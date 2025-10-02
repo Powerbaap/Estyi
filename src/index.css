@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mesajlaşma sistemi için özel stiller */
+@layer utilities {
+  .overflow-wrap-anywhere {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+  
+  /* Mesaj balonları için responsive genişlik */
+  .message-bubble {
+    max-width: 85%;
+  }
+  
+  @media (min-width: 640px) {
+    .message-bubble {
+      max-width: 75%;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .message-bubble {
+      max-width: 70%;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .message-bubble {
+      max-width: 65%;
+    }
+  }
+}
+
+/* Scroll bar stilleri */
+.overflow-y-auto::-webkit-scrollbar {
+  width: 6px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.overflow-y-auto::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

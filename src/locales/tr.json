@@ -1,0 +1,741 @@
+{
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata oluştu",
+    "success": "Başarılı",
+    "cancel": "İptal",
+    "save": "Kaydet",
+    "delete": "Sil",
+    "edit": "Düzenle",
+    "view": "Görüntüle",
+    "close": "Kapat",
+    "back": "Geri",
+    "next": "İleri",
+    "submit": "Gönder",
+    "search": "Ara",
+    "filter": "Filtrele",
+    "sort": "Sırala",
+    "all": "Tümü",
+    "none": "Hiçbiri",
+    "selectAll": "Tümünü Seç",
+    "clearAll": "Temizle"
+  },
+  "auth": {
+    "login": "Giriş Yap",
+    "signup": "Kayıt Ol",
+    "logout": "Çıkış Yap",
+    "email": "E-posta",
+    "password": "Şifre",
+    "confirmPassword": "Şifre Tekrar",
+    "name": "Ad Soyad",
+    "forgotPassword": "Şifremi Unuttum",
+    "rememberMe": "Beni Hatırla",
+    "patient": "Değişim Arayan",
+    "clinic": "Değişim Yaratan",
+    "accountType": "Hesap Türü",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "dontHaveAccount": "Hesabınız yok mu?",
+    "loginWithGoogle": "Google ile Giriş Yap",
+    "signupWithGoogle": "Google ile Kayıt Ol"
+  },
+  "home": {
+    "hero": {
+      "title": "Hayalinizdeki Görünüme Giden Yolu Keşfedin.",
+      "subtitle": "Kimliğinizi paylaşmadan, global estetik merkezlerinden şeffaf teklifler alın.",
+      "cta": "Ücretsiz Fiyat Al",
+      "learnMore": "Daha Fazla Bilgi"
+    },
+    "features": {
+      "title": "Neden Estyi?",
+      "subtitle": "Güvenli ve şeffaf estetik tedavi deneyimi",
+      "secure": {
+        "title": "Güvenli Platform",
+        "description": "Verileriniz şifrelenmiş olarak saklanır"
+      },
+      "global": {
+        "title": "Global Erişim",
+        "description": "Dünya çapında sertifikalı klinikler"
+      },
+      "transparent": {
+        "title": "Şeffaf Fiyatlandırma",
+        "description": "Gizli maliyetler yok"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Kontrol Paneli",
+    "welcome": "Hoş Geldiniz",
+    "stats": {
+      "requests": "Talepler",
+      "offers": "Teklifler",
+      "messages": "Mesajlar",
+      "appointments": "Randevular"
+    },
+    "recentActivity": "Son Aktiviteler",
+    "quickActions": "Hızlı İşlemler",
+    "myPhotos": "Fotoğraflarım",
+    "receivedOffers": "Alınan Teklifler",
+    "enlargePhoto": "Büyüt",
+    "photos": "fotoğraf",
+    "contactClinic": "Klinik ile İletişim",
+    "acceptOffer": "Kabul Et",
+    "rejectOffer": "Reddet",
+    "offerAccepted": "Teklif Kabul Edildi",
+    "offerRejected": "Teklif Reddedildi",
+    "processingOffer": "İşleniyor...",
+    "active": "Aktif",
+    "closed": "Kapalı",
+    "pending": "Beklemede",
+    "completed": "Tamamlandı",
+    "offerId": "Teklif No",
+    "clinicContact": "Klinik İletişimi",
+    "offerDetails": "Teklif Detayları",
+    "priceRange": "Fiyat Aralığı",
+    "duration": "Süre",
+    "hospitalization": "Hastanede Kalış",
+    "clinicRating": "Klinik Puanı",
+    "clinicReviews": "Klinik Değerlendirmeleri",
+    "clinicCountry": "Klinik Ülkesi",
+    "offerDate": "Teklif Tarihi",
+    "procedureDetails": "İşlem Detayları",
+    "clinicProfile": "Klinik Profili",
+    "viewClinic": "Klinik Profilini Görüntüle",
+    "sendMessage": "Mesaj Gönder",
+    "requestDetails": "Talep Detayları",
+    "requestStatus": "Talep Durumu",
+    "requestDate": "Talep Tarihi",
+    "requestCountries": "Talep Ülkeleri",
+    "totalOffers": "Toplam Teklif",
+    "totalPhotos": "Toplam Fotoğraf",
+    "totalCountries": "Toplam Ülke"
+  },
+  "requests": {
+    "title": "Fiyat Talepleri",
+    "newRequest": "Yeni Talep",
+    "status": {
+      "pending": "Beklemede",
+      "active": "Aktif",
+      "completed": "Tamamlandı",
+      "cancelled": "İptal Edildi"
+    },
+    "procedure": "İşlem",
+    "country": "Ülke",
+    "budget": "Bütçe",
+    "notes": "Notlar",
+    "photos": "Fotoğraflar",
+    "submitRequest": "Talep Gönder",
+    "allCountries": "Tüm Ülkeler",
+    "allCountriesInfo": "Tüm ülkelerdeki kliniklerden teklif alacaksınız",
+    "submitAllCountries": "Tüm Ülkelerden Teklif Al"
+  },
+  "offers": {
+    "title": "Teklifler",
+    "receivedOffers": "Alınan Teklifler",
+    "noOffers": "Henüz teklif almadınız",
+    "clinic": "Klinik",
+    "price": "Fiyat",
+    "duration": "Süre",
+    "validUntil": "Geçerlilik",
+    "accept": "Kabul Et",
+    "reject": "Reddet",
+    "contact": "İletişim"
+  },
+  "priceRequest": {
+    "title": "Fiyat Teklifi Al",
+    "selectProcedure": "İşlem Seçin",
+    "chooseProcedure": "İşlem seçin",
+    "uploadPhotos": "Fotoğraf Yükleyin",
+    "minimumPhotos": "Minimum 5, Maksimum 10",
+    "clickToUpload": "Fotoğraf yüklemek için tıklayın",
+    "fileFormat": "JPG, PNG, maksimum 10MB her biri",
+    "uploadedPhotos": "Yüklenen Fotoğraflar",
+    "selectCountries": "Ülke Seçin",
+    "chooseCountries": "Teklif almak istediğiniz ülkeleri seçin",
+    "selectedCountries": "Seçilen",
+    "countriesText": "ülke",
+    "allCountries": "Tüm ülkeler",
+    "age": "Yaş",
+    "enterAge": "Yaşınızı girin",
+    "gender": "Cinsiyet",
+    "chooseGender": "Cinsiyet seçin",
+    "female": "Kadın",
+    "male": "Erkek",
+    "treatmentDate": "Tedavi Tarihi",
+    "chooseTreatmentDate": "Tedavi tarihi seçin",
+    "additionalDetails": "Ek Detaylar",
+    "descriptionPlaceholder": "Tedavi hakkında ek bilgiler, beklentileriniz, özel istekleriniz...",
+    "importantInfo": "Önemli Bilgiler",
+    "requestActive": "Talebiniz 30 gün boyunca aktif kalacak",
+    "onlyCertified": "Sadece sertifikalı kliniklerden teklif alacaksınız",
+    "photosEncrypted": "Fotoğraflarınız şifrelenmiş olarak saklanır",
+    "notifications": "Yeni teklifler geldiğinde bildirim alacaksınız",
+    "allCountriesInfo": "Tüm ülkelerdeki kliniklerden teklif alacaksınız",
+    "cancel": "İptal",
+    "submitRequest": "Talep Gönder",
+    "submitAllCountries": "Tüm Ülkelerden Teklif Al"
+  },
+  "messages": {
+    "title": "Mesajlar",
+    "conversations": "Konuşmalar",
+    "newMessage": "Yeni Mesaj",
+    "typeMessage": "Mesajınızı yazın...",
+    "send": "Gönder",
+    "unread": "Okunmamış",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı"
+  },
+  "profile": {
+    "title": "Profil",
+    "personalInfo": "Kişisel Bilgiler",
+    "security": "Güvenlik",
+    "preferences": "Tercihler",
+    "notifications": "Bildirimler",
+    "language": "Dil",
+    "timezone": "Saat Dilimi"
+  },
+  "clinic": {
+    "dashboard": "Klinik Paneli",
+    "applicationTitle": "Klinik Başvurusu",
+    "applicationSuccess": "Başvurunuz başarıyla gönderildi! En kısa sürede sizinle iletişime geçeceğiz.",
+    "clinicName": "Klinik Adı",
+    "country": "Ülke",
+    "specialties": "Uzmanlık Alanları",
+    "website": "Web Sitesi",
+    "description": "Klinik Açıklaması",
+    "submitApplication": "Başvuruyu Gönder",
+    "requests": "Gelen Talepler",
+    "offers": "Verdiğim Teklifler",
+    "messages": "Mesajlar",
+    "profileTitle": "Profil",
+    "profileSubtitle": "Klinik bilgilerinizi yönetin",
+    "membershipTitle": "Üyelik",
+    "membershipSubtitle": "Üyelik planınızı yönetin",
+    "editProfile": "Profili Düzenle",
+    "cancel": "İptal",
+    "saveChanges": "Değişiklikleri Kaydet",
+    "basicInformation": "Temel Bilgiler",
+    "clinicName": "Klinik Adı",
+    "email": "E-posta",
+    "address": "Adres",
+    "phone": "Telefon",
+    "website": "Web Sitesi",
+    "specialties": "Uzmanlık Alanları",
+    "aboutUs": "Hakkımızda",
+    "aboutUsDescription": "İstanbul Aesthetic Center, kozmetik ve rekonstrüktif cerrahi konusunda uzmanlaşmış önde gelen bir medikal turizm destinasyonudur. İleri tıbbi teknoloji ve Türk misafirperverliğini birleştirerek hastalarımıza en yüksek kalitede hizmet sunuyoruz.",
+    "profileCompletion": "Profil Tamamlanma",
+    "documents": "Belgeler",
+    "photos": "Fotoğraflar",
+    "certifications": "Sertifikalar",
+    "languages": "Diller",
+    "teamDescription": "Uzman ekibimiz deneyimli cerrahlar ve sağlık profesyonellerinden oluşmaktadır.",
+    "quickStats": "Hızlı İstatistikler",
+    "stats": {
+      "totalRequests": "Toplam Talep",
+      "receivedOffers": "Alınan Teklif",
+      "membershipDate": "Üyelik Tarihi"
+    },
+    "lookingForNaturalResults": "Doğal sonuçlar arıyor",
+    "preferFUETechnique": "FUE tekniğini tercih ediyor",
+    "lookingForNaturalEnhancement": "Doğal görünüm istiyor",
+    "jciAccredited": "JCI Akrediteli",
+    "isoCertified": "ISO 9001:2015",
+    "ministryApproved": "Sağlık Bakanlığı Onaylı",
+    "turkish": "Türkçe",
+    "english": "İngilizce",
+    "arabic": "Arapça",
+    "russian": "Rusça",
+    "rhinoplasty": "Rinoplasti",
+    "hairTransplant": "Saç Ekimi",
+    "breastSurgery": "Göğüs Cerrahisi",
+    "faceLift": "Yüz Germe",
+    "describeClinic": "Klinik hakkında açıklama yazın...",
+    "describeMedicalTeam": "Tıbbi ekibiniz hakkında açıklama yazın...",
+    "documentsAndCertificates": "Belgeler ve Sertifikalar",
+    "uploadDocument": "Belge Yükle",
+    "uploaded": "Yüklendi",
+    "clinicPhotos": "Klinik Fotoğrafları",
+    "addPhotos": "Fotoğraf Ekle",
+    "clinicPhoto": "Klinik Fotoğrafı",
+    "downloadInvoice": "Fatura İndir",
+    "upgradePlan": "Planı Yükselt",
+    "plan": "Planı",
+    "monthly": "aylık",
+    "autoRenewing": "Otomatik Yenileme",
+    "manualRenewal": "Manuel Yenileme",
+    "nextBillingDate": "Sonraki Fatura Tarihi",
+    "daysRemaining": "gün kaldı",
+    "currentUsage": "Mevcut Kullanım",
+    "patientRequests": "Hasta Talepleri",
+    "storage": "Depolama",
+    "translations": "Çeviriler",
+    "videoCalls": "Video Görüşmeleri",
+    "availablePlans": "Mevcut Planlar",
+    "billingHistory": "Fatura Geçmişi",
+    "perfectForSmallClinics": "Küçük klinikler için mükemmel",
+    "mostPopularForGrowingClinics": "Büyüyen klinikler için en popüler",
+    "forLargeMedicalCenters": "Büyük medikal merkezler için",
+    "upTo50PatientRequests": "Aya kadar 50 hasta talebi",
+    "basicAnalytics": "Temel analitik",
+    "emailSupport": "E-posta desteği",
+    "documentStorage2GB": "Belge depolama (2GB)",
+    "standardProfileListing": "Standart profil listesi",
+    "limitedTo2Specialties": "2 uzmanlık alanıyla sınırlı",
+    "noVideoConsultations": "Video görüşmesi yok",
+    "basicTranslationOnly": "Sadece temel çeviri",
+    "unlimitedPatientRequests": "Sınırsız hasta talebi",
+    "advancedAnalytics": "Gelişmiş analitik",
+    "prioritySupport": "Öncelikli destek",
+    "multiLanguageTranslation": "Çok dilli çeviri",
+    "documentStorage10GB": "Belge depolama (10GB)",
+    "videoConsultations": "Video görüşmeleri",
+    "featuredProfileListing": "Öne çıkan profil listesi",
+    "customBranding": "Özel markalama",
+    "everythingInProfessional": "Professional'daki her şey",
+    "dedicatedAccountManager": "Özel hesap yöneticisi",
+    "customIntegrations": "Özel entegrasyonlar",
+    "whiteLabelSolution": "Beyaz etiket çözümü",
+    "unlimitedDocumentStorage": "Sınırsız belge depolama",
+    "advancedReporting": "Gelişmiş raporlama",
+    "apiAccess": "API erişimi",
+    "multiClinicManagement": "Çoklu klinik yönetimi",
+    "reviewAndRespond": "Hasta taleplerini inceleyin ve yanıtlayın",
+    "allProcedures": "Tüm İşlemler",
+    "allStatus": "Tüm Durumlar",
+    "new": "Yeni",
+    "offered": "Teklif Verildi",
+    "expired": "Süresi Doldu",
+    "newRequests": "Yeni Talepler",
+    "offersSent": "Gönderilen Teklifler",
+    "avgResponse": "Ortalama Yanıt",
+    "responseRate": "Yanıt Oranı",
+    "activeRequests": "Aktif Talepler",
+    "submitOffer": "Teklif Gönder",
+    "viewDetails": "Detayları Görüntüle",
+    "patientAge": "Hasta Yaşı",
+    "preferredCountries": "Tercih Edilen Ülkeler",
+    "patientNotes": "Hasta Notları",
+    "requestDate": "Talep Tarihi",
+    "photos": "Fotoğraflar",
+    "noPhotos": "Fotoğraf yok",
+    "viewAllPhotos": "Tüm Fotoğrafları Görüntüle",
+    "closePhoto": "Fotoğrafı Kapat",
+    "myOffers": "Tekliflerim",
+    "trackAndManage": "Tekliflerinizi takip edin ve yönetin",
+    "pending": "Beklemede",
+    "accepted": "Kabul Edildi",
+    "rejected": "Reddedildi",
+    "allTime": "Tüm Zamanlar",
+    "today": "Bugün",
+    "thisWeek": "Bu Hafta",
+    "totalOffers": "Toplam Teklif",
+    "totalValue": "Toplam Değer",
+    "offerDetails": "Teklif Detayları",
+    "submittedDate": "Gönderilme Tarihi",
+    "expiryDate": "Son Geçerlilik Tarihi",
+    "duration": "Süre",
+    "hospitalization": "Hastanede Kalış",
+    "includedServices": "Dahil Olan Hizmetler",
+    "basePrice": "Temel Fiyat",
+    "totalPrice": "Toplam Fiyat",
+    "daysUntilExpiry": "gün kaldı",
+    "expired": "Süresi Doldu",
+    "viewOffer": "Teklifi Görüntüle",
+    "editOffer": "Teklifi Düzenle",
+    "withdrawOffer": "Teklifi Geri Çek",
+    "noOffers": "Henüz teklif göndermediniz",
+    "noOffersMessage": "Hasta taleplerine yanıt vererek ilk teklifinizi gönderin",
+    "chatWithPatients": "Hastalarınızla sohbet edin",
+    "noConversations": "Henüz konuşma yok",
+    "typeMessage": "Mesajınızı yazın...",
+    "send": "Gönder",
+    "translate": "Çevir",
+    "call": "Ara",
+    "videoCall": "Video Ara",
+    "moreOptions": "Daha Fazla Seçenek",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "messageDelivered": "Mesaj iletildi",
+    "messageSeen": "Mesaj görüldü",
+    "translatedMessage": "Çevrilmiş Mesaj",
+    "originalMessage": "Orijinal Mesaj",
+    "noMessages": "Henüz mesaj yok",
+    "startConversation": "Konuşmayı başlatın",
+    "submitOfferTitle": "Teklif Gönder",
+    "for": "için",
+    "patientInformation": "Hasta Bilgileri",
+    "age": "Yaş",
+    "countries": "Ülkeler",
+    "baseProcedurePrice": "Temel İşlem Fiyatı",
+    "enterBasePrice": "Temel fiyatı girin",
+    "priceRange": "Fiyat Aralığı",
+    "procedureDuration": "İşlem Süresi",
+    "selectDuration": "Süre seçin",
+    "duration1to2": "1-2 saat",
+    "duration2to3": "2-3 saat",
+    "duration3to4": "3-4 saat",
+    "duration4to6": "4-6 saat",
+    "duration6to8": "6-8 saat",
+    "fullDay": "Tam gün",
+    "hospitalizationRequired": "Hastanede Kalış Gereksinimi",
+    "noHospitalization": "Hastanede kalış gerekmez",
+    "oneNight": "1 gece",
+    "twoNights": "2 gece",
+    "threeNights": "3 gece",
+    "additionalServices": "Ek Hizmetler",
+    "hotelAccommodation": "Otel Konaklaması",
+    "airportTransfer": "Havaalanı Transferi",
+    "consultationIncluded": "Konsültasyon Dahil",
+    "additionalNotes": "Ek Notlar",
+    "offerNotes": "Teklif notlarınızı yazın...",
+    "submitOffer": "Teklifi Gönder",
+    "offerSubmitted": "Teklif Gönderildi!",
+    "offerSubmittedMessage": "Teklifiniz {userId} kullanıcısına gönderildi. 7 gün içinde yanıt verebilirler.",
+    "totalOffer": "Toplam Teklif",
+    "flightCost": "Uçak Masrafı",
+    "visaCost": "Vize Masrafı",
+    "totalPrice": "Toplam Fiyat",
+    "date": "Tarih",
+    "description": "Açıklama",
+    "amount": "Tutar",
+    "paid": "Ödendi",
+    "invoice": "Fatura",
+    "download": "İndir",
+    "paymentMethod": "Ödeme Yöntemi",
+    "primary": "Birincil",
+    "expires": "Son Kullanma",
+    "updatePaymentMethod": "Ödeme Yöntemini Güncelle",
+    "selectHospitalization": "Hastanede kalış seçin",
+    "additionalInfo": "Ek Bilgiler",
+    "costBreakdown": "Maliyet Dağılımı",
+    "baseProcedure": "Temel İşlem",
+    "flightAssistance": "Uçak Yardımı",
+    "visaSupport": "Vize Desteği",
+    "importantNotice": "Önemli Bilgi",
+    "oneOfferPerRequest": "Her talep için sadece bir teklif gönderebilirsiniz",
+    "noModification": "Teklif gönderildikten sonra değiştirilemez",
+    "sevenDaysResponse": "Hasta 7 gün içinde yanıt vermelidir",
+    "autoIncluded": "Uçak ve vize masrafları otomatik dahildir",
+    "offersList": "Teklifler Listesi",
+    "showing": "Gösteriliyor",
+    "of": "/",
+    "patientProcedure": "Hasta/İşlem",
+    "details": "Detaylar",
+    "submitted": "Gönderildi",
+    "clinicPanel": "Klinik Paneli",
+    "medicalClinicDashboard": "Tıbbi Klinik Paneli",
+    "professionalPlan": "Professional Plan",
+    "basicPlan": "Temel Plan",
+    "professionalPlanJanuary2025": "Professional Plan - Ocak 2025",
+    "professionalPlanDecember2024": "Professional Plan - Aralık 2024",
+    "professionalPlanNovember2024": "Professional Plan - Kasım 2024",
+    "basicPlanOctober2024": "Temel Plan - Ekim 2024",
+    "istanbulAestheticCenter": "İstanbul Aesthetic Center",
+    "totalRequests": "Toplam Talep",
+    "activeOffers": "Aktif Teklifler",
+    "acceptedOffers": "Kabul Edilen Teklifler",
+    "responseRate": "Yanıt Oranı",
+    "mostPopular": "En Popüler",
+    "currentPlan": "Mevcut Plan",
+    "upgradeTo": "Yükselt",
+    "status": "Durum",
+    "offers": "Teklifler",
+    "base": "Temel",
+    "daysLeft": "gün kaldı",
+    "noOffersFound": "Teklif bulunamadı",
+    "adjustFilters": "Filtreleri ayarlayın veya yeni teklifler göndermeyi bekleyin",
+    "noneOutpatient": "Yok (Ayakta Tedavi)",
+    "fourFiveNights": "4-5 gece",
+    "oneWeek": "1 hafta",
+    "accommodation": "Konaklama",
+    "transport": "Ulaşım",
+    "consultations": "Konsültasyonlar",
+    "submitting": "Gönderiliyor...",
+    "fromLastMonth": "geçen aydan",
+    "recentRequests": "Son Talepler",
+    "recentOffers": "Son Teklifler",
+    "user": "Kullanıcı",
+    "rhinoplastyRequest": "Rinoplasti Talebi",
+    "hoursAgo": "saat önce",
+    "new": "Yeni",
+    "accepted": "Kabul Edildi",
+    "pending": "Beklemede",
+    "hairTransplant": "Saç Ekimi",
+    "offerSent": "Teklif Verildi",
+    "waitingResponse": "Yanıt Bekleniyor"
+  },
+  "footer": {
+    "description": "Dünya çapında sertifikalı estetik kliniklerle hastaları buluşturuyoruz.",
+    "support": "Destek",
+    "legal": "Yasal",
+    "contact": "İletişim",
+    "privacy": "Gizlilik Politikası",
+    "terms": "Kullanım Şartları",
+    "about": "Hakkımızda",
+    "helpCenter": "Yardım Merkezi",
+    "faq": "SSS",
+    "security": "Güvenlik",
+    "cookies": "Çerez Politikası"
+  },
+  "legal": {
+    "help": {
+      "title": "Yardım Merkezi",
+      "description": "Size nasıl yardımcı olabiliriz? Aşağıdaki iletişim kanallarından bize ulaşabilirsiniz.",
+      "contact": {
+        "email": {
+          "title": "E-posta Desteği",
+          "description": "Genel sorular için e-posta gönderin"
+        }
+      },
+      "hours": {
+        "title": "Destek Saatleri",
+        "weekdays": "Hafta içi: 09:00 - 18:00",
+        "weekend": "Hafta sonu: 10:00 - 16:00",
+        "note": "Tüm saatler Türkiye saati (GMT+3) olarak gösterilir"
+      }
+    },
+    "faq": {
+      "title": "Sık Sorulan Sorular",
+      "items": [
+        {
+                  "question": "Estyi nasıl çalışır?",
+        "answer": "Estyi, hastaların estetik tedavi taleplerini dünya çapındaki sertifikalı kliniklere iletir. Hastalar fotoğraf ve bilgilerini paylaşır, klinikler teklif gönderir."
+        },
+        {
+          "question": "Hizmet ücretli mi?",
+          "answer": "Hayır, Estyi platformu hastalar için tamamen ücretsizdir. Sadece tedavi ücretlerini kliniklere ödersiniz."
+        },
+        {
+          "question": "Verilerim güvende mi?",
+          "answer": "Evet, tüm verileriniz şifrelenmiş olarak saklanır ve GDPR uyumludur. Kişisel bilgileriniz güvenle korunur."
+        },
+        {
+          "question": "Hangi ülkelerde hizmet veriyorsunuz?",
+          "answer": "Türkiye, Güney Kore, Tayland, Meksika, Brezilya, Almanya, Polonya, Çek Cumhuriyeti, Hindistan ve Dubai'de hizmet veriyoruz."
+        },
+        {
+          "question": "Klinik seçimi nasıl yapılır?",
+          "answer": "Tüm kliniklerimiz sertifikalı ve akreditelidir. Kliniklerin profillerini inceleyebilir, değerlendirmelerini okuyabilirsiniz."
+        },
+        {
+          "question": "Tedavi sonrası destek var mı?",
+          "answer": "Evet, tedavi öncesi ve sonrası sürekli destek sağlıyoruz. Herhangi bir sorunuzda bize ulaşabilirsiniz."
+        },
+        {
+          "question": "Ödeme nasıl yapılır?",
+          "answer": "Ödemeler güvenli ödeme sistemleri üzerinden yapılır. Klinik ile anlaştığınız fiyat üzerinden ödeme yaparsınız."
+        }
+      ]
+    },
+    "contact": {
+      "title": "İletişim",
+      "description": "Sorularınız için bizimle iletişime geçin. Size en kısa sürede yanıt vereceğiz.",
+      "info": {
+        "email": {
+          "title": "E-posta",
+          "general": "Genel sorular için:",
+          "support": "Teknik destek için:"
+        },
+        "phone": {
+          "title": "Telefon",
+          "turkey": "Türkiye:",
+          "international": "Uluslararası:"
+        },
+        "address": {
+          "title": "Adres",
+          "line1": "Estyi Ltd. Şti.",
+          "line2": "Levent Mahallesi, Büyükdere Caddesi",
+          "line3": "34330 Beşiktaş/İstanbul, Türkiye"
+        }
+      },
+      "form": {
+        "title": "İletişim Formu",
+        "name": "Ad Soyad",
+        "namePlaceholder": "Adınızı ve soyadınızı girin",
+        "email": "E-posta",
+        "emailPlaceholder": "E-posta adresinizi girin",
+        "subject": "Konu",
+        "subjectPlaceholder": "Konu başlığını girin",
+        "message": "Mesaj",
+        "messagePlaceholder": "Mesajınızı yazın...",
+        "submit": "Gönder"
+      }
+    },
+    "privacy": {
+      "title": "Gizlilik Politikası",
+      "description": "Kişisel verilerinizin nasıl korunduğu hakkında bilgi alın.",
+        "intro": "Bu gizlilik politikası, Estyi platformunda kişisel verilerinizin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.",
+      "dataCollected": {
+        "title": "Toplanan Veriler",
+        "email": "E-posta adresi ve iletişim bilgileri",
+        "photos": "Tedavi öncesi fotoğraflar",
+        "preferences": "Tedavi tercihleri ve bütçe bilgileri",
+        "clinicInfo": "Klinik bilgileri ve sertifikalar"
+      },
+      "dataUsage": {
+        "title": "Veri Kullanımı",
+        "secure": "Güvenli şifreleme ile saklanır",
+        "ai": "AI destekli eşleştirme için kullanılır",
+        "legal": "Yasal yükümlülükler için gerekli"
+      },
+      "dataSharing": {
+        "title": "Veri Paylaşımı",
+        "clinics": "Sadece onaylı kliniklerle paylaşılır",
+        "noMarketing": "Pazarlama amaçlı paylaşılmaz"
+      },
+      "retention": {
+        "title": "Veri Saklama",
+        "photos": "Fotoğraflar 2 yıl saklanır",
+        "clinicDocs": "Klinik belgeleri 5 yıl saklanır"
+      },
+      "rights": {
+        "title": "Kullanıcı Hakları",
+        "access": "Verilerinize erişim hakkı",
+        "object": "İşleme itiraz etme hakkı",
+        "portability": "Veri taşınabilirliği hakkı"
+      },
+      "contact": {
+        "title": "İletişim",
+        "email": "Gizlilik soruları için e-posta"
+      }
+    },
+    "terms": {
+      "title": "Kullanım Şartları",
+      "description": "Platform kullanım koşullarını öğrenin.",
+      "serviceUsage": {
+        "title": "Hizmet Kullanımı",
+        "platform": "Platform sadece estetik tedavi eşleştirmesi için kullanılır",
+        "clinic": "Klinikler onaylı ve sertifikalı olmalıdır"
+      },
+      "userResponsibilities": {
+        "title": "Kullanıcı Sorumlulukları",
+        "accuracy": "Doğru ve güncel bilgi sağlamak zorunludur",
+        "prohibited": "Yanıltıcı bilgi paylaşımı yasaktır"
+      },
+      "clinicResponsibilities": {
+        "title": "Klinik Sorumlulukları",
+        "licenses": "Geçerli lisans ve sertifikalara sahip olmalıdır",
+        "transparent": "Şeffaf fiyatlandırma yapmalıdır"
+      },
+      "platformResponsibilities": {
+        "title": "Platform Sorumlulukları",
+        "secure": "Güvenli veri saklama sağlar",
+        "notResponsible": "Tedavi sonuçlarından sorumlu değildir"
+      },
+      "disputeResolution": {
+        "title": "Uyuşmazlık Çözümü",
+        "mediation": "Önce arabuluculuk denenir",
+        "court": "Gerekirse mahkeme yolu izlenir"
+      }
+    },
+    "about": {
+      "title": "Hakkımızda",
+        "description": "Estyi, dünya çapında estetik tedavi arayan hastaları güvenilir kliniklerle buluşturan yenilikçi bir platformdur.",
+      "mission": {
+        "title": "Misyonumuz",
+        "transparent": {
+          "title": "Şeffaf Fiyatlandırma",
+          "description": "Gizli maliyetler olmadan, net fiyatlar sunuyoruz"
+        },
+        "visibility": {
+          "title": "Global Erişim",
+          "description": "Dünya çapında sertifikalı kliniklere erişim sağlıyoruz"
+        },
+        "ai": {
+          "title": "AI Destekli Eşleştirme",
+          "description": "Yapay zeka ile en uygun klinik-hasta eşleştirmesi"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Çerez Politikası",
+      "description": "Çerez kullanımı hakkında bilgi alın.",
+      "types": {
+        "title": "Çerez Türleri",
+        "essential": {
+          "title": "Zorunlu Çerezler",
+          "description": "Sitenin temel işlevleri için gerekli olan çerezler"
+        },
+        "analytics": {
+          "title": "Analitik Çerezler",
+          "description": "Site kullanımını analiz etmek için kullanılan çerezler"
+        },
+        "language": {
+          "title": "Dil Çerezleri",
+          "description": "Tercih ettiğiniz dili hatırlamak için kullanılan çerezler"
+        }
+      },
+      "management": {
+        "title": "Çerez Yönetimi",
+        "description": "Tarayıcı ayarlarınızdan çerezleri yönetebilir veya silebilirsiniz. Ancak bazı site özellikleri çalışmayabilir."
+      }
+    },
+    "security": {
+      "title": "Güvenlik",
+      "description": "Güvenlik önlemlerimiz hakkında bilgi alın.",
+      "verification": {
+        "title": "Klinik Doğrulama",
+        "description": "Tüm kliniklerimiz lisans ve sertifika kontrolünden geçer"
+      },
+      "encryption": {
+        "title": "Veri Şifreleme",
+        "description": "Tüm verileriniz SSL şifreleme ile korunur"
+      },
+      "messaging": {
+        "title": "Güvenli Mesajlaşma",
+        "description": "Platform üzerinden güvenli iletişim sağlanır"
+      },
+      "suspicious": {
+        "title": "Şüpheli Aktivite",
+        "description": "Şüpheli aktiviteleri hemen bildirin"
+      }
+    },
+    "safety": {
+      "title": "Güvenlik Kuralları",
+      "description": "Platform güvenliği hakkında bilgi alın.",
+      "verification": {
+        "title": "Klinik Doğrulama",
+        "description": "Tüm kliniklerimiz lisans ve sertifika kontrolünden geçer"
+      },
+      "encryption": {
+        "title": "Veri Şifreleme",
+        "description": "Tüm verileriniz SSL şifreleme ile korunur"
+      },
+      "messaging": {
+        "title": "Güvenli Mesajlaşma",
+        "description": "Platform üzerinden güvenli iletişim sağlanır"
+      },
+      "suspicious": {
+        "title": "Şüpheli Aktivite",
+        "description": "Şüpheli aktiviteleri hemen bildirin"
+      }
+    }
+  },
+  "countries": [
+    "Türkiye",
+    "Güney Kore",
+    "Tayland",
+    "Meksika",
+    "Brezilya",
+    "Almanya",
+    "Polonya",
+    "Çek Cumhuriyeti",
+    "Hindistan",
+    "Dubai"
+  ],
+  "procedures": [
+    "Rhinoplasty",
+    "Hair Transplant",
+    "Breast Surgery",
+    "Face Lift",
+    "Liposuction",
+    "Tummy Tuck",
+    "Botox & Fillers",
+    "Dental Surgery",
+    "Eye Surgery",
+    "Body Contouring",
+    "El Tırnak İşlemleri",
+    "Saç Boyama",
+    "Protez Saç",
+    "Diğer Saç İşlemleri"
+  ]
+} 
