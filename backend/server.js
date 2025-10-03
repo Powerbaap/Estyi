@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import nodemailer from 'nodemailer';
+import * as nodemailer from 'nodemailer';
 import { createClient } from '@supabase/supabase-js';
 import dotenv from 'dotenv';
 import { emailTemplates } from './emailTemplates.js';
