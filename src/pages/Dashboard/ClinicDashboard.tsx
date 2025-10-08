@@ -27,7 +27,7 @@ import ClinicMembership from '../../components/Clinic/ClinicMembership';
 import ClinicNotificationCenter from '../../components/Notifications/ClinicNotificationCenter';
 
 const ClinicDashboard: React.FC = () => {
-  useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
@@ -36,16 +36,16 @@ const ClinicDashboard: React.FC = () => {
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
 
   const menuItems = [
-    { id: 'dashboard', icon: LayoutDashboard, label: 'Dashboard', count: null },
-    { id: 'requests', icon: FileText, label: 'Talepler', count: 12 },
-    { id: 'offers', icon: DollarSign, label: 'Teklifler', count: 8 },
-    { id: 'profile', icon: User, label: 'Profil', count: null },
-    { id: 'membership', icon: Crown, label: 'Üyelik', count: null }
+    { id: 'dashboard', icon: LayoutDashboard, label: t('clinicDashboard.menu.dashboard'), count: null },
+    { id: 'requests', icon: FileText, label: t('clinicDashboard.menu.requests'), count: 12 },
+    { id: 'offers', icon: DollarSign, label: t('clinicDashboard.menu.offers'), count: 8 },
+    { id: 'profile', icon: User, label: t('clinicDashboard.menu.profile'), count: null },
+    { id: 'membership', icon: Crown, label: t('clinicDashboard.menu.membership'), count: null }
   ];
 
   const stats = [
     { 
-      label: 'Toplam Talepler', 
+      label: t('clinicDashboard.stats.totalRequests'), 
       value: '24', 
       change: '+12%', 
       changeType: 'increase',
@@ -56,7 +56,7 @@ const ClinicDashboard: React.FC = () => {
       trend: 'up'
     },
     { 
-      label: 'Aktif Teklifler', 
+      label: t('clinicDashboard.stats.activeOffers'), 
       value: '8', 
       change: '+5%', 
       changeType: 'increase',
@@ -67,7 +67,7 @@ const ClinicDashboard: React.FC = () => {
       trend: 'up'
     },
     { 
-      label: 'Kabul Edilen Teklifler', 
+      label: t('clinicDashboard.stats.acceptedOffers'), 
       value: '16', 
       change: '+25%', 
       changeType: 'increase',
@@ -78,7 +78,7 @@ const ClinicDashboard: React.FC = () => {
       trend: 'up'
     },
     { 
-      label: 'Yanıt Oranı', 
+      label: t('clinicDashboard.stats.responseRate'), 
       value: '94%', 
       change: '+3%', 
       changeType: 'increase',
@@ -130,25 +130,25 @@ const ClinicDashboard: React.FC = () => {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Takvim</h2>
-                  <p className="text-gray-600 mt-1">Onaylanan randevularınızı görüntüleyin</p>
+                  <h2 className="text-2xl font-bold text-gray-900">{t('clinicDashboard.calendarTitle')}</h2>
+                  <p className="text-gray-600 mt-1">{t('clinicDashboard.calendarSubtitle')}</p>
                 </div>
                 <div className="flex items-center space-x-2">
                   <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                    Bugün
+                    {t('clinicDashboard.today')}
                   </button>
                   <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                    Bu Hafta
+                    {t('clinicDashboard.thisWeek')}
                   </button>
                   <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                    Bu Ay
+                    {t('clinicDashboard.thisMonth')}
                   </button>
                 </div>
               </div>
 
               {/* Calendar Grid */}
               <div className="grid grid-cols-7 gap-1 mb-6">
-                {['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'].map((day) => (
+                {[t('clinicDashboard.monday'), t('clinicDashboard.tuesday'), t('clinicDashboard.wednesday'), t('clinicDashboard.thursday'), t('clinicDashboard.friday'), t('clinicDashboard.saturday'), t('clinicDashboard.sunday')].map((day) => (
                   <div key={day} className="p-3 text-center text-sm font-medium text-gray-500 bg-gray-50 rounded-lg">
                     {day}
                   </div>
@@ -182,35 +182,35 @@ const ClinicDashboard: React.FC = () => {
 
               {/* Appointments List */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Onaylanan Randevular</h3>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.confirmedAppointments')}</h3>
                 
                 {[
                   {
                     id: '1',
                     patientName: 'Ahmet Yılmaz',
-                    procedure: 'Rinoplasti',
-                    date: '15 Ağustos 2025',
+                    procedure: t('procedures.rhinoplasty'),
+                    date: '15 ' + t('clinicDashboard.august') + ' 2025',
                     time: '14:00',
                     status: 'confirmed',
-                    clinic: 'İstanbul Estetik Merkezi'
+                    clinic: t('clinicDashboard.istanbulAestheticCenter')
                   },
                   {
                     id: '2',
                     patientName: 'Fatma Demir',
-                    procedure: 'Saç Ekimi',
-                    date: '22 Ağustos 2025',
+                    procedure: t('procedures.hairTransplant'),
+                    date: '22 ' + t('clinicDashboard.august') + ' 2025',
                     time: '10:30',
                     status: 'confirmed',
-                    clinic: 'İstanbul Estetik Merkezi'
+                    clinic: t('clinicDashboard.istanbulAestheticCenter')
                   },
                   {
                     id: '3',
                     patientName: 'Mehmet Kaya',
-                    procedure: 'Göğüs Estetiği',
-                    date: '28 Ağustos 2025',
+                    procedure: t('procedures.breastSurgery'),
+                    date: '28 ' + t('clinicDashboard.august') + ' 2025',
                     time: '16:00',
                     status: 'confirmed',
-                    clinic: 'İstanbul Estetik Merkezi'
+                    clinic: t('clinicDashboard.istanbulAestheticCenter')
                   }
                 ].map((appointment) => (
                   <div key={appointment.id} className="flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg">
@@ -228,7 +228,7 @@ const ClinicDashboard: React.FC = () => {
                       <p className="font-semibold text-gray-900">{appointment.date}</p>
                       <p className="text-sm text-gray-600">{appointment.time}</p>
                       <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Onaylandı
+                        {t('clinicDashboard.confirmed')}
                       </span>
                     </div>
                   </div>
@@ -244,8 +244,8 @@ const ClinicDashboard: React.FC = () => {
             <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-xl p-6 text-white">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-bold mb-2">Hoş Geldiniz, {((user as any)?.user_metadata?.name) || 'Klinik'}!</h1>
-                  <p className="text-blue-100">Bugün {new Date().toLocaleDateString('tr-TR', { 
+                  <h1 className="text-2xl font-bold mb-2">{t('clinicDashboard.welcome', { name: ((user as any)?.user_metadata?.name) || t('clinicDashboard.clinic') })}</h1>
+                  <p className="text-blue-100">{t('clinicDashboard.today')} {new Date().toLocaleDateString('tr-TR', { 
                     weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 
@@ -255,11 +255,11 @@ const ClinicDashboard: React.FC = () => {
                 <div className="hidden md:flex items-center space-x-6">
                   <div className="text-center">
                     <p className="text-2xl font-bold">24</p>
-                    <p className="text-blue-200 text-sm">Aktif Talep</p>
+                    <p className="text-blue-200 text-sm">{t('clinicDashboard.activeRequest')}</p>
                   </div>
                   <div className="text-center">
                     <p className="text-2xl font-bold">8</p>
-                    <p className="text-blue-200 text-sm">Bekleyen Teklif</p>
+                    <p className="text-blue-200 text-sm">{t('clinicDashboard.pendingOffer')}</p>
                   </div>
                 </div>
               </div>
@@ -283,7 +283,7 @@ const ClinicDashboard: React.FC = () => {
                       <p className="text-sm font-medium text-gray-600">{stat.label}</p>
                       <p className="text-2xl font-bold text-gray-900 mt-1">{stat.value}</p>
                       <p className={`text-sm mt-1 ${stat.changeType === 'increase' ? 'text-green-600' : 'text-red-600'}`}>
-                        {stat.change} geçen aydan
+                        {stat.change} {t('clinicDashboard.fromLastMonth')}
                       </p>
                     </div>
                     <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
@@ -309,26 +309,29 @@ const ClinicDashboard: React.FC = () => {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Son Talepler</h3>
-                    <p className="text-sm text-gray-500 mt-1">Son 24 saatteki talepler</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t('clinicDashboard.recentRequests')}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{t('clinicDashboard.last24Hours')}</p>
                   </div>
                   <button 
                     onClick={() => setActiveTab('requests')}
                     className="flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
-                    <span>Tümünü Gör</span>
+                    <span>{t('clinicDashboard.viewAll')}</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
                 
                 <div className="space-y-3">
-                  {[
-                    { id: 'Kullanıcı1235', procedure: 'Rinoplasti Talebi', time: '1 saat önce', status: 'new', priority: 'high' },
-                    { id: 'Kullanıcı1236', procedure: 'Saç Ekimi Talebi', time: '2 saat önce', status: 'new', priority: 'medium' },
-                    { id: 'Kullanıcı1237', procedure: 'Göğüs Estetiği Talebi', time: '3 saat önce', status: 'new', priority: 'high' },
-                    { id: 'Kullanıcı1238', procedure: 'Yüz Germe Talebi', time: '5 saat önce', status: 'new', priority: 'medium' },
-                    { id: 'Kullanıcı1239', procedure: 'Liposuction Talebi', time: '6 saat önce', status: 'new', priority: 'low' }
-                  ].map((request, index) => (
+                  {[t('procedures.rhinoplasty') + ' ' + t('clinicDashboard.request'), t('procedures.hairTransplant') + ' ' + t('clinicDashboard.request'), t('procedures.breastSurgery') + ' ' + t('clinicDashboard.request'), t('procedures.faceLift') + ' ' + t('clinicDashboard.request'), t('procedures.liposuction') + ' ' + t('clinicDashboard.request')].map((procedure, i) => {
+                    const request = {
+                      id: `${t('clinicDashboard.user')}123${5+i}`,
+                      procedure: procedure,
+                      time: `${i+1} ${t('clinicDashboard.hoursAgo')}`,
+                      status: 'new',
+                      priority: i < 2 ? 'high' : i < 4 ? 'medium' : 'low'
+                    };
+                    return request;
+                  }).map((request, index) => (
                     <div 
                       key={index} 
                       className="group flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg cursor-pointer transition-all duration-200"
@@ -348,7 +351,7 @@ const ClinicDashboard: React.FC = () => {
                         <div className="flex items-center space-x-2 mb-1">
                           <p className="font-semibold text-gray-900 truncate">{request.id}</p>
                           <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800 flex-shrink-0">
-                            Yeni
+                            {t('clinicDashboard.new')}
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 truncate">{request.procedure}</p>
@@ -366,25 +369,25 @@ const ClinicDashboard: React.FC = () => {
               <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Son Teklifler</h3>
-                    <p className="text-sm text-gray-500 mt-1">Son 24 saatteki teklifler</p>
+                    <h3 className="text-lg font-bold text-gray-900">{t('clinicDashboard.recentOffers')}</h3>
+                    <p className="text-sm text-gray-500 mt-1">{t('clinicDashboard.last24HoursOffers')}</p>
                   </div>
                   <button 
                     onClick={() => setActiveTab('offers')}
                     className="flex items-center space-x-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition-colors"
                   >
-                    <span>Tümünü Gör</span>
+                    <span>{t('clinicDashboard.viewAll')}</span>
                     <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
                 
                 <div className="space-y-3">
                   {[
-                    { amount: '$3,500', procedure: 'Saç Ekimi', user: 'Kullanıcı5679', time: '2 saat önce', status: 'accepted' },
-                    { amount: '$4,200', procedure: 'Rinoplasti', user: 'Kullanıcı5680', time: '4 saat önce', status: 'pending' },
-                    { amount: '$6,800', procedure: 'Göğüs Estetiği', user: 'Kullanıcı5681', time: '6 saat önce', status: 'pending' },
-                    { amount: '$5,500', procedure: 'Yüz Germe', user: 'Kullanıcı5682', time: '8 saat önce', status: 'accepted' },
-                    { amount: '$3,200', procedure: 'Liposuction', user: 'Kullanıcı5683', time: '12 saat önce', status: 'pending' }
+                    { amount: '$3,500', procedure: t('procedures.hairTransplant'), user: t('clinicDashboard.user') + '5679', time: `2 ${t('clinicDashboard.hoursAgo')}`, status: 'accepted' },
+                    { amount: '$4,200', procedure: t('procedures.rhinoplasty'), user: t('clinicDashboard.user') + '5680', time: `4 ${t('clinicDashboard.hoursAgo')}`, status: 'pending' },
+                    { amount: '$6,800', procedure: t('procedures.breastSurgery'), user: t('clinicDashboard.user') + '5681', time: `6 ${t('clinicDashboard.hoursAgo')}`, status: 'pending' },
+                    { amount: '$5,500', procedure: t('procedures.faceLift'), user: t('clinicDashboard.user') + '5682', time: `8 ${t('clinicDashboard.hoursAgo')}`, status: 'accepted' },
+                    { amount: '$3,200', procedure: t('procedures.liposuction'), user: t('clinicDashboard.user') + '5683', time: `12 ${t('clinicDashboard.hoursAgo')}`, status: 'pending' }
                   ].map((offer, index) => (
                     <div 
                       key={index} 
@@ -401,7 +404,7 @@ const ClinicDashboard: React.FC = () => {
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium flex-shrink-0 ${
                             offer.status === 'accepted' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
                           }`}>
-                            {offer.status === 'accepted' ? 'Kabul Edildi' : 'Beklemede'}
+                            {offer.status === 'accepted' ? t('clinicDashboard.accepted') : t('clinicDashboard.pending')}
                           </span>
                         </div>
                         <p className="text-sm text-gray-600 truncate">{offer.user}</p>
@@ -418,15 +421,15 @@ const ClinicDashboard: React.FC = () => {
 
             {/* Quick Actions */}
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Hızlı İşlemler</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">{t('clinicDashboard.quickActions')}</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <button className="flex items-center space-x-3 p-4 rounded-lg border border-gray-200 hover:border-green-300 hover:bg-green-50 transition-all duration-200 group">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center group-hover:bg-green-200 transition-colors">
                     <BarChart3 className="w-5 h-5 text-green-600" />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-gray-900">Raporlar</p>
-                    <p className="text-sm text-gray-600">Performans analizi</p>
+                    <p className="font-medium text-gray-900">{t('clinicDashboard.reports')}</p>
+                    <p className="text-sm text-gray-600">{t('clinicDashboard.performanceAnalysis')}</p>
                   </div>
                 </button>
                 
@@ -438,8 +441,8 @@ const ClinicDashboard: React.FC = () => {
                     <Calendar className="w-5 h-5 text-purple-600" />
                   </div>
                   <div className="text-left">
-                    <p className="font-medium text-gray-900">Takvim</p>
-                    <p className="text-sm text-gray-600">Randevuları görüntüle</p>
+                    <p className="font-medium text-gray-900">{t('clinicDashboard.calendar')}</p>
+                    <p className="text-sm text-gray-600">{t('clinicDashboard.viewAppointments')}</p>
                   </div>
                 </button>
               </div>
@@ -460,7 +463,7 @@ const ClinicDashboard: React.FC = () => {
             <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center shadow-lg">
               <Activity className="w-6 h-6 text-blue-600" />
             </div>
-            <span className="text-xl font-bold text-gray-900">Klinik Paneli</span>
+            <span className="text-xl font-bold text-gray-900">{t('clinicDashboard.sidebarTitle')}</span>
           </div>
                       <button
               onClick={() => setSidebarOpen(false)}
@@ -515,9 +518,9 @@ const ClinicDashboard: React.FC = () => {
               
               <div>
                   <h1 className="text-2xl font-bold text-gray-900">
-                  {(user as any)?.user_metadata?.name || 'İstanbul Estetik Merkezi'}
+                  {(user as any)?.user_metadata?.name || t('clinicDashboard.istanbulAestheticCenter')}
                   </h1>
-                <p className="text-sm text-gray-600">Medikal Klinik Dashboard</p>
+                <p className="text-sm text-gray-600">{t('clinicDashboard.medicalDashboard')}</p>
               </div>
             </div>
             
@@ -539,9 +542,9 @@ const ClinicDashboard: React.FC = () => {
                 </div>
                 <div className="hidden md:block">
                   <p className="text-sm font-bold text-gray-900">
-                     {(user as any)?.user_metadata?.name || 'Test Klinik'}
+                     {(user as any)?.user_metadata?.name || t('clinicDashboard.testClinic')}
                   </p>
-                  <p className="text-xs text-gray-500">Premium Üye</p>
+                  <p className="text-xs text-gray-500">{t('clinicDashboard.premiumMember')}</p>
                 </div>
               </div>
             </div>

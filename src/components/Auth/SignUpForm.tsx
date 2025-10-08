@@ -2,21 +2,24 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import { authService } from '../../services/authService';
 
-const signUpSchema = z.object({
-  email: z.string().email('Geçerli bir email adresi girin'),
-  password: z.string().min(8, 'Şifre en az 8 karakter olmalı'),
-  confirmPassword: z.string(),
-  name: z.string().min(2, 'İsim en az 2 karakter olmalı')
-}).refine(data => data.password === data.confirmPassword, {
-  message: "Şifreler eşleşmiyor",
-  path: ["confirmPassword"]
-});
-
-type SignUpForm = z.infer<typeof signUpSchema>;
-
 export function SignUpForm() {
+  const { t } = useTranslation();
+  
+  const signUpSchema = z.object({
+    email: z.string().email(t('auth.emailMinLength')),
+    password: z.string().min(8, t('auth.passwordMinLength')),
+    confirmPassword: z.string(),
+    name: z.string().min(2, t('auth.nameMinLength'))
+  }).refine(data => data.password === data.confirmPassword, {
+    message: t('auth.passwordMismatch'),
+    path: ["confirmPassword"]
+  });
+
+  type SignUpForm = z.infer<typeof signUpSchema>;
+
   const [step, setStep] = useState<'email' | 'verification' | 'details'>('email');
   const [verificationCode, setVerificationCode] = useState('');
   const [loading, setLoading] = useState(false);
@@ -30,7 +33,7 @@ export function SignUpForm() {
   
   const sendCode = async () => {
     if (!email) {
-      setError('Lütfen email adresinizi girin');
+      setError(t('auth.enterEmail'));
       return;
     }
     
@@ -41,7 +44,7 @@ export function SignUpForm() {
       await authService.sendVerificationCode(email);
       setStep('verification');
     } catch (error) {
-      setError('Kod gönderilirken hata oluştu. Lütfen tekrar deneyin.');
+      setError(t('auth.codeError'));
     } finally {
       setLoading(false);
     }
@@ -49,7 +52,7 @@ export function SignUpForm() {
   
   const verifyAndRegister = async (data: SignUpForm) => {
     if (!verificationCode) {
-      setError('Lütfen doğrulama kodunu girin');
+      setError(t('auth.enterVerificationCode'));
       return;
     }
     
@@ -63,11 +66,11 @@ export function SignUpForm() {
       // Then register the user
       await authService.registerUser(data.email, data.password, data.name);
       
-      alert('Kayıt başarılı! Giriş yapabilirsiniz.');
+      alert(t('auth.registrationSuccess'));
       // Redirect to login or dashboard
       
     } catch (error) {
-      setError('Kayıt sırasında hata oluştu. Lütfen tekrar deneyin.');
+      setError(t('auth.registrationError'));
     } finally {
       setLoading(false);
     }
@@ -76,7 +79,7 @@ export function SignUpForm() {
   return (
     <div className="max-w-md mx-auto bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-        Estyi'ye Kayıt Ol
+        {t('auth.signupTitle')}
       </h2>
       
       {error && (
@@ -90,7 +93,7 @@ export function SignUpForm() {
           <input
             {...register('email')}
             type="email"
-            placeholder="E-posta adresiniz"
+            placeholder={t('auth.signupEmailPlaceholder')}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             disabled={step !== 'email'}
           />
@@ -106,7 +109,7 @@ export function SignUpForm() {
             disabled={loading || !email}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
-            {loading ? 'Gönderiliyor...' : 'Doğrulama Kodu Gönder'}
+            {loading ? t('auth.sendingCode') : t('auth.sendVerificationCode')}
           </button>
         )}
         
@@ -114,14 +117,14 @@ export function SignUpForm() {
           <>
             <div className="text-center mb-4">
               <p className="text-gray-600">
-                <strong>{email}</strong> adresine doğrulama kodu gönderdik
+                <strong>{email}</strong> {t('auth.verificationCodeSent')}
               </p>
             </div>
             
             <input
               value={verificationCode}
               onChange={(e) => setVerificationCode(e.target.value)}
-              placeholder="6 haneli doğrulama kodu"
+              placeholder={t('auth.verificationCodePlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-center text-lg font-mono"
               maxLength={6}
             />
@@ -132,7 +135,7 @@ export function SignUpForm() {
               disabled={!verificationCode || verificationCode.length !== 6}
               className="w-full bg-green-600 text-white py-3 rounded-lg font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              Kodu Doğrula ve Devam Et
+              {t('auth.verifyAndContinue')}
             </button>
             
             <button
@@ -140,7 +143,7 @@ export function SignUpForm() {
               onClick={() => setStep('email')}
               className="w-full text-gray-600 py-2 hover:text-gray-800 transition-colors"
             >
-              ← Geri Dön
+              {t('auth.backButton')}
             </button>
           </>
         )}
@@ -149,13 +152,13 @@ export function SignUpForm() {
           <>
             <div className="text-center mb-4">
               <p className="text-green-600 font-medium">
-                ✓ Email doğrulandı
+                {t('auth.emailVerified')}
               </p>
             </div>
             
             <input
               {...register('name')}
-              placeholder="Adınız Soyadınız"
+              placeholder={t('auth.namePlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             {errors.name && (
@@ -165,7 +168,7 @@ export function SignUpForm() {
             <input
               {...register('password')}
               type="password"
-              placeholder="Şifre (en az 8 karakter)"
+              placeholder={t('auth.passwordPlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             {errors.password && (
@@ -175,7 +178,7 @@ export function SignUpForm() {
             <input
               {...register('confirmPassword')}
               type="password"
-              placeholder="Şifre Tekrar"
+              placeholder={t('auth.confirmPasswordPlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
             {errors.confirmPassword && (
@@ -187,7 +190,7 @@ export function SignUpForm() {
               disabled={loading}
               className="w-full bg-blue-600 text-white py-3 rounded-lg font-medium hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
-              {loading ? 'Kayıt Olunuyor...' : 'Kayıt Ol'}
+              {loading ? t('auth.registering') : t('auth.register')}
             </button>
             
             <button
@@ -195,7 +198,7 @@ export function SignUpForm() {
               onClick={() => setStep('verification')}
               className="w-full text-gray-600 py-2 hover:text-gray-800 transition-colors"
             >
-              ← Geri Dön
+              {t('auth.backButton')}
             </button>
           </>
         )}

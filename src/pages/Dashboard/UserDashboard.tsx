@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, X, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search } from 'lucide-react';
+import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, X, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search, AlertCircle } from 'lucide-react';
 import PriceRequestModal from '../../components/Dashboard/PriceRequestModal';
 import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal';
+import { useTranslation } from 'react-i18next';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import { requestService } from '../../services/api';
 
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -15,11 +20,11 @@ const UserDashboard: React.FC = () => {
   const [requests, setRequests] = useState([
     {
       id: '1',
-      procedure: 'Rinoplasti (Burun Estetiği)',
+      procedure: t('procedures.rhinoplasty'),
       status: 'active',
       createdAt: new Date('2025-01-15'),
       offersCount: 3,
-      countries: ['Türkiye', 'Güney Kore'],
+      countries: [t('countries.turkey'), t('countries.southKorea')],
       photos: 5,
       photoUrls: [
         'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
@@ -31,8 +36,8 @@ const UserDashboard: React.FC = () => {
       offers: [
         {
           id: 'offer1',
-          clinicName: 'İstanbul Estetik Merkezi',
-          clinicCountry: 'Türkiye',
+          clinicName: t('clinics.istanbulAesthetic'),
+          clinicCountry: t('countries.turkey'),
           clinicRating: 4.8,
           clinicReviews: 245,
           priceMin: 2500,
@@ -46,23 +51,23 @@ const UserDashboard: React.FC = () => {
         },
         {
           id: 'offer2',
-          clinicName: 'Seul Güzellik Kliniği',
-          clinicCountry: 'Güney Kore',
+          clinicName: t('clinics.seoulBeauty'),
+          clinicCountry: t('countries.southKorea'),
           clinicRating: 4.9,
           clinicReviews: 189,
           priceMin: 3000,
           priceMax: 4200,
           currency: 'USD',
-          duration: '3-4 saat',
-          hospitalization: '2 gece',
+          duration: t('durations.hours34'),
+          hospitalization: t('hospitalization.nights2'),
           description: 'K-beauty teknikleri ile mükemmel sonuçlar. Uluslararası sertifikalı cerrahlar.',
           createdAt: new Date('2025-01-17'),
           isVerified: true
         },
         {
           id: 'offer3',
-          clinicName: 'Antalya Tıp Merkezi',
-          clinicCountry: 'Türkiye',
+          clinicName: t('clinics.antalyaMedical'),
+          clinicCountry: t('countries.turkey'),
           clinicRating: 4.7,
           clinicReviews: 156,
           priceMin: 2200,
@@ -78,11 +83,11 @@ const UserDashboard: React.FC = () => {
     },
     {
       id: '2',
-      procedure: 'Saç Ekimi',
+      procedure: t('procedures.hairTransplant'),
       status: 'closed',
       createdAt: new Date('2025-01-10'),
       offersCount: 5,
-      countries: ['Türkiye', 'Tayland'],
+      countries: [t('countries.turkey'), t('countries.thailand')],
       photos: 4,
       photoUrls: [
         'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
@@ -93,30 +98,30 @@ const UserDashboard: React.FC = () => {
       offers: [
         {
           id: 'offer4',
-          clinicName: 'Hair World İstanbul',
-          clinicCountry: 'Türkiye',
+          clinicName: t('clinics.hairWorldIstanbul'),
+          clinicCountry: t('countries.turkey'),
           clinicRating: 4.9,
           clinicReviews: 312,
           priceMin: 1800,
           priceMax: 2500,
           currency: 'USD',
-          duration: '6-8 saat',
-          hospitalization: '1 gece',
+          duration: t('durations.hours68'),
+          hospitalization: t('hospitalization.night1'),
           description: 'FUE tekniği ile doğal saç ekimi. 10 yıllık garantili sonuç.',
           createdAt: new Date('2025-01-11'),
           isVerified: true
         },
         {
           id: 'offer5',
-          clinicName: 'Bangkok Hair Clinic',
-          clinicCountry: 'Tayland',
+          clinicName: t('clinics.bangkokHair'),
+          clinicCountry: t('countries.thailand'),
           clinicRating: 4.8,
           clinicReviews: 198,
           priceMin: 2200,
           priceMax: 3200,
           currency: 'USD',
-          duration: '8-10 saat',
-          hospitalization: '2 gece',
+          duration: t('durations.hours810'),
+          hospitalization: t('hospitalization.nights2'),
           description: 'DHI tekniği ile hassas saç ekimi. 5 yıllık bakım dahil.',
           createdAt: new Date('2025-01-12'),
           isVerified: true
@@ -199,13 +204,13 @@ const UserDashboard: React.FC = () => {
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active':
-        return 'Aktif';
+        return t('userDashboard.status.active');
       case 'closed':
-        return 'Tamamlandı';
+        return t('userDashboard.status.closed');
       case 'cancelled':
-        return 'İptal Edildi';
+        return t('userDashboard.status.cancelled');
       default:
-        return 'Bilinmiyor';
+        return t('userDashboard.status.unknown');
     }
   };
 
@@ -216,8 +221,8 @@ const UserDashboard: React.FC = () => {
           <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-6">
             <Eye className="w-8 h-8 text-white" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Giriş Yapın</h2>
-          <p className="text-gray-600 leading-relaxed">Dashboard'ı görüntülemek için giriş yapmanız gerekiyor.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('auth.login')}</h2>
+          <p className="text-gray-600 leading-relaxed">{t('dashboard.welcome')}</p>
         </div>
       </div>
     );
@@ -232,10 +237,10 @@ const UserDashboard: React.FC = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between">
             <div>
               <h1 className="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent">
-                Hoş Geldiniz, {user.name || 'Kullanıcı'}
+                {t('userDashboard.welcome', { name: (user as any)?.user_metadata?.name || t('userDashboard.user') })}
               </h1>
               <p className="text-lg text-gray-600 mt-2 max-w-2xl">
-                Tedavi taleplerinizi yönetin, teklifleri karşılaştırın ve en uygun kliniği bulun
+                {t('userDashboard.subtitle')}
               </p>
             </div>
             <div className="mt-4 lg:mt-0">
@@ -244,7 +249,7 @@ const UserDashboard: React.FC = () => {
                 className="inline-flex items-center space-x-3 px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl"
               >
                 <Plus className="w-5 h-5" />
-                <span>Yeni Fiyat Talebi</span>
+                <span>{t('userDashboard.newRequest')}</span>
               </button>
             </div>
           </div>
@@ -260,9 +265,9 @@ const UserDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">Toplam Talep</p>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.totalRequests')}</p>
                 <p className="text-3xl font-bold text-gray-900">{requests.length}</p>
-                <p className="text-xs text-gray-500 mt-1">Tüm talepleriniz</p>
+                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.allRequests')}</p>
               </div>
               <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 activeFilter === 'all' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-blue-100 to-indigo-100 group-hover:from-blue-200 group-hover:to-indigo-200'
@@ -283,11 +288,11 @@ const UserDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">Aktif Talepler</p>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.activeRequests')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {requests.filter(req => req.status === 'active').length}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Devam eden işlemler</p>
+                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.ongoing')}</p>
               </div>
               <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 activeFilter === 'active' ? 'bg-gradient-to-r from-green-500 to-emerald-600' : 'bg-gradient-to-r from-green-100 to-emerald-100 group-hover:from-green-200 group-hover:to-emerald-200'
@@ -308,11 +313,11 @@ const UserDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">Toplam Teklif</p>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.totalOffers')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {requests.reduce((total, req) => total + req.offersCount, 0)}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Alınan teklifler</p>
+                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.receivedOffers')}</p>
               </div>
               <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 activeFilter === 'offers' ? 'bg-gradient-to-r from-amber-500 to-yellow-600' : 'bg-gradient-to-r from-amber-100 to-yellow-100 group-hover:from-amber-200 group-hover:to-yellow-200'
@@ -333,11 +338,11 @@ const UserDashboard: React.FC = () => {
           >
             <div className="flex items-center justify-between">
               <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">Tamamlanan</p>
+                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.completed')}</p>
                 <p className="text-3xl font-bold text-gray-900">
                   {requests.filter(req => req.status === 'closed').length}
                 </p>
-                <p className="text-xs text-gray-500 mt-1">Bitirilen işlemler</p>
+                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.finished')}</p>
               </div>
               <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
                 activeFilter === 'closed' ? 'bg-gradient-to-r from-purple-500 to-violet-600' : 'bg-gradient-to-r from-purple-100 to-violet-100 group-hover:from-purple-200 group-hover:to-violet-200'
@@ -361,16 +366,16 @@ const UserDashboard: React.FC = () => {
                 <Camera className="w-10 h-10 text-gray-400" />
               </div>
               <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {activeFilter === 'all' && 'Henüz Talep Yok'}
-                {activeFilter === 'active' && 'Aktif Talep Yok'}
-                {activeFilter === 'closed' && 'Tamamlanmış Talep Yok'}
-                {activeFilter === 'offers' && 'Teklif Alınmış Talep Yok'}
+                {activeFilter === 'all' && t('userDashboard.empty.all.title')}
+                {activeFilter === 'active' && t('userDashboard.empty.active.title')}
+                {activeFilter === 'closed' && t('userDashboard.empty.closed.title')}
+                {activeFilter === 'offers' && t('userDashboard.empty.offers.title')}
               </h3>
               <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                {activeFilter === 'all' && 'İlk fiyat talebinizi oluşturmak için yukarıdaki butona tıklayın.'}
-                {activeFilter === 'active' && 'Aktif talepleriniz burada görünecek.'}
-                {activeFilter === 'closed' && 'Tamamlanmış talepleriniz burada görünecek.'}
-                {activeFilter === 'offers' && 'Teklif alınmış talepleriniz burada görünecek.'}
+                {activeFilter === 'all' && t('userDashboard.empty.all.description')}
+                {activeFilter === 'active' && t('userDashboard.empty.active.description')}
+                {activeFilter === 'closed' && t('userDashboard.empty.closed.description')}
+                {activeFilter === 'offers' && t('userDashboard.empty.offers.description')}
               </p>
               {activeFilter === 'all' && (
                 <button
@@ -378,7 +383,7 @@ const UserDashboard: React.FC = () => {
                   className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
                 >
                   <Plus className="w-4 h-4" />
-                  <span>İlk Talebi Oluştur</span>
+                  <span>{t('userDashboard.empty.all.cta')}</span>
                 </button>
               )}
             </div>
@@ -409,11 +414,11 @@ const UserDashboard: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <DollarSign className="w-4 h-4 text-gray-400" />
-                          <span>{request.offersCount} teklif</span>
+                          <span>{request.offersCount} {t('userDashboard.offer')}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Camera className="w-4 h-4 text-gray-400" />
-                          <span>{request.photos} fotoğraf</span>
+                          <span>{request.photos} {t('userDashboard.photo')}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <MapPin className="w-4 h-4 text-gray-400" />
@@ -423,23 +428,26 @@ const UserDashboard: React.FC = () => {
 
                       {/* Photo Preview */}
                       <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">Fotoğraflar</h4>
+                        <h4 className="text-sm font-medium text-gray-700 mb-3">{t('userDashboard.photos')}</h4>
                         <div className="flex space-x-3">
                           {request.photoUrls.slice(0, 4).map((url, index) => (
                             <div
                               key={index}
-                              className="relative group/photo"
+                              className="relative group/photo overflow-hidden"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 handlePhotoClick(url);
                               }}
                             >
-                              <img
+                              <LazyLoadImage
                                 src={url}
-                                alt={`Photo ${index + 1}`}
-                                className="w-20 h-20 rounded-xl object-cover border-2 border-gray-200 cursor-pointer hover:border-blue-300 transition-all duration-200 group-hover/photo:scale-105"
+                                alt=""
+                                effect="blur"
+                                threshold={200}
+                                wrapperClassName="w-20 h-20"
+                                className="w-20 h-20 rounded-xl object-cover border-2 border-gray-200 cursor-pointer hover:border-blue-300 transition-all duration-200 group-hover/photo:scale-105 bg-gray-100"
                               />
-                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover/photo:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center">
+                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover/photo:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center pointer-events-none">
                                 <Eye className="w-5 h-5 text-white opacity-0 group-hover/photo:opacity-100 transition-opacity" />
                               </div>
                             </div>
@@ -457,7 +465,7 @@ const UserDashboard: React.FC = () => {
                         <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border border-gray-100">
                           <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
                             <Star className="w-4 h-4 text-amber-500 mr-2" />
-                            Son Teklifler
+                            {t('userDashboard.latestOffers')}
                           </h4>
                           <div className="space-y-3">
                             {request.offers.slice(0, 2).map((offer) => (
@@ -472,7 +480,7 @@ const UserDashboard: React.FC = () => {
                                       <Star className="w-3 h-3 text-amber-500 mr-1" />
                                       {offer.clinicRating}
                                     </span>
-                                    <span>({offer.clinicReviews} değerlendirme)</span>
+                                    <span>({offer.clinicReviews} {t('userDashboard.reviews')})</span>
                                   </div>
                                 </div>
                                 <div className="text-right flex-shrink-0 ml-4">
@@ -497,7 +505,7 @@ const UserDashboard: React.FC = () => {
                             handleDeleteRequest(request.id);
                           }}
                           className="w-8 h-8 bg-red-50 rounded-full flex items-center justify-center hover:bg-red-100 transition-colors group/delete"
-                          title="Talebi Sil"
+                          title={t('userDashboard.deleteRequest')}
                         >
                           <XCircle className="w-4 h-4 text-red-500 group-hover/delete:text-red-600 transition-colors" />
                         </button>
@@ -539,7 +547,7 @@ const UserDashboard: React.FC = () => {
             </button>
             <img
               src={enlargedPhoto}
-              alt="Büyütülmüş fotoğraf"
+              alt={t('userDashboard.enlargedPhoto')}
               className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

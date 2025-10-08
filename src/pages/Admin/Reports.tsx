@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -15,6 +16,7 @@ import {
 } from 'lucide-react';
 
 const Reports: React.FC = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
@@ -88,9 +90,8 @@ const Reports: React.FC = () => {
   ];
 
   const handleDownloadReport = (type: string) => {
-    console.log(`Downloading ${type} report...`);
     // Burada gerçek rapor indirme işlemi yapılacak
-    alert(`${type} raporu indiriliyor...`);
+    alert(t('auth.reportDownloading', { type }));
   };
 
   return (

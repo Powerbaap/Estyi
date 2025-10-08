@@ -1,19 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Bell, X, Check, Trash2, Filter, DollarSign, MessageCircle, AlertCircle, Building } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-
-interface Notification {
-  id: string;
-  type: 'offer' | 'message' | 'payment' | 'system';
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionUrl?: string;
-  priority: 'low' | 'medium' | 'high';
-  clinicName?: string;
-  offerAmount?: number;
-}
+import { useNotifications } from '../../hooks/useNotifications';
 
 interface NotificationCenterProps {
   isOpen: boolean;
@@ -22,69 +10,20 @@ interface NotificationCenterProps {
 
 const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const {
+    notifications,
+    isLoading,
+    unreadCount,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification,
+    requestNotificationPermission
+  } = useNotifications();
 
-  // Mock notifications - gerçek uygulamada API'den gelecek
+  // Browser notification izni iste
   useEffect(() => {
-    const mockNotifications: Notification[] = [
-      {
-        id: '1',
-        type: 'offer',
-        title: 'Yeni Teklif Aldınız!',
-        message: 'Dr. Ahmet Yılmaz Kliniği size botoks tedavisi için teklif gönderdi',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        isRead: false,
-        actionUrl: '/offers',
-        priority: 'high',
-        clinicName: 'Dr. Ahmet Yılmaz Kliniği',
-        offerAmount: 2500
-      },
-      {
-        id: '2',
-        type: 'offer',
-        title: 'Burun Estetiği Teklifi',
-        message: 'Estetik Merkezi burun estetiği için özel fiyat teklifi gönderdi',
-        timestamp: new Date(Date.now() - 1000 * 60 * 30),
-        isRead: false,
-        actionUrl: '/offers',
-        priority: 'high',
-        clinicName: 'Estetik Merkezi',
-        offerAmount: 15000
-      },
-      {
-        id: '3',
-        type: 'message',
-        title: 'Yeni Mesaj',
-        message: 'Dr. Fatma Kaya size mesaj gönderdi',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        isRead: false,
-        actionUrl: '/messages',
-        priority: 'medium'
-      },
-      {
-        id: '4',
-        type: 'payment',
-        title: 'Ödeme Onaylandı',
-        message: 'Botoks tedavisi ödemeniz başarıyla alındı',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-        isRead: true,
-        actionUrl: '/dashboard',
-        priority: 'low'
-      },
-      {
-        id: '5',
-        type: 'system',
-        title: 'Sistem Güncellemesi',
-        message: 'Platform güvenlik güncellemesi tamamlandı',
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-        isRead: true,
-        priority: 'low'
-      }
-    ];
-    setNotifications(mockNotifications);
-  }, []);
-
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+    requestNotificationPermission();
+  }, [requestNotificationPermission]);
 
   const getNotificationIcon = (type: Notification['type']) => {
     switch (type) {
@@ -129,34 +68,25 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
   };
 
   // Bildirime tıklayınca ilgili sayfaya git
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = async (notification: Notification) => {
     // Bildirimi okundu olarak işaretle
-    setNotifications(prev => 
-      prev.map(n => 
-        n.id === notification.id ? { ...n, isRead: true } : n
-      )
-    );
+    await markAsRead(notification.id);
 
     // Bildirim türüne göre yönlendirme
     switch (notification.type) {
       case 'offer':
-        // Teklif bildirimleri için dashboard'a yönlendir
         navigate('/dashboard');
         break;
       case 'message':
-        // Mesaj bildirimleri için mesajlar sayfasına yönlendir
         navigate('/messages');
         break;
       case 'payment':
-        // Ödeme bildirimleri için dashboard'a yönlendir
         navigate('/dashboard');
         break;
       case 'system':
-        // Sistem bildirimleri için dashboard'a yönlendir
         navigate('/dashboard');
         break;
       default:
-        // Varsayılan olarak dashboard'a yönlendir
         navigate('/dashboard');
     }
 
@@ -197,7 +127,12 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
 
           {/* Notifications List */}
           <div className="flex-1 overflow-y-auto">
-            {notifications.length === 0 ? (
+            {isLoading ? (
+              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mb-4"></div>
+                <p className="text-lg font-medium">Bildirimler Yükleniyor...</p>
+              </div>
+            ) : notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-gray-500">
                 <Bell className="w-16 h-16 mb-4 opacity-50" />
                 <p className="text-lg font-medium">Bildirim Yok</p>
@@ -260,9 +195,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
             <div className="flex items-center justify-between text-xs text-gray-500">
               <span>{notifications.length} bildirim</span>
               <button
-                onClick={() => {
-                  setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
-                }}
+                onClick={markAllAsRead}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 Tümünü Okundu İşaretle

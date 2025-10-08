@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { X, Mail, CheckCircle } from 'lucide-react';
 
 interface EmailVerificationModalProps {
@@ -15,6 +16,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   userId,
   email
 }) => {
+  const { t } = useTranslation();
   const { verifyEmail, isLoading } = useAuth();
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
@@ -35,12 +37,12 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
     setError('');
 
     if (!code) {
-      setError('Lütfen doğrulama kodunu girin');
+      setError(t('auth.enterVerificationCode'));
       return;
     }
 
     if (code.length !== 6) {
-      setError('Doğrulama kodu 6 haneli olmalıdır');
+      setError(t('auth.code6digits'));
       return;
     }
 
@@ -53,7 +55,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
         window.location.href = '/dashboard';
       }, 2000);
     } else {
-      setError(result.error || 'Doğrulama başarısız');
+      setError(result.error || t('auth.verificationFailed'));
     }
   };
 
@@ -69,7 +71,7 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-lg max-w-md w-full p-6">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-semibold text-gray-900">Email Doğrulama</h3>
+          <h3 className="text-lg font-semibold text-gray-900">{t('auth.emailVerificationTitle')}</h3>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600"
@@ -81,26 +83,26 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
         {success ? (
           <div className="text-center">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h4 className="text-xl font-semibold text-gray-900 mb-2">Doğrulama Başarılı!</h4>
-            <p className="text-gray-600">Hesabınız başarıyla doğrulandı. Yönlendiriliyorsunuz...</p>
+            <h4 className="text-xl font-semibold text-gray-900 mb-2">{t('auth.verificationSuccess')}</h4>
+            <p className="text-gray-600">{t('auth.accountVerified')}</p>
           </div>
         ) : (
           <>
             <div className="text-center mb-6">
               <Mail className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-              <h4 className="text-lg font-semibold text-gray-900 mb-2">Doğrulama Kodu Gönderildi</h4>
+              <h4 className="text-lg font-semibold text-gray-900 mb-2">{t('auth.verificationCodeSentTitle')}</h4>
               <p className="text-gray-600 mb-2">
-                <strong>{email}</strong> adresine 6 haneli doğrulama kodu gönderildi.
+                <strong>{email}</strong> {t('auth.verificationCodeSent')}
               </p>
               <p className="text-sm text-gray-500">
-                Kod süresi: <span className="font-mono">{formatTime(timeLeft)}</span>
+                {t('auth.codeValidTime')} <span className="font-mono">{formatTime(timeLeft)}</span>
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label htmlFor="verification-code" className="block text-sm font-medium text-gray-700 mb-2">
-                  Doğrulama Kodu
+                  {t('auth.verificationCodeLabel')}
                 </label>
                 <input
                   id="verification-code"
@@ -126,21 +128,21 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
                   disabled={isLoading || timeLeft === 0}
                   className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
                 >
-                  {isLoading ? 'Doğrulanıyor...' : 'Doğrula'}
+                  {isLoading ? t('auth.verifying') : t('auth.verify')}
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors font-medium"
                 >
-                  İptal
+                  {t('auth.cancel')}
                 </button>
               </div>
             </form>
 
             <div className="mt-4 text-center">
               <p className="text-xs text-gray-500">
-                Kod gelmedi mi? Spam klasörünü kontrol edin veya tekrar deneyin.
+                {t('auth.codeNotReceived')}
               </p>
             </div>
           </>

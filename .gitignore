@@ -107,3 +107,5 @@ railway.json
 
 # Build artifacts
 *.zip
+# Local Netlify folder
+.netlify

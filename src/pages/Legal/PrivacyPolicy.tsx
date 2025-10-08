@@ -1,7 +1,10 @@
 import React from 'react';
 import { Shield, Lock, Eye, Mail, Sparkles, Heart, Star, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const PrivacyPolicy: React.FC = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 sm:py-12 relative overflow-hidden">
       {/* Background Elements */}
@@ -19,39 +22,39 @@ const PrivacyPolicy: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-                Gizlilik Politikası
+                {t('privacy.title')}
               </h1>
-              <p className="text-gray-600 mt-2">Kişisel verilerinizin nasıl korunduğu hakkında bilgi alın</p>
+              <p className="text-gray-600 mt-2">{t('privacy.subtitle')}</p>
             </div>
           </div>
 
           <div className="prose prose-gray max-w-none">
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              Bu gizlilik politikası, Estyi platformunda kişisel verilerinizin nasıl toplandığını, kullanıldığını ve korunduğunu açıklar.
+              {t('privacy.description')}
             </p>
 
             <div className="space-y-8">
               <section className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                   <Eye className="w-5 h-5 text-blue-600" />
-                  <span>Toplanan Veriler</span>
+                  <span>{t('privacy.dataCollection.title')}</span>
                 </h2>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-center space-x-2">
                     <Heart className="w-4 h-4 text-blue-500" />
-                    <span>E-posta adresi ve iletişim bilgileri</span>
+                    <span>{t('privacy.dataCollection.email')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Star className="w-4 h-4 text-blue-500" />
-                    <span>Tedavi öncesi fotoğraflar</span>
+                    <span>{t('privacy.dataCollection.photos')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Globe className="w-4 h-4 text-blue-500" />
-                    <span>Tedavi tercihleri ve bütçe bilgileri</span>
+                    <span>{t('privacy.dataCollection.preferences')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Shield className="w-4 h-4 text-blue-500" />
-                    <span>Klinik bilgileri ve sertifikalar</span>
+                    <span>{t('privacy.dataCollection.clinicInfo')}</span>
                   </li>
                 </ul>
               </section>
@@ -59,20 +62,20 @@ const PrivacyPolicy: React.FC = () => {
               <section className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                   <Lock className="w-5 h-5 text-purple-600" />
-                  <span>Veri Kullanımı</span>
+                  <span>{t('privacy.dataUsage.title')}</span>
                 </h2>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-center space-x-2">
                     <Sparkles className="w-4 h-4 text-purple-500" />
-                    <span>Güvenli şifreleme ile saklanır</span>
+                    <span>{t('privacy.dataUsage.encryption')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Heart className="w-4 h-4 text-purple-500" />
-                    <span>AI destekli eşleştirme için kullanılır</span>
+                    <span>{t('privacy.dataUsage.matching')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Star className="w-4 h-4 text-purple-500" />
-                    <span>Yasal yükümlülükler için gerekli</span>
+                    <span>{t('privacy.dataUsage.legal')}</span>
                   </li>
                 </ul>
               </section>
@@ -80,16 +83,16 @@ const PrivacyPolicy: React.FC = () => {
               <section className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-2xl p-6 border border-pink-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                   <Globe className="w-5 h-5 text-pink-600" />
-                  <span>Veri Paylaşımı</span>
+                  <span>{t('privacy.dataSharing.title')}</span>
                 </h2>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-center space-x-2">
                     <Shield className="w-4 h-4 text-pink-500" />
-                    <span>Sadece onaylı kliniklerle paylaşılır</span>
+                    <span>{t('privacy.dataSharing.clinics')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Lock className="w-4 h-4 text-pink-500" />
-                    <span>Pazarlama amaçlı paylaşılmaz</span>
+                    <span>{t('privacy.dataSharing.noMarketing')}</span>
                   </li>
                 </ul>
               </section>
@@ -97,16 +100,16 @@ const PrivacyPolicy: React.FC = () => {
               <section className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                   <Star className="w-5 h-5 text-green-600" />
-                  <span>Veri Saklama</span>
+                  <span>{t('privacy.dataRetention.title')}</span>
                 </h2>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-center space-x-2">
                     <Heart className="w-4 h-4 text-green-500" />
-                    <span>Fotoğraflar 2 yıl saklanır</span>
+                    <span>{t('privacy.dataRetention.photos')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Shield className="w-4 h-4 text-green-500" />
-                    <span>Klinik belgeleri 5 yıl saklanır</span>
+                    <span>{t('privacy.dataRetention.documents')}</span>
                   </li>
                 </ul>
               </section>
@@ -114,20 +117,20 @@ const PrivacyPolicy: React.FC = () => {
               <section className="bg-gradient-to-r from-yellow-50 to-orange-50 rounded-2xl p-6 border border-yellow-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                   <Sparkles className="w-5 h-5 text-yellow-600" />
-                  <span>Kullanıcı Hakları</span>
+                  <span>{t('privacy.userRights.title')}</span>
                 </h2>
                 <ul className="space-y-3 text-gray-700">
                   <li className="flex items-center space-x-2">
                     <Eye className="w-4 h-4 text-yellow-500" />
-                    <span>Verilerinize erişim hakkı</span>
+                    <span>{t('privacy.userRights.access')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Lock className="w-4 h-4 text-yellow-500" />
-                    <span>İşleme itiraz etme hakkı</span>
+                    <span>{t('privacy.userRights.objection')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
                     <Globe className="w-4 h-4 text-yellow-500" />
-                    <span>Veri taşınabilirliği hakkı</span>
+                    <span>{t('privacy.userRights.portability')}</span>
                   </li>
                 </ul>
               </section>
@@ -135,10 +138,10 @@ const PrivacyPolicy: React.FC = () => {
               <section className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200">
                 <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                   <Mail className="w-5 h-5 text-blue-600" />
-                  <span>İletişim</span>
+                  <span>{t('privacy.contact.title')}</span>
                 </h2>
                 <p className="text-gray-700 mb-4">
-                  Gizlilik soruları için e-posta:
+                  {t('privacy.contact.description')}
                 </p>
                 <a 
                   href="mailto:privacy@estyi.com" 

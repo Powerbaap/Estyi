@@ -162,8 +162,8 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Tekliflerim</h1>
-          <p className="text-gray-600 mt-1">Tekliflerinizi takip edin ve yönetin</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('clinicDashboard.myOffers')}</h1>
+          <p className="text-gray-600 mt-1">{t('clinicDashboard.trackAndManageOffers')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <select
@@ -171,20 +171,20 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
             onChange={(e) => setStatusFilter(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">Tüm Durumlar</option>
-            <option value="pending">Bekleyen</option>
-            <option value="accepted">Kabul Edilen</option>
-            <option value="rejected">Reddedilen</option>
-            <option value="expired">Süresi Dolan</option>
+            <option value="all">{t('clinicDashboard.allStatuses')}</option>
+            <option value="pending">{t('clinicDashboard.pending')}</option>
+            <option value="accepted">{t('clinicDashboard.accepted')}</option>
+            <option value="rejected">{t('clinicDashboard.rejected')}</option>
+            <option value="expired">{t('clinicDashboard.expired')}</option>
           </select>
           <select
             value={dateFilter}
             onChange={(e) => setDateFilter(e.target.value)}
             className="px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            <option value="all">Tüm Tarihler</option>
-            <option value="today">Bugün</option>
-            <option value="week">Bu Hafta</option>
+            <option value="all">{t('clinicDashboard.allDates')}</option>
+            <option value="today">{t('clinicDashboard.today')}</option>
+            <option value="week">{t('clinicDashboard.thisWeek')}</option>
           </select>
         </div>
       </div>
@@ -195,7 +195,7 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
-              <p className="text-sm text-gray-600">Toplam Teklif</p>
+              <p className="text-sm text-gray-600">{t('clinicDashboard.totalOffers')}</p>
             </div>
             <DollarSign className="w-8 h-8 text-blue-600" />
           </div>
@@ -205,7 +205,7 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.pending}</p>
-              <p className="text-sm text-gray-600">Bekleyen</p>
+              <p className="text-sm text-gray-600">{t('clinicDashboard.pending')}</p>
             </div>
             <Clock className="w-8 h-8 text-yellow-600" />
           </div>
@@ -215,7 +215,7 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">{stats.accepted}</p>
-              <p className="text-sm text-gray-600">Kabul Edilen</p>
+              <p className="text-sm text-gray-600">{t('clinicDashboard.accepted')}</p>
             </div>
             <CheckCircle className="w-8 h-8 text-green-600" />
           </div>
@@ -225,7 +225,7 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold text-gray-900">${stats.totalValue.toLocaleString()}</p>
-              <p className="text-sm text-gray-600">Toplam Değer</p>
+              <p className="text-sm text-gray-600">{t('clinicDashboard.totalValue')}</p>
             </div>
             <DollarSign className="w-8 h-8 text-green-600" />
           </div>
@@ -236,9 +236,9 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div className="p-6 border-b border-gray-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Teklif Listesi</h2>
+            <h2 className="text-lg font-semibold text-gray-900">{t('clinicDashboard.offersList')}</h2>
             <span className="text-sm text-gray-600">
-              {filteredOffers.length} / {offers.length} teklif gösteriliyor
+              {t('clinicDashboard.showingOffers', { filtered: filteredOffers.length, total: offers.length })}
             </span>
           </div>
         </div>
@@ -248,22 +248,22 @@ const ClinicOffers: React.FC<ClinicOffersProps> = ({ filterStatus = 'all' }) => 
             <thead className="bg-gray-50">
               <tr>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Hasta & İşlem
+                  {t('clinicDashboard.patientProcedure')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fiyat
+                  {t('clinicDashboard.price')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Detaylar
+                  {t('clinicDashboard.details')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Durum
+                  {t('clinicDashboard.status')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Gönderildi
+                  {t('clinicDashboard.submitted')}
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Son Tarih
+                  {t('clinicDashboard.deadline')}
                 </th>
               </tr>
             </thead>

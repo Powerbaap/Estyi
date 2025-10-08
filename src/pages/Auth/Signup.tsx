@@ -44,12 +44,12 @@ const Signup: React.FC = () => {
     setError('');
 
     if (formData.password !== formData.confirmPassword) {
-      setError('Şifreler eşleşmiyor');
+      setError(t('signup.passwordMismatch'));
       return;
     }
 
     if (formData.password.length < 6) {
-      setError('Şifre en az 6 karakter olmalıdır');
+      setError(t('signup.passwordLength'));
       return;
     }
 
@@ -62,16 +62,15 @@ const Signup: React.FC = () => {
       });
       setShowVerificationModal(true);
     } else {
-      setError(result.error || 'Kayıt olurken bir hata oluştu');
+      setError(result.error || t('signup.signupError'));
     }
   };
 
   const handleGoogleSignup = async () => {
     try {
       // Google signup functionality would be implemented here
-      console.log('Google signup clicked');
     } catch (err) {
-      setError('Google ile kayıt olma işlemi başarısız oldu');
+      setError(t('signup.googleSignupError'));
     }
   };
 
@@ -89,16 +88,16 @@ const Signup: React.FC = () => {
                             <span className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Estyi</span>
           </Link>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Hesabınızı Oluşturun
+            {t('signup.title')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Zaten hesabınız var mı?{' '}
+            {t('signup.haveAccount')}{' '}
             <Link
               to="/login"
               className="font-medium text-blue-600 hover:text-blue-500 transition-colors"
               onClick={scrollToTopInstant}
             >
-              Giriş yapın
+              {t('signup.loginHere')}
             </Link>
           </p>
         </div>
@@ -118,7 +117,7 @@ const Signup: React.FC = () => {
                   }`}
                 >
                   <User className="w-5 h-5" />
-                  <span className="font-medium">Değişim Arayan</span>
+                  <span className="font-medium">{t('auth.patient')}</span>
                 </button>
               </div>
             </div>
@@ -126,7 +125,7 @@ const Signup: React.FC = () => {
             {/* Email Field */}
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                E-posta
+                {t('login.email')}
               </label>
               <input
                 id="email"
@@ -137,14 +136,14 @@ const Signup: React.FC = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                placeholder="E-posta adresinizi girin"
+                placeholder={t('login.emailPlaceholder')}
               />
             </div>
 
             {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Şifre
+                {t('login.password')}
               </label>
               <div className="mt-1 relative">
                 <input
@@ -156,7 +155,7 @@ const Signup: React.FC = () => {
                   value={formData.password}
                   onChange={handleChange}
                   className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="Şifrenizi girin"
+                  placeholder={t('signup.passwordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -175,7 +174,7 @@ const Signup: React.FC = () => {
             {/* Confirm Password Field */}
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Şifre Tekrar
+                {t('signup.confirmPassword')}
               </label>
               <div className="mt-1 relative">
                 <input
@@ -187,7 +186,7 @@ const Signup: React.FC = () => {
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   className="block w-full px-3 py-2 pr-10 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                  placeholder="Şifrenizi tekrar girin"
+                  placeholder={t('signup.confirmPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -217,7 +216,7 @@ const Signup: React.FC = () => {
                 disabled={isLoading}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                {isLoading ? 'Kayıt Olunuyor...' : 'Kayıt Ol'}
+                {isLoading ? t('signup.signingUp') : t('signup.signupButton')}
               </button>
 
               {/* Divider */}
@@ -226,7 +225,7 @@ const Signup: React.FC = () => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">veya</span>
+                  <span className="px-2 bg-white text-gray-500">{t('login.or')}</span>
                 </div>
               </div>
 
@@ -254,22 +253,22 @@ const Signup: React.FC = () => {
                     d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
                   />
                 </svg>
-                Google ile Kayıt Ol
+                {t('signup.signupWithGoogle')}
               </button>
             </div>
           </form>
 
           {/* Terms and Privacy */}
           <p className="text-xs text-gray-500 text-center">
-            Kayıt olarak{' '}
+            {t('signup.termsAgree')}{' '}
             <Link to="/terms" className="text-blue-600 hover:text-blue-500">
-              Kullanım Şartları
+              {t('signup.termsLink')}
             </Link>{' '}
-            ve{' '}
+            {t('signup.and')}{' '}
             <Link to="/privacy" className="text-blue-600 hover:text-blue-500">
-              Gizlilik Politikası
+              {t('signup.privacyLink')}
             </Link>{' '}
-            'nı kabul etmiş olursunuz.
+            {t('signup.accept')}.
           </p>
         </div>
       </div>

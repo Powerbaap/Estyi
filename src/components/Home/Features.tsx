@@ -2,43 +2,46 @@ import React from 'react';
 import { Shield, Globe, Users, Star, Award, Clock, Sparkles, Heart, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
+import { useTranslation } from 'react-i18next';
 
 const Features: React.FC = () => {
+  const { t } = useTranslation();
+  
   const features = [
     {
       icon: Shield,
-      title: 'Güvenli Platform',
-      description: 'GDPR uyumlu ve SSL güvenlik sertifikalı platform ile verileriniz güvende.',
+      title: t('home.features.secure.title'),
+      description: t('home.features.secure.description'),
       color: 'from-purple-500 to-pink-500'
     },
     {
       icon: Globe,
-      title: 'Uluslararası Erişim',
-      description: 'Global güvenilir klinikler ve uzman doktorlar ile bağlantı kurun.',
+      title: t('home.features.global.title'),
+      description: t('home.features.global.description'),
       color: 'from-pink-500 to-red-500'
     },
     {
       icon: Users,
-      title: 'Uzman Doktorlar',
-      description: 'Sertifikalı ve deneyimli doktorlar ile kaliteli tedavi hizmeti alın.',
+      title: t('home.features.experts.title'),
+      description: t('home.features.experts.description'),
       color: 'from-red-500 to-orange-500'
     },
     {
       icon: Star,
-      title: 'Kanıtlanmış Sonuçlar',
-      description: '10,000+ mutlu hasta ve 4.9/5 ortalama değerlendirme puanı.',
+      title: t('home.features.proven.title'),
+      description: t('home.features.proven.description'),
       color: 'from-orange-500 to-yellow-500'
     },
     {
       icon: Award,
-      title: 'Kalite Garantisi',
-      description: 'Sadece onaylı ve kalite standartlarını karşılayan klinikler.',
+      title: t('home.features.quality.title'),
+      description: t('home.features.quality.description'),
       color: 'from-yellow-500 to-green-500'
     },
     {
       icon: Clock,
-      title: '7/24 Destek',
-      description: 'Her zaman yanınızdayız. Sorularınız için anında destek alın.',
+      title: t('home.features.support.title'),
+      description: t('home.features.support.description'),
       color: 'from-green-500 to-blue-500'
     }
   ];
@@ -56,10 +59,10 @@ const Features: React.FC = () => {
         {/* Section Header */}
         <div className="text-center mb-20">
           <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-900 mb-8">
-            Neden <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">Estyi</span>'yi Seçmelisiniz
+            {t('home.features.title')} <span className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">Estyi</span>
           </h2>
           <p className="text-xl md:text-2xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            Estetik tıbbın geleceğini deneyimleyin ve yenilikçi platformumuzla tanışın
+            {t('home.features.subtitle')}
           </p>
         </div>
         
@@ -117,17 +120,17 @@ const Features: React.FC = () => {
             
             <div className="relative z-10">
               <h3 className="text-4xl md:text-5xl font-bold mb-6">
-                Hemen Başlayın
+                {t('home.features.cta.title')}
               </h3>
               <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
-                Ücretsiz hesap oluşturun ve estetik tedaviniz için en iyi fiyatları alın
+                {t('home.features.cta.subtitle')}
               </p>
               <Link
                 to="/signup"
                 onClick={scrollToTopInstant}
                 className="group inline-flex items-center bg-white text-purple-600 px-10 py-5 rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden"
               >
-                <span className="relative z-10">Ücretsiz Kayıt Ol</span>
+                <span className="relative z-10">{t('home.features.cta.button')}</span>
                 <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-pink-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                 <Sparkles className="w-5 h-5 text-purple-600 absolute right-4 top-1/2 transform -translate-y-1/2 group-hover:animate-pulse" />
               </Link>

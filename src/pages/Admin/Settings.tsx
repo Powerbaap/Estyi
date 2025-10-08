@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -14,6 +15,7 @@ import {
 } from 'lucide-react';
 
 const Settings: React.FC = () => {
+  const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('general');
@@ -83,9 +85,8 @@ const Settings: React.FC = () => {
     setIsSaving(true);
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log('Settings saved:', settings);
     setIsSaving(false);
-    alert('Ayarlar başarıyla kaydedildi!');
+    alert(t('auth.settingsSaved'));
   };
 
       const tabs = [

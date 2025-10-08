@@ -38,7 +38,6 @@ const ClinicProfile: React.FC = () => {
 
   const handleSave = () => {
     // Save profile data
-    console.log('Saving profile:', profileData);
     setIsEditing(false);
   };
 
@@ -88,8 +87,8 @@ const ClinicProfile: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Klinik Profili</h1>
-          <p className="text-gray-600 mt-1">Klinik bilgilerinizi görüntüleyin</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('clinicDashboard.clinicProfile')}</h1>
+          <p className="text-gray-600 mt-1">{t('clinicDashboard.viewClinicInfo')}</p>
         </div>
         {/* Profil düzenleme butonu kaldırıldı - sadece admin düzenleyebilir */}
       </div>
@@ -99,35 +98,35 @@ const ClinicProfile: React.FC = () => {
         <div className="lg:col-span-2 space-y-6">
           {/* Basic Information */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Temel Bilgiler</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.basicInfo')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Klinik Adı</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('clinicDashboard.clinicName')}</label>
                 <p className="text-gray-900">{profileData.clinicName}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Şubenin Bulunduğu İl</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('clinicDashboard.branchLocation')}</label>
                 <p className="text-gray-900 flex items-center space-x-2">
                   <MapPin className="w-4 h-4 text-gray-500" />
                   <span>{profileData.branchCity}</span>
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Telefon</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('clinicDashboard.phone')}</label>
                 <p className="text-gray-900 flex items-center space-x-2">
                   <Phone className="w-4 h-4 text-gray-500" />
                   <span>{profileData.phone}</span>
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">E-posta</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('clinicDashboard.email')}</label>
                 <p className="text-gray-900 flex items-center space-x-2">
                   <Mail className="w-4 h-4 text-gray-500" />
                   <span>{profileData.email}</span>
                 </p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Web Sitesi</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">{t('clinicDashboard.website')}</label>
                 <p className="text-gray-900 flex items-center space-x-2">
                   <Globe className="w-4 h-4 text-gray-500" />
                   <a href={profileData.website} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline">
@@ -137,7 +136,7 @@ const ClinicProfile: React.FC = () => {
               </div>
             </div>
             <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Adres</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">{t('clinicDashboard.address')}</label>
               <p className="text-gray-900 flex items-start space-x-2">
                 <MapPin className="w-4 h-4 text-gray-500 mt-1" />
                 <span>{profileData.address}</span>
@@ -147,7 +146,7 @@ const ClinicProfile: React.FC = () => {
 
           {/* Specialties */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Uzmanlık Alanları</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.specialties')}</h2>
             <div className="flex flex-wrap gap-2">
               {profileData.specialties.map((specialty) => (
                 <span key={specialty} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
@@ -159,13 +158,13 @@ const ClinicProfile: React.FC = () => {
 
           {/* About Us */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Hakkımızda</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.aboutUs')}</h2>
             <p className="text-gray-700 leading-relaxed">{profileData.aboutUs}</p>
           </div>
 
           {/* Team Description */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Tıbbi Ekip Açıklaması</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.medicalTeamDescription')}</h2>
             <p className="text-gray-700 leading-relaxed flex items-start space-x-2">
               <Users className="w-5 h-5 text-gray-500 mt-1" />
               <span>{profileData.teamDescription}</span>
@@ -177,22 +176,22 @@ const ClinicProfile: React.FC = () => {
         <div className="space-y-6">
           {/* Quick Stats */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Hızlı İstatistikler</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.quickStats')}</h2>
             <div className="space-y-4">
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Profil Tamamlanma</span>
+                <span className="text-sm text-gray-600">{t('clinicDashboard.profileCompletion')}</span>
                 <span className="text-green-600 font-semibold">95%</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Belgeler</span>
+                <span className="text-sm text-gray-600">{t('clinicDashboard.documents')}</span>
                 <span className="font-semibold text-gray-900">{documents.length}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Fotoğraflar</span>
+                <span className="text-sm text-gray-600">{t('clinicDashboard.photos')}</span>
                 <span className="font-semibold text-gray-900">{photos.length}</span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-600">Uzmanlık Alanları</span>
+                <span className="text-sm text-gray-600">{t('clinicDashboard.specialtyAreas')}</span>
                 <span className="font-semibold text-gray-900">{profileData.specialties.length}</span>
               </div>
             </div>
@@ -200,7 +199,7 @@ const ClinicProfile: React.FC = () => {
 
           {/* Certifications */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Sertifikalar</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.certifications')}</h2>
             <div className="space-y-3">
               {profileData.certifications.map((cert, index) => (
                 <div key={index} className="flex items-center space-x-3">
@@ -213,7 +212,7 @@ const ClinicProfile: React.FC = () => {
 
           {/* Languages */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Diller</h2>
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.languages')}</h2>
             <div className="flex flex-wrap gap-2">
               {profileData.languages.map((language) => (
                 <span key={language} className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm">

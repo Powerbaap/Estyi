@@ -144,7 +144,7 @@ const AdminDashboard: React.FC = () => {
     {
       id: '3',
       type: 'offer_submitted',
-      message: 'Yeni teklif gönderildi: Saç Ekimi - Hair World',
+      message: t('notifications.newTreatmentOffer'),
       time: '1 saat önce',
       status: 'info',
       icon: FileText
@@ -152,7 +152,7 @@ const AdminDashboard: React.FC = () => {
     {
       id: '4',
       type: 'payment_received',
-      message: 'Ödeme alındı: $2,500 - Rinoplasti',
+      message: t('notifications.paymentReceived'),
       time: '3 saat önce',
       status: 'success',
       icon: TrendingUp

@@ -98,15 +98,15 @@ const ClinicMembership: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Üyelik</h1>
-          <p className="text-gray-600 mt-1">Üyelik planınızı yönetin</p>
+          <h1 className="text-2xl font-bold text-gray-900">{t('clinicDashboard.membership')}</h1>
+          <p className="text-gray-600 mt-1">{t('clinicDashboard.manageMembership')}</p>
         </div>
         <div className="flex items-center space-x-3">
           <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            Fatura İndir
+            {t('clinicDashboard.downloadInvoice')}
           </button>
           <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-            Planı Yükselt
+            {t('clinicDashboard.upgradePlan')}
           </button>
         </div>
       </div>
@@ -119,17 +119,17 @@ const ClinicMembership: React.FC = () => {
               <Crown className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">{currentPlan.name} Planı</h2>
+              <h2 className="text-2xl font-bold">{currentPlan.name} {t('clinicDashboard.professionalPlan')}</h2>
               <p className="text-blue-100">
-                ${currentPlan.price}/Aylık • 
-                {currentPlan.autoRenew ? ` Otomatik Yenileme` : ` Manuel Yenileme`}
+                ${currentPlan.price}/{t('clinicDashboard.monthly')} • 
+                {currentPlan.autoRenew ? ` ${t('clinicDashboard.autoRenewal')}` : ` ${t('clinicDashboard.manualRenewal')}`}
               </p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-blue-100">Sonraki Fatura Tarihi</p>
+            <p className="text-blue-100">{t('clinicDashboard.nextBillingDate')}</p>
             <p className="text-xl font-semibold">{currentPlan.endDate.toLocaleDateString()}</p>
-            <p className="text-sm text-blue-200">{getDaysUntilRenewal()} gün kaldı</p>
+            <p className="text-sm text-blue-200">{getDaysUntilRenewal()} {t('clinicDashboard.daysLeft')}</p>
           </div>
         </div>
       </div>
@@ -138,7 +138,7 @@ const ClinicMembership: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Talep Kullanımı</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.requestUsage')}</h3>
             <TrendingUp className="w-4 h-4 text-blue-600" />
           </div>
           <div className="flex items-baseline space-x-2">
@@ -154,7 +154,7 @@ const ClinicMembership: React.FC = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Depolama</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.storage')}</h3>
             <Shield className="w-4 h-4 text-green-600" />
           </div>
           <div className="flex items-baseline space-x-2">
@@ -170,7 +170,7 @@ const ClinicMembership: React.FC = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Çeviri</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.translation')}</h3>
             <Zap className="w-4 h-4 text-purple-600" />
           </div>
           <div className="flex items-baseline space-x-2">
@@ -186,7 +186,7 @@ const ClinicMembership: React.FC = () => {
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">Video Konsültasyon</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.videoConsultation')}</h3>
             <Star className="w-4 h-4 text-yellow-600" />
           </div>
           <div className="flex items-baseline space-x-2">
@@ -203,7 +203,7 @@ const ClinicMembership: React.FC = () => {
 
       {/* Available Plans */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Mevcut Planlar</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-6">{t('clinicDashboard.availablePlans')}</h2>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {plans.map((plan) => (
             <div
@@ -219,14 +219,14 @@ const ClinicMembership: React.FC = () => {
               {plan.popular && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                    En Popüler
+                    {t('clinicDashboard.mostPopular')}
                   </span>
                 </div>
               )}
               {plan.name === currentPlan.name && (
                 <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
                   <span className="bg-green-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                    Mevcut Plan
+                    {t('clinicDashboard.currentPlan')}
                   </span>
                 </div>
               )}
@@ -235,7 +235,7 @@ const ClinicMembership: React.FC = () => {
                 <h3 className="text-xl font-bold text-gray-900 mb-2">{plan.name}</h3>
                 <div className="mb-2">
                   <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
-                  <span className="text-gray-600">/Aylık</span>
+                  <span className="text-gray-600">/{t('clinicDashboard.monthly')}</span>
                 </div>
                 <p className="text-sm text-gray-600">{plan.description}</p>
               </div>
@@ -265,7 +265,7 @@ const ClinicMembership: React.FC = () => {
                     : 'bg-gray-900 text-white hover:bg-gray-800'
                 }`}
               >
-                {plan.name === currentPlan.name ? 'Mevcut Plan' : `${plan.name} Planına Yükselt`}
+                {plan.name === currentPlan.name ? t('clinicDashboard.currentPlan') : t('clinicDashboard.upgradeToPlan', { plan: plan.name })}
               </button>
             </div>
           ))}
@@ -274,24 +274,24 @@ const ClinicMembership: React.FC = () => {
 
       {/* Billing History */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Fatura Geçmişi</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.billingHistory')}</h2>
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200">
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Tarih</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Açıklama</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Tutar</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Durum</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-700">Fatura</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">{t('clinicDashboard.date')}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">{t('clinicDashboard.description')}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">{t('clinicDashboard.amount')}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">{t('clinicDashboard.status')}</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-700">{t('clinicDashboard.invoice')}</th>
               </tr>
             </thead>
             <tbody>
               {[
-                { date: '2025-01-01', description: 'Professional Plan - Ocak 2025', amount: '$299.00', status: 'Ödendi' },
-                { date: '2024-12-01', description: 'Professional Plan - Aralık 2024', amount: '$299.00', status: 'Ödendi' },
-                { date: '2024-11-01', description: 'Professional Plan - Kasım 2024', amount: '$299.00', status: 'Ödendi' },
-                { date: '2024-10-01', description: 'Basic Plan - Ekim 2024', amount: '$99.00', status: 'Ödendi' }
+                { date: '2025-01-01', description: 'Professional Plan - Ocak 2025', amount: '$299.00', status: t('clinicDashboard.paid') },
+                { date: '2024-12-01', description: 'Professional Plan - Aralık 2024', amount: '$299.00', status: t('clinicDashboard.paid') },
+                { date: '2024-11-01', description: 'Professional Plan - Kasım 2024', amount: '$299.00', status: t('clinicDashboard.paid') },
+                { date: '2024-10-01', description: 'Basic Plan - Ekim 2024', amount: '$99.00', status: t('clinicDashboard.paid') }
               ].map((invoice, index) => (
                 <tr key={index} className="border-b border-gray-100">
                   <td className="py-3 px-4 text-sm text-gray-900">{invoice.date}</td>
@@ -304,7 +304,7 @@ const ClinicMembership: React.FC = () => {
                   </td>
                   <td className="py-3 px-4">
                     <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
-                      İndir
+                      {t('clinicDashboard.download')}
                     </button>
                   </td>
                 </tr>
@@ -316,7 +316,7 @@ const ClinicMembership: React.FC = () => {
 
       {/* Payment Method */}
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Ödeme Yöntemi</h2>
+        <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.paymentMethod')}</h2>
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
             <CreditCard className="w-6 h-6 text-gray-600" />
@@ -326,7 +326,7 @@ const ClinicMembership: React.FC = () => {
             </div>
           </div>
           <button className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
-            Değiştir
+            {t('clinicDashboard.change')}
           </button>
         </div>
       </div>

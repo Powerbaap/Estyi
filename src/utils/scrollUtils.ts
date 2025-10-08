@@ -1,11 +1,15 @@
-export const scrollToTop = () => {
-  window.scrollTo({
-    top: 0,
-    left: 0,
-    behavior: 'smooth'
-  });
+// Scroll utility functions
+export const scrollToTopInstant = () => {
+  window.scrollTo({ top: 0, behavior: 'auto' });
 };
 
-export const scrollToTopInstant = () => {
-  window.scrollTo(0, 0);
-}; 
+export const scrollToTopSmooth = () => {
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+};
+
+export const scrollToElement = (elementId: string) => {
+  const element = document.getElementById(elementId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth' });
+  }
+};

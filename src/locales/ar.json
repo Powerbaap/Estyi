@@ -1,0 +1,1774 @@
+{
+  "footer": {
+    "description": "نوحد بين العيادات التجميلية المعتمدة في جميع أنحاء العالم مع المرضى. خدمة آمنة وشفافة ومهنية.",
+    "gdpr": "متوافق مع GDPR",
+    "ssl": "مشفر بـ SSL",
+    "worldwide": "عالمي",
+    "support": "الدعم",
+    "helpCenter": "مركز المساعدة",
+    "faq": "الأسئلة الشائعة",
+    "contact": "اتصل بنا",
+    "security": "الأمان",
+    "legal": "قانوني",
+    "privacyPolicy": "سياسة الخصوصية",
+    "termsOfUse": "شروط الاستخدام",
+    "cookiePolicy": "سياسة ملفات تعريف الارتباط",
+    "aboutUs": "من نحن",
+    "copyright": "© 2025 Estyi. جميع الحقوق محفوظة.",
+    "trustMessage": "10,000+ مريض موثوق يفضلنا"
+  },
+  "countries": {
+    "turkey": "تركيا",
+    "southKorea": "كوريا الجنوبية",
+    "thailand": "تايلاند",
+    "brazil": "البرازيل",
+    "mexico": "المكسيك",
+    "colombia": "كولومبيا",
+    "argentina": "الأرجنتين",
+    "chile": "تشيلي",
+    "peru": "بيرو",
+    "venezuela": "فنزويلا",
+    "ecuador": "الإكوادور",
+    "uruguay": "أوروغواي",
+    "paraguay": "باراغواي",
+    "bolivia": "بوليفيا",
+    "guyana": "غيانا",
+    "suriname": "سورينام",
+    "frenchGuiana": "غيانا الفرنسية",
+    "india": "الهند",
+    "singapore": "سنغافورة",
+    "malaysia": "ماليزيا",
+    "indonesia": "إندونيسيا",
+    "philippines": "الفلبين",
+    "vietnam": "فيتنام",
+    "cambodia": "كمبوديا",
+    "laos": "لاوس",
+    "myanmar": "ميانمار",
+    "bangladesh": "بنغلاديش",
+    "sriLanka": "سريلانكا",
+    "nepal": "نيبال",
+    "bhutan": "بوتان",
+    "maldives": "المالديف",
+    "pakistan": "باكستان",
+    "afghanistan": "أفغانستان",
+    "usa": "الولايات المتحدة الأمريكية",
+    "russia": "روسيا",
+    "china": "الصين",
+    "canada": "كندا"
+  },
+  "procedures": {
+    "otherDental": "إجراءات أسنان أخرى",
+    "otherFacial": "إجراءات وجه أخرى",
+    "otherBody": "إجراءات جسم أخرى"
+  },
+  "helpCenter": {
+    "title": "مركز المساعدة",
+    "subtitle": "كيف يمكننا مساعدتك؟",
+    "description": "يمكنك الوصول إلينا من خلال قنوات الاتصال أدناه. سنرد عليك في أقرب وقت ممكن.",
+    "emailSupport": {
+      "title": "دعم البريد الإلكتروني",
+      "description": "أرسل بريداً إلكترونياً للأسئلة العامة. ستحصل على رد خلال 24 ساعة."
+    },
+    "phoneSupport": {
+      "title": "دعم الهاتف",
+      "description": "اتصل بنا هاتفياً للحالات الطارئة."
+    },
+    "supportHours": {
+      "title": "ساعات الدعم",
+      "weekdays": "أيام الأسبوع: 09:00 - 18:00",
+      "weekends": "عطلات نهاية الأسبوع: 10:00 - 16:00",
+      "timezone": "جميع الأوقات معروضة بالتوقيت التركي (GMT+3)"
+    },
+    "liveSupport": {
+      "title": "الدعم المباشر",
+      "description": "خدمة الدعم المباشر متاحة لأسئلتك الفورية.",
+      "button": "بدء الدعم المباشر"
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "description": "يمكنك العثور على إجابات للأسئلة الشائعة في قسم الأسئلة الشائعة.",
+      "button": "عرض الأسئلة الشائعة"
+    }
+  },
+  "faq": {
+    "title": "الأسئلة الشائعة",
+    "subtitle": "نحن هنا لمساعدتك",
+    "questions": {
+      "howItWorks": {
+        "question": "كيف يعمل Estyi؟",
+        "answer": "Estyi يربط طلبات العلاج التجميلي للمرضى بالعيادات المعتمدة في جميع أنحاء العالم. يشارك المرضى الصور والمعلومات، وترسل العيادات العروض."
+      },
+      "pricing": {
+        "question": "هل الخدمة مدفوعة؟",
+        "answer": "لا، منصة Estyi مجانية تماماً للمرضى. أنت تدفع فقط تكاليف العلاج للعيادات."
+      },
+      "dataSafety": {
+        "question": "هل بياناتي آمنة؟",
+        "answer": "نعم، جميع بياناتك مخزنة مشفرة ومتوافقة مع GDPR. معلوماتك الشخصية محمية بأمان."
+      },
+      "countries": {
+        "question": "في أي بلدان تقدمون الخدمة؟",
+        "answer": "نقدم خدماتنا في تركيا وكوريا الجنوبية وتايلاند والمكسيك والبرازيل وألمانيا وبولندا وجمهورية التشيك والهند ودبي."
+      },
+      "clinicSelection": {
+        "question": "كيف يتم اختيار العيادة؟",
+        "answer": "جميع عياداتنا معتمدة ومعتمدة. يمكنك مراجعة ملفات العيادات وقراءة تقييماتها."
+      },
+      "postTreatmentSupport": {
+        "question": "هل يوجد دعم بعد العلاج؟",
+        "answer": "نعم، نقدم دعماً مستمراً قبل وبعد العلاج. يمكنك التواصل معنا لأي أسئلة."
+      },
+      "payment": {
+        "question": "كيف يتم الدفع؟",
+        "answer": "تتم المدفوعات من خلال أنظمة دفع آمنة. تدفع بناءً على السعر المتفق عليه مع العيادة."
+      }
+    },
+    "stillHaveQuestions": "لا تزال لديك أسئلة؟",
+    "contactDescription": "يمكنك التواصل معنا لأسئلتك. سنرد عليك في أقرب وقت ممكن.",
+    "sendEmail": "إرسال بريد إلكتروني",
+    "contactPage": "صفحة الاتصال"
+  },
+  "contact": {
+    "badge": "اتصل بنا",
+    "title": "اتصل بنا",
+    "subtitle": "تواصل معنا",
+    "description": "تواصل معنا لأسئلتك. سنرد عليك في أقرب وقت ممكن.",
+    "email": {
+      "title": "البريد الإلكتروني",
+      "general": "للأسئلة العامة:",
+      "support": "للدعم الفني:"
+    },
+    "phone": {
+      "title": "الهاتف",
+      "turkey": "تركيا:",
+      "international": "دولي:"
+    },
+    "address": {
+      "title": "العنوان",
+      "line1": "شركة إستيي المحدودة",
+      "line2": "ليفنت ماهاليسي، بويوكديري كادديسي",
+      "line3": "34330 بشيكتاش/اسطنبول، تركيا"
+    },
+    "form": {
+      "title": "نموذج الاتصال",
+      "name": "الاسم الكامل",
+      "namePlaceholder": "أدخل اسمك الكامل",
+      "email": "البريد الإلكتروني",
+      "emailPlaceholder": "أدخل عنوان بريدك الإلكتروني",
+      "subject": "الموضوع",
+      "subjectPlaceholder": "أدخل عنوان الموضوع",
+      "message": "الرسالة",
+      "messagePlaceholder": "اكتب رسالتك...",
+      "submit": "إرسال"
+    }
+  },
+  "aboutUs": {
+    "title": "من نحن",
+    "subtitle": "نشكل مستقبل الطب التجميلي",
+    "description": "إستيي هي منصة مبتكرة تربط المرضى الذين يبحثون عن علاج تجميلي في جميع أنحاء العالم بعيادات موثوقة. نحن نشكل مستقبل الطب التجميلي من خلال نهجنا المركز على الشفافية والأمان والجودة.",
+    "features": {
+      "transparent": {
+        "title": "تسعير شفاف",
+        "description": "نقدم أسعاراً واضحة دون تكاليف خفية. اعرف تكاليف العلاج مسبقاً."
+      },
+      "global": {
+        "title": "وصول عالمي",
+        "description": "نوفر الوصول إلى العيادات المعتمدة في جميع أنحاء العالم. اكتشف أفضل خيارات العلاج."
+      },
+      "ai": {
+        "title": "مطابقة مدعومة بالذكاء الاصطناعي",
+        "description": "نطابق العيادات مع المرضى باستخدام الذكاء الاصطناعي. توصيات مخصصة."
+      }
+    },
+    "quality": {
+      "title": "ضمان الجودة",
+      "description": "تخضع جميع عياداتنا للتحقق من الترخيص والشهادة. فقط العيادات التي تلبي أعلى معايير الجودة مميزة على منصتنا. سلامة ورضا مرضانا هو أولويتنا القصوى."
+    },
+    "stats": {
+      "patients": "10,000+ مريض سعيد",
+      "rating": "4.9/5 متوسط التقييم",
+      "clinics": "500+ عيادة موثوقة",
+      "countries": "10+ دولة"
+    },
+    "cta": {
+      "title": "تواصل معنا",
+      "description": "يمكنك الاتصال بنا لأسئلتك. سنرد عليك في أقرب وقت ممكن.",
+      "contactButton": "صفحة الاتصال",
+      "emailButton": "إرسال بريد إلكتروني"
+    }
+  },
+  "safety": {
+    "title": "إرشادات الأمان",
+    "subtitle": "تعرف على أمان المنصة",
+    "description": "أمانك مهم جداً بالنسبة لنا على منصة إستيي. نقوم بتطبيق إجراءات الأمان التالية.",
+    "clinicVerification": {
+      "title": "التحقق من العيادة",
+      "description": "تخضع جميع عياداتنا للتحقق من الترخيص والشهادة. فقط العيادات المعتمدة والموثوقة مميزة على منصتنا.",
+      "license": {
+        "title": "التحقق من الترخيص",
+        "description": "يتم التحقق من تراخيص جميع العيادات الصالحة"
+      },
+      "certificate": {
+        "title": "التحقق من الشهادة",
+        "description": "يتم التحقق من الشهادات الدولية"
+      },
+      "accreditation": {
+        "title": "الاعتماد",
+        "description": "يتم تفضيل المؤسسات المعتمدة"
+      }
+    },
+    "dataEncryption": {
+      "title": "تشفير البيانات",
+      "description": "جميع بياناتك محمية بتشفير SSL. معلوماتك الشخصية وصورك مخزنة بشكل آمن.",
+      "ssl": "تشفير SSL بـ 256 بت",
+      "gdpr": "حماية البيانات المتوافقة مع GDPR",
+      "server": "بنية تحتية آمنة للخادم"
+    },
+    "secureMessaging": {
+      "title": "المراسلة الآمنة",
+      "description": "يتم توفير الاتصال الآمن عبر المنصة. يتم إرسال جميع الرسائل مشفرة.",
+      "e2e": {
+        "title": "التشفير من طرف إلى طرف",
+        "description": "يمكن قراءة رسائلك فقط من قبلك والمستلم"
+      },
+      "fileSharing": {
+        "title": "مشاركة الملفات الآمنة",
+        "description": "تتم مشاركة الصور والمستندات عبر قنوات آمنة"
+      }
+    },
+    "suspiciousActivity": {
+      "title": "نشاط مشبوه",
+      "description": "أبلغ عن الأنشطة المشبوهة فوراً. فريق الأمان لدينا في خدمتك 24/7.",
+      "report": {
+        "title": "تقرير خرق الأمن",
+        "description": "أبلغ عن الأنشطة المشبوهة فوراً"
+      },
+      "support": {
+        "title": "دعم أمني 24/7",
+        "description": "فريق الأمان لدينا جاهز دائماً"
+      }
+    },
+    "tips": {
+      "title": "نصائح الأمان",
+      "personal": "احتفظ بمعلوماتك الشخصية آمنة",
+      "suspicious": "أبلغ عن الرسائل المشبوهة",
+      "password": "استخدم كلمات مرور قوية",
+      "twoFactor": "استخدم المصادقة الثنائية"
+    }
+  },
+  "cookie": {
+    "title": "سياسة ملفات تعريف الارتباط",
+    "subtitle": "تعرف على استخدام ملفات تعريف الارتباط",
+    "description": "توضح سياسة ملفات تعريف الارتباط هذه كيفية استخدام ملفات تعريف الارتباط على منصة إستيي.",
+    "types": {
+      "title": "أنواع ملفات تعريف الارتباط",
+      "essential": {
+        "title": "ملفات تعريف الارتباط الأساسية",
+        "description": "ملفات تعريف الارتباط المطلوبة للوظائف الأساسية للموقع. لن يعمل الموقع بشكل صحيح بدون هذه الملفات."
+      },
+      "analytics": {
+        "title": "ملفات تعريف الارتباط التحليلية",
+        "description": "ملفات تعريف الارتباط المستخدمة لتحليل استخدام الموقع. تستخدم لتحسين تجربة المستخدم."
+      },
+      "language": {
+        "title": "ملفات تعريف الارتباط اللغوية",
+        "description": "ملفات تعريف الارتباط المستخدمة لتذكر لغتك المفضلة. ستتلقى الخدمة بنفس اللغة في زيارتك القادمة."
+      }
+    },
+    "management": {
+      "title": "إدارة ملفات تعريف الارتباط",
+      "description": "يمكنك إدارة أو حذف ملفات تعريف الارتباط من إعدادات المتصفح الخاص بك. ومع ذلك، قد لا تعمل بعض ميزات الموقع.",
+      "accept": {
+        "title": "قبول ملفات تعريف الارتباط",
+        "description": "اقبل جميع ملفات تعريف الارتباط لتجربة الموقع الكامل."
+      },
+      "reject": {
+        "title": "رفض ملفات تعريف الارتباط",
+        "description": "اقبل فقط ملفات تعريف الارتباط الأساسية لاستخدام الوظائف الأساسية."
+      }
+    },
+    "settings": {
+      "title": "إعدادات ملفات تعريف الارتباط",
+      "essential": {
+        "title": "ملفات تعريف الارتباط الأساسية",
+        "status": "نشط دائماً"
+      },
+      "analytics": {
+        "title": "ملفات تعريف الارتباط التحليلية",
+        "status": "اختياري"
+      },
+      "language": {
+        "title": "ملفات تعريف الارتباط اللغوية",
+        "status": "اختياري"
+      }
+    }
+  },
+  "terms": {
+    "title": "شروط الاستخدام",
+    "subtitle": "تعرف على شروط وأحكام المنصة",
+    "description": "باستخدام منصة إستيي، فإنك توافق على الشروط التالية.",
+    "serviceUsage": {
+      "title": "استخدام الخدمة",
+      "matching": "يتم استخدام المنصة فقط لمطابقة العلاج التجميلي",
+      "approved": "يجب أن تكون العيادات معتمدة ومصدقة"
+    },
+    "userResponsibilities": {
+      "title": "مسؤوليات المستخدم",
+      "accurate": "تقديم معلومات دقيقة وحديثة إلزامي",
+      "noMisleading": "مشاركة معلومات مضللة محظورة"
+    },
+    "clinicResponsibilities": {
+      "title": "مسؤوليات العيادة",
+      "license": "يجب أن يكون لديها تراخيص وشهادات صالحة",
+      "transparent": "يجب تقديم أسعار شفافة"
+    },
+    "platformResponsibilities": {
+      "title": "مسؤوليات المنصة",
+      "secure": "توفر تخزين بيانات آمن",
+      "notLiable": "غير مسؤولة عن نتائج العلاج"
+    },
+    "disputeResolution": {
+      "title": "حل النزاعات",
+      "mediation": "تتم محاولة الوساطة أولاً",
+      "court": "يتم اتخاذ إجراء قانوني إذا لزم الأمر"
+    }
+  },
+  "privacy": {
+    "title": "سياسة الخصوصية",
+    "subtitle": "تعرف على كيفية حماية بياناتك الشخصية",
+    "description": "توضح سياسة الخصوصية هذه كيفية جمع بياناتك الشخصية واستخدامها وحمايتها على منصة إستيي.",
+    "dataCollection": {
+      "title": "جمع البيانات",
+      "email": "عنوان البريد الإلكتروني ومعلومات الاتصال",
+      "photos": "صور ما قبل العلاج",
+      "preferences": "تفضيلات العلاج ومعلومات الميزانية",
+      "clinicInfo": "معلومات العيادة والشهادات"
+    },
+    "dataUsage": {
+      "title": "استخدام البيانات",
+      "encryption": "يتم تخزينها بتشفير آمن",
+      "matching": "تستخدم للمطابقة بالذكاء الاصطناعي",
+      "legal": "مطلوبة للالتزامات القانونية"
+    },
+    "dataSharing": {
+      "title": "مشاركة البيانات",
+      "clinics": "تتم مشاركتها فقط مع العيادات المعتمدة",
+      "noMarketing": "لا تتم مشاركتها لأغراض تسويقية"
+    },
+    "dataRetention": {
+      "title": "الاحتفاظ بالبيانات",
+      "photos": "يتم تخزين الصور لمدة عامين",
+      "documents": "يتم تخزين مستندات العيادة لمدة 5 سنوات"
+    },
+    "userRights": {
+      "title": "حقوق المستخدم",
+      "access": "الحق في الوصول إلى بياناتك",
+      "objection": "الحق في الاعتراض على المعالجة",
+      "portability": "الحق في نقل البيانات"
+    },
+    "contact": {
+      "title": "اتصل بنا",
+      "description": "لأسئلة الخصوصية، البريد الإلكتروني:"
+    }
+  },
+  "messages": {
+    "title": "الرسائل",
+    "loginRequired": "تسجيل الدخول مطلوب",
+    "loginToView": "يجب عليك تسجيل الدخول لعرض الرسائل.",
+    "selectMessage": "اختر رسالة",
+    "selectToChat": "اختر شخصاً للدردشة معه"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "user": "مستخدم",
+    "patient": "يسعى للتغيير",
+    "clinic": "يخلق التغيير",
+    "totalRequests": "إجمالي الطلبات",
+    "receivedOffers": "العروض المستلمة",
+    "memberSince": "عضو منذ",
+    "edit": "تعديل",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "email": "البريد الإلكتروني",
+    "gender": "الجنس",
+    "selectGender": "اختر الجنس",
+    "male": "ذكر",
+    "female": "أنثى",
+    "other": "آخر",
+    "location": "الموقع",
+    "locationPlaceholder": "المدينة، البلد",
+    "security": "الأمان",
+    "changePassword": "تغيير كلمة المرور",
+    "changePasswordDesc": "قم بتحديث كلمة المرور الخاصة بك لأمان الحساب",
+    "twoFactor": "المصادقة الثنائية",
+    "twoFactorDesc": "فعّل المصادقة الثنائية لمزيد من الأمان"
+  },
+  "reviews": {
+    "title": "تقييمات المنصة",
+    "subtitle": "تجارب مستخدمينا مع Estyi",
+    "platformScore": "نقاط المنصة",
+    "excellentPlatform": "منصة ممتازة",
+    "writeReview": "كتابة تقييم",
+    "loginToReview": "تسجيل الدخول لكتابة تقييم",
+    "totalReviews": "تقييمات",
+    "stars": "نجوم",
+    "filters": "الفلاتر",
+    "searchPlaceholder": "ابحث في ميزات المنصة...",
+    "all": "الكل",
+    "positive": "إيجابي",
+    "negative": "سلبي",
+    "neutral": "محايد",
+    "sortBy": "ترتيب حسب",
+    "newest": "الأحدث",
+    "oldest": "الأقدم",
+    "highestRated": "الأعلى تقييماً",
+    "lowestRated": "الأدنى تقييماً",
+    "noReviews": "لم يتم العثور على تقييمات",
+    "noReviewsDesc": "لا توجد تقييمات تطابق معايير البحث الخاصة بك.",
+    "verified": "مستخدم موثق",
+    "helpful": "مفيد",
+    "report": "إبلاغ",
+    "writeReviewTitle": "كتابة تقييم المنصة",
+    "yourRating": "تقييمك",
+    "yourReview": "التقييم",
+    "reviewPlaceholder": "شارك تجربتك...",
+    "submit": "إرسال",
+    "cancel": "إلغاء",
+    "daysAgo": "أيام مضت",
+    "monthsAgo": "أشهر مضت",
+    "yearsAgo": "سنوات مضت"
+  },
+  "signup": {
+    "title": "إنشاء حساب",
+    "subtitle": "إنشاء حسابك الجديد",
+    "name": "الاسم الكامل",
+    "namePlaceholder": "اسمك الكامل",
+    "phone": "رقم الهاتف",
+    "phonePlaceholder": "+90 XXX XXX XX XX",
+    "passwordPlaceholder": "أدخل كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "confirmPasswordPlaceholder": "أعد إدخال كلمة المرور",
+    "signupButton": "تسجيل",
+    "signingUp": "جاري التسجيل...",
+    "signupWithGoogle": "التسجيل باستخدام جوجل",
+    "haveAccount": "هل لديك حساب بالفعل؟",
+    "loginHere": "تسجيل الدخول",
+    "termsAgree": "بالتسجيل",
+    "termsLink": "شروط الاستخدام",
+    "and": "و",
+    "privacyLink": "سياسة الخصوصية",
+    "accept": "أوافق على",
+    "fillAllFields": "يرجى ملء جميع الحقول",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "passwordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
+    "signupError": "حدث خطأ أثناء التسجيل",
+    "googleSignupError": "فشل التسجيل عبر جوجل"
+  },
+  "login": {
+    "welcomeBack": "مرحباً بعودتك",
+    "subtitle": "تسجيل الدخول إلى حسابك",
+    "selectAccountType": "اختر نوع الحساب",
+    "email": "عنوان البريد الإلكتروني",
+    "emailPlaceholder": "example@email.com",
+    "password": "كلمة المرور",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "loginButton": "تسجيل الدخول",
+    "loggingIn": "جاري تسجيل الدخول...",
+    "or": "أو",
+    "continueWithGoogle": "المتابعة مع جوجل",
+    "noAccount": "ليس لديك حساب؟",
+    "signUpHere": "سجل من هنا",
+    "fillAllFields": "يرجى ملء جميع الحقول",
+    "loginError": "حدث خطأ أثناء تسجيل الدخول",
+    "googleError": "فشل تسجيل الدخول عبر جوجل",
+    "enterEmail": "يرجى إدخال عنوان بريدك الإلكتروني",
+    "resetLinkSent": "تم إرسال رابط إعادة تعيين كلمة المرور إلى بريدك الإلكتروني",
+    "resetError": "حدث خطأ أثناء إرسال بريد إعادة التعيين",
+    "yourEmail": "بريدك الإلكتروني",
+    "sending": "جاري الإرسال...",
+    "sendResetLink": "إرسال رابط إعادة التعيين",
+    "cancel": "إلغاء",
+    "resetInfo": "عند إدخال عنوان بريدك الإلكتروني، سيتم إرسال رابط إعادة تعيين كلمة المرور."
+  },
+  "offerModal": {
+    "title": "تقديم عرض",
+    "for": "لـ",
+    "priceRangeError": "لا يمكن أن يتجاوز نطاق السعر 200 دولار. الفرق الحالي: ${{difference}}",
+    "successTitle": "تم إرسال العرض!",
+    "successMessage": "تم إرسال عرضك إلى المستخدم {{userId}}. يمكنهم الرد خلال 7 أيام.",
+    "totalOffer": "إجمالي العرض",
+    "performedBy": "سيتم إجراؤه بواسطة",
+    "address": "العنوان",
+    "minPrice": "الحد الأدنى للسعر",
+    "maxPrice": "الحد الأقصى للسعر",
+    "priceRange": "نطاق السعر",
+    "priceRangeWarning": "⚠️ لا يمكن أن يتجاوز نطاق السعر 200 دولار!",
+    "duration": "مدة الإجراء",
+    "hospitalization": "الإقامة في المستشفى",
+    "doctorName": "اسم الطبيب",
+    "clinicAddress": "عنوان العيادة",
+    "extras": "خدمات إضافية",
+    "accommodation": "الإقامة مشمولة",
+    "transport": "النقل مشمول",
+    "consultation": "استشارة مجانية",
+    "notes": "ملاحظات إضافية",
+    "cancel": "إلغاء",
+    "submitting": "جاري الإرسال...",
+    "submit": "تقديم العرض"
+  },
+  "clinicRequests": {
+    "title": "الطلبات",
+    "subtitle": "طلبات العلاج التجميلي للمستخدمين",
+    "status": {"new": "جديد", "offered": "تم إرسال عرض", "expired": "منتهي الصلاحية", "unknown": "غير معروف"},
+    "stats": {"total": "إجمالي الطلبات", "newRequests": "طلبات جديدة", "offeredRequests": "تم تقديم عروض", "highPriority": "أولوية عالية"},
+    "filter": {"allStatuses": "جميع الحالات", "allProcedures": "جميع الإجراءات"},
+    "searchPlaceholder": "ابحث عن الطلبات...",
+    "noRequests": "لم يتم العثور على طلبات",
+    "noRequestsDesc": "لا توجد طلبات تطابق معايير البحث الخاصة بك.",
+    "user": "مستخدم",
+    "age": "سنة",
+    "photos": "صور",
+    "more": "المزيد",
+    "daysAgo": "أيام مضت",
+    "submitOffer": "تقديم عرض",
+    "enlargedPhoto": "صورة مكبرة"
+  },
+  "clinicDashboard": {
+    "menu": {"dashboard": "لوحة التحكم", "requests": "الطلبات", "offers": "العروض", "profile": "الملف الشخصي", "membership": "العضوية"},
+    "stats": {"totalRequests": "إجمالي الطلبات", "activeOffers": "العروض النشطة", "acceptedOffers": "العروض المقبولة", "responseRate": "معدل الاستجابة"},
+    "welcome": "مرحباً، {{name}}!",
+    "clinic": "عيادة",
+    "today": "اليوم",
+    "activeRequest": "طلب نشط",
+    "pendingOffer": "عرض معلق",
+    "fromLastMonth": "من الشهر الماضي",
+    "recentRequests": "الطلبات الأخيرة",
+    "last24Hours": "الطلبات في آخر 24 ساعة",
+    "viewAll": "عرض الكل",
+    "new": "جديد",
+    "recentOffers": "العروض الأخيرة",
+    "last24HoursOffers": "العروض في آخر 24 ساعة",
+    "accepted": "مقبول",
+    "pending": "معلق"
+  },
+  "requestDetails": {
+    "status": {"active": "نشط", "closed": "مكتمل", "cancelled": "ملغى", "unknown": "غير معروف"},
+    "acceptSuccess": "لقد قبلت عرض {{clinicName}}!",
+    "acceptError": "حدث خطأ أثناء قبول العرض.",
+    "rejectSuccess": "لقد رفضت عرض {{clinicName}}.",
+    "rejectError": "حدث خطأ أثناء رفض العرض.",
+    "offersReceived": "العروض المستلمة",
+    "photos": "الصور",
+    "countries": "الدول",
+    "myPhotos": "صوري",
+    "enlarge": "تكبير",
+    "photosUploaded": "صور تم تحميلها",
+    "receivedOffers": "العروض المستلمة",
+    "noOffersYet": "لا توجد عروض بعد. يتم تقييمها من قبل العيادات...",
+    "verified": "موثق",
+    "reviews": "تقييمات",
+    "onDate": "في",
+    "duration": "المدة",
+    "hospitalization": "الإقامة في المستشفى",
+    "offerNumber": "عرض",
+    "offerAccepted": "تم قبول العرض",
+    "offerRejected": "تم رفض العرض",
+    "accept": "قبول",
+    "reject": "رفض",
+    "contactClinic": "الاتصال بالعيادة",
+    "enlargedPhoto": "صورة مكبرة"
+  },
+  "priceRequest": {
+    "title": "احصل على عرض السعر",
+    "procedure": "اختر الإجراء",
+    "selectProcedure": "اختر الإجراء",
+    "uploadPhotos": "تحميل الصور",
+    "minMax": "الحد الأدنى 5، الحد الأقصى 10",
+    "clickUpload": "انقر لتحميل الصور",
+    "fileFormat": "JPG، PNG، بحد أقصى 10 ميجابايت لكل منهما",
+    "uploadedPhotos": "الصور المحملة",
+    "selectCountries": "اختر الدول",
+    "selectCountriesHint": "اختر الدول التي تريد تلقي العروض منها",
+    "selectAll": "اختر الكل",
+    "clear": "مسح",
+    "selected": "المحدد",
+    "country": "دولة",
+    "allCountries": "جميع الدول",
+    "selectCities": "اختر المدن",
+    "istanbulRegion": "اسطنبول والمدن المحيطة",
+    "city": "مدينة",
+    "age": "العمر",
+    "agePlaceholder": "أدخل عمرك",
+    "gender": "الجنس",
+    "selectGender": "اختر الجنس",
+    "female": "أنثى",
+    "male": "ذكر",
+    "treatmentDate": "تاريخ العلاج",
+    "treatmentDatePlaceholder": "اختر تاريخ العلاج",
+    "additionalDetails": "تفاصيل إضافية",
+    "descriptionPlaceholder": "معلومات إضافية عن العلاج، توقعاتك، طلبات خاصة...",
+    "importantInfo": "معلومات مهمة",
+    "requestActive": "يمكن للعيادات إرسال العروض طالما أن طلبك نشط.",
+    "onlyCertified": "فقط العيادات المعتمدة والموافق عليها يمكنها إرسال العروض.",
+    "photosEncrypted": "يتم تشفير صورك وتخزينها بشكل آمن.",
+    "notifications": "سيتم إخطارك عند وصول عروض جديدة.",
+    "allCountriesInfo": "ستتلقى عروض من جميع الدول. المزيد من الخيارات!",
+    "cancel": "إلغاء",
+    "submitRequest": "إنشاء الطلب",
+    "submitAllCountries": "إرسال إلى جميع الدول"
+  },
+  "userDashboard": {
+    "welcome": "مرحباً، {{name}}",
+    "user": "مستخدم",
+    "subtitle": "إدارة طلبات العلاج الخاصة بك، مقارنة العروض والعثور على أفضل عيادة",
+    "newRequest": "طلب سعر جديد",
+    "status": {
+      "active": "نشط",
+      "closed": "مكتمل",
+      "cancelled": "ملغى",
+      "unknown": "غير معروف"
+    },
+    "stats": {
+      "totalRequests": "إجمالي الطلبات",
+      "allRequests": "جميع طلباتك",
+      "activeRequests": "الطلبات النشطة",
+      "ongoing": "العمليات الجارية",
+      "totalOffers": "إجمالي العروض",
+      "receivedOffers": "العروض المستلمة",
+      "completed": "مكتمل",
+      "finished": "العمليات المنتهية"
+    },
+    "empty": {
+      "all": {
+        "title": "لا توجد طلبات بعد",
+        "description": "انقر فوق الزر أعلاه لإنشاء طلب السعر الأول الخاص بك.",
+        "cta": "إنشاء الطلب الأول"
+      },
+      "active": {
+        "title": "لا توجد طلبات نشطة",
+        "description": "ستظهر طلباتك النشطة هنا."
+      },
+      "closed": {
+        "title": "لا توجد طلبات مكتملة",
+        "description": "ستظهر طلباتك المكتملة هنا."
+      },
+      "offers": {
+        "title": "لا توجد طلبات بعروض",
+        "description": "ستظهر طلباتك مع العروض هنا."
+      }
+    },
+    "offer": "عرض",
+    "photo": "صورة",
+    "photos": "الصور",
+    "latestOffers": "أحدث العروض",
+    "reviews": "تقييمات",
+    "deleteRequest": "حذف الطلب",
+    "enlargedPhoto": "صورة مكبرة"
+  },
+  "common": {
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "نجح",
+    "cancel": "إلغاء",
+    "save": "حفظ",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "close": "إغلاق",
+    "back": "رجوع",
+    "next": "التالي",
+    "submit": "إرسال",
+    "search": "بحث",
+    "filter": "تصفية",
+    "sort": "ترتيب",
+    "all": "الكل",
+    "none": "لا شيء",
+    "selectAll": "اختيار الكل",
+    "clearAll": "مسح الكل",
+    "messages": "الرسائل",
+    "notifications": "الإشعارات",
+    "noNotifications": "لا توجد إشعارات",
+    "viewAllNotifications": "عرض جميع الإشعارات",
+    "dashboard": "لوحة التحكم",
+    "profile": "الملف الشخصي",
+    "clinicApplication": "طلب العيادة",
+    "markAllRead": "وضع علامة مقروء على الجميع",
+    "newNotificationsHere": "ستظهر الإشعارات الجديدة هنا",
+    "minutes": "دقائق",
+    "hours": "ساعات",
+    "days": "أيام",
+    "ago": "مضت",
+    "offer": "عرض",
+    "unread": "غير مقروء",
+    "messageReceived": "تم استلام رسالتك. سنعود إليك في أقرب وقت ممكن."
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "signup": "إنشاء حساب",
+    "logout": "تسجيل الخروج",
+    "email": "البريد الإلكتروني",
+    "password": "كلمة المرور",
+    "confirmPassword": "تأكيد كلمة المرور",
+    "name": "الاسم الكامل",
+    "forgotPassword": "نسيت كلمة المرور",
+    "rememberMe": "تذكرني",
+    "patient": "يسعى للتغيير",
+    "clinic": "يخلق التغيير",
+    "accountType": "نوع الحساب",
+    "alreadyHaveAccount": "لديك حساب بالفعل؟",
+    "dontHaveAccount": "ليس لديك حساب؟",
+    "loginWithGoogle": "تسجيل الدخول بـ Google",
+    "signupWithGoogle": "إنشاء حساب بـ Google",
+    "signupTitle": "إنشاء حساب في Estyi",
+    "signupEmailPlaceholder": "عنوان بريدك الإلكتروني",
+    "passwordPlaceholder": "كلمة المرور (8 أحرف على الأقل)",
+    "confirmPasswordPlaceholder": "تأكيد كلمة المرور",
+    "namePlaceholder": "اسمك الكامل",
+    "sendingCode": "جاري الإرسال...",
+    "sendVerificationCode": "إرسال رمز التحقق",
+    "verificationCodeSent": "تم إرسال رمز التحقق إلى",
+    "verificationCodePlaceholder": "رمز التحقق من 6 أرقام",
+    "verifyAndContinue": "تحقق من الرمز واستمر",
+    "backButton": "← عودة",
+    "emailVerified": "✓ تم التحقق من البريد الإلكتروني",
+    "registering": "جاري التسجيل...",
+    "register": "تسجيل",
+    "registrationSuccess": "تم التسجيل بنجاح! يمكنك الآن تسجيل الدخول.",
+    "registrationError": "فشل التسجيل. يرجى المحاولة مرة أخرى.",
+    "enterEmail": "يرجى إدخال عنوان بريدك الإلكتروني",
+    "codeError": "فشل في إرسال الرمز. يرجى المحاولة مرة أخرى.",
+    "enterVerificationCode": "يرجى إدخال رمز التحقق",
+    "emailVerificationTitle": "تحقق البريد الإلكتروني",
+    "verificationSuccess": "تم التحقق بنجاح!",
+    "accountVerified": "تم التحقق من حسابك بنجاح. جاري التوجيه...",
+    "verificationCodeSentTitle": "تم إرسال رمز التحقق",
+    "codeValidTime": "صالح حتى:",
+    "verificationCodeLabel": "رمز التحقق",
+    "verifying": "جاري التحقق...",
+    "verify": "تحقق",
+    "cancel": "إلغاء",
+    "codeNotReceived": "لم تستلم الرمز؟ تحقق من مجلد البريد العشوائي أو حاول مرة أخرى.",
+    "verificationFailed": "فشل التحقق",
+    "code6digits": "يجب أن يكون رمز التحقق 6 أرقام",
+    "emailMinLength": "يرجى إدخال عنوان بريد إلكتروني صحيح",
+    "passwordMinLength": "يجب أن تكون كلمة المرور 8 أحرف على الأقل",
+    "nameMinLength": "يجب أن يكون الاسم حرفين على الأقل",
+    "passwordMismatch": "كلمات المرور غير متطابقة",
+    "userStatusUpdateError": "لا يمكن تحديث حالة المستخدم",
+    "verificationProcessError": "فشلت عملية التحقق",
+    "reportDownloading": "جاري تحميل التقرير...",
+    "settingsSaved": "تم حفظ الإعدادات بنجاح!",
+    "acceptSuccess": "تم قبول العرض بنجاح!",
+    "acceptError": "حدث خطأ أثناء قبول العرض.",
+    "rejectSuccess": "تم رفض العرض بنجاح.",
+    "rejectError": "حدث خطأ أثناء رفض العرض.",
+    "priceRangeError": "خطأ في نطاق السعر"
+  },
+  "home": {
+    "hero": {
+      "title": "اكتشف الطريق إلى مظهرك المثالي",
+      "subtitle": "احصل على عروض شفافة من مراكز التجميل العالمية دون مشاركة هويتك.",
+      "cta": "احصل على عرض مجاني",
+      "learnMore": "اعرف المزيد"
+    },
+    "features": {
+      "title": "لماذا تختار",
+      "subtitle": "اختبر مستقبل الطب التجميلي وتعرّف على منصتنا المبتكرة",
+      "secure": {
+        "title": "منصة آمنة",
+        "description": "بياناتك آمنة مع منصتنا المتوافقة مع GDPR والمصدقة على الأمان SSL."
+      },
+      "global": {
+        "title": "وصول دولي",
+        "description": "تواصل مع العيادات الموثوقة عالمياً والأطباء المتخصصين."
+      },
+      "experts": {
+        "title": "أطباء متخصصون",
+        "description": "احصل على خدمات علاجية عالية الجودة من أطباء معتمدين وذوي خبرة."
+      },
+      "proven": {
+        "title": "نتائج مثبتة",
+        "description": "10,000+ مريض سعيد ومتوسط تقييم 4.9/5."
+      },
+      "quality": {
+        "title": "ضمان الجودة",
+        "description": "فقط العيادات المعتمدة التي تلبي معايير الجودة."
+      },
+      "support": {
+        "title": "دعم 24/7",
+        "description": "نحن دائماً معك. احصل على دعم فوري لأسئلتك."
+      },
+      "cta": {
+        "title": "ابدأ الآن",
+        "subtitle": "أنشئ حساباً مجانياً واحصل على أفضل الأسعار لعلاجك التجميلي",
+        "button": "سجل مجاناً"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "أهلاً وسهلاً",
+    "stats": {
+      "requests": "الطلبات",
+      "offers": "العروض",
+      "messages": "الرسائل",
+      "appointments": "المواعيد"
+    },
+    "recentActivity": "النشاط الأخير",
+    "quickActions": "الإجراءات السريعة",
+    "myPhotos": "صوري",
+    "receivedOffers": "العروض المستلمة",
+    "enlargePhoto": "تكبير",
+    "photos": "صور",
+    "contactClinic": "تواصل مع العيادة",
+    "acceptOffer": "قبول",
+    "rejectOffer": "رفض",
+    "offerAccepted": "تم قبول العرض",
+    "offerRejected": "تم رفض العرض",
+    "processingOffer": "جاري المعالجة...",
+    "active": "نشط",
+    "closed": "مغلق",
+    "pending": "في الانتظار",
+    "completed": "مكتمل",
+    "offerId": "رقم العرض",
+    "clinicContact": "تواصل العيادة",
+    "offerDetails": "تفاصيل العرض",
+    "priceRange": "نطاق السعر",
+    "duration": "المدة",
+    "hospitalization": "الإقامة في المستشفى",
+    "clinicRating": "تقييم العيادة",
+    "clinicReviews": "مراجعات العيادة",
+    "clinicCountry": "بلد العيادة",
+    "offerDate": "تاريخ العرض",
+    "procedureDetails": "تفاصيل الإجراء",
+    "clinicProfile": "ملف العيادة",
+    "viewClinic": "عرض ملف العيادة",
+    "sendMessage": "إرسال رسالة",
+    "requestDetails": "تفاصيل الطلب",
+    "requestStatus": "حالة الطلب",
+    "requestDate": "تاريخ الطلب",
+    "requestCountries": "بلدان الطلب",
+    "totalOffers": "إجمالي العروض",
+    "totalPhotos": "إجمالي الصور",
+    "totalCountries": "إجمالي البلدان"
+  },
+  "requests": {
+    "title": "طلبات الأسعار",
+    "newRequest": "طلب جديد",
+    "status": {
+      "pending": "في الانتظار",
+      "active": "نشط",
+      "completed": "مكتمل",
+      "cancelled": "ملغي"
+    },
+    "procedure": "الإجراء",
+    "country": "البلد",
+    "budget": "الميزانية",
+    "notes": "الملاحظات",
+    "photos": "الصور",
+    "submitRequest": "إرسال الطلب",
+    "allCountries": "جميع البلدان",
+    "allCountriesInfo": "ستتلقى عروضاً من عيادات في جميع البلدان",
+    "submitAllCountries": "احصل على عروض من جميع البلدان"
+  },
+  "offers": {
+    "title": "العروض",
+    "receivedOffers": "العروض المستلمة",
+    "noOffers": "لا توجد عروض بعد",
+    "clinic": "العيادة",
+    "price": "السعر",
+    "duration": "المدة",
+    "validUntil": "صالح حتى",
+    "accept": "قبول",
+    "reject": "رفض",
+    "contact": "تواصل"
+  },
+  "priceRequest": {
+    "title": "احصل على عرض سعر",
+    "selectProcedure": "اختر الإجراء",
+    "chooseProcedure": "اختر الإجراء",
+    "uploadPhotos": "رفع الصور",
+    "minimumPhotos": "الحد الأدنى 5، الحد الأقصى 10",
+    "clickToUpload": "انقر لرفع الصور",
+    "fileFormat": "JPG، PNG، حد أقصى 10 ميجابايت لكل صورة",
+    "uploadedPhotos": "الصور المرفوعة",
+    "selectCountries": "اختر البلدان",
+    "chooseCountries": "اختر البلدان التي تريد الحصول على عروض منها",
+    "selectedCountries": "المحدد",
+    "countriesText": "بلد",
+    "allCountries": "جميع البلدان",
+    "age": "العمر",
+    "enterAge": "أدخل عمرك",
+    "gender": "الجنس",
+    "chooseGender": "اختر الجنس",
+    "female": "أنثى",
+    "male": "ذكر",
+    "treatmentDate": "تاريخ العلاج",
+    "chooseTreatmentDate": "اختر تاريخ العلاج",
+    "additionalDetails": "تفاصيل إضافية",
+    "descriptionPlaceholder": "معلومات إضافية حول العلاج، توقعاتك، طلبات خاصة...",
+    "importantInfo": "معلومات مهمة",
+    "requestActive": "سيبقى طلبك نشطاً لمدة 30 يوماً",
+    "onlyCertified": "ستتلقى عروضاً من عيادات معتمدة فقط",
+    "photosEncrypted": "صورك محفوظة مشفرة",
+    "notifications": "ستتلقى إشعارات عند وصول عروض جديدة",
+    "allCountriesInfo": "ستتلقى عروضاً من عيادات في جميع البلدان",
+    "cancel": "إلغاء",
+    "submitRequest": "إرسال الطلب",
+    "submitAllCountries": "احصل على عروض من جميع البلدان",
+    "additionalNotes": "ملاحظات إضافية",
+    "addAdditionalInfo": "أضف معلومات إضافية...",
+    "costBreakdown": "تفصيل التكلفة",
+    "basicProcedure": "الإجراء الأساسي:",
+    "totalOffer": "إجمالي العرض:",
+    "oneOfferPerRequest": "يمكنك إرسال عرض واحد فقط لكل طلب",
+    "offerCannotBeChanged": "لا يمكن تغيير العرض بعد الإرسال",
+    "patient7DaysResponse": "يمكن للمريض الرد خلال 7 أيام",
+    "hospitalizationIncluded": "الإقامة في المستشفى والخدمات الأساسية مشمولة تلقائياً"
+  },
+  "messages": {
+    "title": "الرسائل",
+    "conversations": "المحادثات",
+    "newMessage": "رسالة جديدة",
+    "typeMessage": "اكتب رسالتك...",
+    "send": "إرسال",
+    "unread": "غير مقروء",
+    "online": "متصل",
+    "offline": "غير متصل"
+  },
+  "profile": {
+    "title": "الملف الشخصي",
+    "personalInfo": "المعلومات الشخصية",
+    "security": "الأمان",
+    "preferences": "التفضيلات",
+    "notifications": "الإشعارات",
+    "language": "اللغة",
+    "timezone": "المنطقة الزمنية"
+  },
+  "clinic": {
+    "dashboard": "لوحة تحكم العيادة",
+    "applicationTitle": "طلب العيادة",
+    "applicationSuccess": "تم إرسال طلبك بنجاح! سنتواصل معك قريباً.",
+    "clinicName": "اسم العيادة",
+    "country": "البلد",
+    "specialties": "التخصصات",
+    "website": "الموقع الإلكتروني",
+    "description": "وصف العيادة",
+    "submitApplication": "إرسال الطلب",
+    "requests": "الطلبات الواردة",
+    "offers": "عروضي",
+    "messages": "الرسائل",
+    "profileTitle": "الملف الشخصي",
+    "profileSubtitle": "إدارة معلومات عيادتك",
+    "membershipTitle": "العضوية",
+    "membershipSubtitle": "إدارة خطة العضوية الخاصة بك",
+    "editProfile": "تحرير الملف الشخصي",
+    "cancel": "إلغاء",
+    "saveChanges": "حفظ التغييرات",
+    "basicInformation": "المعلومات الأساسية",
+    "clinicName": "اسم العيادة",
+    "email": "البريد الإلكتروني",
+    "address": "العنوان",
+    "phone": "الهاتف",
+    "website": "الموقع الإلكتروني",
+    "specialties": "التخصصات",
+    "aboutUs": "معلومات عنا",
+    "aboutUsDescription": "مركز إسطنبول للتجميل وجهة رائدة في السياحة الطبية متخصصة في الجراحة التجميلية وإعادة البناء. نجمع بين التكنولوجيا الطبية المتقدمة والضيافة التركية لتقديم أعلى جودة من الخدمة لمرضانا.",
+    "profileCompletion": "اكتمال الملف الشخصي",
+    "documents": "المستندات",
+    "photos": "الصور",
+    "certifications": "الشهادات",
+    "languages": "اللغات",
+    "teamDescription": "فريقنا الخبير يتكون من جراحين ذوي خبرة ومهنيين في الرعاية الصحية.",
+    "quickStats": "إحصائيات سريعة",
+    "stats": {
+      "totalRequests": "إجمالي الطلبات",
+      "receivedOffers": "العروض المستلمة",
+      "membershipDate": "تاريخ العضوية"
+    },
+    "lookingForNaturalResults": "يبحث عن نتائج طبيعية",
+    "preferFUETechnique": "يفضل تقنية FUE",
+    "lookingForNaturalEnhancement": "يريد مظهراً طبيعياً",
+    "jciAccredited": "معتمد من JCI",
+    "isoCertified": "ISO 9001:2015",
+    "ministryApproved": "معتمد من الوزارة",
+    "turkish": "التركية",
+    "english": "الإنجليزية",
+    "arabic": "العربية",
+    "russian": "الروسية",
+    "rhinoplasty": "جراحة الأنف",
+    "hairTransplant": "زراعة الشعر",
+    "breastSurgery": "جراحة الثدي",
+    "faceLift": "شد الوجه",
+    "describeClinic": "اكتب عن عيادتك...",
+    "describeMedicalTeam": "اكتب عن فريقك الطبي...",
+    "documentsAndCertificates": "المستندات والشهادات",
+    "uploadDocument": "رفع مستند",
+    "uploaded": "تم الرفع",
+    "clinicPhotos": "صور العيادة",
+    "addPhotos": "إضافة صور",
+    "clinicPhoto": "صورة العيادة",
+    "downloadInvoice": "تحميل الفاتورة",
+    "upgradePlan": "ترقية الخطة",
+    "plan": "الخطة",
+    "monthly": "شهرياً",
+    "autoRenewing": "تجديد تلقائي",
+    "manualRenewal": "تجديد يدوي",
+    "nextBillingDate": "تاريخ الفواتير التالي",
+    "daysRemaining": "أيام متبقية",
+    "currentUsage": "الاستخدام الحالي",
+    "patientRequests": "طلبات المرضى",
+    "storage": "التخزين",
+    "translations": "الترجمات",
+    "videoCalls": "المكالمات المرئية",
+    "availablePlans": "الخطط المتاحة",
+    "billingHistory": "تاريخ الفواتير",
+    "perfectForSmallClinics": "مثالي للعيادات الصغيرة",
+    "mostPopularForGrowingClinics": "الأكثر شعبية للعيادات النامية",
+    "forLargeMedicalCenters": "للمراكز الطبية الكبيرة",
+    "upTo50PatientRequests": "حتى 50 طلب مريض شهرياً",
+    "basicAnalytics": "تحليلات أساسية",
+    "emailSupport": "دعم عبر البريد الإلكتروني",
+    "documentStorage2GB": "تخزين المستندات (2 جيجابايت)",
+    "standardProfileListing": "قائمة الملف الشخصي القياسية",
+    "limitedTo2Specialties": "محدود بتخصصين",
+    "noVideoConsultations": "لا توجد استشارات فيديو",
+    "basicTranslationOnly": "ترجمة أساسية فقط",
+    "unlimitedPatientRequests": "طلبات مرضى غير محدودة",
+    "advancedAnalytics": "تحليلات متقدمة",
+    "prioritySupport": "دعم ذو أولوية",
+    "multiLanguageTranslation": "ترجمة متعددة اللغات",
+    "documentStorage10GB": "تخزين المستندات (10 جيجابايت)",
+    "videoConsultations": "استشارات فيديو",
+    "featuredProfileListing": "قائمة ملف شخصي مميز",
+    "customBranding": "علامة تجارية مخصصة",
+    "everythingInProfessional": "كل شيء في المهني",
+    "dedicatedAccountManager": "مدير حساب مخصص",
+    "customIntegrations": "تكاملات مخصصة",
+    "whiteLabelSolution": "حل العلامة البيضاء",
+    "unlimitedDocumentStorage": "تخزين مستندات غير محدود",
+    "advancedReporting": "تقارير متقدمة",
+    "apiAccess": "وصول API",
+    "multiClinicManagement": "إدارة متعددة العيادات",
+    "reviewAndRespond": "مراجعة والرد على طلبات المرضى",
+    "allProcedures": "جميع الإجراءات",
+    "allStatus": "جميع الحالات",
+    "new": "جديد",
+    "offered": "تم تقديم عرض",
+    "expired": "منتهي الصلاحية",
+    "newRequests": "طلبات جديدة",
+    "offersSent": "العروض المرسلة",
+    "avgResponse": "متوسط الاستجابة",
+    "responseRate": "معدل الاستجابة",
+    "activeRequests": "طلبات نشطة",
+    "submitOffer": "إرسال عرض",
+    "viewDetails": "عرض التفاصيل",
+    "patientAge": "عمر المريض",
+    "preferredCountries": "البلدان المفضلة",
+    "patientNotes": "ملاحظات المريض",
+    "requestDate": "تاريخ الطلب",
+    "photos": "الصور",
+    "noPhotos": "لا توجد صور",
+    "viewAllPhotos": "عرض جميع الصور",
+    "closePhoto": "إغلاق الصورة",
+    "myOffers": "عروضي",
+    "trackAndManage": "تتبع وإدارة عروضك",
+    "pending": "في الانتظار",
+    "accepted": "مقبول",
+    "rejected": "مرفوض",
+    "allTime": "جميع الأوقات",
+    "today": "اليوم",
+    "thisWeek": "هذا الأسبوع",
+    "totalOffers": "إجمالي العروض",
+    "totalValue": "القيمة الإجمالية",
+    "offerDetails": "تفاصيل العرض",
+    "submittedDate": "تاريخ الإرسال",
+    "expiryDate": "تاريخ انتهاء الصلاحية",
+    "duration": "المدة",
+    "hospitalization": "الإقامة في المستشفى",
+    "includedServices": "الخدمات المشمولة",
+    "basePrice": "السعر الأساسي",
+    "totalPrice": "السعر الإجمالي",
+    "daysUntilExpiry": "أيام متبقية",
+    "expired": "منتهي الصلاحية",
+    "viewOffer": "عرض العرض",
+    "editOffer": "تحرير العرض",
+    "withdrawOffer": "سحب العرض",
+    "noOffers": "لم ترسل عروضاً بعد",
+    "noOffersMessage": "أرسل عرضك الأول بالرد على طلبات المرضى",
+    "chatWithPatients": "تحدث مع مرضاك",
+    "noConversations": "لا توجد محادثات بعد",
+    "typeMessage": "اكتب رسالتك...",
+    "send": "إرسال",
+    "translate": "ترجمة",
+    "call": "اتصال",
+    "videoCall": "مكالمة فيديو",
+    "moreOptions": "خيارات أكثر",
+    "online": "متصل",
+    "offline": "غير متصل",
+    "messageDelivered": "تم تسليم الرسالة",
+    "messageSeen": "تم مشاهدة الرسالة",
+    "translatedMessage": "الرسالة المترجمة",
+    "originalMessage": "الرسالة الأصلية",
+    "noMessages": "لا توجد رسائل بعد",
+    "startConversation": "بدء المحادثة",
+    "submitOfferTitle": "إرسال عرض",
+    "for": "لـ",
+    "patientInformation": "معلومات المريض",
+    "age": "العمر",
+    "countries": "البلدان",
+    "baseProcedurePrice": "سعر الإجراء الأساسي",
+    "enterBasePrice": "أدخل السعر الأساسي",
+    "priceRange": "نطاق السعر",
+    "procedureDuration": "مدة الإجراء",
+    "selectDuration": "اختر المدة",
+    "duration1to2": "1-2 ساعة",
+    "duration2to3": "2-3 ساعات",
+    "duration3to4": "3-4 ساعات",
+    "duration4to6": "4-6 ساعات",
+    "duration6to8": "6-8 ساعات",
+    "fullDay": "يوم كامل",
+    "hospitalizationRequired": "مطلوب إقامة في المستشفى",
+    "noHospitalization": "لا حاجة لإقامة في المستشفى",
+    "oneNight": "ليلة واحدة",
+    "twoNights": "ليلتان",
+    "threeNights": "ثلاث ليال",
+    "additionalServices": "خدمات إضافية",
+    "hotelAccommodation": "إقامة في الفندق",
+    "airportTransfer": "نقل من المطار",
+    "consultationIncluded": "استشارة مشمولة",
+    "additionalNotes": "ملاحظات إضافية",
+    "offerNotes": "اكتب ملاحظات عرضك...",
+    "submitOffer": "إرسال العرض",
+    "offerSubmitted": "تم إرسال العرض!",
+    "offerSubmittedMessage": "تم إرسال عرضك إلى المستخدم {userId}. يمكنهم الرد خلال 7 أيام.",
+    "totalOffer": "إجمالي العرض",
+    "flightCost": "تكلفة الطيران",
+    "visaCost": "تكلفة التأشيرة",
+    "totalPrice": "السعر الإجمالي",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "amount": "المبلغ",
+    "paid": "مدفوع",
+    "invoice": "الفاتورة",
+    "download": "تحميل",
+    "paymentMethod": "طريقة الدفع",
+    "primary": "أساسي",
+    "expires": "ينتهي",
+    "updatePaymentMethod": "تحديث طريقة الدفع",
+    "selectHospitalization": "اختر الإقامة في المستشفى",
+    "additionalInfo": "معلومات إضافية",
+    "costBreakdown": "تفصيل التكلفة",
+    "baseProcedure": "الإجراء الأساسي",
+    "flightAssistance": "مساعدة الطيران",
+    "visaSupport": "دعم التأشيرة",
+    "importantNotice": "إشعار مهم",
+    "oneOfferPerRequest": "يمكنك إرسال عرض واحد فقط لكل طلب",
+    "noModification": "لا يمكن تعديل العرض بعد الإرسال",
+    "sevenDaysResponse": "يجب على المريض الرد خلال 7 أيام",
+    "autoIncluded": "تكاليف الطيران والتأشيرة مشمولة تلقائياً",
+    "offersList": "قائمة العروض",
+    "showing": "عرض",
+    "of": "من",
+    "patientProcedure": "المريض/الإجراء",
+    "details": "التفاصيل",
+    "submitted": "مرسل",
+    "clinicPanel": "لوحة العيادة",
+    "medicalClinicDashboard": "لوحة تحكم العيادة الطبية",
+    "professionalPlan": "الخطة المهنية",
+    "basicPlan": "الخطة الأساسية",
+    "professionalPlanJanuary2025": "الخطة المهنية - يناير 2025",
+    "professionalPlanDecember2024": "الخطة المهنية - ديسمبر 2024",
+    "professionalPlanNovember2024": "الخطة المهنية - نوفمبر 2024",
+    "basicPlanOctober2024": "الخطة الأساسية - أكتوبر 2024",
+    "istanbulAestheticCenter": "مركز إسطنبول للتجميل",
+    "totalRequests": "إجمالي الطلبات",
+    "activeOffers": "عروض نشطة",
+    "acceptedOffers": "عروض مقبولة",
+    "responseRate": "معدل الاستجابة",
+    "mostPopular": "الأكثر شعبية",
+    "currentPlan": "الخطة الحالية",
+    "upgradeTo": "ترقية إلى",
+    "status": "الحالة",
+    "offers": "العروض",
+    "base": "أساسي",
+    "daysLeft": "أيام متبقية",
+    "noOffersFound": "لم يتم العثور على عروض",
+    "adjustFilters": "اضبط المرشحات أو انتظر إرسال عروض جديدة",
+    "noneOutpatient": "لا شيء (عيادة خارجية)",
+    "fourFiveNights": "4-5 ليال",
+    "oneWeek": "أسبوع واحد",
+    "accommodation": "الإقامة",
+    "transport": "النقل",
+    "consultations": "الاستشارات",
+    "submitting": "جاري الإرسال...",
+    "fromLastMonth": "من الشهر الماضي",
+    "recentRequests": "الطلبات الأخيرة",
+    "recentOffers": "العروض الأخيرة",
+    "user": "المستخدم",
+    "rhinoplastyRequest": "طلب جراحة الأنف",
+    "hoursAgo": "ساعات مضت",
+    "new": "جديد",
+    "accepted": "مقبول",
+    "pending": "في الانتظار",
+    "hairTransplant": "زراعة الشعر",
+    "offerSent": "تم إرسال العرض",
+    "waitingResponse": "في انتظار الرد"
+  },
+  "clinicApplication": {
+    "title": "نموذج طلب عيادة",
+    "subtitle": "انضم إلى شبكتنا العالمية من العيادات التجميلية المعتمدة وتواصل مع المرضى حول العالم",
+    "submissionSuccess": "تم إرسال الطلب!",
+    "submissionMessage": "تم استلام طلبك بنجاح. سنعود إليك في أقرب وقت ممكن.",
+    "backToHome": "العودة إلى الصفحة الرئيسية",
+    "clinicName": "اسم العيادة",
+    "clinicNamePlaceholder": "أدخل اسم عيادتك",
+    "country": "الدولة",
+    "selectCountry": "اختر دولتك",
+    "specialties": "التخصصات",
+    "selectAll": "اختر كل ما ينطبق",
+    "selected": "مختار",
+    "specialtyAreas": "مجالات تخصص",
+    "website": "الموقع الإلكتروني",
+    "websitePlaceholder": "https://your-clinic-website.com",
+    "description": "وصف العيادة",
+    "descriptionPlaceholder": "اكتب عن عيادتك، وخدماتك، وخبرتك وما يجعلك مميزاً...",
+    "certificates": "الشهادات والتراخيص",
+    "uploadCertificates": "رفع الشهادات والتراخيص",
+    "fileFormat": "PDF, JPG, PNG - حد أقصى 10 ميجابايت لكل ملف",
+    "filesUploaded": "ملفات مرفوعة",
+    "submitApplication": "إرسال الطلب",
+    "whyJoin": "لماذا انضم إلى إستيي؟",
+    "globalAccess": "الوصول إلى شبكة المرضى العالمية",
+    "verifiedCertification": "اعتماد عيادة متحقق منه",
+    "securePayments": "معالجة مدفوعات آمنة",
+    "applicationProcess": "عملية الطلب",
+    "step1": "إرسال الطلب",
+    "step2": "مراجعة وتحقق (2-5 أيام)",
+    "step3": "توقيع العقد",
+    "step4": "منح الوصول للمنصة"
+  },
+  "clinicDashboard": {
+    "menu": {
+      "dashboard": "لوحة التحكم",
+      "requests": "الطلبات",
+      "offers": "العروض",
+      "profile": "الملف الشخصي",
+      "membership": "العضوية"
+    },
+    "stats": {
+      "totalRequests": "إجمالي الطلبات",
+      "activeOffers": "العروض النشطة",
+      "acceptedOffers": "العروض المقبولة",
+      "responseRate": "معدل الاستجابة"
+    },
+    "welcome": "مرحبا، {{name}}!",
+    "clinic": "عيادة",
+    "today": "اليوم",
+    "activeRequest": "طلبات نشطة",
+    "pendingOffer": "عروض معلقة",
+    "fromLastMonth": "من الشهر الماضي",
+    "recentRequests": "الطلبات الأخيرة",
+    "recentOffers": "العروض الأخيرة",
+    "last24Hours": "طلبات آخر 24 ساعة",
+    "last24HoursOffers": "عروض آخر 24 ساعة",
+    "viewAll": "عرض الكل",
+    "new": "جديد",
+    "accepted": "مقبول",
+    "pending": "في الانتظار",
+    "quickActions": "إجراءات سريعة",
+    "reports": "التقارير",
+    "performanceAnalysis": "تحليل الأداء",
+    "calendar": "التقويم",
+    "viewAppointments": "عرض المواعيد",
+    "sidebarTitle": "لوحة العيادة",
+    "medicalDashboard": "لوحة تحكم العيادة الطبية",
+    "premiumMember": "عضو مميز",
+    "calendarTitle": "التقويم",
+    "calendarSubtitle": "عرض مواعيدك المؤكدة",
+    "today": "اليوم",
+    "thisWeek": "هذا الأسبوع",
+    "thisMonth": "هذا الشهر",
+    "monday": "الاثنين",
+    "tuesday": "الثلاثاء",
+    "wednesday": "الأربعاء",
+    "thursday": "الخميس",
+    "friday": "الجمعة",
+    "saturday": "السبت",
+    "sunday": "الأحد",
+    "confirmedAppointments": "المواعيد المؤكدة",
+    "confirmed": "مؤكد",
+    "duration": "المدة",
+    "hospitalization": "المستشفى",
+    "night": "ليلة",
+    "hours": "ساعات",
+    "hoursAgo": "ساعات مضت",
+    "request": "طلب",
+    "user": "مستخدم",
+    "patientName": "اسم المريض",
+    "clinic": "العيادة",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "procedure": "الإجراء",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "august": "أغسطس",
+    "istanbulAestheticCenter": "مركز إسطنبول للتجميل",
+    "testClinic": "عيادة تجريبية",
+    "clinicProfile": "ملف العيادة",
+    "viewClinicInfo": "عرض معلومات عيادتك",
+    "basicInfo": "المعلومات الأساسية",
+    "clinicName": "اسم العيادة",
+    "branchLocation": "موقع الفرع",
+    "phone": "الهاتف",
+    "email": "البريد الإلكتروني",
+    "website": "الموقع الإلكتروني",
+    "address": "العنوان",
+    "specialties": "التخصصات",
+    "aboutUs": "معلومات عنا",
+    "medicalTeamDescription": "وصف الفريق الطبي",
+    "quickStats": "إحصائيات سريعة",
+    "profileCompletion": "اكتمال الملف",
+    "documents": "المستندات",
+    "photos": "الصور",
+    "specialtyAreas": "مجالات التخصص",
+    "certifications": "الشهادات",
+    "languages": "اللغات",
+    "membership": "العضوية",
+    "manageMembership": "إدارة خطة عضويتك",
+    "downloadInvoice": "تحميل الفاتورة",
+    "upgradePlan": "ترقية الخطة",
+    "professionalPlan": "الخطة المهنية",
+    "monthly": "شهري",
+    "autoRenewal": "تجديد تلقائي",
+    "manualRenewal": "تجديد يدوي",
+    "nextBillingDate": "تاريخ الفاتورة التالية",
+    "daysLeft": "يوم متبقي",
+    "requestUsage": "استخدام الطلبات",
+    "storage": "التخزين",
+    "translation": "الترجمة",
+    "videoConsultation": "الاستشارة بالفيديو",
+    "availablePlans": "الخطط المتاحة",
+    "mostPopular": "الأكثر شعبية",
+    "currentPlan": "الخطة الحالية",
+    "upgradeToPlan": "الترقية إلى خطة {{plan}}",
+    "billingHistory": "تاريخ الفواتير",
+    "date": "التاريخ",
+    "description": "الوصف",
+    "amount": "المبلغ",
+    "status": "الحالة",
+    "invoice": "الفاتورة",
+    "paid": "مدفوع",
+    "download": "تحميل",
+    "paymentMethod": "طريقة الدفع",
+    "change": "تغيير",
+    "myOffers": "عروضي",
+    "trackAndManageOffers": "تتبع وتدير عروضك",
+    "allStatuses": "جميع الحالات",
+    "pending": "قيد الانتظار",
+    "accepted": "مقبول",
+    "rejected": "مرفوض",
+    "expired": "منتهي الصلاحية",
+    "allDates": "جميع التواريخ",
+    "today": "اليوم",
+    "thisWeek": "هذا الأسبوع",
+    "totalOffers": "إجمالي العروض",
+    "totalValue": "القيمة الإجمالية",
+    "offersList": "قائمة العروض",
+    "showingOffers": "يظهر {{filtered}} / {{total}} عرض",
+    "patientProcedure": "المريض والإجراء",
+    "price": "السعر",
+    "details": "التفاصيل",
+    "status": "الحالة",
+    "submitted": "تم الإرسال",
+    "deadline": "الموعد النهائي",
+    "total": "الإجمالي",
+    "duration": "المدة",
+    "hospital": "المستشفى",
+    "more": "أكثر",
+    "daysLeft": "يوم متبقي"
+  },
+  "footer": {
+    "description": "نحن نربط المرضى بالعيادات التجميلية المعتمدة حول العالم.",
+    "support": "الدعم",
+    "legal": "قانوني",
+    "contact": "اتصل بنا",
+    "privacy": "سياسة الخصوصية",
+    "terms": "شروط الاستخدام",
+    "about": "معلومات عنا",
+    "helpCenter": "مركز المساعدة",
+    "faq": "الأسئلة الشائعة",
+    "security": "الأمان",
+    "cookies": "سياسة ملفات تعريف الارتباط"
+  },
+  "legal": {
+    "help": {
+      "title": "مركز المساعدة",
+      "description": "كيف يمكننا مساعدتك؟ يمكنك التواصل معنا من خلال قنوات الاتصال أدناه.",
+      "contact": {
+        "email": {
+          "title": "دعم البريد الإلكتروني",
+          "description": "إرسال بريد إلكتروني للأسئلة العامة"
+        }
+      },
+      "hours": {
+        "title": "ساعات الدعم",
+        "weekdays": "أيام الأسبوع: 09:00 - 18:00",
+        "weekend": "عطلة نهاية الأسبوع: 10:00 - 16:00",
+        "note": "جميع الأوقات معروضة بالتوقيت التركي (GMT+3)"
+      }
+    },
+    "faq": {
+      "title": "الأسئلة الشائعة",
+      "items": [
+        {
+          "question": "كيف يعمل إستيي؟",
+          "answer": "إستيي ينقل طلبات علاج التجميل للمرضى إلى عيادات معتمدة حول العالم. المرضى يشاركون الصور والمعلومات، والعيادات ترسل العروض."
+        },
+        {
+          "question": "هل الخدمة مدفوعة؟",
+          "answer": "لا، منصة إستيي مجانية تماماً للمرضى. تدفع فقط رسوم العلاج للعيادات."
+        },
+        {
+          "question": "هل بياناتي آمنة؟",
+          "answer": "نعم، جميع بياناتك محفوظة مشفرة ومتوافقة مع GDPR. معلوماتك الشخصية محمية بأمان."
+        },
+        {
+          "question": "في أي بلدان تقدمون الخدمة؟",
+          "answer": "نحن نقدم الخدمة في تركيا، كوريا الجنوبية، تايلاند، المكسيك، البرازيل، ألمانيا، بولندا، جمهورية التشيك، الهند ودبي."
+        },
+        {
+          "question": "كيف يتم اختيار العيادة؟",
+          "answer": "جميع عياداتنا معتمدة ومصرح بها. يمكنك مراجعة ملفات العيادات وقراءة تقييماتها."
+        },
+        {
+          "question": "هل يوجد دعم بعد العلاج؟",
+          "answer": "نعم، نوفر دعماً مستمراً قبل وبعد العلاج. يمكنك التواصل معنا لأي أسئلة."
+        },
+        {
+          "question": "كيف يتم الدفع؟",
+          "answer": "المدفوعات تتم من خلال أنظمة دفع آمنة. تدفع حسب السعر الذي تتفق عليه مع العيادة."
+        }
+      ]
+    },
+    "contact": {
+      "title": "اتصل بنا",
+      "description": "تواصل معنا لأسئلتك. سنرد عليك في أقرب وقت ممكن.",
+      "info": {
+        "email": {
+          "title": "البريد الإلكتروني",
+          "general": "للأسئلة العامة:",
+          "support": "للدعم التقني:"
+        },
+        "phone": {
+          "title": "الهاتف",
+          "turkey": "تركيا:",
+          "international": "دولياً:"
+        },
+        "address": {
+          "title": "العنوان",
+          "line1": "إستيي المحدودة",
+          "line2": "حي ليفنت، شارع بيوكديري",
+          "line3": "34330 بشكتاش/إسطنبول، تركيا"
+        }
+      },
+      "form": {
+        "title": "نموذج الاتصال",
+        "name": "الاسم الكامل",
+        "namePlaceholder": "أدخل اسمك واسم عائلتك",
+        "email": "البريد الإلكتروني",
+        "emailPlaceholder": "أدخل عنوان بريدك الإلكتروني",
+        "subject": "الموضوع",
+        "subjectPlaceholder": "أدخل عنوان الموضوع",
+        "message": "الرسالة",
+        "messagePlaceholder": "اكتب رسالتك...",
+        "submit": "إرسال"
+      }
+    },
+    "privacy": {
+      "title": "سياسة الخصوصية",
+      "description": "تعلم كيف يتم حماية بياناتك الشخصية.",
+      "intro": "تشرح سياسة الخصوصية هذه كيف يتم جمع بياناتك الشخصية واستخدامها وحمايتها على منصة إستيي.",
+      "dataCollected": {
+        "title": "البيانات المجمعة",
+        "email": "عنوان البريد الإلكتروني ومعلومات الاتصال",
+        "photos": "صور ما قبل العلاج",
+        "preferences": "تفضيلات العلاج ومعلومات الميزانية",
+        "clinicInfo": "معلومات العيادة والشهادات"
+      },
+      "dataUsage": {
+        "title": "استخدام البيانات",
+        "secure": "محفوظة بتشفير آمن",
+        "ai": "تُستخدم للمطابقة المدعومة بالذكاء الاصطناعي",
+        "legal": "مطلوبة للالتزامات القانونية"
+      },
+      "dataSharing": {
+        "title": "مشاركة البيانات",
+        "clinics": "يتم مشاركتها مع العيادات المعتمدة فقط",
+        "noMarketing": "لا يتم مشاركتها لأغراض التسويق"
+      },
+      "retention": {
+        "title": "احتفاظ البيانات",
+        "photos": "الصور محفوظة لمدة سنتين",
+        "clinicDocs": "مستندات العيادة محفوظة لمدة 5 سنوات"
+      },
+      "rights": {
+        "title": "حقوق المستخدم",
+        "access": "حق الوصول لبياناتك",
+        "object": "حق الاعتراض على المعالجة",
+        "portability": "حق قابلية نقل البيانات"
+      },
+      "contact": {
+        "title": "اتصل بنا",
+        "email": "البريد الإلكتروني لأسئلة الخصوصية"
+      }
+    },
+    "terms": {
+      "title": "شروط الاستخدام",
+      "description": "تعلم شروط استخدام المنصة.",
+      "serviceUsage": {
+        "title": "استخدام الخدمة",
+        "platform": "المنصة تُستخدم فقط لمطابقة علاج التجميل",
+        "clinic": "يجب أن تكون العيادات معتمدة ومصرح بها"
+      },
+      "userResponsibilities": {
+        "title": "مسؤوليات المستخدم",
+        "accuracy": "تقديم معلومات دقيقة ومحدثة إلزامي",
+        "prohibited": "مشاركة معلومات مضللة محظورة"
+      },
+      "clinicResponsibilities": {
+        "title": "مسؤوليات العيادة",
+        "licenses": "يجب أن تمتلك تراخيص وشهادات صالحة",
+        "transparent": "يجب أن تقدم تسعيراً شفافاً"
+      },
+      "platformResponsibilities": {
+        "title": "مسؤوليات المنصة",
+        "secure": "توفر تخزين بيانات آمن",
+        "notResponsible": "ليست مسؤولة عن نتائج العلاج"
+      },
+      "disputeResolution": {
+        "title": "حل النزاعات",
+        "mediation": "يتم تجربة الوساطة أولاً",
+        "court": "إجراءات المحكمة عند الضرورة"
+      }
+    },
+    "about": {
+      "title": "معلومات عنا",
+      "description": "إستيي منصة مبتكرة تربط المرضى الذين يبحثون عن علاج التجميل حول العالم مع عيادات موثوقة.",
+      "mission": {
+        "title": "مهمتنا",
+        "transparent": {
+          "title": "تسعير شفاف",
+          "description": "نقدم أسعاراً واضحة دون تكاليف خفية"
+        },
+        "visibility": {
+          "title": "وصول عالمي",
+          "description": "نوفر الوصول إلى عيادات معتمدة حول العالم"
+        },
+        "ai": {
+          "title": "مطابقة مدعومة بالذكاء الاصطناعي",
+          "description": "مطابقة مثالية بين العيادة والمريض بالذكاء الاصطناعي"
+        }
+      }
+    },
+    "cookies": {
+      "title": "سياسة ملفات تعريف الارتباط",
+      "description": "تعلم عن استخدام ملفات تعريف الارتباط.",
+      "types": {
+        "title": "أنواع ملفات تعريف الارتباط",
+        "essential": {
+          "title": "ملفات تعريف الارتباط الأساسية",
+          "description": "ملفات تعريف الارتباط اللازمة لوظائف الموقع الأساسية"
+        },
+        "analytics": {
+          "title": "ملفات تعريف الارتباط التحليلية",
+          "description": "ملفات تعريف الارتباط المستخدمة لتحليل استخدام الموقع"
+        },
+        "language": {
+          "title": "ملفات تعريف الارتباط للغة",
+          "description": "ملفات تعريف الارتباط المستخدمة لتذكر لغتك المفضلة"
+        }
+      },
+      "management": {
+        "title": "إدارة ملفات تعريف الارتباط",
+        "description": "يمكنك إدارة أو حذف ملفات تعريف الارتباط من إعدادات المتصفح. ومع ذلك، قد لا تعمل بعض ميزات الموقع."
+      }
+    },
+    "security": {
+      "title": "الأمان",
+      "description": "تعلم عن تدابير الأمان لدينا.",
+      "verification": {
+        "title": "التحقق من العيادة",
+        "description": "جميع عياداتنا تمر بفحص التراخيص والشهادات"
+      },
+      "encryption": {
+        "title": "تشفير البيانات",
+        "description": "جميع بياناتك محمية بتشفير SSL"
+      },
+      "messaging": {
+        "title": "رسائل آمنة",
+        "description": "يتم توفير اتصال آمن من خلال المنصة"
+      },
+      "suspicious": {
+        "title": "النشاط المشبوه",
+        "description": "أبلغ عن الأنشطة المشبوهة فوراً"
+      }
+    },
+    "safety": {
+      "title": "إرشادات الأمان",
+      "description": "تعلم عن أمان المنصة.",
+      "verification": {
+        "title": "التحقق من العيادة",
+        "description": "جميع عياداتنا تمر بفحص التراخيص والشهادات"
+      },
+      "encryption": {
+        "title": "تشفير البيانات",
+        "description": "جميع بياناتك محمية بتشفير SSL"
+      },
+      "messaging": {
+        "title": "رسائل آمنة",
+        "description": "يتم توفير اتصال آمن من خلال المنصة"
+      },
+      "suspicious": {
+        "title": "النشاط المشبوه",
+        "description": "أبلغ عن الأنشطة المشبوهة فوراً"
+      }
+    }
+  },
+  "countries": [
+    "تركيا",
+    "كوريا الجنوبية",
+    "تايلاند",
+    "المكسيك",
+    "البرازيل",
+    "ألمانيا",
+    "بولندا",
+    "جمهورية التشيك",
+    "الهند",
+    "دبي"
+  ],
+  "procedures": {
+    "rhinoplasty": "جراحة الأنف",
+    "hairTransplant": "زرع الشعر",
+    "breastSurgery": "جراحة الثدي",
+    "faceLift": "شد الوجه",
+    "liposuction": "شفط الدهون",
+    "tummyTuck": "شد البطن",
+    "botoxFillers": "البوتوكس والحقن",
+    "dentalSurgery": "جراحة الأسنان",
+    "eyeSurgery": "جراحة العين",
+    "bodyContouring": "نحت الجسم",
+    "nailProcedures": "إجراءات الأظافر",
+    "hairColoring": "صبغ الشعر",
+    "hairProsthesis": "الشعر الصناعي",
+    "otherHairProcedures": "إجراءات الشعر الأخرى"
+  },
+  "countries": {
+    "turkey": "تركيا",
+    "southKorea": "كوريا الجنوبية",
+    "thailand": "تايلاند",
+    "brazil": "البرازيل",
+    "mexico": "المكسيك",
+    "colombia": "كولومبيا",
+    "argentina": "الأرجنتين",
+    "chile": "تشيلي",
+    "peru": "بيرو",
+    "venezuela": "فنزويلا",
+    "ecuador": "الإكوادور",
+    "uruguay": "أوروغواي",
+    "paraguay": "باراغواي",
+    "bolivia": "بوليفيا",
+    "guyana": "غيانا",
+    "suriname": "سورينام",
+    "frenchGuiana": "غيانا الفرنسية",
+    "india": "الهند",
+    "singapore": "سنغافورة",
+    "malaysia": "ماليزيا",
+    "indonesia": "إندونيسيا",
+    "philippines": "الفلبين",
+    "vietnam": "فيتنام",
+    "cambodia": "كمبوديا",
+    "laos": "لاوس",
+    "myanmar": "ميانمار",
+    "bangladesh": "بنغلاديش",
+    "sriLanka": "سريلانكا",
+    "nepal": "نيبال",
+    "bhutan": "بوتان",
+    "maldives": "المالديف",
+    "pakistan": "باكستان",
+    "afghanistan": "أفغانستان",
+    "usa": "الولايات المتحدة",
+    "russia": "الاتحاد الروسي",
+    "china": "الصين",
+    "canada": "كندا",
+    "japan": "اليابان",
+    "germany": "ألمانيا",
+    "unitedKingdom": "المملكة المتحدة",
+    "netherlands": "هولندا",
+    "sweden": "السويد"
+  },
+  "cities": {
+    "istanbul": "إسطنبول",
+    "seoul": "سيول",
+    "bangkok": "بانكوك",
+    "antalya": "أنطاليا"
+  },
+  "clinics": {
+    "istanbulAesthetic": "مركز إسطنبول للتجميل",
+    "seoulBeauty": "عيادة سيول للجمال",
+    "hairWorldIstanbul": "Hair World إسطنبول",
+    "bangkokHair": "عيادة بانكوك للشعر",
+    "antalyaMedical": "مركز أنطاليا الطبي"
+  },
+  "genders": {
+    "female": "أنثى",
+    "male": "ذكر"
+  },
+  "durations": {
+    "hours23": "2-3 ساعات",
+    "hours34": "3-4 ساعات",
+    "hours68": "6-8 ساعات",
+    "hours810": "8-10 ساعات"
+  },
+  "hospitalization": {
+    "night1": "ليلة واحدة",
+    "nights2": "ليلتان"
+  },
+  "proceduresList": [
+    "جراحة الأنف",
+    "زرع الشعر",
+    "جراحة الثدي",
+    "شد الوجه",
+    "شفط الدهون",
+    "شد البطن",
+    "البوتوكس والحقن",
+    "جراحة الأسنان",
+    "جراحة العين",
+    "نحت الجسم",
+    "إجراءات الأظافر",
+    "صبغ الشعر",
+    "الشعر الصناعي",
+    "إجراءات الشعر الأخرى"
+  ],
+  "notifications": {
+    "newRhinoplastyRequest": "طلب جديد لجراحة الأنف",
+    "newHairTransplantRequest": "طلب جديد لزرع الشعر",
+    "rhinoplastyTreatmentOffer": "عرض علاج جراحة الأنف",
+    "botoxTreatmentPayment": "تم استلام دفعة علاج البوتوكس بنجاح",
+    "newTreatmentOffer": "تم إرسال عرض علاج جديد: زرع الشعر - Hair World",
+    "paymentReceived": "تم استلام الدفعة: $2,500 - جراحة الأنف"
+  },
+  "messages": {
+    "title": "الرسائل",
+    "loginRequired": "يتطلب تسجيل الدخول",
+    "loginToView": "يجب تسجيل الدخول لعرض الرسائل.",
+    "selectMessage": "اختر رسالة",
+    "selectToChat": "اختر شخصاً للدردشة معه",
+    "rhinoplastyInquiry": "أريد معلومات حول جراحة الأنف. ما هي التكلفة والعملية؟",
+    "rhinoplastyInfo": "أرسل معلومات مفصلة حول جراحة الأنف. السعر 3,500 دولار والعملية تستغرق حوالي ساعتين.",
+    "hairTransplantDetails": "تفاصيل زرع الشعر",
+    "liposuctionQuestion": "سؤال شفط الدهون",
+    "hairTransplantAppointment": "موعد زرع الشعر"
+  }
+}

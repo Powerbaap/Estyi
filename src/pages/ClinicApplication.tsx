@@ -1,7 +1,26 @@
 import React, { useState } from 'react';
 import { CheckCircle, Upload, Award, Globe, Sparkles, Heart, Star, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { TREATMENT_AREAS } from '../types';
 
 const ClinicApplication: React.FC = () => {
+  const { t, i18n } = useTranslation();
+  
+  // Helper function to get translation with fallback
+  const getTranslation = (key: string, fallback: string) => {
+    const translation = t(key);
+    return translation === key ? fallback : translation;
+  };
+  
+  // Get treatment areas in current language
+  const getSpecialtyOptions = () => {
+    const currentLang = i18n.language || 'en';
+    return TREATMENT_AREAS.map(area => 
+      area.name[currentLang as keyof typeof area.name] || area.name.en
+    );
+  };
+
+  const specialtyOptions = getSpecialtyOptions();
   const [formData, setFormData] = useState({
     clinicName: '',
     country: '',
@@ -11,43 +30,6 @@ const ClinicApplication: React.FC = () => {
     certificates: [] as File[]
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
-
-  const specialtyOptions = [
-    'Abdominoplasti (Karın Germe)',
-    'Akne Tedavisi',
-    'Anti-Aging Uygulamaları',
-    'Bacak Estetiği',
-    'Basen Estetiği',
-    'Botoks',
-    'Boy Uzatma Ameliyatı',
-    'Burun Estetiği (Rinoplasti)',
-    'Çene Estetiği',
-    'Cilt Gençleştirme (Mezoterapi, PRP vb.)',
-    'Diş Beyazlatma',
-    'Diş İmplantı',
-    'Dudak Dolgusu',
-    'El Gençleştirme',
-    'Göz Altı Işık Dolgusu',
-    'Göz Kapağı Estetiği (Blefaroplasti)',
-    'Göğüs Büyütme',
-    'Göğüs Dikleştirme',
-    'Göğüs Küçültme',
-    'Kalça Şekillendirme / BBL (Popo Kaldırma)',
-    'Karbon Peeling',
-    'Kol Germe',
-    'Kombine Estetik Paketleri (Full Body Makeover)',
-    'Liposuction (Yağ Aldırma)',
-    'Lüks Medikal Spa Tedavileri',
-    'Meme Ucu Estetiği',
-    'Saç Ekimi',
-    'Sakal Ekimi',
-    'Yüz Germe (Facelift)',
-    'Yüz Şekillendirme (Dolgu / Jawline)',
-    'Vajinal Estetik (Genital Estetik)',
-    'Penis Kalınlaştırma Dolgusu (Penil Filler)',
-    'Penis Uzatma Operasyonları',
-    'Vücut Şekillendirme (HD Liposuction, Six-Pack Abdominal Etching)'
-  ];
 
   const handleSpecialtyToggle = (specialty: string) => {
     setFormData(prev => ({
@@ -68,7 +50,6 @@ const ClinicApplication: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Clinic application submitted:', formData);
     setIsSubmitted(true);
   };
 
@@ -88,16 +69,16 @@ const ClinicApplication: React.FC = () => {
               <CheckCircle className="w-8 h-8 text-white" />
             </div>
             <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-4">
-              Başvuru Gönderildi!
+              {getTranslation('clinicApplication.submissionSuccess', 'Application Submitted!')}
             </h2>
             <p className="text-gray-600 mb-6">
-              Başvurunuz başarıyla alındı. En kısa sürede size geri dönüş yapacağız.
+              {getTranslation('clinicApplication.submissionMessage', 'Your application has been successfully received. We will get back to you as soon as possible.')}
             </p>
             <button
               onClick={() => window.location.href = '/'}
               className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white px-8 py-4 rounded-2xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 font-semibold"
             >
-              Ana Sayfaya Dön
+              {getTranslation('clinicApplication.backToHome', 'Back to Homepage')}
             </button>
           </div>
         </div>
@@ -122,11 +103,11 @@ const ClinicApplication: React.FC = () => {
               <Award className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-              Klinik Başvuru Formu
+              {getTranslation('clinicApplication.title', 'Clinic Application Form')}
             </h1>
           </div>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Sertifikalı estetik kliniklerinin global ağımıza katılın ve dünya çapındaki hastalarla bağlantı kurun
+            {getTranslation('clinicApplication.subtitle', 'Join our global network of certified aesthetic clinics and connect with patients worldwide')}
           </p>
         </div>
 
@@ -138,7 +119,7 @@ const ClinicApplication: React.FC = () => {
                 {/* Clinic Name */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Klinik Adı *
+                    {getTranslation('clinicApplication.clinicName', 'Clinic Name')} *
                   </label>
                   <input
                     type="text"
@@ -146,14 +127,14 @@ const ClinicApplication: React.FC = () => {
                     value={formData.clinicName}
                     onChange={(e) => setFormData(prev => ({ ...prev, clinicName: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                    placeholder="Klinik adınızı girin"
+                    placeholder={getTranslation('clinicApplication.clinicNamePlaceholder', 'Enter your clinic name')}
                   />
                 </div>
 
                 {/* Country */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Ülke *
+                    {getTranslation('clinicApplication.country', 'Country')} *
                   </label>
                   <select
                     required
@@ -161,24 +142,56 @@ const ClinicApplication: React.FC = () => {
                     onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
                   >
-                    <option value="">Ülkenizi seçin</option>
-                    <option value="Turkey">Turkey</option>
-                    <option value="South Korea">South Korea</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="Mexico">Mexico</option>
-                    <option value="Brazil">Brazil</option>
-                    <option value="Germany">Germany</option>
-                    <option value="Poland">Poland</option>
-                    <option value="Czech Republic">Czech Republic</option>
-                    <option value="India">India</option>
-                    <option value="UAE">UAE</option>
+                    <option value="">{getTranslation('clinicApplication.selectCountry', 'Select your country')}</option>
+                    <option value="Turkey">{getTranslation('countries.turkey', 'Turkey')}</option>
+                    <option value="South Korea">{getTranslation('countries.southKorea', 'South Korea')}</option>
+                    <option value="Thailand">{getTranslation('countries.thailand', 'Thailand')}</option>
+                    <option value="Brazil">{getTranslation('countries.brazil', 'Brazil')}</option>
+                    <option value="Mexico">{getTranslation('countries.mexico', 'Mexico')}</option>
+                    <option value="Colombia">{getTranslation('countries.colombia', 'Colombia')}</option>
+                    <option value="Argentina">{getTranslation('countries.argentina', 'Argentina')}</option>
+                    <option value="Chile">{getTranslation('countries.chile', 'Chile')}</option>
+                    <option value="Peru">{getTranslation('countries.peru', 'Peru')}</option>
+                    <option value="Venezuela">{getTranslation('countries.venezuela', 'Venezuela')}</option>
+                    <option value="Ecuador">{getTranslation('countries.ecuador', 'Ecuador')}</option>
+                    <option value="Uruguay">{getTranslation('countries.uruguay', 'Uruguay')}</option>
+                    <option value="Paraguay">{getTranslation('countries.paraguay', 'Paraguay')}</option>
+                    <option value="Bolivia">{getTranslation('countries.bolivia', 'Bolivia')}</option>
+                    <option value="Guyana">{getTranslation('countries.guyana', 'Guyana')}</option>
+                    <option value="Suriname">{getTranslation('countries.suriname', 'Suriname')}</option>
+                    <option value="French Guiana">{getTranslation('countries.frenchGuiana', 'French Guiana')}</option>
+                    <option value="India">{getTranslation('countries.india', 'India')}</option>
+                    <option value="Singapore">{getTranslation('countries.singapore', 'Singapore')}</option>
+                    <option value="Malaysia">{getTranslation('countries.malaysia', 'Malaysia')}</option>
+                    <option value="Indonesia">{getTranslation('countries.indonesia', 'Indonesia')}</option>
+                    <option value="Philippines">{getTranslation('countries.philippines', 'Philippines')}</option>
+                    <option value="Vietnam">{getTranslation('countries.vietnam', 'Vietnam')}</option>
+                    <option value="Cambodia">{getTranslation('countries.cambodia', 'Cambodia')}</option>
+                    <option value="Laos">{getTranslation('countries.laos', 'Laos')}</option>
+                    <option value="Myanmar">{getTranslation('countries.myanmar', 'Myanmar')}</option>
+                    <option value="Bangladesh">{getTranslation('countries.bangladesh', 'Bangladesh')}</option>
+                    <option value="Sri Lanka">{getTranslation('countries.sriLanka', 'Sri Lanka')}</option>
+                    <option value="Nepal">{getTranslation('countries.nepal', 'Nepal')}</option>
+                    <option value="Bhutan">{getTranslation('countries.bhutan', 'Bhutan')}</option>
+                    <option value="Maldives">{getTranslation('countries.maldives', 'Maldives')}</option>
+                    <option value="Pakistan">{getTranslation('countries.pakistan', 'Pakistan')}</option>
+                    <option value="Afghanistan">{getTranslation('countries.afghanistan', 'Afghanistan')}</option>
+                    <option value="United States">{getTranslation('countries.usa', 'United States')}</option>
+                    <option value="Russian Federation">{getTranslation('countries.russia', 'Russian Federation')}</option>
+                    <option value="China">{getTranslation('countries.china', 'China')}</option>
+                    <option value="Canada">{getTranslation('countries.canada', 'Canada')}</option>
+                    <option value="Japan">{getTranslation('countries.japan', 'Japan')}</option>
+                    <option value="Germany">{getTranslation('countries.germany', 'Germany')}</option>
+                    <option value="United Kingdom">{getTranslation('countries.unitedKingdom', 'United Kingdom')}</option>
+                    <option value="Netherlands">{getTranslation('countries.netherlands', 'Netherlands')}</option>
+                    <option value="Sweden">{getTranslation('countries.sweden', 'Sweden')}</option>
                   </select>
                 </div>
 
                 {/* Specialties */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Uzmanlık Alanları * (Tümünü seçin)
+                    {getTranslation('clinicApplication.specialties', 'Specialties')} * ({getTranslation('clinicApplication.selectAll', 'Select all that apply')})
                   </label>
                   <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto border border-gray-300 rounded-xl p-4 bg-white/50">
                     {specialtyOptions.map((specialty) => (
@@ -194,28 +207,28 @@ const ClinicApplication: React.FC = () => {
                     ))}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    Seçilen: {formData.specialties.length} uzmanlık alanı
+                    {getTranslation('clinicApplication.selected', 'Selected')}: {formData.specialties.length} {getTranslation('clinicApplication.specialtyAreas', 'specialty areas')}
                   </p>
                 </div>
 
                 {/* Website */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Web Sitesi
+                    {getTranslation('clinicApplication.website', 'Website')}
                   </label>
                   <input
                     type="url"
                     value={formData.website}
                     onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                    placeholder="https://klinik-web-siteniz.com"
+                    placeholder={getTranslation('clinicApplication.websitePlaceholder', 'https://your-clinic-website.com')}
                   />
                 </div>
 
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Klinik Açıklaması *
+                    {getTranslation('clinicApplication.description', 'Clinic Description')} *
                   </label>
                   <textarea
                     required
@@ -223,14 +236,14 @@ const ClinicApplication: React.FC = () => {
                     value={formData.description}
                     onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                    placeholder="Klinik hakkında, hizmetleriniz, deneyiminiz ve sizi özel kılan şeyler hakkında açıklama yazın..."
+                    placeholder={getTranslation('clinicApplication.descriptionPlaceholder', 'Write about your clinic, services, experience and what makes you special...')}
                   />
                 </div>
 
                 {/* Certificates Upload */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Sertifikalar & Lisanslar *
+                    {getTranslation('clinicApplication.certificates', 'Certificates & Licenses')} *
                   </label>
                   <div className="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:border-purple-400 transition-colors duration-300 bg-white/50">
                     <input
@@ -246,14 +259,14 @@ const ClinicApplication: React.FC = () => {
                       className="cursor-pointer flex flex-col items-center space-y-2"
                     >
                       <Upload className="w-8 h-8 text-gray-400" />
-                      <span className="text-sm text-gray-600">Sertifika ve lisansları yükleyin</span>
-                      <span className="text-xs text-gray-500">PDF, JPG, PNG - her dosya maksimum 10MB</span>
+                      <span className="text-sm text-gray-600">{getTranslation('clinicApplication.uploadCertificates', 'Upload certificates and licenses')}</span>
+                      <span className="text-xs text-gray-500">{getTranslation('clinicApplication.fileFormat', 'PDF, JPG, PNG - max 10MB each file')}</span>
                     </label>
                   </div>
                   {formData.certificates.length > 0 && (
                     <div className="mt-3">
                       <p className="text-sm text-gray-600">
-                        {formData.certificates.length} dosya yüklendi
+                        {formData.certificates.length} {getTranslation('clinicApplication.filesUploaded', 'files uploaded')}
                       </p>
                     </div>
                   )}
@@ -265,7 +278,7 @@ const ClinicApplication: React.FC = () => {
                   disabled={!formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description}
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
-                  Başvuruyu Gönder
+                  {getTranslation('clinicApplication.submitApplication', 'Submit Application')}
                 </button>
               </form>
             </div>
@@ -277,20 +290,20 @@ const ClinicApplication: React.FC = () => {
             <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-gray-200/50 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
                 <Sparkles className="w-5 h-5 text-purple-500" />
-                <span>Neden Estyi'ye Katılmalısınız?</span>
+                <span>{getTranslation('clinicApplication.whyJoin', 'Why Join Estyi?')}</span>
               </h3>
               <ul className="space-y-3 text-sm text-gray-600">
                 <li className="flex items-start space-x-3">
                   <Globe className="w-5 h-5 text-blue-600 mt-0.5" />
-                  <span>Global hasta ağına erişim</span>
+                  <span>{getTranslation('clinicApplication.globalAccess', 'Global patient network access')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <Award className="w-5 h-5 text-green-600 mt-0.5" />
-                  <span>Doğrulanmış klinik sertifikasyonu</span>
+                  <span>{getTranslation('clinicApplication.verifiedCertification', 'Verified clinic certification')}</span>
                 </li>
                 <li className="flex items-start space-x-3">
                   <Shield className="w-5 h-5 text-purple-600 mt-0.5" />
-                  <span>Güvenli ödeme işlemi</span>
+                  <span>{getTranslation('clinicApplication.securePayments', 'Secure payment processing')}</span>
                 </li>
               </ul>
             </div>
@@ -299,24 +312,24 @@ const ClinicApplication: React.FC = () => {
             <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-3xl p-6 border border-purple-200/50">
               <h3 className="text-lg font-semibold text-purple-900 mb-4 flex items-center space-x-2">
                 <Star className="w-5 h-5 text-purple-600" />
-                <span>Başvuru Süreci</span>
+                <span>{getTranslation('clinicApplication.applicationProcess', 'Application Process')}</span>
               </h3>
               <div className="space-y-3 text-sm text-purple-800">
                 <div className="flex items-center space-x-3">
                   <div className="w-6 h-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-xs font-bold">1</div>
-                  <span>Başvuru gönder</span>
+                  <span>{getTranslation('clinicApplication.step1', 'Submit application')}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-6 h-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-xs font-bold">2</div>
-                  <span>İnceleme & doğrulama (2-5 gün)</span>
+                  <span>{getTranslation('clinicApplication.step2', 'Review & verification (2-5 days)')}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-6 h-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-xs font-bold">3</div>
-                  <span>Sözleşme imzalama</span>
+                  <span>{getTranslation('clinicApplication.step3', 'Contract signing')}</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-6 h-6 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-full flex items-center justify-center text-xs font-bold">4</div>
-                  <span>Platform erişimi verildi</span>
+                  <span>{getTranslation('clinicApplication.step4', 'Platform access granted')}</span>
                 </div>
               </div>
             </div>

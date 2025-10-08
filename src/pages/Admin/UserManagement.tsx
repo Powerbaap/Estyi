@@ -90,17 +90,14 @@ const UserManagement: React.FC = () => {
 
   const handleBlockUser = (userId: string) => {
     // Block user logic
-    console.log('Blocking user:', userId);
   };
 
   const handleUnblockUser = (userId: string) => {
     // Unblock user logic
-    console.log('Unblocking user:', userId);
   };
 
   const handleDeleteUser = (userId: string) => {
     // Delete user logic
-    console.log('Deleting user:', userId);
   };
 
   return (

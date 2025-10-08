@@ -8,7 +8,7 @@ import { emailTemplates } from './emailTemplates.js';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 3005;
 
 app.use(cors());
 app.use(express.json());
@@ -19,7 +19,7 @@ const supabase = createClient(
 );
 
 // Email transporter
-const transporter = nodemailer.createTransporter({
+const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
   port: parseInt(process.env.SMTP_PORT || '587'),
   secure: false,

@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar, Eye, Phone, Mail } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface Offer {
   id: string;
@@ -66,14 +68,12 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'accepted' }));
       
       // Kliniğe bildirim gönder
-      console.log(`Teklif kabul edildi: ${clinicName} - ${offerId}`);
       
       // Başarı mesajı göster
-      alert(`${clinicName} teklifini kabul ettiniz!`);
+      alert(t('auth.acceptSuccess', { clinicName }));
       
     } catch (error) {
-      console.error('Teklif kabul edilirken hata:', error);
-      alert('Teklif kabul edilirken bir hata oluştu.');
+      alert(t('auth.acceptError'));
     } finally {
       setIsProcessing(null);
     }
@@ -88,14 +88,12 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'rejected' }));
       
       // Kliniğe bildirim gönder
-      console.log(`Teklif reddedildi: ${clinicName} - ${offerId}`);
       
       // Başarı mesajı göster
-      alert(`${clinicName} teklifini reddettiniz.`);
+      alert(t('auth.rejectSuccess', { clinicName }));
       
     } catch (error) {
-      console.error('Teklif reddedilirken hata:', error);
-      alert('Teklif reddedilirken bir hata oluştu.');
+      alert(t('auth.rejectError'));
     } finally {
       setIsProcessing(null);
     }
@@ -117,13 +115,13 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const getStatusText = (status: string) => {
     switch (status) {
       case 'active':
-        return 'Aktif';
+        return t('requestDetails.status.active');
       case 'closed':
-        return 'Tamamlandı';
+        return t('requestDetails.status.closed');
       case 'cancelled':
-        return 'İptal Edildi';
+        return t('requestDetails.status.cancelled');
       default:
-        return 'Bilinmiyor';
+        return t('requestDetails.status.unknown');
     }
   };
 
@@ -175,7 +173,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                     <DollarSign className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-3xl font-bold text-blue-600">{request.offersCount}</div>
-                  <div className="text-sm text-blue-700 font-medium">Teklif Alındı</div>
+                  <div className="text-sm text-blue-700 font-medium">{t('requestDetails.offersReceived')}</div>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
@@ -184,7 +182,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                     <Eye className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-3xl font-bold text-green-600">{request.photos}</div>
-                  <div className="text-sm text-green-700 font-medium">Fotoğraf</div>
+                  <div className="text-sm text-green-700 font-medium">{t('requestDetails.photos')}</div>
                 </div>
               </div>
               <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-6 border border-purple-100">
@@ -193,67 +191,21 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
                   <div className="text-3xl font-bold text-purple-600">{request.countries.length}</div>
-                  <div className="text-sm text-purple-700 font-medium">Ülke</div>
+                  <div className="text-sm text-purple-700 font-medium">{t('requestDetails.countries')}</div>
                 </div>
               </div>
             </div>
 
-            {/* User's Photos */}
-            {request.photoUrls && request.photoUrls.length > 0 ? (
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                  <Eye className="w-5 h-5 text-blue-500 mr-2" />
-                  Fotoğraflarım ({request.photos})
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {request.photoUrls.map((photoUrl, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={photoUrl}
-                        alt={`Fotoğraf ${index + 1}`}
-                        className="aspect-square object-cover rounded-xl border-2 border-gray-200 cursor-pointer hover:border-blue-300 transition-all duration-200 group-hover:scale-105"
-                        onClick={() => setEnlargedPhoto(photoUrl)}
-                      />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center">
-                        <button 
-                          className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium transition-opacity shadow-lg cursor-pointer hover:bg-white hover:shadow-xl transform hover:scale-105"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEnlargedPhoto(photoUrl);
-                          }}
-                        >
-                          Büyüt
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                  <Eye className="w-5 h-5 text-blue-500 mr-2" />
-                  Fotoğraflarım ({request.photos})
-                </h3>
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-12 text-center border border-gray-200">
-                  <div className="text-6xl mb-4">📷</div>
-                  <p className="text-gray-600 text-lg">
-                    {request.photos} fotoğraf yüklendi
-                  </p>
-                </div>
-              </div>
-            )}
-
             {/* Offers */}
-            <div>
+            <div className="mb-8">
               <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
                 <Star className="w-5 h-5 text-amber-500 mr-2" />
-                Alınan Teklifler ({request.offersCount})
+                {t('requestDetails.receivedOffers')} ({request.offersCount})
               </h3>
               {request.offers.length === 0 ? (
                 <div className="text-center py-12 text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
                   <Clock className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <p className="text-lg">Henüz teklif alınmadı. Klinikler tarafından değerlendiriliyor...</p>
+                  <p className="text-lg">{t('requestDetails.noOffersYet')}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -288,7 +240,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                               {offer.isVerified && (
                                 <div className="flex items-center space-x-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
                                   <Award className="w-3 h-3" />
-                                  <span>Doğrulanmış</span>
+                                  <span>{t('requestDetails.verified')}</span>
                                 </div>
                               )}
                             </div>
@@ -300,7 +252,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                               <span className="flex items-center space-x-2 flex-shrink-0">
                                 <Star className="w-4 h-4 text-amber-500" />
                                 <span className="font-medium">{offer.clinicRating}</span>
-                                <span className="text-gray-500">({offer.clinicReviews} değerlendirme)</span>
+                                <span className="text-gray-500">({offer.clinicReviews} {t('requestDetails.reviews')})</span>
                               </span>
                             </div>
                           </div>
@@ -310,7 +262,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             ${offer.priceMin.toLocaleString()} - ${offer.priceMax.toLocaleString()}
                           </div>
                           <div className="text-sm text-gray-600">
-                            {offer.createdAt.toLocaleDateString('tr-TR')} tarihinde
+                            {offer.createdAt.toLocaleDateString('tr-TR')} {t('requestDetails.onDate')}
                           </div>
                         </div>
                       </div>
@@ -319,14 +271,14 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
                           <Clock className="w-5 h-5 text-blue-500" />
                           <div>
-                            <span className="font-medium text-gray-700">Süre:</span>
+                            <span className="font-medium text-gray-700">{t('requestDetails.duration')}:</span>
                             <span className="text-gray-600 ml-2">{offer.duration}</span>
                           </div>
                         </div>
                         <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
                           <span className="text-lg">🏥</span>
                           <div>
-                            <span className="font-medium text-gray-700">Hastanede Kalış:</span>
+                            <span className="font-medium text-gray-700">{t('requestDetails.hospitalization')}:</span>
                             <span className="text-gray-600 ml-2">{offer.hospitalization}</span>
                           </div>
                         </div>
@@ -342,7 +294,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
 
                       <div className="flex items-center justify-between pt-6 border-t border-gray-100">
                         <div className="text-sm text-gray-500 flex-shrink-0 bg-gray-100 px-3 py-1.5 rounded-full">
-                          Teklif #{offer.id.slice(-6).toUpperCase()}
+                          {t('requestDetails.offerNumber')} #{offer.id.slice(-6).toUpperCase()}
                         </div>
                         
                         {/* Teklif Durumu */}
@@ -351,7 +303,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                               <span className="text-green-600 text-lg">✓</span>
                             </div>
-                            <span className="text-green-600 font-semibold">Teklif Kabul Edildi</span>
+                            <span className="text-green-600 font-semibold">{t('requestDetails.offerAccepted')}</span>
                           </div>
                         )}
                         
@@ -360,7 +312,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                               <span className="text-red-600 text-lg">✗</span>
                             </div>
-                            <span className="text-red-600 font-semibold">Teklif Reddedildi</span>
+                            <span className="text-red-600 font-semibold">{t('requestDetails.offerRejected')}</span>
                           </div>
                         )}
                         
@@ -377,7 +329,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                               ) : (
                                 <span className="text-lg">✓</span>
                               )}
-                              <span>Kabul Et</span>
+                              <span>{t('requestDetails.accept')}</span>
                             </button>
                             
                             <button
@@ -390,7 +342,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                               ) : (
                                 <span className="text-lg">✗</span>
                               )}
-                              <span>Reddet</span>
+                              <span>{t('requestDetails.reject')}</span>
                             </button>
                             
                             <button
@@ -398,7 +350,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                               className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                               <MessageCircle className="w-4 h-4" />
-                              <span>Klinik ile İletişim</span>
+                              <span>{t('requestDetails.contactClinic')}</span>
                             </button>
                           </div>
                         )}
@@ -410,7 +362,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                           >
                             <MessageCircle className="w-4 h-4" />
-                            <span>Klinik ile İletişim</span>
+                            <span>{t('requestDetails.contactClinic')}</span>
                           </button>
                         )}
                       </div>
@@ -419,6 +371,55 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 </div>
               )}
             </div>
+
+            {/* User's Photos */}
+            {request.photoUrls && request.photoUrls.length > 0 ? (
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                  <Eye className="w-5 h-5 text-blue-500 mr-2" />
+                  {t('requestDetails.myPhotos')} ({request.photos})
+                </h3>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  {request.photoUrls.map((photoUrl, index) => (
+                    <div key={index} className="relative group overflow-hidden">
+                      <LazyLoadImage
+                        src={photoUrl}
+                        alt=""
+                        effect="blur"
+                        threshold={200}
+                        wrapperClassName="aspect-square"
+                        className="aspect-square object-cover rounded-xl border-2 border-gray-200 cursor-pointer hover:border-blue-300 transition-all duration-200 group-hover:scale-105 bg-gray-100"
+                        onClick={() => setEnlargedPhoto(photoUrl)}
+                      />
+                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center pointer-events-none">
+                        <button 
+                          className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium transition-opacity shadow-lg cursor-pointer hover:bg-white hover:shadow-xl transform hover:scale-105 pointer-events-auto"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setEnlargedPhoto(photoUrl);
+                          }}
+                        >
+                          {t('requestDetails.enlarge')}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="mb-8">
+                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                  <Eye className="w-5 h-5 text-blue-500 mr-2" />
+                  {t('requestDetails.myPhotos')} ({request.photos})
+                </h3>
+                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-12 text-center border border-gray-200">
+                  <div className="text-6xl mb-4">📷</div>
+                  <p className="text-gray-600 text-lg">
+                    {request.photos} {t('requestDetails.photosUploaded')}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -436,9 +437,11 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
             >
               <X className="w-6 h-6" />
             </button>
-            <img
+            <LazyLoadImage
               src={enlargedPhoto}
-              alt="Büyütülmüş fotoğraf"
+              alt={t('requestDetails.enlargedPhoto')}
+              effect="blur"
+              wrapperClassName="max-w-full max-h-full"
               className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
               onClick={(e) => e.stopPropagation()}
             />

@@ -174,8 +174,8 @@ const Reviews: React.FC = () => {
         <div className="mb-8">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Platform Değerlendirmeleri</h1>
-                              <p className="text-gray-600 mt-2">Kullanıcılarımızın Estyi deneyimleri</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('reviews.title')}</h1>
+                              <p className="text-gray-600 mt-2">{t('reviews.subtitle') || 'Kullanıcılarımızın Estyi deneyimleri'}</p>
             </div>
             {user ? (
               <button
@@ -183,13 +183,13 @@ const Reviews: React.FC = () => {
                 className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
               >
                 <Plus className="w-4 h-4" />
-                <span>Değerlendirme Yaz</span>
+                <span>{t('reviews.writeReview')}</span>
               </button>
             ) : (
               <div className="text-center">
-                <p className="text-sm text-gray-600 mb-2">Değerlendirme yazmak için giriş yapın</p>
+                <p className="text-sm text-gray-600 mb-2">{t('reviews.loginToReview')}</p>
                 <button className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors">
-                  Giriş Yap
+                  {t('login.loginButton')}
                 </button>
               </div>
             )}
@@ -200,17 +200,17 @@ const Reviews: React.FC = () => {
           {/* Sidebar - Stats and Filters */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Platform Puanı</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">{t('reviews.platformScore') || 'Platform Puanı'}</h3>
               <div className="text-center mb-4">
                 <div className="text-4xl font-bold text-gray-900 mb-2">{averageRating}</div>
                 <div className="flex justify-center mb-2">
                   {renderStars(5)}
                 </div>
-                <p className="text-sm text-gray-600">{totalReviews} değerlendirme</p>
+                <p className="text-sm text-gray-600">{totalReviews} {t('reviews.totalReviews')}</p>
                 <div className="mt-3 p-3 bg-green-50 rounded-lg">
                   <div className="flex items-center justify-center text-green-600">
                     <Heart className="w-5 h-5 mr-2" />
-                    <span className="text-sm font-medium">Mükemmel Platform</span>
+                    <span className="text-sm font-medium">{t('reviews.excellentPlatform') || 'Mükemmel Platform'}</span>
                   </div>
                 </div>
               </div>
@@ -239,12 +239,12 @@ const Reviews: React.FC = () => {
             </div>
 
             <div className="bg-white rounded-2xl shadow-lg p-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Filtreler</h3>
+              <h3 className="text-lg font-bold text-gray-900 mb-4">{t('reviews.filters')}</h3>
               <div className="space-y-2">
                 {[
-                  { key: 'all', label: 'Tümü' },
-                  { key: '5star', label: '5 Yıldız' },
-                  { key: '4star', label: '4 Yıldız' }
+                  { key: 'all', label: t('reviews.all') },
+                  { key: '5star', label: `5 ${t('reviews.stars') || 'Yıldız'}` },
+                  { key: '4star', label: `4 ${t('reviews.stars') || 'Yıldız'}` }
                 ].map((option) => (
                   <button
                     key={option.key}
@@ -270,7 +270,7 @@ const Reviews: React.FC = () => {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
-                  placeholder="Platform özelliklerinde ara..."
+                  placeholder={t('reviews.searchPlaceholder') || 'Platform özelliklerinde ara...'}
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -283,9 +283,9 @@ const Reviews: React.FC = () => {
               {filteredReviews.length === 0 ? (
                 <div className="bg-white rounded-2xl shadow-lg p-12 text-center">
                   <MessageCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Değerlendirme Bulunamadı</h3>
+                  <h3 className="text-lg font-medium text-gray-900 mb-2">{t('reviews.noReviews')}</h3>
                   <p className="text-gray-600 mb-6">
-                    Arama kriterlerinize uygun değerlendirme bulunamadı.
+                    {t('reviews.noReviewsDesc')}
                   </p>
                 </div>
               ) : (

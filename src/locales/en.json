@@ -1,0 +1,1774 @@
+{
+  "footer": {
+    "description": "We bring together certified aesthetic clinics worldwide with patients. Safe, transparent, and professional service.",
+    "gdpr": "GDPR Compliant",
+    "ssl": "SSL Encrypted",
+    "worldwide": "Worldwide",
+    "support": "Support",
+    "helpCenter": "Help Center",
+    "faq": "FAQ",
+    "contact": "Contact",
+    "security": "Security",
+    "legal": "Legal",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfUse": "Terms of Use",
+    "cookiePolicy": "Cookie Policy",
+    "aboutUs": "About Us",
+    "copyright": "© 2025 Estyi. All rights reserved.",
+    "trustMessage": "10,000+ trusted patients prefer us"
+  },
+  "countries": {
+    "turkey": "Turkey",
+    "southKorea": "South Korea",
+    "thailand": "Thailand",
+    "brazil": "Brazil",
+    "mexico": "Mexico",
+    "colombia": "Colombia",
+    "argentina": "Argentina",
+    "chile": "Chile",
+    "peru": "Peru",
+    "venezuela": "Venezuela",
+    "ecuador": "Ecuador",
+    "uruguay": "Uruguay",
+    "paraguay": "Paraguay",
+    "bolivia": "Bolivia",
+    "guyana": "Guyana",
+    "suriname": "Suriname",
+    "frenchGuiana": "French Guiana",
+    "india": "India",
+    "singapore": "Singapore",
+    "malaysia": "Malaysia",
+    "indonesia": "Indonesia",
+    "philippines": "Philippines",
+    "vietnam": "Vietnam",
+    "cambodia": "Cambodia",
+    "laos": "Laos",
+    "myanmar": "Myanmar",
+    "bangladesh": "Bangladesh",
+    "sriLanka": "Sri Lanka",
+    "nepal": "Nepal",
+    "bhutan": "Bhutan",
+    "maldives": "Maldives",
+    "pakistan": "Pakistan",
+    "afghanistan": "Afghanistan",
+    "usa": "United States",
+    "russia": "Russia",
+    "china": "China",
+    "canada": "Canada"
+  },
+  "procedures": {
+    "otherDental": "Other Dental Procedures",
+    "otherFacial": "Other Facial Procedures",
+    "otherBody": "Other Body Procedures"
+  },
+  "helpCenter": {
+    "title": "Help Center",
+    "subtitle": "How can we help you?",
+    "description": "You can reach us through the communication channels below. We will respond to you as soon as possible.",
+    "emailSupport": {
+      "title": "Email Support",
+      "description": "Send an email for general questions. You will receive a response within 24 hours."
+    },
+    "phoneSupport": {
+      "title": "Phone Support",
+      "description": "Contact us by phone for emergencies."
+    },
+    "supportHours": {
+      "title": "Support Hours",
+      "weekdays": "Weekdays: 09:00 - 18:00",
+      "weekends": "Weekends: 10:00 - 16:00",
+      "timezone": "All times are shown in Turkish time (GMT+3)"
+    },
+    "liveSupport": {
+      "title": "Live Support",
+      "description": "Our live support service is available for your instant questions.",
+      "button": "Start Live Support"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "description": "You can find answers to common questions in our FAQ section.",
+      "button": "View FAQ"
+    }
+  },
+  "faq": {
+    "title": "Frequently Asked Questions",
+    "subtitle": "We are here to help you",
+    "questions": {
+      "howItWorks": {
+        "question": "How does Estyi work?",
+        "answer": "Estyi connects patients' aesthetic treatment requests to certified clinics worldwide. Patients share photos and information, clinics send offers."
+      },
+      "pricing": {
+        "question": "Is the service paid?",
+        "answer": "No, the Estyi platform is completely free for patients. You only pay treatment costs to clinics."
+      },
+      "dataSafety": {
+        "question": "Is my data safe?",
+        "answer": "Yes, all your data is stored encrypted and is GDPR compliant. Your personal information is safely protected."
+      },
+      "countries": {
+        "question": "Which countries do you serve?",
+        "answer": "We serve in Turkey, South Korea, Thailand, Mexico, Brazil, Germany, Poland, Czech Republic, India and Dubai."
+      },
+      "clinicSelection": {
+        "question": "How is clinic selection made?",
+        "answer": "All our clinics are certified and accredited. You can review clinic profiles and read their reviews."
+      },
+      "postTreatmentSupport": {
+        "question": "Is there post-treatment support?",
+        "answer": "Yes, we provide continuous support before and after treatment. You can contact us for any questions."
+      },
+      "payment": {
+        "question": "How is payment made?",
+        "answer": "Payments are made through secure payment systems. You pay based on the price agreed with the clinic."
+      }
+    },
+    "stillHaveQuestions": "Still have questions?",
+    "contactDescription": "You can contact us for your questions. We will respond to you as soon as possible.",
+    "sendEmail": "Send Email",
+    "contactPage": "Contact Page"
+  },
+  "contact": {
+    "badge": "Contact",
+    "title": "Contact",
+    "subtitle": "Get in touch with us",
+    "description": "Get in touch with us for your questions. We will respond to you as soon as possible.",
+    "email": {
+      "title": "Email",
+      "general": "For general inquiries:",
+      "support": "For technical support:"
+    },
+    "phone": {
+      "title": "Phone",
+      "turkey": "Turkey:",
+      "international": "International:"
+    },
+    "address": {
+      "title": "Address",
+      "line1": "Estyi Ltd. Co.",
+      "line2": "Levent Mahallesi, Büyükdere Caddesi",
+      "line3": "34330 Beşiktaş/Istanbul, Turkey"
+    },
+    "form": {
+      "title": "Contact Form",
+      "name": "Full Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email address",
+      "subject": "Subject",
+      "subjectPlaceholder": "Enter subject title",
+      "message": "Message",
+      "messagePlaceholder": "Write your message...",
+      "submit": "Send"
+    }
+  },
+  "aboutUs": {
+    "title": "About Us",
+    "subtitle": "Shaping the future of aesthetic medicine",
+    "description": "Estyi is an innovative platform that connects patients seeking aesthetic treatment worldwide with trusted clinics. We are shaping the future of aesthetic medicine with our approach focused on transparency, security, and quality.",
+    "features": {
+      "transparent": {
+        "title": "Transparent Pricing",
+        "description": "We offer clear prices without hidden costs. Know the treatment costs in advance."
+      },
+      "global": {
+        "title": "Global Access",
+        "description": "We provide access to certified clinics worldwide. Discover the best treatment options."
+      },
+      "ai": {
+        "title": "AI-Powered Matching",
+        "description": "We match clinics with patients using artificial intelligence. Personalized recommendations."
+      }
+    },
+    "quality": {
+      "title": "Quality Guarantee",
+      "description": "All our clinics undergo license and certificate verification. Only clinics that meet the highest quality standards are featured on our platform. The safety and satisfaction of our patients is our top priority."
+    },
+    "stats": {
+      "patients": "10,000+ Happy Patients",
+      "rating": "4.9/5 Average Rating",
+      "clinics": "500+ Trusted Clinics",
+      "countries": "10+ Countries"
+    },
+    "cta": {
+      "title": "Get In Touch With Us",
+      "description": "You can contact us for your questions. We will respond to you as soon as possible.",
+      "contactButton": "Contact Page",
+      "emailButton": "Send Email"
+    }
+  },
+  "safety": {
+    "title": "Security Guidelines",
+    "subtitle": "Learn about platform security",
+    "description": "Your security is very important to us on the Estyi platform. We implement the following security measures.",
+    "clinicVerification": {
+      "title": "Clinic Verification",
+      "description": "All our clinics undergo license and certificate verification. Only approved and trusted clinics are featured on our platform.",
+      "license": {
+        "title": "License Verification",
+        "description": "All clinics' valid licenses are verified"
+      },
+      "certificate": {
+        "title": "Certificate Verification",
+        "description": "International certificates are verified"
+      },
+      "accreditation": {
+        "title": "Accreditation",
+        "description": "Accredited institutions are preferred"
+      }
+    },
+    "dataEncryption": {
+      "title": "Data Encryption",
+      "description": "All your data is protected with SSL encryption. Your personal information and photos are stored securely.",
+      "ssl": "256-bit SSL encryption",
+      "gdpr": "GDPR compliant data protection",
+      "server": "Secure server infrastructure"
+    },
+    "secureMessaging": {
+      "title": "Secure Messaging",
+      "description": "Secure communication is provided through the platform. All messages are transmitted encrypted.",
+      "e2e": {
+        "title": "End-to-End Encryption",
+        "description": "Your messages can only be read by you and the recipient"
+      },
+      "fileSharing": {
+        "title": "Secure File Sharing",
+        "description": "Photo and document sharing is done through secure channels"
+      }
+    },
+    "suspiciousActivity": {
+      "title": "Suspicious Activity",
+      "description": "Report suspicious activities immediately. Our security team is at your service 24/7.",
+      "report": {
+        "title": "Security Breach Report",
+        "description": "Report suspicious activities immediately"
+      },
+      "support": {
+        "title": "24/7 Security Support",
+        "description": "Our security team is always ready"
+      }
+    },
+    "tips": {
+      "title": "Security Tips",
+      "personal": "Keep your personal information secure",
+      "suspicious": "Report suspicious messages",
+      "password": "Use strong passwords",
+      "twoFactor": "Use two-factor authentication"
+    }
+  },
+  "cookie": {
+    "title": "Cookie Policy",
+    "subtitle": "Learn about cookie usage",
+    "description": "This cookie policy explains how cookies are used on the Estyi platform.",
+    "types": {
+      "title": "Cookie Types",
+      "essential": {
+        "title": "Essential Cookies",
+        "description": "Cookies required for the basic functions of the site. The site will not work properly without these cookies."
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "description": "Cookies used to analyze site usage. Used to improve user experience."
+      },
+      "language": {
+        "title": "Language Cookies",
+        "description": "Cookies used to remember your preferred language. You will receive service in the same language on your next visit."
+      }
+    },
+    "management": {
+      "title": "Cookie Management",
+      "description": "You can manage or delete cookies from your browser settings. However, some site features may not work.",
+      "accept": {
+        "title": "Accept Cookies",
+        "description": "Accept all cookies to experience the full site."
+      },
+      "reject": {
+        "title": "Reject Cookies",
+        "description": "Accept only essential cookies to use basic functions."
+      }
+    },
+    "settings": {
+      "title": "Cookie Settings",
+      "essential": {
+        "title": "Essential Cookies",
+        "status": "Always active"
+      },
+      "analytics": {
+        "title": "Analytics Cookies",
+        "status": "Optional"
+      },
+      "language": {
+        "title": "Language Cookies",
+        "status": "Optional"
+      }
+    }
+  },
+  "terms": {
+    "title": "Terms of Use",
+    "subtitle": "Learn about platform terms and conditions",
+    "description": "By using the Estyi platform, you agree to the following terms.",
+    "serviceUsage": {
+      "title": "Service Usage",
+      "matching": "Platform is used only for aesthetic treatment matching",
+      "approved": "Clinics must be approved and certified"
+    },
+    "userResponsibilities": {
+      "title": "User Responsibilities",
+      "accurate": "Providing accurate and current information is mandatory",
+      "noMisleading": "Sharing misleading information is prohibited"
+    },
+    "clinicResponsibilities": {
+      "title": "Clinic Responsibilities",
+      "license": "Must have valid licenses and certificates",
+      "transparent": "Must provide transparent pricing"
+    },
+    "platformResponsibilities": {
+      "title": "Platform Responsibilities",
+      "secure": "Provides secure data storage",
+      "notLiable": "Not liable for treatment results"
+    },
+    "disputeResolution": {
+      "title": "Dispute Resolution",
+      "mediation": "Mediation is attempted first",
+      "court": "Legal action is taken if necessary"
+    }
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "subtitle": "Learn how your personal data is protected",
+    "description": "This privacy policy explains how your personal data is collected, used and protected on the Estyi platform.",
+    "dataCollection": {
+      "title": "Data Collection",
+      "email": "Email address and contact information",
+      "photos": "Pre-treatment photos",
+      "preferences": "Treatment preferences and budget information",
+      "clinicInfo": "Clinic information and certificates"
+    },
+    "dataUsage": {
+      "title": "Data Usage",
+      "encryption": "Stored with secure encryption",
+      "matching": "Used for AI-powered matching",
+      "legal": "Required for legal obligations"
+    },
+    "dataSharing": {
+      "title": "Data Sharing",
+      "clinics": "Shared only with approved clinics",
+      "noMarketing": "Not shared for marketing purposes"
+    },
+    "dataRetention": {
+      "title": "Data Retention",
+      "photos": "Photos are stored for 2 years",
+      "documents": "Clinic documents are stored for 5 years"
+    },
+    "userRights": {
+      "title": "User Rights",
+      "access": "Right to access your data",
+      "objection": "Right to object to processing",
+      "portability": "Right to data portability"
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "For privacy questions, email:"
+    }
+  },
+  "messages": {
+    "title": "Messages",
+    "loginRequired": "Login Required",
+    "loginToView": "You need to login to view messages.",
+    "selectMessage": "Select Message",
+    "selectToChat": "Select a person to chat with"
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "user": "User",
+    "patient": "Seeking Change",
+    "clinic": "Creating Change",
+    "totalRequests": "Total Requests",
+    "receivedOffers": "Received Offers",
+    "memberSince": "Member Since",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "email": "Email",
+    "gender": "Gender",
+    "selectGender": "Select gender",
+    "male": "Male",
+    "female": "Female",
+    "other": "Other",
+    "location": "Location",
+    "locationPlaceholder": "City, country",
+    "security": "Security",
+    "changePassword": "Change Password",
+    "changePasswordDesc": "Update your password for account security",
+    "twoFactor": "Two-Factor Authentication",
+    "twoFactorDesc": "Enable 2FA for additional security"
+  },
+  "reviews": {
+    "title": "Platform Reviews",
+    "subtitle": "Our users' Estyi experiences",
+    "platformScore": "Platform Score",
+    "excellentPlatform": "Excellent Platform",
+    "writeReview": "Write Review",
+    "loginToReview": "Login to write a review",
+    "totalReviews": "reviews",
+    "stars": "Stars",
+    "filters": "Filters",
+    "searchPlaceholder": "Search in platform features...",
+    "all": "All",
+    "positive": "Positive",
+    "negative": "Negative",
+    "neutral": "Neutral",
+    "sortBy": "Sort By",
+    "newest": "Newest",
+    "oldest": "Oldest",
+    "highestRated": "Highest Rated",
+    "lowestRated": "Lowest Rated",
+    "noReviews": "No Reviews Found",
+    "noReviewsDesc": "No reviews match your search criteria.",
+    "verified": "Verified User",
+    "helpful": "Helpful",
+    "report": "Report",
+    "writeReviewTitle": "Write Platform Review",
+    "yourRating": "Your Rating",
+    "yourReview": "Review",
+    "reviewPlaceholder": "Share your experience...",
+    "submit": "Submit",
+    "cancel": "Cancel",
+    "daysAgo": "days ago",
+    "monthsAgo": "months ago",
+    "yearsAgo": "years ago"
+  },
+  "signup": {
+    "title": "Create Account",
+    "subtitle": "Create your new account",
+    "name": "Full Name",
+    "namePlaceholder": "Your Full Name",
+    "phone": "Phone Number",
+    "phonePlaceholder": "+90 XXX XXX XX XX",
+    "passwordPlaceholder": "Enter your password",
+    "confirmPassword": "Confirm Password",
+    "confirmPasswordPlaceholder": "Re-enter your password",
+    "signupButton": "Sign Up",
+    "signingUp": "Signing Up...",
+    "signupWithGoogle": "Sign Up with Google",
+    "haveAccount": "Already have an account?",
+    "loginHere": "Sign in",
+    "termsAgree": "By signing up",
+    "termsLink": "Terms of Use",
+    "and": "and",
+    "privacyLink": "Privacy Policy",
+    "accept": "I accept",
+    "fillAllFields": "Please fill in all fields",
+    "passwordMismatch": "Passwords do not match",
+    "passwordLength": "Password must be at least 6 characters",
+    "signupError": "An error occurred during sign up",
+    "googleSignupError": "Google sign-up failed"
+  },
+  "login": {
+    "welcomeBack": "Welcome Back",
+    "subtitle": "Sign in to your account",
+    "selectAccountType": "Select Account Type",
+    "email": "Email Address",
+    "emailPlaceholder": "example@email.com",
+    "password": "Password",
+    "forgotPassword": "Forgot Password?",
+    "loginButton": "Sign In",
+    "loggingIn": "Signing In...",
+    "or": "or",
+    "continueWithGoogle": "Continue with Google",
+    "noAccount": "Don't have an account?",
+    "signUpHere": "Sign up here",
+    "fillAllFields": "Please fill in all fields",
+    "loginError": "An error occurred during login",
+    "googleError": "Google sign-in failed",
+    "enterEmail": "Please enter your email address",
+    "resetLinkSent": "Password reset link has been sent to your email",
+    "resetError": "An error occurred while sending the reset email",
+    "yourEmail": "Your Email",
+    "sending": "Sending...",
+    "sendResetLink": "Send Reset Link",
+    "cancel": "Cancel",
+    "resetInfo": "When you enter your email address, a password reset link will be sent."
+  },
+  "offerModal": {
+    "title": "Submit Offer",
+    "for": "for",
+    "priceRangeError": "Price range cannot exceed $200. Current difference: ${{difference}}",
+    "successTitle": "Offer Sent!",
+    "successMessage": "Your offer has been sent to user {{userId}}. They can respond within 7 days.",
+    "totalOffer": "Total Offer",
+    "performedBy": "Performed By",
+    "address": "Address",
+    "minPrice": "Minimum Price",
+    "maxPrice": "Maximum Price",
+    "priceRange": "Price Range",
+    "priceRangeWarning": "⚠️ Price range cannot exceed $200!",
+    "duration": "Procedure Duration",
+    "hospitalization": "Hospital Stay",
+    "doctorName": "Doctor Name",
+    "clinicAddress": "Clinic Address",
+    "extras": "Extra Services",
+    "accommodation": "Accommodation Included",
+    "transport": "Transport Included",
+    "consultation": "Free Consultation",
+    "notes": "Additional Notes",
+    "cancel": "Cancel",
+    "submitting": "Submitting...",
+    "submit": "Submit Offer"
+  },
+  "clinicRequests": {
+    "title": "Requests",
+    "subtitle": "User aesthetic treatment requests",
+    "status": {"new": "New", "offered": "Offer Sent", "expired": "Expired", "unknown": "Unknown"},
+    "stats": {"total": "Total Requests", "newRequests": "New Requests", "offeredRequests": "Offered", "expiredRequests": "Expired"},
+    "filter": {"allStatuses": "All Statuses", "allProcedures": "All Procedures"},
+    "searchPlaceholder": "Search requests...",
+    "noRequests": "No Requests Found",
+    "noRequestsDesc": "No requests match your search criteria.",
+    "user": "User",
+    "age": "years",
+    "photos": "photos",
+    "more": "more",
+    "daysAgo": "days ago",
+    "submitOffer": "Submit Offer",
+    "enlargedPhoto": "Enlarged photo"
+  },
+  "clinicDashboard": {
+    "menu": {"dashboard": "Dashboard", "requests": "Requests", "offers": "Offers", "profile": "Profile", "membership": "Membership"},
+    "stats": {"totalRequests": "Total Requests", "activeOffers": "Active Offers", "acceptedOffers": "Accepted Offers", "responseRate": "Response Rate"},
+    "welcome": "Welcome, {{name}}!",
+    "clinic": "Clinic",
+    "today": "Today",
+    "activeRequest": "Active Request",
+    "pendingOffer": "Pending Offer",
+    "fromLastMonth": "from last month",
+    "recentRequests": "Recent Requests",
+    "last24Hours": "Requests in the last 24 hours",
+    "viewAll": "View All",
+    "new": "New",
+    "recentOffers": "Recent Offers",
+    "last24HoursOffers": "Offers in the last 24 hours",
+    "accepted": "Accepted",
+    "pending": "Pending"
+  },
+  "requestDetails": {
+    "status": {"active": "Active", "closed": "Completed", "cancelled": "Cancelled", "unknown": "Unknown"},
+    "acceptSuccess": "You accepted {{clinicName}}'s offer!",
+    "acceptError": "An error occurred while accepting the offer.",
+    "rejectSuccess": "You rejected {{clinicName}}'s offer.",
+    "rejectError": "An error occurred while rejecting the offer.",
+    "offersReceived": "Offers Received",
+    "photos": "Photos",
+    "countries": "Countries",
+    "myPhotos": "My Photos",
+    "enlarge": "Enlarge",
+    "photosUploaded": "photos uploaded",
+    "receivedOffers": "Received Offers",
+    "noOffersYet": "No offers yet. Being evaluated by clinics...",
+    "verified": "Verified",
+    "reviews": "reviews",
+    "onDate": "on",
+    "duration": "Duration",
+    "hospitalization": "Hospital Stay",
+    "offerNumber": "Offer",
+    "offerAccepted": "Offer Accepted",
+    "offerRejected": "Offer Rejected",
+    "accept": "Accept",
+    "reject": "Reject",
+    "contactClinic": "Contact Clinic",
+    "enlargedPhoto": "Enlarged photo"
+  },
+  "priceRequest": {
+    "title": "Get Price Quote",
+    "procedure": "Select Procedure",
+    "selectProcedure": "Select procedure",
+    "uploadPhotos": "Upload Photos",
+    "minMax": "Minimum 5, Maximum 10",
+    "clickUpload": "Click to upload photos",
+    "fileFormat": "JPG, PNG, maximum 10MB each",
+    "uploadedPhotos": "Uploaded Photos",
+    "selectCountries": "Select Countries",
+    "selectCountriesHint": "Select countries you want to receive offers from",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "selected": "Selected",
+    "country": "country",
+    "allCountries": "All countries",
+    "selectCities": "Select Cities",
+    "istanbulRegion": "Istanbul and Surrounding Cities",
+    "city": "city",
+    "age": "Age",
+    "agePlaceholder": "Enter your age",
+    "gender": "Gender",
+    "selectGender": "Select gender",
+    "female": "Female",
+    "male": "Male",
+    "treatmentDate": "Treatment Date",
+    "treatmentDatePlaceholder": "Select treatment date",
+    "additionalDetails": "Additional Details",
+    "descriptionPlaceholder": "Additional information about treatment, your expectations, special requests...",
+    "importantInfo": "Important Information",
+    "requestActive": "Clinics can send offers as long as your request is active.",
+    "onlyCertified": "Only certified and approved clinics can send offers.",
+    "photosEncrypted": "Your photos are securely encrypted and stored.",
+    "notifications": "You will be notified when new offers arrive.",
+    "allCountriesInfo": "You will receive offers from all countries. More options!",
+    "cancel": "Cancel",
+    "submitRequest": "Create Request",
+    "submitAllCountries": "Send to All Countries"
+  },
+  "userDashboard": {
+    "welcome": "Welcome, {{name}}",
+    "user": "User",
+    "subtitle": "Manage your treatment requests, compare offers and find the best clinic",
+    "newRequest": "New Price Request",
+    "status": {
+      "active": "Active",
+      "closed": "Completed",
+      "cancelled": "Cancelled",
+      "unknown": "Unknown"
+    },
+    "stats": {
+      "totalRequests": "Total Requests",
+      "allRequests": "All your requests",
+      "activeRequests": "Active Requests",
+      "ongoing": "Ongoing processes",
+      "totalOffers": "Total Offers",
+      "receivedOffers": "Received offers",
+      "completed": "Completed",
+      "finished": "Finished processes"
+    },
+    "empty": {
+      "all": {
+        "title": "No Requests Yet",
+        "description": "Click the button above to create your first price request.",
+        "cta": "Create First Request"
+      },
+      "active": {
+        "title": "No Active Requests",
+        "description": "Your active requests will appear here."
+      },
+      "closed": {
+        "title": "No Completed Requests",
+        "description": "Your completed requests will appear here."
+      },
+      "offers": {
+        "title": "No Requests with Offers",
+        "description": "Your requests with offers will appear here."
+      }
+    },
+    "offer": "offer",
+    "photo": "photo",
+    "photos": "Photos",
+    "latestOffers": "Latest Offers",
+    "reviews": "reviews",
+    "deleteRequest": "Delete Request",
+    "enlargedPhoto": "Enlarged photo"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Successful",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "all": "All",
+    "none": "None",
+    "selectAll": "Select All",
+    "clearAll": "Clear All",
+    "messages": "Messages",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications",
+    "viewAllNotifications": "View all notifications",
+    "dashboard": "Dashboard",
+    "profile": "Profile",
+    "clinicApplication": "Clinic Application",
+    "markAllRead": "Mark All as Read",
+    "newNotificationsHere": "New notifications will appear here",
+    "minutes": "minutes",
+    "hours": "hours",
+    "days": "days",
+    "ago": "ago",
+    "offer": "Offer",
+    "unread": "unread",
+    "messageReceived": "Your message has been received. We will get back to you as soon as possible."
+  },
+  "auth": {
+    "login": "Login",
+    "signup": "Sign Up",
+    "logout": "Logout",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "name": "Full Name",
+    "forgotPassword": "Forgot Password",
+    "rememberMe": "Remember Me",
+    "patient": "Seeking Change",
+    "clinic": "Creating Change",
+    "accountType": "Account Type",
+    "alreadyHaveAccount": "Already have an account?",
+    "dontHaveAccount": "Don't have an account?",
+    "loginWithGoogle": "Login with Google",
+    "signupWithGoogle": "Sign up with Google",
+    "signupTitle": "Sign up for Estyi",
+    "signupEmailPlaceholder": "Your email address",
+    "passwordPlaceholder": "Password (at least 8 characters)",
+    "confirmPasswordPlaceholder": "Confirm Password",
+    "namePlaceholder": "Your Full Name",
+    "sendingCode": "Sending...",
+    "sendVerificationCode": "Send Verification Code",
+    "verificationCodeSent": "sent verification code to",
+    "verificationCodePlaceholder": "6-digit verification code",
+    "verifyAndContinue": "Verify Code and Continue",
+    "backButton": "← Go Back",
+    "emailVerified": "✓ Email verified",
+    "registering": "Registering...",
+    "register": "Register",
+    "registrationSuccess": "Registration successful! You can now log in.",
+    "registrationError": "Registration failed. Please try again.",
+    "enterEmail": "Please enter your email address",
+    "codeError": "Failed to send code. Please try again.",
+    "enterVerificationCode": "Please enter verification code",
+    "emailVerificationTitle": "Email Verification",
+    "verificationSuccess": "Verification Successful!",
+    "accountVerified": "Your account has been successfully verified. Redirecting...",
+    "verificationCodeSentTitle": "Verification Code Sent",
+    "codeValidTime": "Code expires:",
+    "verificationCodeLabel": "Verification Code",
+    "verifying": "Verifying...",
+    "verify": "Verify",
+    "cancel": "Cancel",
+    "codeNotReceived": "Code not received? Check your spam folder or try again.",
+    "verificationFailed": "Verification failed",
+    "code6digits": "Verification code must be 6 digits",
+    "emailMinLength": "Please enter a valid email address",
+    "passwordMinLength": "Password must be at least 8 characters",
+    "nameMinLength": "Name must be at least 2 characters",
+    "passwordMismatch": "Passwords do not match",
+    "userStatusUpdateError": "Could not update user status",
+    "verificationProcessError": "Verification process failed",
+    "reportDownloading": "report downloading...",
+    "settingsSaved": "Settings saved successfully!",
+    "acceptSuccess": "Offer accepted successfully!",
+    "acceptError": "Error occurred while accepting offer.",
+    "rejectSuccess": "Offer rejected successfully.",
+    "rejectError": "Error occurred while rejecting offer.",
+    "priceRangeError": "Price range error"
+  },
+  "home": {
+    "hero": {
+      "title": "Discover the Path to Your Dream Appearance",
+      "subtitle": "Get transparent offers from global aesthetic centers without sharing your identity.",
+      "cta": "Get Free Quote",
+      "learnMore": "Learn More"
+    },
+    "features": {
+      "title": "Why Choose",
+      "subtitle": "Experience the future of aesthetic medicine and meet our innovative platform",
+      "secure": {
+        "title": "Secure Platform",
+        "description": "Your data is safe with our GDPR compliant and SSL security certified platform."
+      },
+      "global": {
+        "title": "International Access",
+        "description": "Connect with globally trusted clinics and expert doctors."
+      },
+      "experts": {
+        "title": "Expert Doctors",
+        "description": "Receive quality treatment services from certified and experienced doctors."
+      },
+      "proven": {
+        "title": "Proven Results",
+        "description": "10,000+ happy patients and an average rating of 4.9/5."
+      },
+      "quality": {
+        "title": "Quality Guarantee",
+        "description": "Only approved clinics that meet quality standards."
+      },
+      "support": {
+        "title": "24/7 Support",
+        "description": "We are always with you. Get instant support for your questions."
+      },
+      "cta": {
+        "title": "Get Started Now",
+        "subtitle": "Create a free account and get the best prices for your aesthetic treatment",
+        "button": "Register for Free"
+      }
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome",
+    "stats": {
+      "requests": "Requests",
+      "offers": "Offers",
+      "messages": "Messages",
+      "appointments": "Appointments"
+    },
+    "recentActivity": "Recent Activity",
+    "quickActions": "Quick Actions",
+    "myPhotos": "My Photos",
+    "receivedOffers": "Received Offers",
+    "enlargePhoto": "Enlarge",
+    "photos": "photos",
+    "contactClinic": "Contact Clinic",
+    "acceptOffer": "Accept",
+    "rejectOffer": "Reject",
+    "offerAccepted": "Offer Accepted",
+    "offerRejected": "Offer Rejected",
+    "processingOffer": "Processing...",
+    "active": "Active",
+    "closed": "Closed",
+    "pending": "Pending",
+    "completed": "Completed",
+    "offerId": "Offer No",
+    "clinicContact": "Clinic Contact",
+    "offerDetails": "Offer Details",
+    "priceRange": "Price Range",
+    "duration": "Duration",
+    "hospitalization": "Hospitalization",
+    "clinicRating": "Clinic Rating",
+    "clinicReviews": "Clinic Reviews",
+    "clinicCountry": "Clinic Country",
+    "offerDate": "Offer Date",
+    "procedureDetails": "Procedure Details",
+    "clinicProfile": "Clinic Profile",
+    "viewClinic": "View Clinic Profile",
+    "sendMessage": "Send Message",
+    "requestDetails": "Request Details",
+    "requestStatus": "Request Status",
+    "requestDate": "Request Date",
+    "requestCountries": "Request Countries",
+    "totalOffers": "Total Offers",
+    "totalPhotos": "Total Photos",
+    "totalCountries": "Total Countries"
+  },
+  "requests": {
+    "title": "Price Requests",
+    "newRequest": "New Request",
+    "status": {
+      "pending": "Pending",
+      "active": "Active",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "procedure": "Procedure",
+    "country": "Country",
+    "budget": "Budget",
+    "notes": "Notes",
+    "photos": "Photos",
+    "submitRequest": "Submit Request",
+    "allCountries": "All Countries",
+    "allCountriesInfo": "You will receive offers from clinics in all countries",
+    "submitAllCountries": "Get Quotes from All Countries"
+  },
+  "offers": {
+    "title": "Offers",
+    "receivedOffers": "Received Offers",
+    "noOffers": "No offers yet",
+    "clinic": "Clinic",
+    "price": "Price",
+    "duration": "Duration",
+    "validUntil": "Valid Until",
+    "accept": "Accept",
+    "reject": "Reject",
+    "contact": "Contact"
+  },
+  "priceRequest": {
+    "title": "Get Price Quote",
+    "selectProcedure": "Select Procedure",
+    "chooseProcedure": "Choose procedure",
+    "uploadPhotos": "Upload Photos",
+    "minimumPhotos": "Minimum 5, Maximum 10",
+    "clickToUpload": "Click to upload photos",
+    "fileFormat": "JPG, PNG, max 10MB each",
+    "uploadedPhotos": "Uploaded Photos",
+    "selectCountries": "Select Countries",
+    "chooseCountries": "Select countries you want to get quotes from",
+    "selectedCountries": "Selected",
+    "countriesText": "countries",
+    "allCountries": "All countries",
+    "age": "Age",
+    "enterAge": "Enter your age",
+    "gender": "Gender",
+    "chooseGender": "Select gender",
+    "female": "Female",
+    "male": "Male",
+    "treatmentDate": "Treatment Date",
+    "chooseTreatmentDate": "Select treatment date",
+    "additionalDetails": "Additional Details",
+    "descriptionPlaceholder": "Additional information about treatment, your expectations, special requests...",
+    "importantInfo": "Important Information",
+    "requestActive": "Your request will remain active for 30 days",
+    "onlyCertified": "You will only receive offers from certified clinics",
+    "photosEncrypted": "Your photos are stored encrypted",
+    "notifications": "You will receive notifications when new offers arrive",
+    "allCountriesInfo": "You will receive offers from clinics in all countries",
+    "cancel": "Cancel",
+    "submitRequest": "Submit Request",
+    "submitAllCountries": "Get Quotes from All Countries",
+    "additionalNotes": "Additional Notes",
+    "addAdditionalInfo": "Add additional information...",
+    "costBreakdown": "Cost Breakdown",
+    "basicProcedure": "Basic Procedure:",
+    "totalOffer": "Total Offer:",
+    "oneOfferPerRequest": "You can only send one offer per request",
+    "offerCannotBeChanged": "Offer cannot be changed after submission",
+    "patient7DaysResponse": "Patient can respond within 7 days",
+    "hospitalizationIncluded": "Hospitalization and basic services are automatically included"
+  },
+  "messages": {
+    "title": "Messages",
+    "conversations": "Conversations",
+    "newMessage": "New Message",
+    "typeMessage": "Type your message...",
+    "send": "Send",
+    "unread": "Unread",
+    "online": "Online",
+    "offline": "Offline"
+  },
+  "profile": {
+    "title": "Profile",
+    "personalInfo": "Personal Information",
+    "security": "Security",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "language": "Language",
+    "timezone": "Timezone"
+  },
+  "clinic": {
+    "dashboard": "Clinic Dashboard",
+    "applicationTitle": "Clinic Application",
+    "applicationSuccess": "Your application has been submitted successfully! We will contact you soon.",
+    "clinicName": "Clinic Name",
+    "country": "Country",
+    "specialties": "Specialties",
+    "website": "Website",
+    "description": "Clinic Description",
+    "submitApplication": "Submit Application",
+    "requests": "Incoming Requests",
+    "offers": "My Offers",
+    "messages": "Messages",
+    "profileTitle": "Profile",
+    "profileSubtitle": "Manage your clinic information",
+    "membershipTitle": "Membership",
+    "membershipSubtitle": "Manage your membership plan",
+    "editProfile": "Edit Profile",
+    "cancel": "Cancel",
+    "saveChanges": "Save Changes",
+    "basicInformation": "Basic Information",
+    "clinicName": "Clinic Name",
+    "email": "Email",
+    "address": "Address",
+    "phone": "Phone",
+    "website": "Website",
+    "specialties": "Specialties",
+    "aboutUs": "About Us",
+    "aboutUsDescription": "Istanbul Aesthetic Center is a leading medical tourism destination specializing in cosmetic and reconstructive surgery. We combine advanced medical technology with Turkish hospitality to provide our patients with the highest quality service.",
+    "profileCompletion": "Profile Completion",
+    "documents": "Documents",
+    "photos": "Photos",
+    "certifications": "Certifications",
+    "languages": "Languages",
+    "teamDescription": "Our expert team consists of experienced surgeons and healthcare professionals.",
+    "quickStats": "Quick Stats",
+    "stats": {
+      "totalRequests": "Total Requests",
+      "receivedOffers": "Received Offers",
+      "membershipDate": "Membership Date"
+    },
+    "lookingForNaturalResults": "Looking for natural results",
+    "preferFUETechnique": "Prefers FUE technique",
+    "lookingForNaturalEnhancement": "Wants natural appearance",
+    "jciAccredited": "JCI Accredited",
+    "isoCertified": "ISO 9001:2015",
+    "ministryApproved": "Ministry Approved",
+    "turkish": "Turkish",
+    "english": "English",
+    "arabic": "Arabic",
+    "russian": "Russian",
+    "rhinoplasty": "Rhinoplasty",
+    "hairTransplant": "Hair Transplant",
+    "breastSurgery": "Breast Surgery",
+    "faceLift": "Face Lift",
+    "describeClinic": "Write about your clinic...",
+    "describeMedicalTeam": "Write about your medical team...",
+    "documentsAndCertificates": "Documents and Certificates",
+    "uploadDocument": "Upload Document",
+    "uploaded": "Uploaded",
+    "clinicPhotos": "Clinic Photos",
+    "addPhotos": "Add Photos",
+    "clinicPhoto": "Clinic Photo",
+    "downloadInvoice": "Download Invoice",
+    "upgradePlan": "Upgrade Plan",
+    "plan": "Plan",
+    "monthly": "monthly",
+    "autoRenewing": "Auto Renewal",
+    "manualRenewal": "Manual Renewal",
+    "nextBillingDate": "Next Billing Date",
+    "daysRemaining": "days left",
+    "currentUsage": "Current Usage",
+    "patientRequests": "Patient Requests",
+    "storage": "Storage",
+    "translations": "Translations",
+    "videoCalls": "Video Calls",
+    "availablePlans": "Available Plans",
+    "billingHistory": "Billing History",
+    "perfectForSmallClinics": "Perfect for small clinics",
+    "mostPopularForGrowingClinics": "Most popular for growing clinics",
+    "forLargeMedicalCenters": "For large medical centers",
+    "upTo50PatientRequests": "Up to 50 patient requests per month",
+    "basicAnalytics": "Basic analytics",
+    "emailSupport": "Email support",
+    "documentStorage2GB": "Document storage (2GB)",
+    "standardProfileListing": "Standard profile listing",
+    "limitedTo2Specialties": "Limited to 2 specialties",
+    "noVideoConsultations": "No video consultations",
+    "basicTranslationOnly": "Basic translation only",
+    "unlimitedPatientRequests": "Unlimited patient requests",
+    "advancedAnalytics": "Advanced analytics",
+    "prioritySupport": "Priority support",
+    "multiLanguageTranslation": "Multi-language translation",
+    "documentStorage10GB": "Document storage (10GB)",
+    "videoConsultations": "Video consultations",
+    "featuredProfileListing": "Featured profile listing",
+    "customBranding": "Custom branding",
+    "everythingInProfessional": "Everything in Professional",
+    "dedicatedAccountManager": "Dedicated account manager",
+    "customIntegrations": "Custom integrations",
+    "whiteLabelSolution": "White label solution",
+    "unlimitedDocumentStorage": "Unlimited document storage",
+    "advancedReporting": "Advanced reporting",
+    "apiAccess": "API access",
+    "multiClinicManagement": "Multi-clinic management",
+    "reviewAndRespond": "Review and respond to patient requests",
+    "allProcedures": "All Procedures",
+    "allStatus": "All Statuses",
+    "new": "New",
+    "offered": "Offered",
+    "expired": "Expired",
+    "newRequests": "New Requests",
+    "offersSent": "Offers Sent",
+    "avgResponse": "Average Response",
+    "responseRate": "Response Rate",
+    "activeRequests": "Active Requests",
+    "submitOffer": "Submit Offer",
+    "viewDetails": "View Details",
+    "patientAge": "Patient Age",
+    "preferredCountries": "Preferred Countries",
+    "patientNotes": "Patient Notes",
+    "requestDate": "Request Date",
+    "photos": "Photos",
+    "noPhotos": "No photos",
+    "viewAllPhotos": "View All Photos",
+    "closePhoto": "Close Photo",
+    "myOffers": "My Offers",
+    "trackAndManage": "Track and manage your offers",
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "allTime": "All Time",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "totalOffers": "Total Offers",
+    "totalValue": "Total Value",
+    "offerDetails": "Offer Details",
+    "submittedDate": "Submitted Date",
+    "expiryDate": "Expiry Date",
+    "duration": "Duration",
+    "hospitalization": "Hospitalization",
+    "includedServices": "Included Services",
+    "basePrice": "Base Price",
+    "totalPrice": "Total Price",
+    "daysUntilExpiry": "days left",
+    "expired": "Expired",
+    "viewOffer": "View Offer",
+    "editOffer": "Edit Offer",
+    "withdrawOffer": "Withdraw Offer",
+    "noOffers": "No offers sent yet",
+    "noOffersMessage": "Send your first offer by responding to patient requests",
+    "chatWithPatients": "Chat with your patients",
+    "noConversations": "No conversations yet",
+    "typeMessage": "Type your message...",
+    "send": "Send",
+    "translate": "Translate",
+    "call": "Call",
+    "videoCall": "Video Call",
+    "moreOptions": "More Options",
+    "online": "Online",
+    "offline": "Offline",
+    "messageDelivered": "Message delivered",
+    "messageSeen": "Message seen",
+    "translatedMessage": "Translated Message",
+    "originalMessage": "Original Message",
+    "noMessages": "No messages yet",
+    "startConversation": "Start conversation",
+    "submitOfferTitle": "Submit Offer",
+    "for": "for",
+    "patientInformation": "Patient Information",
+    "age": "Age",
+    "countries": "Countries",
+    "baseProcedurePrice": "Base Procedure Price",
+    "enterBasePrice": "Enter base price",
+    "priceRange": "Price Range",
+    "procedureDuration": "Procedure Duration",
+    "selectDuration": "Select duration",
+    "duration1to2": "1-2 hours",
+    "duration2to3": "2-3 hours",
+    "duration3to4": "3-4 hours",
+    "duration4to6": "4-6 hours",
+    "duration6to8": "6-8 hours",
+    "fullDay": "Full day",
+    "hospitalizationRequired": "Hospitalization Required",
+    "noHospitalization": "No hospitalization needed",
+    "oneNight": "1 night",
+    "twoNights": "2 nights",
+    "threeNights": "3 nights",
+    "additionalServices": "Additional Services",
+    "hotelAccommodation": "Hotel Accommodation",
+    "airportTransfer": "Airport Transfer",
+    "consultationIncluded": "Consultation Included",
+    "additionalNotes": "Additional Notes",
+    "offerNotes": "Write your offer notes...",
+    "submitOffer": "Submit Offer",
+    "offerSubmitted": "Offer Submitted!",
+    "offerSubmittedMessage": "Your offer has been sent to user {userId}. They can respond within 7 days.",
+    "totalOffer": "Total Offer",
+    "flightCost": "Flight Cost",
+    "visaCost": "Visa Cost",
+    "totalPrice": "Total Price",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "paid": "Paid",
+    "invoice": "Invoice",
+    "download": "Download",
+    "paymentMethod": "Payment Method",
+    "primary": "Primary",
+    "expires": "Expires",
+    "updatePaymentMethod": "Update Payment Method",
+    "selectHospitalization": "Select hospitalization",
+    "additionalInfo": "Additional Information",
+    "costBreakdown": "Cost Breakdown",
+    "baseProcedure": "Base Procedure",
+    "flightAssistance": "Flight Assistance",
+    "visaSupport": "Visa Support",
+    "importantNotice": "Important Notice",
+    "oneOfferPerRequest": "You can only send one offer per request",
+    "noModification": "Offer cannot be modified after submission",
+    "sevenDaysResponse": "Patient must respond within 7 days",
+    "autoIncluded": "Flight and visa costs are automatically included",
+    "offersList": "Offers List",
+    "showing": "Showing",
+    "of": "of",
+    "patientProcedure": "Patient/Procedure",
+    "details": "Details",
+    "submitted": "Submitted",
+    "clinicPanel": "Clinic Panel",
+    "medicalClinicDashboard": "Medical Clinic Dashboard",
+    "professionalPlan": "Professional Plan",
+    "basicPlan": "Basic Plan",
+    "professionalPlanJanuary2025": "Professional Plan - January 2025",
+    "professionalPlanDecember2024": "Professional Plan - December 2024",
+    "professionalPlanNovember2024": "Professional Plan - November 2024",
+    "basicPlanOctober2024": "Basic Plan - October 2024",
+    "istanbulAestheticCenter": "Istanbul Aesthetic Center",
+    "totalRequests": "Total Requests",
+    "activeOffers": "Active Offers",
+    "acceptedOffers": "Accepted Offers",
+    "responseRate": "Response Rate",
+    "mostPopular": "Most Popular",
+    "currentPlan": "Current Plan",
+    "upgradeTo": "Upgrade to",
+    "status": "Status",
+    "offers": "Offers",
+    "base": "Base",
+    "daysLeft": "days left",
+    "noOffersFound": "No offers found",
+    "adjustFilters": "Adjust filters or wait for new offers to be sent",
+    "noneOutpatient": "None (Outpatient)",
+    "fourFiveNights": "4-5 nights",
+    "oneWeek": "1 week",
+    "accommodation": "Accommodation",
+    "transport": "Transport",
+    "consultations": "Consultations",
+    "submitting": "Submitting...",
+    "fromLastMonth": "from last month",
+    "recentRequests": "Recent Requests",
+    "recentOffers": "Recent Offers",
+    "user": "User",
+    "rhinoplastyRequest": "Rhinoplasty Request",
+    "hoursAgo": "hours ago",
+    "new": "New",
+    "accepted": "Accepted",
+    "pending": "Pending",
+    "hairTransplant": "Hair Transplant",
+    "offerSent": "Offer Sent",
+    "waitingResponse": "Waiting Response"
+  },
+  "clinicApplication": {
+    "title": "Clinic Application Form",
+    "subtitle": "Join our global network of certified aesthetic clinics and connect with patients worldwide",
+    "submissionSuccess": "Application Submitted!",
+    "submissionMessage": "Your application has been successfully received. We will get back to you as soon as possible.",
+    "backToHome": "Back to Homepage",
+    "clinicName": "Clinic Name",
+    "clinicNamePlaceholder": "Enter your clinic name",
+    "country": "Country",
+    "selectCountry": "Select your country",
+    "specialties": "Specialties",
+    "selectAll": "Select all that apply",
+    "selected": "Selected",
+    "specialtyAreas": "specialty areas",
+    "website": "Website",
+    "websitePlaceholder": "https://your-clinic-website.com",
+    "description": "Clinic Description",
+    "descriptionPlaceholder": "Write about your clinic, services, experience and what makes you special...",
+    "certificates": "Certificates & Licenses",
+    "uploadCertificates": "Upload certificates and licenses",
+    "fileFormat": "PDF, JPG, PNG - max 10MB each file",
+    "filesUploaded": "files uploaded",
+    "submitApplication": "Submit Application",
+    "whyJoin": "Why Join Estyi?",
+    "globalAccess": "Global patient network access",
+    "verifiedCertification": "Verified clinic certification",
+    "securePayments": "Secure payment processing",
+    "applicationProcess": "Application Process",
+    "step1": "Submit application",
+    "step2": "Review & verification (2-5 days)",
+    "step3": "Contract signing",
+    "step4": "Platform access granted"
+  },
+  "clinicDashboard": {
+    "menu": {
+      "dashboard": "Dashboard",
+      "requests": "Requests",
+      "offers": "Offers",
+      "profile": "Profile",
+      "membership": "Membership"
+    },
+    "stats": {
+      "totalRequests": "Total Requests",
+      "activeOffers": "Active Offers",
+      "acceptedOffers": "Accepted Offers",
+      "responseRate": "Response Rate"
+    },
+    "welcome": "Welcome, {{name}}!",
+    "clinic": "Clinic",
+    "today": "Today",
+    "activeRequest": "Active Requests",
+    "pendingOffer": "Pending Offers",
+    "fromLastMonth": "from last month",
+    "recentRequests": "Recent Requests",
+    "recentOffers": "Recent Offers",
+    "last24Hours": "Last 24 requests",
+    "last24HoursOffers": "Last 24 hours offers",
+    "viewAll": "View All",
+    "new": "New",
+    "accepted": "Accepted",
+    "pending": "Pending",
+    "quickActions": "Quick Actions",
+    "reports": "Reports",
+    "performanceAnalysis": "Performance analysis",
+    "calendar": "Calendar",
+    "viewAppointments": "View appointments",
+    "sidebarTitle": "Clinic Panel",
+    "medicalDashboard": "Medical Clinic Dashboard",
+    "premiumMember": "Premium Member",
+    "calendarTitle": "Calendar",
+    "calendarSubtitle": "View your confirmed appointments",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "thisMonth": "This Month",
+    "monday": "Mon",
+    "tuesday": "Tue",
+    "wednesday": "Wed",
+    "thursday": "Thu",
+    "friday": "Fri",
+    "saturday": "Sat",
+    "sunday": "Sun",
+    "confirmedAppointments": "Confirmed Appointments",
+    "confirmed": "Confirmed",
+    "duration": "Duration",
+    "hospitalization": "Hospitalization",
+    "night": "night",
+    "hours": "hours",
+    "hoursAgo": "hours ago",
+    "request": "Request",
+    "user": "User",
+    "patientName": "Patient Name",
+    "clinic": "Clinic",
+    "date": "Date",
+    "time": "Time",
+    "procedure": "Procedure",
+    "amount": "Amount",
+    "status": "Status",
+    "august": "August",
+    "istanbulAestheticCenter": "Istanbul Aesthetic Center",
+    "testClinic": "Test Clinic",
+    "clinicProfile": "Clinic Profile",
+    "viewClinicInfo": "View your clinic information",
+    "basicInfo": "Basic Information",
+    "clinicName": "Clinic Name",
+    "branchLocation": "Branch Location",
+    "phone": "Phone",
+    "email": "Email",
+    "website": "Website",
+    "address": "Address",
+    "specialties": "Specialties",
+    "aboutUs": "About Us",
+    "medicalTeamDescription": "Medical Team Description",
+    "quickStats": "Quick Stats",
+    "profileCompletion": "Profile Completion",
+    "documents": "Documents",
+    "photos": "Photos",
+    "specialtyAreas": "Specialty Areas",
+    "certifications": "Certifications",
+    "languages": "Languages",
+    "membership": "Membership",
+    "manageMembership": "Manage your membership plan",
+    "downloadInvoice": "Download Invoice",
+    "upgradePlan": "Upgrade Plan",
+    "professionalPlan": "Professional Plan",
+    "monthly": "Monthly",
+    "autoRenewal": "Auto Renewal",
+    "manualRenewal": "Manual Renewal",
+    "nextBillingDate": "Next Billing Date",
+    "daysLeft": "days left",
+    "requestUsage": "Request Usage",
+    "storage": "Storage",
+    "translation": "Translation",
+    "videoConsultation": "Video Consultation",
+    "availablePlans": "Available Plans",
+    "mostPopular": "Most Popular",
+    "currentPlan": "Current Plan",
+    "upgradeToPlan": "Upgrade to {{plan}} Plan",
+    "billingHistory": "Billing History",
+    "date": "Date",
+    "description": "Description",
+    "amount": "Amount",
+    "status": "Status",
+    "invoice": "Invoice",
+    "paid": "Paid",
+    "download": "Download",
+    "paymentMethod": "Payment Method",
+    "change": "Change",
+    "myOffers": "My Offers",
+    "trackAndManageOffers": "Track and manage your offers",
+    "allStatuses": "All Statuses",
+    "pending": "Pending",
+    "accepted": "Accepted",
+    "rejected": "Rejected",
+    "expired": "Expired",
+    "allDates": "All Dates",
+    "today": "Today",
+    "thisWeek": "This Week",
+    "totalOffers": "Total Offers",
+    "totalValue": "Total Value",
+    "offersList": "Offers List",
+    "showingOffers": "{{filtered}} / {{total}} offers showing",
+    "patientProcedure": "Patient & Procedure",
+    "price": "Price",
+    "details": "Details",
+    "status": "Status",
+    "submitted": "Submitted",
+    "deadline": "Deadline",
+    "total": "Total",
+    "duration": "Duration",
+    "hospital": "Hospital",
+    "more": "more",
+    "daysLeft": "days left"
+  },
+  "footer": {
+    "description": "We connect patients with certified aesthetic clinics worldwide.",
+    "support": "Support",
+    "legal": "Legal",
+    "contact": "Contact",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "about": "About Us",
+    "helpCenter": "Help Center",
+    "faq": "FAQ",
+    "security": "Security",
+    "cookies": "Cookie Policy"
+  },
+  "legal": {
+    "help": {
+      "title": "Help Center",
+      "description": "How can we help you? You can reach us through the contact channels below.",
+      "contact": {
+        "email": {
+          "title": "Email Support",
+          "description": "Send email for general questions"
+        }
+      },
+      "hours": {
+        "title": "Support Hours",
+        "weekdays": "Weekdays: 09:00 - 18:00",
+        "weekend": "Weekend: 10:00 - 16:00",
+        "note": "All times are shown in Turkey time (GMT+3)"
+      }
+    },
+    "faq": {
+      "title": "Frequently Asked Questions",
+      "items": [
+        {
+          "question": "How does Estyi work?",
+          "answer": "Estyi transmits patients' aesthetic treatment requests to certified clinics worldwide. Patients share photos and information, clinics send offers."
+        },
+        {
+          "question": "Is the service paid?",
+          "answer": "No, the Estyi platform is completely free for patients. You only pay treatment fees to clinics."
+        },
+        {
+          "question": "Is my data safe?",
+          "answer": "Yes, all your data is stored encrypted and is GDPR compliant. Your personal information is safely protected."
+        },
+        {
+          "question": "Which countries do you serve?",
+          "answer": "We serve in Turkey, South Korea, Thailand, Mexico, Brazil, Germany, Poland, Czech Republic, India and Dubai."
+        },
+        {
+          "question": "How is clinic selection made?",
+          "answer": "All our clinics are certified and accredited. You can review clinic profiles and read their reviews."
+        },
+        {
+          "question": "Is there post-treatment support?",
+          "answer": "Yes, we provide continuous support before and after treatment. You can contact us for any questions."
+        },
+        {
+          "question": "How is payment made?",
+          "answer": "Payments are made through secure payment systems. You pay according to the price you agree with the clinic."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contact",
+      "description": "Contact us for your questions. We will respond to you as soon as possible.",
+      "info": {
+        "email": {
+          "title": "Email",
+          "general": "For general questions:",
+          "support": "For technical support:"
+        },
+        "phone": {
+          "title": "Phone",
+          "turkey": "Turkey:",
+          "international": "International:"
+        },
+        "address": {
+          "title": "Address",
+          "line1": "Estyi Ltd. Co.",
+          "line2": "Levent District, Büyükdere Street",
+          "line3": "34330 Beşiktaş/Istanbul, Turkey"
+        }
+      },
+      "form": {
+        "title": "Contact Form",
+        "name": "Full Name",
+        "namePlaceholder": "Enter your name and surname",
+        "email": "Email",
+        "emailPlaceholder": "Enter your email address",
+        "subject": "Subject",
+        "subjectPlaceholder": "Enter subject title",
+        "message": "Message",
+        "messagePlaceholder": "Write your message...",
+        "submit": "Submit"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "description": "Learn about how your personal data is protected.",
+      "intro": "This privacy policy explains how your personal data is collected, used and protected on the Estyi platform.",
+      "dataCollected": {
+        "title": "Data Collected",
+        "email": "Email address and contact information",
+        "photos": "Pre-treatment photos",
+        "preferences": "Treatment preferences and budget information",
+        "clinicInfo": "Clinic information and certificates"
+      },
+      "dataUsage": {
+        "title": "Data Usage",
+        "secure": "Stored with secure encryption",
+        "ai": "Used for AI-assisted matching",
+        "legal": "Required for legal obligations"
+      },
+      "dataSharing": {
+        "title": "Data Sharing",
+        "clinics": "Shared only with approved clinics",
+        "noMarketing": "Not shared for marketing purposes"
+      },
+      "retention": {
+        "title": "Data Retention",
+        "photos": "Photos are stored for 2 years",
+        "clinicDocs": "Clinic documents are stored for 5 years"
+      },
+      "rights": {
+        "title": "User Rights",
+        "access": "Right to access your data",
+        "object": "Right to object to processing",
+        "portability": "Right to data portability"
+      },
+      "contact": {
+        "title": "Contact",
+        "email": "Email for privacy questions"
+      }
+    },
+    "terms": {
+      "title": "Terms of Use",
+      "description": "Learn about platform usage conditions.",
+      "serviceUsage": {
+        "title": "Service Usage",
+        "platform": "Platform is used only for aesthetic treatment matching",
+        "clinic": "Clinics must be approved and certified"
+      },
+      "userResponsibilities": {
+        "title": "User Responsibilities",
+        "accuracy": "Providing accurate and up-to-date information is mandatory",
+        "prohibited": "Sharing misleading information is prohibited"
+      },
+      "clinicResponsibilities": {
+        "title": "Clinic Responsibilities",
+        "licenses": "Must have valid licenses and certificates",
+        "transparent": "Must provide transparent pricing"
+      },
+      "platformResponsibilities": {
+        "title": "Platform Responsibilities",
+        "secure": "Provides secure data storage",
+        "notResponsible": "Not responsible for treatment results"
+      },
+      "disputeResolution": {
+        "title": "Dispute Resolution",
+        "mediation": "Mediation is tried first",
+        "court": "Court proceedings if necessary"
+      }
+    },
+    "about": {
+      "title": "About Us",
+      "description": "Estyi is an innovative platform that connects patients seeking aesthetic treatment worldwide with reliable clinics.",
+      "mission": {
+        "title": "Our Mission",
+        "transparent": {
+          "title": "Transparent Pricing",
+          "description": "We offer clear prices without hidden costs"
+        },
+        "visibility": {
+          "title": "Global Access",
+          "description": "We provide access to certified clinics worldwide"
+        },
+        "ai": {
+          "title": "AI-Assisted Matching",
+          "description": "Optimal clinic-patient matching with artificial intelligence"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Cookie Policy",
+      "description": "Learn about cookie usage.",
+      "types": {
+        "title": "Cookie Types",
+        "essential": {
+          "title": "Essential Cookies",
+          "description": "Cookies necessary for basic site functions"
+        },
+        "analytics": {
+          "title": "Analytics Cookies",
+          "description": "Cookies used to analyze site usage"
+        },
+        "language": {
+          "title": "Language Cookies",
+          "description": "Cookies used to remember your preferred language"
+        }
+      },
+      "management": {
+        "title": "Cookie Management",
+        "description": "You can manage or delete cookies from your browser settings. However, some site features may not work."
+      }
+    },
+    "security": {
+      "title": "Security",
+      "description": "Learn about our security measures.",
+      "verification": {
+        "title": "Clinic Verification",
+        "description": "All our clinics pass license and certificate checks"
+      },
+      "encryption": {
+        "title": "Data Encryption",
+        "description": "All your data is protected with SSL encryption"
+      },
+      "messaging": {
+        "title": "Secure Messaging",
+        "description": "Secure communication is provided through the platform"
+      },
+      "suspicious": {
+        "title": "Suspicious Activity",
+        "description": "Report suspicious activities immediately"
+      }
+    },
+    "safety": {
+      "title": "Safety Guidelines",
+      "description": "Learn about platform security.",
+      "verification": {
+        "title": "Clinic Verification",
+        "description": "All our clinics pass license and certificate checks"
+      },
+      "encryption": {
+        "title": "Data Encryption",
+        "description": "All your data is protected with SSL encryption"
+      },
+      "messaging": {
+        "title": "Secure Messaging",
+        "description": "Secure communication is provided through the platform"
+      },
+      "suspicious": {
+        "title": "Suspicious Activity",
+        "description": "Report suspicious activities immediately"
+      }
+    }
+  },
+  "countries": [
+    "Turkey",
+    "South Korea",
+    "Thailand",
+    "Mexico",
+    "Brazil",
+    "Germany",
+    "Poland",
+    "Czech Republic",
+    "India",
+    "Dubai"
+  ],
+  "procedures": {
+    "rhinoplasty": "Rhinoplasty",
+    "hairTransplant": "Hair Transplant",
+    "breastSurgery": "Breast Surgery",
+    "faceLift": "Face Lift",
+    "liposuction": "Liposuction",
+    "tummyTuck": "Tummy Tuck",
+    "botoxFillers": "Botox & Fillers",
+    "dentalSurgery": "Dental Surgery",
+    "eyeSurgery": "Eye Surgery",
+    "bodyContouring": "Body Contouring",
+    "nailProcedures": "Nail Procedures",
+    "hairColoring": "Hair Coloring",
+    "hairProsthesis": "Hair Prosthesis",
+    "otherHairProcedures": "Other Hair Procedures"
+  },
+  "countries": {
+    "turkey": "Turkey",
+    "southKorea": "South Korea",
+    "thailand": "Thailand",
+    "brazil": "Brazil",
+    "mexico": "Mexico",
+    "colombia": "Colombia",
+    "argentina": "Argentina",
+    "chile": "Chile",
+    "peru": "Peru",
+    "venezuela": "Venezuela",
+    "ecuador": "Ecuador",
+    "uruguay": "Uruguay",
+    "paraguay": "Paraguay",
+    "bolivia": "Bolivia",
+    "guyana": "Guyana",
+    "suriname": "Suriname",
+    "frenchGuiana": "French Guiana",
+    "india": "India",
+    "singapore": "Singapore",
+    "malaysia": "Malaysia",
+    "indonesia": "Indonesia",
+    "philippines": "Philippines",
+    "vietnam": "Vietnam",
+    "cambodia": "Cambodia",
+    "laos": "Laos",
+    "myanmar": "Myanmar",
+    "bangladesh": "Bangladesh",
+    "sriLanka": "Sri Lanka",
+    "nepal": "Nepal",
+    "bhutan": "Bhutan",
+    "maldives": "Maldives",
+    "pakistan": "Pakistan",
+    "afghanistan": "Afghanistan",
+    "usa": "United States",
+    "russia": "Russian Federation",
+    "china": "China",
+    "canada": "Canada",
+    "japan": "Japan",
+    "germany": "Germany",
+    "unitedKingdom": "United Kingdom",
+    "netherlands": "Netherlands",
+    "sweden": "Sweden"
+  },
+  "cities": {
+    "istanbul": "Istanbul",
+    "seoul": "Seoul",
+    "bangkok": "Bangkok",
+    "antalya": "Antalya"
+  },
+  "clinics": {
+    "istanbulAesthetic": "Istanbul Aesthetic Center",
+    "seoulBeauty": "Seoul Beauty Clinic",
+    "hairWorldIstanbul": "Hair World Istanbul",
+    "bangkokHair": "Bangkok Hair Clinic",
+    "antalyaMedical": "Antalya Medical Center"
+  },
+  "genders": {
+    "female": "Female",
+    "male": "Male"
+  },
+  "durations": {
+    "hours23": "2-3 hours",
+    "hours34": "3-4 hours",
+    "hours68": "6-8 hours",
+    "hours810": "8-10 hours"
+  },
+  "hospitalization": {
+    "night1": "1 night",
+    "nights2": "2 nights"
+  },
+  "proceduresList": [
+    "Rhinoplasty",
+    "Hair Transplant",
+    "Breast Surgery",
+    "Face Lift",
+    "Liposuction",
+    "Tummy Tuck",
+    "Botox & Fillers",
+    "Dental Surgery",
+    "Eye Surgery",
+    "Body Contouring",
+    "Nail Procedures",
+    "Hair Coloring",
+    "Hair Prosthesis",
+    "Other Hair Procedures"
+  ],
+  "notifications": {
+    "newRhinoplastyRequest": "New Rhinoplasty Request",
+    "newHairTransplantRequest": "New Hair Transplant Request",
+    "rhinoplastyTreatmentOffer": "Rhinoplasty Treatment Offer",
+    "botoxTreatmentPayment": "Botox treatment payment received successfully",
+    "newTreatmentOffer": "New treatment offer sent: Hair Transplant - Hair World",
+    "paymentReceived": "Payment received: $2,500 - Rhinoplasty"
+  },
+  "messages": {
+    "title": "Messages",
+    "loginRequired": "Login Required",
+    "loginToView": "You need to login to view messages.",
+    "selectMessage": "Select Message",
+    "selectToChat": "Select a person to chat with",
+    "rhinoplastyInquiry": "I would like information about rhinoplasty surgery. What will the price and process be like?",
+    "rhinoplastyInfo": "I am sending detailed information about rhinoplasty surgery. The price is $3,500 USD and the process takes approximately 2 hours.",
+    "hairTransplantDetails": "Hair Transplant Details",
+    "liposuctionQuestion": "Liposuction Question",
+    "hairTransplantAppointment": "Hair Transplant Appointment"
+  }
+}

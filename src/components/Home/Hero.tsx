@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Play, Sparkles, Heart, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import { useAuth } from '../../contexts/AuthContext';
 import PriceRequestModal from '../Dashboard/PriceRequestModal';
@@ -8,12 +9,12 @@ import Logo from '../Layout/Logo';
 
 const Hero: React.FC = () => {
   const { user } = useAuth();
+  const { t } = useTranslation();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
 
   const handlePriceRequestClick = () => {
     // Kullanıcı metadata'sından rolü al
     const userRole = user?.user_metadata?.role || user?.app_metadata?.role;
-    console.log('Hero - User role:', userRole);
     
     if (user && userRole === 'user') {
       setIsRequestModalOpen(true);
@@ -57,15 +58,11 @@ const Hero: React.FC = () => {
             </div>
             
             <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-gray-900 mb-8 leading-tight">
-              Hayalinizdeki Görünüme
-              <span className="block bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent animate-pulse">
-                Giden Yolu Keşfedin
-              </span>
+              {t('home.hero.title')}
             </h1>
             
             <p className="text-xl md:text-2xl text-gray-600 mb-10 max-w-4xl mx-auto leading-relaxed">
-              Kimliğinizi paylaşmadan, global estetik merkezlerinden şeffaf teklifler alın.
-              <span className="block text-purple-600 font-semibold mt-2">Güvenli • Şeffaf • Profesyonel</span>
+              {t('home.hero.subtitle')}
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center space-y-6 sm:space-y-0 sm:space-x-8 mb-16">
@@ -73,7 +70,6 @@ const Hero: React.FC = () => {
                 (() => {
                   // Kullanıcı metadata'sından rolü al
                   const userRole = user?.user_metadata?.role || user?.app_metadata?.role;
-                  console.log('Hero - Button check - User role:', userRole);
                   
                   if (userRole === 'user') {
                     return (
@@ -81,7 +77,7 @@ const Hero: React.FC = () => {
                         onClick={handlePriceRequestClick}
                         className="group inline-flex items-center space-x-3 px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden"
                       >
-                        <span className="relative z-10">Ücretsiz Fiyat Al</span>
+                        <span className="relative z-10">{t('home.hero.cta')}</span>
                         <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-pink-700 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <Sparkles className="w-5 h-5 relative z-10 animate-pulse" />
                       </button>
@@ -89,7 +85,7 @@ const Hero: React.FC = () => {
                   } else {
                     return (
                       <div className="inline-flex items-center space-x-3 px-10 py-5 bg-gray-400 text-white rounded-3xl font-bold text-xl cursor-not-allowed opacity-60">
-                        <span>Ücretsiz Fiyat Al</span>
+                        <span>{t('home.hero.cta')}</span>
                       </div>
                     );
                   }
@@ -100,7 +96,7 @@ const Hero: React.FC = () => {
                   onClick={scrollToTopInstant}
                   className="group inline-flex items-center space-x-3 px-10 py-5 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden"
                 >
-                  <span className="relative z-10">Ücretsiz Fiyat Al</span>
+                  <span className="relative z-10">{t('home.hero.cta')}</span>
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-700 via-pink-700 to-blue-700 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                   <Sparkles className="w-5 h-5 relative z-10 animate-pulse" />
                 </Link>
@@ -123,17 +119,17 @@ const Hero: React.FC = () => {
           <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="text-center group">
               <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">500+</div>
-              <div className="text-gray-600 font-medium">Güvenilir Klinik</div>
+              <div className="text-gray-600 font-medium">{t('home.features.secure.title')}</div>
               <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mt-3 rounded-full"></div>
             </div>
             <div className="text-center group">
               <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">10K+</div>
-              <div className="text-gray-600 font-medium">Mutlu Müşteri</div>
+              <div className="text-gray-600 font-medium">{t('common.success')} {t('auth.patient')}</div>
               <div className="w-16 h-1 bg-gradient-to-r from-pink-500 to-blue-500 mx-auto mt-3 rounded-full"></div>
             </div>
             <div className="text-center group">
               <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">50+</div>
-              <div className="text-gray-600 font-medium">Tedavi Türü</div>
+              <div className="text-gray-600 font-medium">{t('requests.procedure')}</div>
               <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-3 rounded-full"></div>
             </div>
           </div>
@@ -146,7 +142,6 @@ const Hero: React.FC = () => {
           isOpen={isRequestModalOpen}
           onClose={() => setIsRequestModalOpen(false)}
           onRequestSubmitted={(request) => {
-            console.log('Yeni talep oluşturuldu:', request);
             setIsRequestModalOpen(false);
           }}
         />

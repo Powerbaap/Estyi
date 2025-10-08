@@ -1,7 +1,10 @@
 import React from 'react';
 import { Users, Globe, Shield, Sparkles, Heart, Star, Award } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const AboutUs: React.FC = () => {
+  const { t } = useTranslation();
+  
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-8 sm:py-12 relative overflow-hidden">
       {/* Background Elements */}
@@ -19,46 +22,45 @@ const AboutUs: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                Hakkımızda
+                {t('aboutUs.title')}
               </h1>
-              <p className="text-gray-600 mt-2">Estetik tıbbın geleceğini şekillendiriyoruz</p>
+              <p className="text-gray-600 mt-2">{t('aboutUs.subtitle')}</p>
             </div>
           </div>
 
           <div className="prose prose-gray max-w-none">
             <p className="text-lg text-gray-600 mb-8 leading-relaxed">
-              Estyi, dünya çapında estetik tedavi arayan hastaları güvenilir kliniklerle buluşturan yenilikçi bir platformdur. 
-              Şeffaflık, güvenlik ve kalite odaklı yaklaşımımızla estetik tıbbın geleceğini şekillendiriyoruz.
+              {t('aboutUs.description')}
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <div className="bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl p-6 border border-purple-200 hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-4">
                   <Shield className="w-6 h-6 text-purple-600" />
-                  <h3 className="font-semibold text-gray-900">Şeffaf Fiyatlandırma</h3>
+                  <h3 className="font-semibold text-gray-900">{t('aboutUs.features.transparent.title')}</h3>
                 </div>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  Gizli maliyetler olmadan, net fiyatlar sunuyoruz. Tedavi maliyetlerini önceden bilin.
+                  {t('aboutUs.features.transparent.description')}
                 </p>
               </div>
 
               <div className="bg-gradient-to-r from-pink-50 to-blue-50 rounded-2xl p-6 border border-pink-200 hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-4">
                   <Globe className="w-6 h-6 text-pink-600" />
-                  <h3 className="font-semibold text-gray-900">Global Erişim</h3>
+                  <h3 className="font-semibold text-gray-900">{t('aboutUs.features.global.title')}</h3>
                 </div>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  Dünya çapında sertifikalı kliniklere erişim sağlıyoruz. En iyi tedavi seçeneklerini keşfedin.
+                  {t('aboutUs.features.global.description')}
                 </p>
               </div>
 
               <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-6 border border-blue-200 hover:shadow-lg transition-all duration-300">
                 <div className="flex items-center space-x-3 mb-4">
                   <Sparkles className="w-6 h-6 text-blue-600" />
-                  <h3 className="font-semibold text-gray-900">AI Destekli Eşleştirme</h3>
+                  <h3 className="font-semibold text-gray-900">{t('aboutUs.features.ai.title')}</h3>
                 </div>
                 <p className="text-gray-700 text-sm leading-relaxed">
-                  Yapay zeka ile en uygun klinik-hasta eşleştirmesi yapıyoruz. Kişiselleştirilmiş öneriler.
+                  {t('aboutUs.features.ai.description')}
                 </p>
               </div>
             </div>
@@ -66,36 +68,35 @@ const AboutUs: React.FC = () => {
             <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 mb-8">
               <div className="flex items-center space-x-3 mb-4">
                 <Award className="w-6 h-6 text-green-600" />
-                <h3 className="font-semibold text-gray-900">Kalite Garantisi</h3>
+                <h3 className="font-semibold text-gray-900">{t('aboutUs.quality.title')}</h3>
               </div>
               <p className="text-gray-700 leading-relaxed mb-4">
-                Tüm kliniklerimiz lisans ve sertifika kontrolünden geçer. Sadece en yüksek kalite standartlarını karşılayan 
-                klinikler platformumuzda yer alır. Hastalarımızın güvenliği ve memnuniyeti bizim için en önemli önceliktir.
+                {t('aboutUs.quality.description')}
               </p>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                 <div className="flex items-center space-x-2">
                   <Heart className="w-4 h-4 text-green-600" />
-                  <span>10,000+ Mutlu Hasta</span>
+                  <span>{t('aboutUs.stats.patients')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Star className="w-4 h-4 text-yellow-500" />
-                  <span>4.9/5 Ortalama Puan</span>
+                  <span>{t('aboutUs.stats.rating')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Shield className="w-4 h-4 text-blue-600" />
-                  <span>500+ Güvenilir Klinik</span>
+                  <span>{t('aboutUs.stats.clinics')}</span>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Globe className="w-4 h-4 text-purple-600" />
-                  <span>10+ Ülke</span>
+                  <span>{t('aboutUs.stats.countries')}</span>
                 </div>
               </div>
             </div>
 
             <div className="text-center">
-              <h3 className="text-2xl font-bold text-gray-900 mb-4">Bizimle İletişime Geçin</h3>
+              <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('aboutUs.cta.title')}</h3>
               <p className="text-gray-600 mb-6">
-                Sorularınız için bizimle iletişime geçebilirsiniz. Size en kısa sürede yanıt vereceğiz.
+                {t('aboutUs.cta.description')}
               </p>
               <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
                 <a 
@@ -103,14 +104,14 @@ const AboutUs: React.FC = () => {
                   className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <Heart className="w-4 h-4" />
-                  <span>İletişim Sayfası</span>
+                  <span>{t('aboutUs.cta.contactButton')}</span>
                 </a>
                 <a 
                   href="mailto:info@estyi.com" 
                   className="inline-flex items-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-xl font-medium border border-purple-200 hover:bg-purple-50 transition-all duration-300"
                 >
                   <Star className="w-4 h-4" />
-                  <span>E-posta Gönder</span>
+                  <span>{t('aboutUs.cta.emailButton')}</span>
                 </a>
               </div>
             </div>

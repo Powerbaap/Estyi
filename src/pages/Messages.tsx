@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import MessageList from '../components/Messages/MessageList';
 import ChatWindow from '../components/Messages/ChatWindow';
 import { X } from 'lucide-react';
 
 const Messages: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const location = useLocation();
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
@@ -14,7 +16,6 @@ const Messages: React.FC = () => {
   useEffect(() => {
     if (location.state?.messageType === 'clinic_contact' && location.state?.selectedClinic) {
       // Klinik ile yeni konuşma başlat
-      console.log('Klinik ile iletişim:', location.state.selectedClinic);
       // Burada klinik ile yeni konuşma oluşturulabilir
     }
   }, [location.state]);
@@ -35,8 +36,8 @@ const Messages: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Giriş Yapın</h2>
-          <p className="text-gray-600">Mesajları görüntülemek için giriş yapmanız gerekiyor.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('messages.loginRequired')}</h2>
+          <p className="text-gray-600">{t('messages.loginToView')}</p>
         </div>
       </div>
     );
@@ -63,8 +64,8 @@ const Messages: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                 </div>
-                <h3 className="text-lg font-medium mb-2">Mesaj Seçin</h3>
-                <p className="text-sm">Sohbet etmek istediğiniz kişiyi seçin</p>
+                <h3 className="text-lg font-medium mb-2">{t('messages.selectMessage')}</h3>
+                <p className="text-sm">{t('messages.selectToChat')}</p>
               </div>
             </div>
           </div>
@@ -83,7 +84,7 @@ const Messages: React.FC = () => {
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-              <h2 className="text-lg font-semibold text-gray-900">Mesaj</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('messages.title')}</h2>
               <button
                 onClick={closeModal}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"

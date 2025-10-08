@@ -6,7 +6,7 @@ import { generateUserId, generateVerificationCode, saveVerificationCode, sendVer
 interface AuthContextType {
   user: User | null;
   session: Session | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  login: (email: string, password: string, role?: 'user' | 'clinic' | 'admin') => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, role?: 'user' | 'clinic' | 'admin') => Promise<{ success: boolean; error?: string; userId?: string }>;
   verifyEmail: (userId: string, code: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => Promise<void>;
@@ -100,7 +100,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Mock normal kullanıcılar (Değişimi Arayan)
   const mockUsers = [
     {
-      email: 'test@user.com',
+      email: 'user@test.com',
       password: 'test123456',
       name: 'Test Kullanıcı',
       role: 'user' as const,
@@ -112,10 +112,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Session'ı kontrol et
   useEffect(() => {
     const getSession = async () => {
-      console.log('Getting session...');
-      const { data: { session }, error } = await supabase.auth.getSession();
-      console.log('Session data:', session);
-      console.log('Session error:', error);
       setSession(session);
       setUser(session?.user ?? null);
       setIsLoading(false);
@@ -125,7 +121,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event, session);
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
@@ -189,7 +184,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             role: 'authenticated'
           } as User;
           setUser(mockUser);
-          console.log('Normal user logged in:', mockUser);
           return { success: true };
         }
       }
@@ -243,7 +237,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } catch (error) {
-      console.error('Signup error:', error);
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } finally {
       setIsLoading(false);
@@ -275,13 +268,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         .eq('id', userId);
 
       if (error) {
-        console.error('User verification update error:', error);
         return { success: false, error: 'Kullanıcı durumu güncellenemedi' };
       }
 
       return { success: true };
     } catch (error) {
-      console.error('Email verification error:', error);
       return { success: false, error: 'Doğrulama işlemi başarısız' };
     } finally {
       setIsLoading(false);
@@ -293,11 +284,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       const { error } = await supabase.auth.signOut();
       if (error) {
-        console.error('Logout error:', error);
       }
       setUser(null);
     } catch (error) {
-      console.error('Logout error:', error);
     } finally {
       setIsLoading(false);
     }

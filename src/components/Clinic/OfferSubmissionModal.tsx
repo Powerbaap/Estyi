@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, DollarSign, Clock, Bed, Plane, FileText, Check } from 'lucide-react';
+import { X, DollarSign, Clock, Bed, Check } from 'lucide-react';
+import { z } from 'zod';
+import DOMPurify from 'dompurify';
 
 interface UserRequest {
   id: string;
@@ -20,6 +22,22 @@ interface OfferSubmissionModalProps {
   request: UserRequest | null;
 }
 
+// Zod şeması tanımlama
+const offerSchema = z.object({
+  minPrice: z.string().min(1, "Minimum fiyat zorunludur").refine(val => Number(val) >= 100, "Minimum fiyat en az 100 olmalıdır"),
+  maxPrice: z.string().min(1, "Maksimum fiyat zorunludur").refine(val => Number(val) <= 50000, "Maksimum fiyat en fazla 50000 olmalıdır"),
+  duration: z.string().min(1, "İşlem süresi zorunludur"),
+  hospitalization: z.string().min(1, "Hastanede kalış süresi zorunludur"),
+  doctorName: z.string().min(3, "Doktor adı en az 3 karakter olmalıdır"),
+  clinicAddress: z.string().min(5, "Klinik adresi en az 5 karakter olmalıdır"),
+  accommodation: z.boolean(),
+  transport: z.boolean(),
+  consultation: z.boolean(),
+  notes: z.string().optional()
+});
+
+type OfferFormData = z.infer<typeof offerSchema>;
+
 const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onClose, request }) => {
   const { t } = useTranslation();
   const [formData, setFormData] = useState({
@@ -36,6 +54,7 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
     consultation: false,
     notes: ''
   });
+  const [formErrors, setFormErrors] = useState<Partial<Record<keyof OfferFormData, string>>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -57,46 +76,77 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
     const maxPrice = parseFloat(formData.maxPrice) || 0;
     const difference = maxPrice - minPrice;
     if (difference > 200) {
-      return `Fiyat aralığı 200 doları geçemez. Mevcut fark: $${difference}`;
+      return t('offerModal.priceRangeError', { difference });
     }
     return null;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setFormErrors({});
     
-    // Fiyat aralığı kontrolü
-    if (!validatePriceRange()) {
-      alert(getPriceRangeError());
-      return;
-    }
-    
-    setIsSubmitting(true);
-
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    setIsSubmitting(false);
-    setIsSubmitted(true);
-
-    // Auto close after 3 seconds
-    setTimeout(() => {
-      setIsSubmitted(false);
-      onClose();
-      // Reset form
-      setFormData({
-        basePrice: '',
-        minPrice: '',
-        maxPrice: '',
-        priceRange: 200,
-        duration: '',
-        hospitalization: '',
-        accommodation: false,
-        transport: false,
-        consultation: false,
-        notes: ''
+    try {
+      // Zod ile form doğrulama
+      const validatedData = offerSchema.parse({
+        minPrice: formData.minPrice,
+        maxPrice: formData.maxPrice,
+        duration: formData.duration,
+        hospitalization: formData.hospitalization,
+        doctorName: DOMPurify.sanitize(formData.doctorName),
+        clinicAddress: DOMPurify.sanitize(formData.clinicAddress),
+        accommodation: formData.accommodation,
+        transport: formData.transport,
+        consultation: formData.consultation,
+        notes: DOMPurify.sanitize(formData.notes)
       });
-    }, 3000);
+      
+      // Fiyat aralığı kontrolü
+      if (!validatePriceRange()) {
+        setFormErrors({maxPrice: t('auth.priceRangeError')});
+        return;
+      }
+      
+      setIsSubmitting(true);
+  
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+  
+      setIsSubmitting(false);
+      setIsSubmitted(true);
+  
+      // Auto close after 3 seconds
+      setTimeout(() => {
+        setIsSubmitted(false);
+        onClose();
+        // Reset form
+        setFormData({
+          basePrice: '',
+          minPrice: '',
+          maxPrice: '',
+          priceRange: 200,
+          duration: '',
+          hospitalization: '',
+          doctorName: '',
+          clinicAddress: '',
+          accommodation: false,
+          transport: false,
+          consultation: false,
+          notes: ''
+        });
+      }, 3000);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        // Zod hata mesajlarını formErrors state'ine aktar
+        const errors: Partial<Record<keyof OfferFormData, string>> = {};
+        error.errors.forEach(err => {
+          if (err.path.length > 0) {
+            const field = err.path[0] as keyof OfferFormData;
+            errors[field] = err.message;
+          }
+        });
+        setFormErrors(errors);
+      }
+    }
   };
 
   if (!isOpen || !request) return null;
@@ -108,19 +158,19 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <Check className="w-8 h-8 text-green-600" />
           </div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Teklif Gönderildi!</h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('offerModal.successTitle')}</h2>
           <p className="text-gray-600 mb-4">
-            Teklifiniz {request.userId} kullanıcısına gönderildi. 7 gün içinde yanıt verebilirler.
+            {t('offerModal.successMessage', { userId: request.userId })}
           </p>
           <div className="bg-blue-50 rounded-lg p-4">
             <p className="text-sm text-blue-800">
-              <strong>Toplam Teklif:</strong> ${calculateTotal().toLocaleString()} USD
+              <strong>{t('offerModal.totalOffer')}:</strong> ${calculateTotal().toLocaleString()} USD
             </p>
             <p className="text-sm text-blue-800 mt-2">
-              <strong>İşlemi Yapacak:</strong> {formData.doctorName}
+              <strong>{t('offerModal.performedBy')}:</strong> {formData.doctorName}
             </p>
             <p className="text-sm text-blue-800 mt-1">
-              <strong>Adres:</strong> {formData.clinicAddress}
+              <strong>{t('offerModal.address')}:</strong> {formData.clinicAddress}
             </p>
           </div>
         </div>
@@ -146,9 +196,9 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Teklif Gönder</h2>
+            <h2 className="text-2xl font-bold text-gray-900">{t('offerModal.title')}</h2>
             <p className="text-gray-600 mt-1">
-              {request.procedure} için {request.userId}
+              {request.procedure} {t('offerModal.for')} {request.userId}
             </p>
           </div>
           <button
@@ -200,9 +250,12 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
                   max="50000"
                   value={formData.minPrice}
                   onChange={(e) => setFormData(prev => ({ ...prev, minPrice: e.target.value }))}
-                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className={`w-full pl-10 pr-4 py-3 border ${formErrors.minPrice ? 'border-red-500' : 'border-gray-300'} rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500`}
                   placeholder="Minimum fiyatı girin"
                 />
+                {formErrors.minPrice && (
+                  <p className="text-red-500 text-sm mt-1">{formErrors.minPrice}</p>
+                )}
               </div>
             </div>
             
@@ -369,28 +422,28 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
           {/* Additional Notes */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ek Notlar
+              {t('priceRequest.additionalNotes')}
             </label>
             <textarea
               rows={3}
               value={formData.notes}
               onChange={(e) => setFormData(prev => ({ ...prev, notes: e.target.value }))}
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Ek bilgiler ekleyin..."
+              placeholder={t('priceRequest.addAdditionalInfo')}
             />
           </div>
 
           {/* Cost Breakdown */}
           <div className="bg-blue-50 rounded-lg p-4">
-            <h3 className="font-semibold text-blue-900 mb-3">Maliyet Dağılımı</h3>
+            <h3 className="font-semibold text-blue-900 mb-3">{t('priceRequest.costBreakdown')}</h3>
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
-                <span>Temel İşlem:</span>
+                <span>{t('priceRequest.basicProcedure')}</span>
                 <span>${parseFloat(formData.minPrice) || 0} - ${parseFloat(formData.maxPrice) || 0}</span>
               </div>
 
               <div className="border-t border-blue-200 pt-2 flex justify-between font-semibold text-blue-900">
-                <span>Toplam Teklif:</span>
+                <span>{t('priceRequest.totalOffer')}</span>
                 <span>${calculateTotal().toLocaleString()}</span>
               </div>
             </div>
@@ -398,12 +451,12 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
 
           {/* Important Notice */}
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <h4 className="font-semibold text-yellow-900 mb-2">Önemli Bilgiler</h4>
+            <h4 className="font-semibold text-yellow-900 mb-2">{t('priceRequest.importantInfo')}</h4>
             <ul className="text-sm text-yellow-800 space-y-1">
-              <li>Her talep için sadece bir teklif gönderebilirsiniz</li>
-              <li>Teklif gönderildikten sonra değiştirilemez</li>
-              <li>Hasta 7 gün içinde yanıt verebilir</li>
-              <li>Hastane yatışı ve temel hizmetler otomatik dahildir</li>
+              <li>{t('priceRequest.oneOfferPerRequest')}</li>
+              <li>{t('priceRequest.offerCannotBeChanged')}</li>
+              <li>{t('priceRequest.patient7DaysResponse')}</li>
+              <li>{t('priceRequest.hospitalizationIncluded')}</li>
             </ul>
           </div>
 

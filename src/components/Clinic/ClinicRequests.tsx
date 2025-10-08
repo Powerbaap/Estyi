@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { 
   Eye, 
@@ -16,9 +16,13 @@ import {
   Award,
   TrendingUp,
   Users,
-  Clock as ClockIcon
+  Clock as ClockIcon,
+  AlertCircle
 } from 'lucide-react';
 import OfferSubmissionModal from './OfferSubmissionModal';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
+import { requestService } from '../../services/api';
 
 interface UserRequest {
   id: string;
@@ -65,12 +69,13 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
   const [currentFilterProcedure, setCurrentFilterProcedure] = useState(filterProcedure);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-
-  const [requests] = useState<UserRequest[]>([
+  
+  // API'den gelen verileri tutacak state
+  const [requests, setRequests] = useState<UserRequest[]>([
     {
       id: 'req1',
       userId: 'Kullanıcı1234',
-      procedure: 'Göğüs Estetiği',
+      procedure: t('procedures.breastSurgery'),
       photos: [
         'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/5069438/pexels-photo-5069438.jpeg?auto=compress&cs=tinysrgb&w=400',
@@ -79,7 +84,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
       countries: ['Türkiye', 'Almanya'],
       citiesTR: ['İstanbul'],
       age: 26,
-      gender: 'Kadın',
+      gender: t('genders.female'),
       treatmentDate: '2025-02-15',
       description: 'Doğal sonuçlar arıyorum, minimal kesi tercih ediyorum',
       createdAt: new Date('2025-01-20T10:30:00'),
@@ -89,15 +94,15 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
     {
       id: 'req2',
       userId: 'Kullanıcı2234',
-      procedure: 'Saç Ekimi',
+      procedure: t('procedures.hairTransplant'),
       photos: [
         'https://images.pexels.com/photos/5069440/pexels-photo-5069440.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/5069441/pexels-photo-5069441.jpeg?auto=compress&cs=tinysrgb&w=400'
       ],
-      countries: ['Türkiye', 'Almanya'],
-      citiesTR: ['İstanbul'],
+      countries: [t('countries.turkey'), t('countries.germany')],
+      citiesTR: [t('cities.istanbul')],
       age: 27,
-      gender: 'Erkek',
+      gender: t('genders.male'),
       treatmentDate: '2025-03-01',
       description: 'FUE tekniği tercih ediyorum, doğal görünüm önemli',
       createdAt: new Date('2025-01-19T15:20:00'),
@@ -106,37 +111,62 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
     }
   ]);
 
-  const handleSubmitOffer = (request: UserRequest) => {
+  const handleSubmitOffer = useCallback((request: UserRequest) => {
     setSelectedRequest(request);
     setIsOfferModalOpen(true);
-  };
+  }, []);
 
-  const handlePhotoClick = (photo: string) => {
+  const handlePhotoClick = useCallback((photo: string) => {
     setEnlargedPhoto(photo);
-  };
+  }, []);
 
-  const handleClosePhotoModal = () => {
+  const handleClosePhotoModal = useCallback(() => {
     setEnlargedPhoto(null);
-  };
+  }, []);
 
-  const handleModalBackdropClick = (e: React.MouseEvent) => {
+  const handleModalBackdropClick = useCallback((e: React.MouseEvent) => {
     if (e.target === e.currentTarget) {
       handleClosePhotoModal();
     }
-  };
+  }, [handleClosePhotoModal]);
 
-  const filteredRequests = requests.filter(request => {
-    const matchesStatus = currentFilterStatus === 'all' || request.status === currentFilterStatus;
-    const matchesProcedure = currentFilterProcedure === 'all' || request.procedure.toLowerCase().includes(currentFilterProcedure.toLowerCase());
-    const matchesSearch = searchTerm === '' || 
-      request.procedure.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      request.userId.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesStatus && matchesProcedure && matchesSearch;
-  });
+  // Filtreleme işlemleri
+  const filteredRequests = useMemo(() => {
+    return requests.filter(request => {
+      // Status filtresi
+      if (currentFilterStatus !== 'all' && request.status !== currentFilterStatus) {
+        return false;
+      }
+      
+      // Prosedür filtresi
+      if (currentFilterProcedure !== 'all' && !request.procedure.toLowerCase().includes(currentFilterProcedure.toLowerCase())) {
+        return false;
+      }
+      
+      // Klinik uzmanlık alanı filtresi
+      if (clinicSpecialties.length > 0 && !clinicSpecialties.includes(request.procedure)) {
+        return false;
+      }
+      
+      // Şehir filtresi - Klinik şubesi ile aynı şehirdeki talepler
+      if (clinicBranchCity && request.citiesTR && !request.citiesTR.includes(clinicBranchCity)) {
+        return false;
+      }
+      
+      // Arama filtresi
+      if (searchTerm && !(
+        request.procedure.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        request.userId.toLowerCase().includes(searchTerm.toLowerCase())
+      )) {
+        return false;
+      }
+      
+      return true;
+    });
+  }, [requests, currentFilterStatus, currentFilterProcedure, clinicSpecialties, clinicBranchCity, searchTerm]);
 
-  const getStatusColor = (status: string) => {
+  const getStatusColor = useCallback((status: string) => {
     switch (status) {
       case 'new':
         return 'bg-green-100 text-green-800';
@@ -147,27 +177,27 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  };
+  }, []);
 
-  const getStatusText = (status: string) => {
+  const getStatusText = useCallback((status: string) => {
     switch (status) {
       case 'new':
-        return 'Yeni';
+        return t('clinicRequests.status.new');
       case 'offered':
-        return 'Teklif Verildi';
+        return t('clinicRequests.status.offered');
       case 'expired':
-        return 'Süresi Doldu';
+        return t('clinicRequests.status.expired');
       default:
-        return 'Bilinmiyor';
+        return t('clinicRequests.status.unknown');
     }
-  };
+  }, [t]);
 
-  const stats = {
+  const stats = useMemo(() => ({
     total: requests.length,
     new: requests.filter(r => r.status === 'new').length,
     offered: requests.filter(r => r.status === 'offered').length,
-    highPriority: requests.filter(r => r.priority === 'high').length
-  };
+    expired: requests.filter(r => r.status === 'expired').length
+  }), [requests]);
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -175,8 +205,8 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
       <div className="bg-white border-b border-gray-200 px-6 py-4">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">Talepler</h1>
-            <p className="text-gray-600">Kullanıcıların estetik talep istekleri</p>
+            <h1 className="text-2xl font-bold text-gray-900">{t('clinicRequests.title')}</h1>
+            <p className="text-gray-600">{t('clinicRequests.subtitle')}</p>
           </div>
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-2">
@@ -210,7 +240,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
           <div className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg p-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm">Toplam Talep</p>
+                <p className="text-blue-100 text-sm">{t('clinicRequests.stats.total')}</p>
                 <p className="text-2xl font-bold">{stats.total}</p>
               </div>
               <FileText className="w-8 h-8 text-blue-200" />
@@ -219,7 +249,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
           <div className="bg-gradient-to-r from-green-500 to-green-600 rounded-lg p-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Yeni Talepler</p>
+                <p className="text-green-100 text-sm">{t('clinicRequests.stats.newRequests')}</p>
                 <p className="text-2xl font-bold">{stats.new}</p>
               </div>
               <Clock className="w-8 h-8 text-green-200" />
@@ -228,7 +258,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
           <div className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg p-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm">Teklif Verilen</p>
+                <p className="text-purple-100 text-sm">{t('clinicRequests.stats.offeredRequests')}</p>
                 <p className="text-2xl font-bold">{stats.offered}</p>
               </div>
               <Award className="w-8 h-8 text-purple-200" />
@@ -237,8 +267,8 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
           <div className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg p-4 text-white">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm">Yüksek Öncelik</p>
-                <p className="text-2xl font-bold">{stats.highPriority}</p>
+                <p className="text-orange-100 text-sm">{t('clinicRequests.stats.expiredRequests')}</p>
+                <p className="text-2xl font-bold">{stats.expired}</p>
               </div>
               <TrendingUp className="w-8 h-8 text-orange-200" />
             </div>
@@ -257,10 +287,10 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                 onChange={(e) => setCurrentFilterStatus(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">Tüm Durumlar</option>
-                <option value="new">Yeni</option>
-                <option value="offered">Teklif Verildi</option>
-                <option value="expired">Süresi Doldu</option>
+                <option value="all">{t('clinicRequests.filter.allStatuses')}</option>
+                <option value="new">{t('clinicRequests.status.new')}</option>
+                <option value="offered">{t('clinicRequests.status.offered')}</option>
+                <option value="expired">{t('clinicRequests.status.expired')}</option>
               </select>
             </div>
             <div className="flex items-center space-x-2">
@@ -269,7 +299,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                 onChange={(e) => setCurrentFilterProcedure(e.target.value)}
                 className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="all">Tüm İşlemler</option>
+                <option value="all">{t('clinicRequests.filter.allProcedures')}</option>
                 {clinicSpecialties.map(specialty => (
                   <option key={specialty} value={specialty}>{specialty}</option>
                 ))}
@@ -280,7 +310,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
             <Search className="w-4 h-4 text-gray-500" />
             <input
               type="text"
-              placeholder="Talep ara..."
+              placeholder={t('clinicRequests.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 w-64"
@@ -294,8 +324,8 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
         {filteredRequests.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Talep Bulunamadı</h3>
-            <p className="text-gray-500">Arama kriterlerinize uygun talep bulunmuyor.</p>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('clinicRequests.noRequests')}</h3>
+            <p className="text-gray-500">{t('clinicRequests.noRequestsDesc')}</p>
           </div>
         ) : (
           <div className={viewMode === 'grid' ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6' : 'space-y-4'}>
@@ -305,11 +335,11 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <h3 className="text-lg font-semibold text-gray-900 mb-1">{request.procedure}</h3>
-                      <p className="text-sm text-gray-600 mb-2">Kullanıcı: {request.userId}</p>
+                      <p className="text-sm text-gray-600 mb-2">{t('clinicRequests.user')}: {request.userId}</p>
                       <div className="flex items-center space-x-4 text-sm text-gray-500">
                         <span className="flex items-center space-x-1">
                           <User className="w-4 h-4" />
-                          <span>{request.age} yaş, {request.gender}</span>
+                          <span>{request.age} {t('clinicRequests.age')}, {request.gender}</span>
                         </span>
                         <span className="flex items-center space-x-1">
                           <Calendar className="w-4 h-4" />
@@ -332,7 +362,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                       </span>
                       <span className="flex items-center space-x-1">
                         <Camera className="w-4 h-4" />
-                        <span>{request.photos.length} fotoğraf</span>
+                        <span>{request.photos.length} {t('clinicRequests.photos')}</span>
                       </span>
                     </div>
                     <span className="text-xs text-gray-400">
@@ -341,37 +371,45 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                   </div>
 
                   {request.photos.length > 0 && (
-                    <div className="grid grid-cols-3 gap-2 mb-4">
-                      {request.photos.slice(0, 3).map((photo, index) => (
-                        <img
-                          key={index}
-                          src={photo}
-                          alt={`Talep fotoğrafı ${index + 1}`}
-                          className="w-full h-20 object-cover rounded-lg cursor-pointer hover:opacity-80 transition-opacity"
-                          onClick={() => handlePhotoClick(photo)}
-                        />
-                      ))}
-                      {request.photos.length > 3 && (
-                        <div className="w-full h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 text-sm">
-                          +{request.photos.length - 3} daha
-                        </div>
-                      )}
+                    <div className="mb-6">
+                      <div className="grid grid-cols-3 gap-3 mb-4">
+                        {request.photos.slice(0, 3).map((photo, index) => (
+                          <div key={index} className="relative overflow-hidden rounded-lg bg-gray-100">
+                            <LazyLoadImage
+                              src={photo}
+                              alt=""
+                              effect="blur"
+                              className="w-full h-24 object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                              onClick={() => handlePhotoClick(photo)}
+                              wrapperClassName="w-full h-24"
+                              threshold={300}
+                            />
+                          </div>
+                        ))}
+                        {request.photos.length > 3 && (
+                          <div className="w-full h-24 bg-gray-100 rounded-lg flex items-center justify-center text-gray-500 text-sm font-medium">
+                            +{request.photos.length - 3} {t('clinicRequests.more')}
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
 
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      <ClockIcon className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-500">
-                        {Math.floor((Date.now() - request.createdAt.getTime()) / (1000 * 60 * 60 * 24))} gün önce
-                      </span>
+                  <div className="pt-4 border-t border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <ClockIcon className="w-4 h-4 text-gray-400" />
+                        <span className="text-sm text-gray-500">
+                          {Math.floor((Date.now() - request.createdAt.getTime()) / (1000 * 60 * 60 * 24))} {t('clinicRequests.daysAgo')}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleSubmitOffer(request)}
+                        className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium shadow-sm"
+                      >
+                        {t('clinicRequests.submitOffer')}
+                      </button>
                     </div>
-                    <button
-                      onClick={() => handleSubmitOffer(request)}
-                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
-                    >
-                      Teklif Ver
-                    </button>
                   </div>
                 </div>
               </div>
@@ -395,7 +433,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
             </button>
             <img
               src={enlargedPhoto}
-              alt="Büyütülmüş fotoğraf"
+              alt={t('clinicRequests.enlargedPhoto')}
               className="max-w-full max-h-full rounded-lg"
             />
           </div>
@@ -414,4 +452,4 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
   );
 };
 
-export default ClinicRequests;
+export default React.memo(ClinicRequests);

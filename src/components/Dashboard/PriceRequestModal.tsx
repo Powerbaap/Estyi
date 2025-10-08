@@ -10,7 +10,13 @@ interface PriceRequestModalProps {
 }
 
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  
+  // Helper function to get translation with fallback
+  const getTranslation = (key: string, fallback: string) => {
+    const translation = t(key);
+    return translation === key ? fallback : translation;
+  };
   const [formData, setFormData] = useState({
     procedure: '',
     countries: [] as string[],
@@ -22,26 +28,90 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     photos: [] as File[]
   });
 
-  // Tedavi alanlarını Türkçe olarak al
+  // Get treatment areas in current language with fallback
   const getTreatmentAreas = () => {
+    const currentLang = i18n.language || 'en';
     return TREATMENT_AREAS.map(area => ({
       key: area.key,
-      name: area.name.tr,
-      description: area.description.tr
+      name: area.name[currentLang as keyof typeof area.name] || area.name.en,
+      description: area.description[currentLang as keyof typeof area.description] || area.description.en
     }));
   };
 
   const treatmentAreas = getTreatmentAreas();
   
-  // Ülke listesi
-  const countries = [
-    'Türkiye', 'Güney Kore', 'Tayland', 'Brezilya', 'Meksika', 'Kolombiya', 
-    'Arjantin', 'Şili', 'Peru', 'Venezuela', 'Ekvador', 'Uruguay', 
-    'Paraguay', 'Bolivya', 'Guyana', 'Surinam', 'Fransız Guyanası',
-    'Hindistan', 'Singapur', 'Malezya', 'Endonezya', 'Filipinler',
-    'Vietnam', 'Kamboçya', 'Laos', 'Myanmar', 'Bangladesh', 'Sri Lanka',
-    'Nepal', 'Bhutan', 'Maldivler', 'Pakistan', 'Afganistan'
+  // Countries list with translation keys and fallbacks
+  const countryKeys = [
+    'turkey', 'southKorea', 'thailand', 'brazil', 'mexico', 'colombia', 
+    'argentina', 'chile', 'peru', 'venezuela', 'ecuador', 'uruguay', 
+    'paraguay', 'bolivia', 'guyana', 'suriname', 'frenchGuiana',
+    'india', 'singapore', 'malaysia', 'indonesia', 'philippines',
+    'vietnam', 'cambodia', 'laos', 'myanmar', 'bangladesh', 'sriLanka',
+    'nepal', 'bhutan', 'maldives', 'pakistan', 'afghanistan',
+    'usa', 'russia', 'china', 'canada', 'japan', 'germany', 
+    'unitedKingdom', 'netherlands', 'sweden'
   ];
+  
+  // Country fallbacks in English
+  const countryFallbacks: { [key: string]: string } = {
+    turkey: 'Turkey',
+    southKorea: 'South Korea',
+    thailand: 'Thailand',
+    brazil: 'Brazil',
+    mexico: 'Mexico',
+    colombia: 'Colombia',
+    argentina: 'Argentina',
+    chile: 'Chile',
+    peru: 'Peru',
+    venezuela: 'Venezuela',
+    ecuador: 'Ecuador',
+    uruguay: 'Uruguay',
+    paraguay: 'Paraguay',
+    bolivia: 'Bolivia',
+    guyana: 'Guyana',
+    suriname: 'Suriname',
+    frenchGuiana: 'French Guiana',
+    india: 'India',
+    singapore: 'Singapore',
+    malaysia: 'Malaysia',
+    indonesia: 'Indonesia',
+    philippines: 'Philippines',
+    vietnam: 'Vietnam',
+    cambodia: 'Cambodia',
+    laos: 'Laos',
+    myanmar: 'Myanmar',
+    bangladesh: 'Bangladesh',
+    sriLanka: 'Sri Lanka',
+    nepal: 'Nepal',
+    bhutan: 'Bhutan',
+    maldives: 'Maldives',
+    pakistan: 'Pakistan',
+    afghanistan: 'Afghanistan',
+    usa: 'United States',
+    russia: 'Russian Federation',
+    china: 'China',
+    canada: 'Canada',
+    japan: 'Japan',
+    germany: 'Germany',
+    unitedKingdom: 'United Kingdom',
+    netherlands: 'Netherlands',
+    sweden: 'Sweden'
+  };
+  
+  // Get translated country names with fallback
+  const getCountryName = (key: string) => {
+    const translation = t(`countries.${key}`);
+    // If translation failed (returns the key), use fallback
+    if (translation === `countries.${key}`) {
+      return countryFallbacks[key] || key;
+    }
+    return translation;
+  };
+  
+  const countries = countryKeys.map(key => ({
+    key,
+    name: getCountryName(key)
+  }));
 
   // Türkiye şehirleri (81 il)
   const turkishCities = [
@@ -80,12 +150,12 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     }));
   };
 
-  const toggleCountry = (country: string) => {
+  const toggleCountry = (countryKey: string) => {
     setFormData(prev => ({
       ...prev,
-      countries: prev.countries.includes(country)
-        ? prev.countries.filter(c => c !== country)
-        : [...prev.countries, country]
+      countries: prev.countries.includes(countryKey)
+        ? prev.countries.filter(c => c !== countryKey)
+        : [...prev.countries, countryKey]
     }));
   };
 
@@ -116,7 +186,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   const selectAllCountries = () => {
     setFormData(prev => ({
       ...prev,
-      countries: [...countries]
+      countries: countryKeys
     }));
   };
 
@@ -127,20 +197,20 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     }));
   };
 
-  const isAllSelected = formData.countries.length === countries.length;
+  const isAllSelected = formData.countries.length === countryKeys.length;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Yeni talep oluştur
+    // Create new request
     const newRequest = {
       id: Math.random().toString(36).substr(2, 9),
       procedure: formData.procedure,
       status: 'active',
       createdAt: new Date(),
       offersCount: 0,
-      countries: formData.countries,
-      citiesTR: formData.countries.includes('Türkiye') ? formData.citiesTR : [],
+      countries: formData.countries.map(key => countries.find(c => c.key === key)?.name || key),
+      citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
       photos: formData.photos.length,
       offers: []
     };
@@ -182,7 +252,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       >
         {/* Header */}
         <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 className="text-2xl font-bold text-gray-900">Fiyat Teklifi Al</h2>
+          <h2 className="text-2xl font-bold text-gray-900">{getTranslation('priceRequest.title', 'Get Price Quote')}</h2>
           <button
             onClick={onClose}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
@@ -195,7 +265,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
           {/* Procedure Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              İşlem Seçin *
+              {getTranslation('priceRequest.procedure', 'Select Procedure')} *
             </label>
             <select
               required
@@ -203,22 +273,22 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               onChange={(e) => setFormData(prev => ({ ...prev, procedure: e.target.value }))}
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">İşlem seçin</option>
+              <option value="">{getTranslation('priceRequest.selectProcedure', 'Select procedure')}</option>
               {treatmentAreas.map((area) => (
                 <option key={area.key} value={area.name}>
                   {area.name}
                 </option>
               ))}
-              <option value="Diğer Diş İşlemleri">Diğer Diş İşlemleri</option>
-              <option value="Diğer Yüz İşlemleri">Diğer Yüz İşlemleri</option>
-              <option value="Diğer Vücut İşlemleri">Diğer Vücut İşlemleri</option>
+              <option value={getTranslation('procedures.otherDental', 'Other Dental Procedures')}>{getTranslation('procedures.otherDental', 'Other Dental Procedures')}</option>
+              <option value={getTranslation('procedures.otherFacial', 'Other Facial Procedures')}>{getTranslation('procedures.otherFacial', 'Other Facial Procedures')}</option>
+              <option value={getTranslation('procedures.otherBody', 'Other Body Procedures')}>{getTranslation('procedures.otherBody', 'Other Body Procedures')}</option>
             </select>
           </div>
 
           {/* Photo Upload */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Fotoğraf Yükleyin * (Minimum 5, Maksimum 10)
+              {getTranslation('priceRequest.uploadPhotos', 'Upload Photos')} * ({getTranslation('priceRequest.minMax', 'Minimum 5, Maximum 10')})
             </label>
             <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
               <input
@@ -231,8 +301,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               />
               <label htmlFor="photo-upload" className="cursor-pointer">
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">Fotoğraf yüklemek için tıklayın</p>
-                <p className="text-sm text-gray-500">JPG, PNG, maksimum 10MB her biri</p>
+                <p className="text-lg font-medium text-gray-700 mb-2">{getTranslation('priceRequest.clickUpload', 'Click to upload photos')}</p>
+                <p className="text-sm text-gray-500">{getTranslation('priceRequest.fileFormat', 'JPG, PNG, maximum 10MB each')}</p>
               </label>
             </div>
             
@@ -240,7 +310,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             {formData.photos.length > 0 && (
               <div className="mt-4">
                 <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  Yüklenen Fotoğraflar: {formData.photos.length}/10
+                  {getTranslation('priceRequest.uploadedPhotos', 'Uploaded Photos')}: {formData.photos.length}/10
                 </h4>
                 <div className="grid grid-cols-5 gap-2">
                   {formData.photos.map((photo, index) => (
@@ -267,7 +337,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
           {/* Countries Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ülke Seçin * (Teklif almak istediğiniz ülkeleri seçin)
+              {getTranslation('priceRequest.selectCountries', 'Select Countries')} * ({getTranslation('priceRequest.selectCountriesHint', 'Select countries you want to receive offers from')})
             </label>
             
             {/* Quick Selection Buttons */}
@@ -281,43 +351,43 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
                     : 'bg-white text-blue-600 border-blue-600 hover:bg-blue-50'
                 }`}
               >
-                Tümünü Seç
+                {getTranslation('priceRequest.selectAll', 'Select All')}
               </button>
               <button
                 type="button"
                 onClick={clearAllCountries}
                 className="px-3 py-1 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
               >
-                Temizle
+                {getTranslation('priceRequest.clear', 'Clear')}
               </button>
             </div>
 
             <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
               <div className="grid grid-cols-2 gap-2">
                 {countries.map((country) => (
-                  <label key={country} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                  <label key={country.key} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
                     <input
                       type="checkbox"
-                      checked={formData.countries.includes(country)}
-                      onChange={() => toggleCountry(country)}
+                      checked={formData.countries.includes(country.key)}
+                      onChange={() => toggleCountry(country.key)}
                       className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                     />
-                    <span className="text-sm text-gray-700">{country}</span>
+                    <span className="text-sm text-gray-700">{country.name}</span>
                   </label>
                 ))}
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
-              Seçilen: {formData.countries.length} ülke
-              {isAllSelected && <span className="text-blue-600 font-medium"> (Tüm ülkeler)</span>}
+              {getTranslation('priceRequest.selected', 'Selected')}: {formData.countries.length} {getTranslation('priceRequest.country', 'country')}
+              {isAllSelected && <span className="text-blue-600 font-medium"> ({getTranslation('priceRequest.allCountries', 'All countries')})</span>}
             </p>
           </div>
 
           {/* Cities selection for Turkey */}
-          {formData.countries.includes('Türkiye') && (
+          {formData.countries.includes('turkey') && (
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Şehir Seçin (Türkiye) {formData.citiesTR.length === 0 && <span className="text-red-500">*</span>}
+                {getTranslation('priceRequest.selectCities', 'Select Cities')} ({getTranslation('countries.turkey', 'Turkey')}) {formData.citiesTR.length === 0 && <span className="text-red-500">*</span>}
               </label>
               <div className="flex space-x-2 mb-3">
                 <button
@@ -325,21 +395,21 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
                   onClick={selectAllCitiesTR}
                   className="px-3 py-1 text-sm rounded-lg border bg-white text-blue-600 border-blue-600 hover:bg-blue-50 transition-colors"
                 >
-                  Tümünü Seç
+                  {getTranslation('priceRequest.selectAll', 'Select All')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setFormData(prev => ({ ...prev, citiesTR: [...istanbulRegionCities] }))}
                   className="px-3 py-1 text-sm rounded-lg border bg-white text-blue-600 border-blue-600 hover:bg-blue-50 transition-colors"
                 >
-                  İstanbul ve Çevre İller
+                  {getTranslation('priceRequest.istanbulRegion', 'Istanbul and Surrounding Cities')}
                 </button>
                 <button
                   type="button"
                   onClick={clearAllCitiesTR}
                   className="px-3 py-1 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
                 >
-                  Temizle
+                  {getTranslation('priceRequest.clear', 'Clear')}
                 </button>
               </div>
               <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3">
@@ -357,14 +427,14 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
                   ))}
                 </div>
               </div>
-              <p className="text-xs text-gray-500 mt-1">Seçilen: {formData.citiesTR.length} şehir</p>
+              <p className="text-xs text-gray-500 mt-1">{getTranslation('priceRequest.selected', 'Selected')}: {formData.citiesTR.length} {getTranslation('priceRequest.city', 'city')}</p>
             </div>
           )}
 
           {/* Age */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Yaş *
+              {getTranslation('priceRequest.age', 'Age')} *
             </label>
             <input
               type="number"
@@ -374,14 +444,14 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               value={formData.age}
               onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Yaşınızı girin"
+              placeholder={getTranslation('priceRequest.agePlaceholder', 'Enter your age')}
             />
           </div>
 
           {/* Gender */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Cinsiyet *
+              {getTranslation('priceRequest.gender', 'Gender')} *
             </label>
             <select
               required
@@ -389,16 +459,16 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
             >
-              <option value="">Cinsiyet seçin</option>
-              <option value="female">Kadın</option>
-              <option value="male">Erkek</option>
+              <option value="">{getTranslation('priceRequest.selectGender', 'Select gender')}</option>
+              <option value="female">{getTranslation('priceRequest.female', 'Female')}</option>
+              <option value="male">{getTranslation('priceRequest.male', 'Male')}</option>
             </select>
           </div>
 
           {/* Treatment Date */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Tedavi Tarihi *
+              {getTranslation('priceRequest.treatmentDate', 'Treatment Date')} *
             </label>
             <input
               type="date"
@@ -407,34 +477,34 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               onChange={(e) => setFormData(prev => ({ ...prev, treatmentDate: e.target.value }))}
               min={new Date().toISOString().split('T')[0]}
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Tedavi tarihi seçin"
+              placeholder={getTranslation('priceRequest.treatmentDatePlaceholder', 'Select treatment date')}
             />
           </div>
 
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Ek Detaylar
+              {getTranslation('priceRequest.additionalDetails', 'Additional Details')}
             </label>
             <textarea
               rows={4}
               value={formData.description}
               onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder="Tedavi hakkında ek bilgiler, beklentileriniz, özel istekleriniz..."
+              placeholder={getTranslation('priceRequest.descriptionPlaceholder', 'Additional information about treatment, your expectations, special requests...')}
             />
           </div>
 
           {/* Important Notice */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-900 mb-2">Önemli Bilgiler</h4>
+            <h4 className="font-semibold text-blue-900 mb-2">{getTranslation('priceRequest.importantInfo', 'Important Information')}</h4>
             <ul className="text-sm text-blue-800 space-y-1">
-              <li>Talebiniz 30 gün boyunca aktif kalacak</li>
-              <li>Sadece sertifikalı kliniklerden teklif alacaksınız</li>
-              <li>Fotoğraflarınız şifrelenmiş olarak saklanır</li>
-              <li>Yeni teklifler geldiğinde bildirim alacaksınız</li>
+              <li>{getTranslation('priceRequest.requestActive', 'Clinics can send offers as long as your request is active.')}</li>
+              <li>{getTranslation('priceRequest.onlyCertified', 'Only certified and approved clinics can send offers.')}</li>
+              <li>{getTranslation('priceRequest.photosEncrypted', 'Your photos are securely encrypted and stored.')}</li>
+              <li>{getTranslation('priceRequest.notifications', 'You will be notified when new offers arrive.')}</li>
               {isAllSelected && (
-                <li className="text-blue-900 font-medium">Tüm ülkelerdeki kliniklerden teklif alacaksınız</li>
+                <li className="text-blue-900 font-medium">{getTranslation('priceRequest.allCountriesInfo', 'You will receive offers from all countries. More options!')}</li>
               )}
             </ul>
           </div>
@@ -446,7 +516,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               onClick={onClose}
               className="flex-1 px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
             >
-              İptal
+              {getTranslation('priceRequest.cancel', 'Cancel')}
             </button>
             <button
               type="submit"
@@ -457,11 +527,11 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
                 !formData.age ||
                 !formData.gender ||
                 !formData.treatmentDate ||
-                (formData.countries.includes('Türkiye') && formData.citiesTR.length === 0)
+                (formData.countries.includes('turkey') && formData.citiesTR.length === 0)
               }
               className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
             >
-              {isAllSelected ? 'Tüm Ülkelerden Teklif Al' : 'Talep Gönder'}
+              {isAllSelected ? getTranslation('priceRequest.submitAllCountries', 'Send to All Countries') : getTranslation('priceRequest.submitRequest', 'Create Request')}
             </button>
           </div>
         </form>

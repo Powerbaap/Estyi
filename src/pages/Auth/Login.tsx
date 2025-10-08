@@ -27,43 +27,30 @@ const Login: React.FC = () => {
     setError('');
 
     if (!formData.email || !formData.password) {
-      setError('Lütfen tüm alanları doldurun');
+      setError(t('login.fillAllFields'));
       return;
     }
 
     const result = await login(formData.email, formData.password, formData.role);
     
     if (result.success) {
-      // Başarılı giriş - kullanıcıyı yönlendir
-              if (formData.email === 'admin@estyi.com' || formData.email === 'system@estyi.com') {
+      if (formData.email === 'admin@estyi.com' || formData.email === 'system@estyi.com') {
         navigate('/admin/dashboard');
+      } else if (formData.role === 'clinic') {
+        navigate('/clinic-dashboard');
       } else {
-        const dashboardPath = formData.role === 'user' ? '/dashboard' : 
-                             formData.role === 'clinic' ? '/clinic-dashboard' : '/admin/dashboard';
-        navigate(dashboardPath);
+        navigate('/dashboard');
       }
     } else {
-      setError(result.error || 'Giriş yapılırken bir hata oluştu');
+      setError(result.error || t('login.loginError'));
     }
   };
 
   const handleGoogleLogin = async () => {
     try {
-      const result = await login(formData.email, formData.password, formData.role);
-      
-      if (result.success) {
-        if (formData.email === 'admin@estyi.com' || formData.email === 'system@estyi.com') {
-          navigate('/admin/dashboard');
-        } else {
-          const dashboardPath = formData.role === 'user' ? '/dashboard' : 
-                               formData.role === 'clinic' ? '/clinic-dashboard' : '/admin/dashboard';
-          navigate(dashboardPath);
-        }
-      } else {
-        setError('Google girişi başarısız');
-      }
+      // Google signup functionality would be implemented here
     } catch (err) {
-      setError('Google girişi başarısız');
+      setError(t('login.googleError'));
     }
   };
 
@@ -72,17 +59,17 @@ const Login: React.FC = () => {
     setForgotMessage('');
 
     if (!forgotEmail) {
-      setForgotMessage('Lütfen email adresinizi girin');
+      setForgotMessage(t('login.enterEmail'));
       return;
     }
 
     const result = await resetPassword(forgotEmail);
     
     if (result.success) {
-      setForgotMessage('Şifre sıfırlama linki email adresinize gönderildi');
+      setForgotMessage(t('login.resetLinkSent'));
       setTimeout(() => setShowForgotPassword(false), 3000);
     } else {
-      setForgotMessage(result.error || 'Şifre sıfırlama emaili gönderilirken bir hata oluştu');
+      setForgotMessage(result.error || t('login.resetError'));
     }
   };
 
@@ -103,10 +90,10 @@ const Login: React.FC = () => {
             </span>
           </div>
           <h2 className="mt-6 text-3xl font-bold text-gray-900">
-            Tekrar Hoş Geldiniz
+            {t('login.welcomeBack')}
           </h2>
           <p className="mt-2 text-sm text-gray-600">
-            Hesabınıza giriş yapın
+            {t('login.subtitle')}
           </p>
         </div>
 
@@ -120,7 +107,7 @@ const Login: React.FC = () => {
           {/* Role Selection */}
           <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Hesap Türü Seçin
+              {t('login.selectAccountType')}
             </label>
             <div className="grid grid-cols-2 gap-4">
               <button
@@ -136,7 +123,7 @@ const Login: React.FC = () => {
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
                     <User className="w-6 h-6 text-blue-600" />
                   </div>
-                  <div className="text-sm font-bold">Değişim Arayan</div>
+                  <div className="text-sm font-bold">{t('auth.patient')}</div>
                 </div>
               </button>
               <button
@@ -152,7 +139,7 @@ const Login: React.FC = () => {
                   <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-green-100 to-blue-100 flex items-center justify-center">
                     <Building className="w-6 h-6 text-green-600" />
                   </div>
-                  <div className="text-sm font-bold">Değişim Yaratan</div>
+                  <div className="text-sm font-bold">{t('auth.clinic')}</div>
                 </div>
               </button>
             </div>
@@ -162,7 +149,7 @@ const Login: React.FC = () => {
           <form className="space-y-6" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                E-posta Adresi
+                {t('login.email')}
               </label>
               <input
                 id="email"
@@ -173,13 +160,13 @@ const Login: React.FC = () => {
                 value={formData.email}
                 onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                 className="mt-1 block w-full px-3 py-3 border border-gray-300 rounded-lg shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="ornek@email.com"
+                placeholder={t('login.emailPlaceholder')}
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Şifre
+                {t('login.password')}
               </label>
               <div className="mt-1 relative">
                 <input
@@ -207,6 +194,22 @@ const Login: React.FC = () => {
               </div>
             </div>
 
+            {/* Error Message */}
+            {error && (
+              <div className="bg-red-50 border border-red-200 rounded-xl p-4">
+                <div className="flex">
+                  <div className="flex-shrink-0">
+                    <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                  </div>
+                  <div className="ml-3">
+                    <p className="text-sm text-red-800">{error}</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             <div className="flex items-center justify-between">
               <div className="text-sm">
                 <button
@@ -214,7 +217,7 @@ const Login: React.FC = () => {
                   onClick={() => setShowForgotPassword(true)}
                   className="font-medium text-blue-600 hover:text-blue-500"
                 >
-                  Şifremi Unuttum?
+                  {t('login.forgotPassword')}
                 </button>
               </div>
             </div>
@@ -225,7 +228,7 @@ const Login: React.FC = () => {
                 disabled={isLoading}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                {isLoading ? 'Giriş Yapılıyor...' : 'Giriş Yap'}
+                {isLoading ? t('login.loggingIn') : t('login.loginButton')}
               </button>
             </div>
 
@@ -235,7 +238,7 @@ const Login: React.FC = () => {
                   <div className="w-full border-t border-gray-300" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">veya</span>
+                  <span className="px-2 bg-white text-gray-500">{t('login.or')}</span>
                 </div>
               </div>
 
@@ -251,7 +254,7 @@ const Login: React.FC = () => {
                     <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                     <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                   </svg>
-                  <span className="ml-2">Google ile Devam Et</span>
+                  <span className="ml-2">{t('login.continueWithGoogle')}</span>
                 </button>
               </div>
             </div>
@@ -259,9 +262,9 @@ const Login: React.FC = () => {
 
           <div className="mt-6 text-center">
             <p className="text-sm text-gray-600">
-              Hesabınız yok mu?{' '}
+              {t('login.noAccount')}{' '}
               <Link to="/signup" className="font-medium text-blue-600 hover:text-blue-500">
-                Buradan kayıt olun
+                {t('login.signUpHere')}
               </Link>
             </p>
           </div>
@@ -272,7 +275,7 @@ const Login: React.FC = () => {
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg max-w-md w-full p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-900">Şifremi Unuttum</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('auth.forgotPassword')}</h3>
                 <button
                   onClick={() => setShowForgotPassword(false)}
                   className="text-gray-400 hover:text-gray-600"
@@ -284,7 +287,7 @@ const Login: React.FC = () => {
               <form onSubmit={handleForgotPassword} className="space-y-4">
                 <div>
                   <label htmlFor="forgot-email" className="block text-sm font-medium text-gray-700 mb-2">
-                    Email Adresiniz
+                    {t('login.yourEmail')}
                   </label>
                   <div className="relative">
                     <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -294,7 +297,7 @@ const Login: React.FC = () => {
                       value={forgotEmail}
                       onChange={(e) => setForgotEmail(e.target.value)}
                       className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      placeholder="ornek@email.com"
+                      placeholder={t('login.emailPlaceholder')}
                       required
                     />
                   </div>
@@ -302,7 +305,7 @@ const Login: React.FC = () => {
 
                 {forgotMessage && (
                   <div className={`p-3 rounded-lg text-sm ${
-                    forgotMessage.includes('gönderildi')
+                    forgotMessage.includes(t('login.resetLinkSent')) || forgotMessage.includes('sent')
                       ? 'bg-green-50 text-green-700 border border-green-200'
                       : 'bg-red-50 text-red-700 border border-red-200'
                   }`}>
@@ -316,21 +319,21 @@ const Login: React.FC = () => {
                     disabled={isLoading}
                     className="flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors font-medium disabled:opacity-50"
                   >
-                    {isLoading ? 'Gönderiliyor...' : 'Şifre Sıfırlama Linki Gönder'}
+                    {isLoading ? t('login.sending') : t('login.sendResetLink')}
                   </button>
                   <button
                     type="button"
                     onClick={() => setShowForgotPassword(false)}
                     className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors font-medium"
                   >
-                    İptal
+                    {t('login.cancel')}
                   </button>
                 </div>
               </form>
 
               <div className="mt-4 text-center">
                 <p className="text-xs text-gray-500">
-                  Email adresinizi girdiğinizde, şifre sıfırlama linki gönderilecektir.
+                  {t('login.resetInfo')}
                 </p>
               </div>
             </div>

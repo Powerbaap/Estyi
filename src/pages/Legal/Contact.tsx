@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, Sparkles, Heart, Star, Globe } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const Contact: React.FC = () => {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,7 +13,6 @@ const Contact: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Contact form submitted:', formData);
     // Handle form submission
   };
 
@@ -29,14 +30,14 @@ const Contact: React.FC = () => {
           <div className="flex justify-center mb-6">
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-4 py-2 rounded-full text-sm font-medium">
               <Sparkles className="w-4 h-4" />
-              <span>İletişim</span>
+              <span>{t('contact.badge')}</span>
             </div>
           </div>
           <h1 className="text-4xl sm:text-5xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent mb-6">
-            İletişim
+            {t('contact.title')}
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-            Sorularınız için bizimle iletişime geçin. Size en kısa sürede yanıt vereceğiz.
+            {t('contact.description')}
           </p>
         </div>
 
@@ -48,11 +49,11 @@ const Contact: React.FC = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
                   <Mail className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-900">E-posta</h3>
+                <h3 className="font-semibold text-gray-900">{t('contact.email.title')}</h3>
               </div>
-              <p className="text-gray-700 text-sm mb-2">Genel sorular için:</p>
+              <p className="text-gray-700 text-sm mb-2">{t('contact.email.general')}</p>
                               <a href="mailto:info@estyi.com" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">info@estyi.com</a>
-              <p className="text-gray-700 text-sm mt-3 mb-2">Teknik destek için:</p>
+              <p className="text-gray-700 text-sm mt-3 mb-2">{t('contact.email.support')}</p>
                               <a href="mailto:support@estyi.com" className="text-blue-600 hover:text-blue-700 font-medium transition-colors">support@estyi.com</a>
             </div>
 
@@ -61,11 +62,11 @@ const Contact: React.FC = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-xl flex items-center justify-center">
                   <Phone className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-900">Telefon</h3>
+                <h3 className="font-semibold text-gray-900">{t('contact.phone.title')}</h3>
               </div>
-              <p className="text-gray-700 text-sm mb-2">Türkiye:</p>
+              <p className="text-gray-700 text-sm mb-2">{t('contact.phone.turkey')}</p>
               <a href="tel:+902125550123" className="text-green-600 hover:text-green-700 font-medium transition-colors">+90 212 555 01 23</a>
-              <p className="text-gray-700 text-sm mt-3 mb-2">Uluslararası:</p>
+              <p className="text-gray-700 text-sm mt-3 mb-2">{t('contact.phone.international')}</p>
               <a href="tel:+441234567890" className="text-green-600 hover:text-green-700 font-medium transition-colors">+44 123 456 7890</a>
             </div>
 
@@ -74,12 +75,12 @@ const Contact: React.FC = () => {
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl flex items-center justify-center">
                   <MapPin className="w-5 h-5 text-white" />
                 </div>
-                <h3 className="font-semibold text-gray-900">Adres</h3>
+                <h3 className="font-semibold text-gray-900">{t('contact.address.title')}</h3>
               </div>
               <p className="text-gray-700 text-sm leading-relaxed">
-                Estyi Ltd. Şti.<br />
-                Levent Mahallesi, Büyükdere Caddesi<br />
-                34330 Beşiktaş/İstanbul, Türkiye
+                {t('contact.address.line1')}<br />
+                {t('contact.address.line2')}<br />
+                {t('contact.address.line3')}
               </p>
             </div>
           </div>
@@ -92,7 +93,7 @@ const Contact: React.FC = () => {
                   <Send className="w-6 h-6 text-white" />
                 </div>
                 <h2 className="text-2xl font-semibold text-gray-900">
-                  İletişim Formu
+                  {t('contact.form.title')}
                 </h2>
               </div>
               
@@ -100,7 +101,7 @@ const Contact: React.FC = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Ad Soyad
+                      {t('contact.form.name')}
                     </label>
                     <input
                       type="text"
@@ -108,12 +109,12 @@ const Contact: React.FC = () => {
                       value={formData.name}
                       onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                      placeholder="Adınızı ve soyadınızı girin"
+                      placeholder={t('contact.form.namePlaceholder')}
                     />
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      E-posta
+                      {t('contact.form.email')}
                     </label>
                     <input
                       type="email"
@@ -121,14 +122,14 @@ const Contact: React.FC = () => {
                       value={formData.email}
                       onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                      placeholder="E-posta adresinizi girin"
+                      placeholder={t('contact.form.emailPlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Konu
+                    {t('contact.form.subject')}
                   </label>
                   <input
                     type="text"
@@ -136,13 +137,13 @@ const Contact: React.FC = () => {
                     value={formData.subject}
                     onChange={(e) => setFormData(prev => ({ ...prev, subject: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                    placeholder="Konu başlığını girin"
+                    placeholder={t('contact.form.subjectPlaceholder')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Mesaj
+                    {t('contact.form.message')}
                   </label>
                   <textarea
                     rows={6}
@@ -150,7 +151,7 @@ const Contact: React.FC = () => {
                     value={formData.message}
                     onChange={(e) => setFormData(prev => ({ ...prev, message: e.target.value }))}
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                    placeholder="Mesajınızı yazın..."
+                    placeholder={t('contact.form.messagePlaceholder')}
                   />
                 </div>
 
@@ -159,7 +160,7 @@ const Contact: React.FC = () => {
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white py-4 px-6 rounded-xl hover:from-purple-700 hover:to-pink-700 transition-all duration-300 font-semibold flex items-center justify-center space-x-2 shadow-lg hover:shadow-xl transform hover:scale-105"
                 >
                   <Send className="w-5 h-5" />
-                  <span>Gönder</span>
+                  <span>{t('contact.form.submit')}</span>
                 </button>
               </form>
             </div>

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Bell, X, Check, Trash2, Filter, DollarSign, MessageCircle, AlertCircle, Building, User, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 interface ClinicNotification {
   id: string;
@@ -29,6 +30,7 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
   clinicSpecialties = ['Rhinoplasty', 'Hair Transplant', 'Breast Surgery'] 
 }) => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [notifications, setNotifications] = useState<ClinicNotification[]>([]);
 
   // Mock notifications - gerçek uygulamada API'den gelecek
@@ -37,8 +39,8 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
       {
         id: '1',
         type: 'new_request',
-        title: 'Yeni Rinoplasti Talebi',
-        message: 'User1234 kullanıcısı rinoplasti tedavisi için talep oluşturdu',
+        title: t('notifications.newRhinoplastyRequest'),
+        message: t('rhinoplastyInquiry'),
         timestamp: new Date(Date.now() - 1000 * 60 * 5),
         isRead: false,
         actionUrl: '/clinic/requests',
@@ -50,8 +52,8 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
       {
         id: '2',
         type: 'offer_accepted',
-        title: 'Teklifiniz Kabul Edildi!',
-        message: 'User5678 kullanıcısı saç ekimi teklifinizi kabul etti',
+        title: t('auth.acceptSuccess'),
+        message: t('rhinoplastyInfo'),
         timestamp: new Date(Date.now() - 1000 * 60 * 30),
         isRead: false,
         actionUrl: '/clinic/offers',
@@ -63,8 +65,8 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
       {
         id: '3',
         type: 'new_request',
-        title: 'Yeni Saç Ekimi Talebi',
-        message: 'User9012 kullanıcısı saç ekimi tedavisi için talep oluşturdu',
+        title: t('notifications.newHairTransplantRequest'),
+        message: t('messages.hairTransplantDetails'),
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
         isRead: false,
         actionUrl: '/clinic/requests',
@@ -76,8 +78,8 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
       {
         id: '4',
         type: 'offer_rejected',
-        title: 'Teklif Reddedildi',
-        message: 'User3456 kullanıcısı göğüs cerrahisi teklifinizi reddetti',
+        title: t('auth.rejectSuccess'),
+        message: t('messages.liposuctionQuestion'),
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
         isRead: true,
         actionUrl: '/clinic/offers',
@@ -88,8 +90,8 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
       {
         id: '5',
         type: 'message',
-        title: 'Yeni Mesaj',
-        message: 'User7890 kullanıcısından yeni mesaj aldınız',
+        title: t('common.messages'),
+        message: t('messages.hairTransplantAppointment'),
         timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
         isRead: true,
         actionUrl: '/clinic/messages',
@@ -147,11 +149,11 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 1) return 'Şimdi';
-    if (minutes < 60) return `${minutes} dk önce`;
-    if (hours < 24) return `${hours} sa önce`;
-    if (days < 7) return `${days} gün önce`;
-    return date.toLocaleDateString('tr-TR');
+    if (minutes < 1) return t('common.loading');
+    if (minutes < 60) return `${minutes} ${t('common.minutes')} ${t('common.ago')}`;
+    if (hours < 24) return `${hours} ${t('common.hours')} ${t('common.ago')}`;
+    if (days < 7) return `${days} ${t('common.days')} ${t('common.ago')}`;
+    return date.toLocaleDateString();
   };
 
   const markAsRead = (notificationId: string) => {
@@ -222,7 +224,7 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
           <div className="flex items-center justify-between p-6 border-b border-gray-100">
             <div className="flex items-center">
               <Bell className="w-6 h-6 text-gray-600 mr-3" />
-              <h2 className="text-xl font-bold text-gray-900">Klinik Bildirimleri</h2>
+              <h2 className="text-xl font-bold text-gray-900">{t('common.notifications')}</h2>
               {unreadCount > 0 && (
                 <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
                   {unreadCount}
@@ -235,7 +237,7 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
                   onClick={markAllAsRead}
                   className="text-xs text-blue-600 hover:text-blue-800 font-medium"
                 >
-                  Tümünü Okundu İşaretle
+                  {t('common.markAllRead')}
                 </button>
               )}
               <button
@@ -252,8 +254,8 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
             {notifications.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-gray-500">
                 <Bell className="w-16 h-16 mb-4 opacity-50" />
-                <p className="text-lg font-medium">Bildirim Yok</p>
-                <p className="text-sm">Yeni bildirimler burada görünecek</p>
+                <p className="text-lg font-medium">{t('common.noNotifications')}</p>
+                <p className="text-sm">{t('common.newNotificationsHere')}</p>
               </div>
             ) : (
               <div className="p-4 space-y-3">
@@ -322,7 +324,7 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
                             )}
                             {notification.offerAmount && (
                               <div className="mt-1 text-xs text-blue-700">
-                                Teklif: ${notification.offerAmount.toLocaleString()}
+                                {t('common.offer')}: ${notification.offerAmount.toLocaleString()}
                               </div>
                             )}
                           </div>
@@ -338,12 +340,12 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
           {/* Footer */}
           <div className="p-4 border-t border-gray-100">
             <div className="flex items-center justify-between text-xs text-gray-500">
-              <span>{notifications.length} bildirim</span>
+              <span>{notifications.length} {t('common.notifications')}</span>
               <button
                 onClick={markAllAsRead}
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                Tümünü Okundu İşaretle
+                {t('common.markAllRead')}
               </button>
             </div>
           </div>

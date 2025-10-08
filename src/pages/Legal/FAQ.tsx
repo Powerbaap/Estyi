@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { HelpCircle, ChevronDown, ChevronUp, Sparkles, Heart, Star } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 const FAQ: React.FC = () => {
+  const { t } = useTranslation();
   const [openItems, setOpenItems] = useState<number[]>([]);
 
   const toggleItem = (index: number) => {
@@ -14,32 +16,32 @@ const FAQ: React.FC = () => {
 
   const faqItems = [
     {
-              question: "Estyi nasıl çalışır?",
-        answer: "Estyi, hastaların estetik tedavi taleplerini dünya çapındaki sertifikalı kliniklere iletir. Hastalar fotoğraf ve bilgilerini paylaşır, klinikler teklif gönderir."
+      question: t('faq.questions.howItWorks.question'),
+      answer: t('faq.questions.howItWorks.answer')
     },
     {
-      question: "Hizmet ücretli mi?",
-              answer: "Hayır, Estyi platformu hastalar için tamamen ücretsizdir. Sadece tedavi ücretlerini kliniklere ödersiniz."
+      question: t('faq.questions.pricing.question'),
+      answer: t('faq.questions.pricing.answer')
     },
     {
-      question: "Verilerim güvende mi?",
-      answer: "Evet, tüm verileriniz şifrelenmiş olarak saklanır ve GDPR uyumludur. Kişisel bilgileriniz güvenle korunur."
+      question: t('faq.questions.dataSafety.question'),
+      answer: t('faq.questions.dataSafety.answer')
     },
     {
-      question: "Hangi ülkelerde hizmet veriyorsunuz?",
-      answer: "Türkiye, Güney Kore, Tayland, Meksika, Brezilya, Almanya, Polonya, Çek Cumhuriyeti, Hindistan ve Dubai'de hizmet veriyoruz."
+      question: t('faq.questions.countries.question'),
+      answer: t('faq.questions.countries.answer')
     },
     {
-      question: "Klinik seçimi nasıl yapılır?",
-      answer: "Tüm kliniklerimiz sertifikalı ve akreditelidir. Kliniklerin profillerini inceleyebilir, değerlendirmelerini okuyabilirsiniz."
+      question: t('faq.questions.clinicSelection.question'),
+      answer: t('faq.questions.clinicSelection.answer')
     },
     {
-      question: "Tedavi sonrası destek var mı?",
-      answer: "Evet, tedavi öncesi ve sonrası sürekli destek sağlıyoruz. Herhangi bir sorunuzda bize ulaşabilirsiniz."
+      question: t('faq.questions.postTreatmentSupport.question'),
+      answer: t('faq.questions.postTreatmentSupport.answer')
     },
     {
-      question: "Ödeme nasıl yapılır?",
-      answer: "Ödemeler güvenli ödeme sistemleri üzerinden yapılır. Klinik ile anlaştığınız fiyat üzerinden ödeme yaparsınız."
+      question: t('faq.questions.payment.question'),
+      answer: t('faq.questions.payment.answer')
     }
   ];
 
@@ -60,9 +62,9 @@ const FAQ: React.FC = () => {
             </div>
             <div>
               <h1 className="text-3xl sm:text-4xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent">
-                Sık Sorulan Sorular
+                {t('faq.title')}
               </h1>
-              <p className="text-gray-600 mt-2">Size yardımcı olmak için buradayız</p>
+              <p className="text-gray-600 mt-2">{t('faq.subtitle')}</p>
             </div>
           </div>
 
@@ -95,10 +97,10 @@ const FAQ: React.FC = () => {
           <div className="mt-12 p-6 bg-gradient-to-r from-purple-50 to-pink-50 rounded-2xl border border-purple-200">
             <div className="flex items-center space-x-3 mb-4">
               <Sparkles className="w-6 h-6 text-purple-600" />
-              <h3 className="text-xl font-semibold text-gray-900">Hala sorunuz mu var?</h3>
+              <h3 className="text-xl font-semibold text-gray-900">{t('faq.stillHaveQuestions')}</h3>
             </div>
             <p className="text-gray-600 mb-4">
-              Sorularınız için bizimle iletişime geçebilirsiniz. Size en kısa sürede yanıt vereceğiz.
+              {t('faq.contactDescription')}
             </p>
             <div className="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
               <a 
@@ -106,14 +108,14 @@ const FAQ: React.FC = () => {
                 className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl"
               >
                 <Heart className="w-4 h-4" />
-                <span>E-posta Gönder</span>
+                <span>{t('faq.sendEmail')}</span>
               </a>
               <a 
                 href="/contact" 
                 className="inline-flex items-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-xl font-medium border border-purple-200 hover:bg-purple-50 transition-all duration-300"
               >
                 <Star className="w-4 h-4" />
-                <span>İletişim Sayfası</span>
+                <span>{t('faq.contactPage')}</span>
               </a>
             </div>
           </div>

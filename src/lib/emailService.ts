@@ -29,7 +29,6 @@ export const saveVerificationCode = async (userId: string, code: string): Promis
     });
 
   if (error) {
-    console.error('Verification code save error:', error);
     throw new Error('Doğrulama kodu kaydedilemedi');
   }
 };
@@ -50,9 +49,7 @@ export const sendVerificationEmail = async (email: string, code: string): Promis
       throw new Error(errorData.error || 'Email gönderilemedi');
     }
 
-    console.log('Verification email sent successfully');
   } catch (error) {
-    console.error('Email send error:', error);
     throw new Error('Email gönderilemedi');
   }
 };
@@ -80,7 +77,6 @@ export const verifyCode = async (userId: string, code: string): Promise<boolean>
 
     return true;
   } catch (error) {
-    console.error('Code verification error:', error);
     return false;
   }
 };

@@ -87,7 +87,6 @@ const ClinicManagement: React.FC = () => {
 
   const handleCreateClinic = () => {
     // Create clinic logic
-    console.log('Creating clinic:', newClinic);
     setShowCreateModal(false);
     setNewClinic({
       name: '',
@@ -114,17 +113,14 @@ const ClinicManagement: React.FC = () => {
 
   const handleApproveClinic = (clinicId: string) => {
     // Approve clinic logic
-    console.log('Approving clinic:', clinicId);
   };
 
   const handleRejectClinic = (clinicId: string) => {
     // Reject clinic logic
-    console.log('Rejecting clinic:', clinicId);
   };
 
   const handleDeleteClinic = (clinicId: string) => {
     // Delete clinic logic
-    console.log('Deleting clinic:', clinicId);
   };
 
   const specialties = [

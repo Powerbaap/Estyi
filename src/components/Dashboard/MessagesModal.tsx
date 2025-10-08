@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { X, Send, Phone, Video, MoreVertical, Check, CheckCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Message {
   id: string;
@@ -26,6 +28,7 @@ interface MessagesModalProps {
 }
 
 const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
+  const { t } = useTranslation();
   const [selectedConversation, setSelectedConversation] = useState<string | null>('1');
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
@@ -93,7 +96,7 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
         {
           id: '4',
           senderId: 'user',
-          content: 'Rinoplasti ameliyatı hakkında bilgi almak istiyorum. Fiyat ve süreç nasıl olacak?',
+          content: t('messages.rhinoplastyInquiry'),
           timestamp: new Date(Date.now() - 1000 * 60 * 15),
           isRead: true,
           isDelivered: true
@@ -101,7 +104,7 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
         {
           id: '5',
           senderId: 'clinic',
-          content: 'Rinoplasti ameliyatı hakkında detaylı bilgi gönderiyorum. Fiyat 3,500 USD ve süreç yaklaşık 2 saat sürüyor.',
+          content: t('messages.rhinoplastyInfo'),
           timestamp: new Date(Date.now() - 1000 * 60 * 10),
           isRead: false,
           isDelivered: true
@@ -164,7 +167,7 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
       const reply: Message = {
         id: (Date.now() + 1).toString(),
         senderId: 'clinic',
-        content: 'Mesajınız alındı. En kısa sürede size dönüş yapacağız.',
+        content: t('common.messageReceived'),
         timestamp: new Date(),
         isRead: false,
         isDelivered: true
@@ -212,7 +215,7 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
         {/* Conversations List */}
         <div className="w-1/3 border-r border-gray-200 flex flex-col">
           <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-            <h2 className="text-xl font-bold text-gray-900">Mesajlar</h2>
+            <h2 className="text-xl font-bold text-gray-900">{t('common.messages')}</h2>
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"

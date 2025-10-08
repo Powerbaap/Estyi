@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import { User, Camera, Save, Edit, MapPin, Mail, Shield } from 'lucide-react';
 
 const Profile: React.FC = () => {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -14,7 +16,6 @@ const Profile: React.FC = () => {
 
   const handleSave = () => {
     // Burada API çağrısı yapılacak
-    console.log('Profile updated:', profileData);
     setIsEditing(false);
   };
 
@@ -36,8 +37,8 @@ const Profile: React.FC = () => {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Giriş Yapın</h2>
-          <p className="text-gray-600">Profilinizi görüntülemek için giriş yapmanız gerekiyor.</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('auth.login')}</h2>
+          <p className="text-gray-600">{t('profile.title')}</p>
         </div>
       </div>
     );
@@ -48,8 +49,8 @@ const Profile: React.FC = () => {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profil</h1>
-          <p className="text-gray-600 mt-2">Kişisel bilgilerinizi yönetin ve hesap ayarlarınızı güncelleyin</p>
+          <h1 className="text-3xl font-bold text-gray-900">{t('profile.title')}</h1>
+          <p className="text-gray-600 mt-2">{t('profile.personalInfo')}</p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -77,23 +78,23 @@ const Profile: React.FC = () => {
                   )}
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 mt-4">
-                  {user?.name || 'Kullanıcı'}
+                  {user?.name || t('profile.user')}
                 </h2>
-                <p className="text-gray-600">{user.role === 'user' ? 'Değişim Arayan' : 'Değişim Yaratan'}</p>
+                <p className="text-gray-600">{user.role === 'user' ? t('profile.patient') : t('profile.clinic')}</p>
               </div>
 
               {/* Quick Stats */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600">Toplam Talep</span>
+                  <span className="text-sm text-gray-600">{t('profile.totalRequests')}</span>
                   <span className="font-semibold text-gray-900">5</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600">Alınan Teklif</span>
+                  <span className="text-sm text-gray-600">{t('profile.receivedOffers')}</span>
                   <span className="font-semibold text-gray-900">12</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600">Üyelik Tarihi</span>
+                  <span className="text-sm text-gray-600">{t('profile.memberSince')}</span>
                   <span className="font-semibold text-gray-900">15.01.2024</span>
                 </div>
               </div>
@@ -104,7 +105,7 @@ const Profile: React.FC = () => {
           <div className="lg:col-span-2">
             <div className="bg-white rounded-2xl shadow-lg p-6">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-bold text-gray-900">Kişisel Bilgiler</h3>
+                <h3 className="text-xl font-bold text-gray-900">{t('profile.personalInfo')}</h3>
                 <div className="flex space-x-2">
                   {isEditing ? (
                     <>
@@ -112,14 +113,14 @@ const Profile: React.FC = () => {
                         onClick={() => setIsEditing(false)}
                         className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
                       >
-                        İptal
+                        {t('profile.cancel')}
                       </button>
                       <button
                         onClick={handleSave}
                         className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
                       >
                         <Save className="w-4 h-4" />
-                        <span>Kaydet</span>
+                        <span>{t('profile.save')}</span>
                       </button>
                     </>
                   ) : (
@@ -128,7 +129,7 @@ const Profile: React.FC = () => {
                       className="flex items-center space-x-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                     >
                       <Edit className="w-4 h-4" />
-                      <span>Düzenle</span>
+                      <span>{t('profile.edit')}</span>
                     </button>
                   )}
                 </div>
@@ -138,7 +139,7 @@ const Profile: React.FC = () => {
                 {/* Email */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    E-posta
+                    {t('profile.email')}
                   </label>
                   <div className="relative">
                     <input
@@ -155,7 +156,7 @@ const Profile: React.FC = () => {
                 {/* Gender */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Cinsiyet
+                    {t('profile.gender')}
                   </label>
                   <select
                     value={profileData.gender}
@@ -163,17 +164,17 @@ const Profile: React.FC = () => {
                     disabled={!isEditing}
                     className="w-full px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                   >
-                    <option value="">Cinsiyet seçin</option>
-                    <option value="male">Erkek</option>
-                    <option value="female">Kadın</option>
-                    <option value="other">Diğer</option>
+                    <option value="">{t('profile.selectGender')}</option>
+                    <option value="male">{t('profile.male')}</option>
+                    <option value="female">{t('profile.female')}</option>
+                    <option value="other">{t('profile.other')}</option>
                   </select>
                 </div>
 
                 {/* Location */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Konum
+                    {t('profile.location')}
                   </label>
                   <div className="relative">
                     <input
@@ -181,7 +182,7 @@ const Profile: React.FC = () => {
                       value={profileData.location}
                       onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
                       disabled={!isEditing}
-                      placeholder="Şehir, ülke"
+                      placeholder={t('profile.locationPlaceholder')}
                       className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                     />
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -193,16 +194,16 @@ const Profile: React.FC = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Shield className="w-5 h-5 mr-2 text-blue-600" />
-                  Güvenlik
+                  {t('profile.security')}
                 </h4>
                 <div className="space-y-3">
                   <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="font-medium text-gray-900">Şifre Değiştir</div>
-                    <div className="text-sm text-gray-600">Hesap güvenliğiniz için şifrenizi güncelleyin</div>
+                    <div className="font-medium text-gray-900">{t('profile.changePassword')}</div>
+                    <div className="text-sm text-gray-600">{t('profile.changePasswordDesc')}</div>
                   </button>
                   <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="font-medium text-gray-900">İki Faktörlü Doğrulama</div>
-                    <div className="text-sm text-gray-600">Ek güvenlik için 2FA'yı etkinleştirin</div>
+                    <div className="font-medium text-gray-900">{t('profile.twoFactor')}</div>
+                    <div className="text-sm text-gray-600">{t('profile.twoFactorDesc')}</div>
                   </button>
                 </div>
               </div>
