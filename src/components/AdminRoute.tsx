@@ -1,13 +1,19 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { getUserRole } from '../utils/auth';
 
 interface AdminRouteProps {
   children: React.ReactNode;
 }
 
 const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
-  const { user } = useAuth();
+  const { user, isLoading } = useAuth();
+
+  // Başlangıçta auth durumu yüklenirken bekle
+  if (isLoading) {
+    return null;
+  }
 
   // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
   if (!user) {
@@ -15,7 +21,7 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   }
 
   // Kullanıcı admin değilse ana sayfaya yönlendir
-  if (user.role !== 'admin') {
+  if (getUserRole(user) !== 'admin') {
     return <Navigate to="/" replace />;
   }
 
@@ -23,4 +29,4 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
-export default AdminRoute; 
+export default AdminRoute;

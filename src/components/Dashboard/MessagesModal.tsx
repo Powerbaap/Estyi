@@ -29,119 +29,17 @@ interface MessagesModalProps {
 
 const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
   const { t } = useTranslation();
-  const [selectedConversation, setSelectedConversation] = useState<string | null>('1');
+  const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // Mock conversations
-  const conversations: Conversation[] = [
-    {
-      id: '1',
-      name: 'Dr. Ahmet Yılmaz',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face',
-      lastMessage: 'Rinoplasti ameliyatı hakkında detaylı bilgi gönderiyorum. Fiyat 3,500 USD ve süreç yaklaşık 2 saat sürüyor.',
-      timestamp: '10 dk önce',
-      unreadCount: 2,
-      isOnline: true
-    },
-    {
-      id: '2',
-      name: 'Estetik Kliniği',
-      avatar: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=40&h=40&fit=crop&crop=face',
-      lastMessage: 'Teşekkürler! Bilgileri inceledim. Randevu almak istiyorum.',
-      timestamp: '45 dk önce',
-      unreadCount: 1,
-      isOnline: false
-    },
-    {
-      id: '3',
-      name: 'Dr. Fatma Kaya',
-      avatar: 'https://images.unsplash.com/photo-1594824475545-9d0c7c4951c1?w=40&h=40&fit=crop&crop=face',
-      lastMessage: 'Fiyat teklifiniz hazır. İncelemek ister misiniz?',
-      timestamp: '2 sa önce',
-      unreadCount: 0,
-      isOnline: true
-    }
-  ];
+  // Konuşma listesi başlangıçta boş
+  const conversations: Conversation[] = [];
 
-  // Mock messages based on conversation ID
+  // Seçili konuşma değiştiğinde mesajları sıfırla
   React.useEffect(() => {
-    const messagesData = {
-      '1': [
-        {
-          id: '1',
-          senderId: 'clinic',
-          content: 'Merhaba! Size nasıl yardımcı olabilirim?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '2',
-          senderId: 'user',
-          content: 'Merhaba doktor, tedavi planım hakkında bilgi almak istiyorum.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 25),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '3',
-          senderId: 'clinic',
-          content: 'Tabii ki! Hangi tedavi hakkında bilgi almak istiyorsunuz?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 20),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '4',
-          senderId: 'user',
-          content: t('messages.rhinoplastyInquiry'),
-          timestamp: new Date(Date.now() - 1000 * 60 * 15),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '5',
-          senderId: 'clinic',
-          content: t('messages.rhinoplastyInfo'),
-          timestamp: new Date(Date.now() - 1000 * 60 * 10),
-          isRead: false,
-          isDelivered: true
-        }
-      ],
-      '2': [
-        {
-          id: '1',
-          senderId: 'clinic',
-          content: 'Merhaba! Tedavi süreciniz hakkında detaylı bilgi gönderiyorum.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '2',
-          senderId: 'user',
-          content: 'Teşekkürler! Bilgileri inceledim. Randevu almak istiyorum.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 45),
-          isRead: false,
-          isDelivered: true
-        }
-      ],
-      '3': [
-        {
-          id: '1',
-          senderId: 'clinic',
-          content: 'Fiyat teklifiniz hazır. İncelemek ister misiniz?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-          isRead: true,
-          isDelivered: true
-        }
-      ]
-    };
-
-    const conversationMessages = messagesData[selectedConversation as keyof typeof messagesData] || messagesData['1'];
-    setMessages(conversationMessages);
+    setMessages([]);
   }, [selectedConversation]);
 
   const handleSendMessage = () => {
@@ -159,21 +57,7 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
     setMessages(prev => [...prev, message]);
     setNewMessage('');
 
-    // Simulate typing indicator
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      // Simulate reply
-      const reply: Message = {
-        id: (Date.now() + 1).toString(),
-        senderId: 'clinic',
-        content: t('common.messageReceived'),
-        timestamp: new Date(),
-        isRead: false,
-        isDelivered: true
-      };
-      setMessages(prev => [...prev, reply]);
-    }, 2000);
+    // Otomatik cevap kaldırıldı; gerçek servis bağlanınca kullanılacak
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -312,8 +196,13 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
               </div>
 
               {/* Messages */}
-              <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {messages.map((message) => (
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            {messages.length === 0 ? (
+              <div className="flex items-center justify-center h-64 text-gray-500">
+                <p className="text-sm">Henüz mesaj yok</p>
+              </div>
+            ) : (
+              messages.map((message) => (
                   <div
                     key={message.id}
                     className={`flex ${message.senderId === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -340,7 +229,8 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
                       </div>
                     </div>
                   </div>
-                ))}
+              ))
+            )}
                 
                 {/* Typing Indicator */}
                 {isTyping && (
@@ -391,4 +281,4 @@ const MessagesModal: React.FC<MessagesModalProps> = ({ isOpen, onClose }) => {
   );
 };
 
-export default MessagesModal; 
+export default MessagesModal;

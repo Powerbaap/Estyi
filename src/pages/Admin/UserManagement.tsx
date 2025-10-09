@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
+import { getUserRole } from '../../utils/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -78,7 +79,7 @@ const UserManagement: React.FC = () => {
     const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          user.email.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-    const matchesRole = roleFilter === 'all' || user.role === roleFilter;
+  const matchesRole = roleFilter === 'all' || getUserRole(user as any) === roleFilter;
     
     return matchesSearch && matchesStatus && matchesRole;
   });
@@ -260,11 +261,11 @@ const UserManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.role === 'admin' ? 'bg-red-100 text-red-800' :
-                        user.role === 'clinic' ? 'bg-green-100 text-green-800' :
+                  getUserRole(user as any) === 'admin' ? 'bg-red-100 text-red-800' :
+                  getUserRole(user as any) === 'clinic' ? 'bg-green-100 text-green-800' :
                         'bg-blue-100 text-blue-800'
                       }`}>
-                        {user.role === 'admin' ? 'Admin' : user.role === 'clinic' ? 'Klinik' : 'Kullanıcı'}
+                {getUserRole(user as any) === 'admin' ? 'Admin' : getUserRole(user as any) === 'clinic' ? 'Klinik' : 'Kullanıcı'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -347,7 +348,7 @@ const UserManagement: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Rol</label>
-                <p className="text-sm text-gray-900">{selectedUser.role}</p>
+                <p className="text-sm text-gray-900">{getUserRole(selectedUser as any)}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Durum</label>
@@ -378,4 +379,4 @@ const UserManagement: React.FC = () => {
   );
 };
 
-export default UserManagement; 
+export default UserManagement;

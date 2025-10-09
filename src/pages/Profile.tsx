@@ -1,10 +1,93 @@
 import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { getUserRole } from '../utils/auth';
 import { useTranslation } from 'react-i18next';
 import { User, Camera, Save, Edit, MapPin, Mail, Shield } from 'lucide-react';
 
+// Güvenli çeviri fallback metinleri (bileşen dışında sabit)
+const profileFallbackTexts: Record<string, Record<string, string>> = {
+  'profile.user': {
+    tr: 'Kullanıcı',
+    en: 'User',
+    ar: 'مستخدم'
+  },
+  'profile.patient': {
+    tr: 'Hasta',
+    en: 'Patient',
+    ar: 'مريض'
+  },
+  'profile.clinic': {
+    tr: 'Klinik',
+    en: 'Clinic',
+    ar: 'عيادة'
+  },
+  'profile.totalRequests': {
+    tr: 'Toplam Talepler',
+    en: 'Total Requests',
+    ar: 'إجمالي الطلبات'
+  },
+  'profile.receivedOffers': {
+    tr: 'Alınan Teklifler',
+    en: 'Received Offers',
+    ar: 'العروض المستلمة'
+  },
+  'profile.memberSince': {
+    tr: 'Üyelik Tarihi',
+    en: 'Member Since',
+    ar: 'عضو منذ'
+  },
+  'profile.location': {
+    tr: 'Konum',
+    en: 'Location',
+    ar: 'الموقع'
+  },
+  'profile.locationPlaceholder': {
+    tr: 'Şehir, ülke',
+    en: 'City, country',
+    ar: 'المدينة، الدولة'
+  },
+  'profile.security': {
+    tr: 'Güvenlik',
+    en: 'Security',
+    ar: 'الأمان'
+  },
+  'profile.changePassword': {
+    tr: 'Şifreyi Değiştir',
+    en: 'Change Password',
+    ar: 'تغيير كلمة المرور'
+  },
+  'profile.changePasswordDesc': {
+    tr: 'Hesap güvenliğiniz için güçlü bir şifre kullanın.',
+    en: 'Use a strong password for your account security.',
+    ar: 'استخدم كلمة مرور قوية لأمان حسابك.'
+  },
+  'profile.twoFactor': {
+    tr: 'İki Aşamalı Doğrulama',
+    en: 'Two-Factor Authentication',
+    ar: 'المصادقة الثنائية'
+  },
+  'profile.twoFactorDesc': {
+    tr: 'Hesabınızı ekstra güvenlik katmanı ile koruyun.',
+    en: 'Protect your account with an extra security layer.',
+    ar: 'قم بحماية حسابك بطبقة أمان إضافية.'
+  }
+};
+
 const Profile: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, ready, i18n } = useTranslation();
+  const safeTranslate = (key: string) => {
+    if (ready) {
+      const translation = t(key);
+      if (translation && translation !== key) {
+        return translation;
+      }
+    }
+    const currentLang = i18n.language || 'tr';
+    const fallback = profileFallbackTexts[key];
+    if (fallback && (fallback as any)[currentLang]) return (fallback as any)[currentLang];
+    if (fallback && fallback.tr) return fallback.tr;
+    return key;
+  };
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -78,23 +161,23 @@ const Profile: React.FC = () => {
                   )}
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 mt-4">
-                  {user?.name || t('profile.user')}
+                  {user?.name || safeTranslate('profile.user')}
                 </h2>
-                <p className="text-gray-600">{user.role === 'user' ? t('profile.patient') : t('profile.clinic')}</p>
+                <p className="text-gray-600">{getUserRole(user) === 'user' ? safeTranslate('profile.patient') : safeTranslate('profile.clinic')}</p>
               </div>
 
               {/* Quick Stats */}
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600">{t('profile.totalRequests')}</span>
+                  <span className="text-sm text-gray-600">{safeTranslate('profile.totalRequests')}</span>
                   <span className="font-semibold text-gray-900">5</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600">{t('profile.receivedOffers')}</span>
+                  <span className="text-sm text-gray-600">{safeTranslate('profile.receivedOffers')}</span>
                   <span className="font-semibold text-gray-900">12</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                  <span className="text-sm text-gray-600">{t('profile.memberSince')}</span>
+                  <span className="text-sm text-gray-600">{safeTranslate('profile.memberSince')}</span>
                   <span className="font-semibold text-gray-900">15.01.2024</span>
                 </div>
               </div>
@@ -174,7 +257,7 @@ const Profile: React.FC = () => {
                 {/* Location */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {t('profile.location')}
+                    {safeTranslate('profile.location')}
                   </label>
                   <div className="relative">
                     <input
@@ -182,7 +265,7 @@ const Profile: React.FC = () => {
                       value={profileData.location}
                       onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
                       disabled={!isEditing}
-                      placeholder={t('profile.locationPlaceholder')}
+                      placeholder={safeTranslate('profile.locationPlaceholder')}
                       className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
                     />
                     <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -194,16 +277,16 @@ const Profile: React.FC = () => {
               <div className="mt-8 pt-6 border-t border-gray-200">
                 <h4 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
                   <Shield className="w-5 h-5 mr-2 text-blue-600" />
-                  {t('profile.security')}
+                  {safeTranslate('profile.security')}
                 </h4>
                 <div className="space-y-3">
                   <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="font-medium text-gray-900">{t('profile.changePassword')}</div>
-                    <div className="text-sm text-gray-600">{t('profile.changePasswordDesc')}</div>
+                    <div className="font-medium text-gray-900">{safeTranslate('profile.changePassword')}</div>
+                    <div className="text-sm text-gray-600">{safeTranslate('profile.changePasswordDesc')}</div>
                   </button>
                   <button className="w-full text-left p-3 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
-                    <div className="font-medium text-gray-900">{t('profile.twoFactor')}</div>
-                    <div className="text-sm text-gray-600">{t('profile.twoFactorDesc')}</div>
+                    <div className="font-medium text-gray-900">{safeTranslate('profile.twoFactor')}</div>
+                    <div className="text-sm text-gray-600">{safeTranslate('profile.twoFactorDesc')}</div>
                   </button>
                 </div>
               </div>
@@ -215,4 +298,4 @@ const Profile: React.FC = () => {
   );
 };
 
-export default Profile; 
+export default Profile;

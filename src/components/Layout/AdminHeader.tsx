@@ -11,15 +11,10 @@ import {
   Shield
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { useNotifications } from '../../hooks/useNotifications';
+import type { NotificationItem } from '../../services/notificationsService';
 
-interface Notification {
-  id: string;
-  title: string;
-  message: string;
-  type: 'info' | 'warning' | 'success' | 'error';
-  time: string;
-  isRead: boolean;
-}
+// Admin bildirimleri artık ortak hook’tan geliyor (type seti farklı olabilir)
 
 interface Message {
   id: string;
@@ -37,32 +32,7 @@ const AdminHeader: React.FC = () => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const [isMessageOpen, setIsMessageOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: '1',
-      title: 'Yeni Klinik Kaydı',
-      message: 'İstanbul Estetik Merkezi sisteme kayıt oldu.',
-      type: 'info',
-      time: '2 dakika önce',
-      isRead: false
-    },
-    {
-      id: '2',
-      title: 'Sistem Uyarısı',
-      message: 'Sunucu yükü %85\'e ulaştı.',
-      type: 'warning',
-      time: '15 dakika önce',
-      isRead: false
-    },
-    {
-      id: '3',
-      title: 'Başarılı İşlem',
-      message: 'Kullanıcı hesabı başarıyla onaylandı.',
-      type: 'success',
-      time: '1 saat önce',
-      isRead: true
-    }
-  ]);
+  const { notifications, markAsRead, unreadCount } = useNotifications();
 
   const [messages, setMessages] = useState<Message[]>([
     {
@@ -110,11 +80,7 @@ const AdminHeader: React.FC = () => {
   };
 
   const markNotificationAsRead = (id: string) => {
-    setNotifications(prev => 
-      prev.map(notification => 
-        notification.id === id ? { ...notification, isRead: true } : notification
-      )
-    );
+    markAsRead(id);
   };
 
   const markMessageAsRead = (id: string) => {
@@ -125,34 +91,48 @@ const AdminHeader: React.FC = () => {
     );
   };
 
-  const unreadNotifications = notifications.filter(n => !n.isRead).length;
+  const unreadNotifications = unreadCount;
   const unreadMessages = messages.filter(m => !m.isRead).length;
 
-  const getNotificationIcon = (type: string) => {
+  const getNotificationIcon = (type: NotificationItem['type']) => {
     switch (type) {
-      case 'info':
-        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>;
-      case 'warning':
-        return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>;
-      case 'success':
+      case 'offer':
         return <div className="w-2 h-2 bg-green-500 rounded-full"></div>;
-      case 'error':
-        return <div className="w-2 h-2 bg-red-500 rounded-full"></div>;
+      case 'message':
+        return <div className="w-2 h-2 bg-blue-500 rounded-full"></div>;
+      case 'payment':
+        return <div className="w-2 h-2 bg-yellow-500 rounded-full"></div>;
+      case 'system':
+        return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>;
       default:
         return <div className="w-2 h-2 bg-gray-500 rounded-full"></div>;
     }
   };
 
-  const getNotificationColor = (type: string) => {
+  const formatTime = (date: Date) => {
+    const now = new Date();
+    const diff = now.getTime() - date.getTime();
+    const minutes = Math.floor(diff / (1000 * 60));
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+
+    if (minutes < 1) return t('common.loading');
+    if (minutes < 60) return `${minutes} ${t('common.minutes')} ${t('common.ago')}`;
+    if (hours < 24) return `${hours} ${t('common.hours')} ${t('common.ago')}`;
+    if (days < 7) return `${days} ${t('common.days')} ${t('common.ago')}`;
+    return date.toLocaleDateString();
+  };
+
+  const getNotificationColor = (type: NotificationItem['type']) => {
     switch (type) {
-      case 'info':
+      case 'message':
         return 'border-l-blue-500';
-      case 'warning':
-        return 'border-l-yellow-500';
-      case 'success':
+      case 'offer':
         return 'border-l-green-500';
-      case 'error':
-        return 'border-l-red-500';
+      case 'payment':
+        return 'border-l-yellow-500';
+      case 'system':
+        return 'border-l-gray-500';
       default:
         return 'border-l-gray-500';
     }
@@ -293,7 +273,7 @@ const AdminHeader: React.FC = () => {
                                 {notification.message}
                               </p>
                               <p className="text-xs text-gray-500 mt-2">
-                                {notification.time}
+                                {formatTime(notification.timestamp)}
                               </p>
                             </div>
                           </div>
@@ -366,4 +346,4 @@ const AdminHeader: React.FC = () => {
   );
 };
 
-export default AdminHeader; 
+export default AdminHeader;

@@ -1,134 +1,77 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, X, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search, AlertCircle } from 'lucide-react';
+import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, X, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search, AlertCircle, FileText } from 'lucide-react';
 import PriceRequestModal from '../../components/Dashboard/PriceRequestModal';
 import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { requestService } from '../../services/api';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
+  const location = useLocation();
+  const navigate = useNavigate();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>('all');
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
 
-  const [requests, setRequests] = useState([
-    {
-      id: '1',
-      procedure: t('procedures.rhinoplasty'),
-      status: 'active',
-      createdAt: new Date('2025-01-15'),
-      offersCount: 3,
-      countries: [t('countries.turkey'), t('countries.southKorea')],
-      photos: 5,
-      photoUrls: [
-        'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069438/pexels-photo-5069438.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069439/pexels-photo-5069439.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069440/pexels-photo-5069440.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069441/pexels-photo-5069441.jpeg?auto=compress&cs=tinysrgb&w=400'
-      ],
-      offers: [
-        {
-          id: 'offer1',
-          clinicName: t('clinics.istanbulAesthetic'),
-          clinicCountry: t('countries.turkey'),
-          clinicRating: 4.8,
-          clinicReviews: 245,
-          priceMin: 2500,
-          priceMax: 3500,
-          currency: 'USD',
-          duration: '2-3 saat',
-          hospitalization: '1 gece',
-          description: 'Deneyimli cerrahlarımız ile doğal görünümlü burun estetiği. 15 yıllık tecrübe.',
-          createdAt: new Date('2025-01-16'),
-          isVerified: true
-        },
-        {
-          id: 'offer2',
-          clinicName: t('clinics.seoulBeauty'),
-          clinicCountry: t('countries.southKorea'),
-          clinicRating: 4.9,
-          clinicReviews: 189,
-          priceMin: 3000,
-          priceMax: 4200,
-          currency: 'USD',
-          duration: t('durations.hours34'),
-          hospitalization: t('hospitalization.nights2'),
-          description: 'K-beauty teknikleri ile mükemmel sonuçlar. Uluslararası sertifikalı cerrahlar.',
-          createdAt: new Date('2025-01-17'),
-          isVerified: true
-        },
-        {
-          id: 'offer3',
-          clinicName: t('clinics.antalyaMedical'),
-          clinicCountry: t('countries.turkey'),
-          clinicRating: 4.7,
-          clinicReviews: 156,
-          priceMin: 2200,
-          priceMax: 3000,
-          currency: 'USD',
-          duration: '2-3 saat',
-          hospitalization: '1 gece',
-          description: 'Tatil ile birleştirilebilir paket seçenekleri. VIP transfer dahil.',
-          createdAt: new Date('2025-01-18'),
-          isVerified: true
+  // Gerçek kullanıcı verileri - başlangıçta boş
+  const [requests, setRequests] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Gerçek veri yükleme (Supabase API entegrasyonu)
+  useEffect(() => {
+    const loadUserRequests = async () => {
+      try {
+        setIsLoading(true);
+        if (!user?.id) {
+          setRequests([]);
+          return;
         }
-      ]
-    },
-    {
-      id: '2',
-      procedure: t('procedures.hairTransplant'),
-      status: 'closed',
-      createdAt: new Date('2025-01-10'),
-      offersCount: 5,
-      countries: [t('countries.turkey'), t('countries.thailand')],
-      photos: 4,
-      photoUrls: [
-        'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069438/pexels-photo-5069438.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069439/pexels-photo-5069439.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/5069440/pexels-photo-5069440.jpeg?auto=compress&cs=tinysrgb&w=400'
-      ],
-      offers: [
-        {
-          id: 'offer4',
-          clinicName: t('clinics.hairWorldIstanbul'),
-          clinicCountry: t('countries.turkey'),
-          clinicRating: 4.9,
-          clinicReviews: 312,
-          priceMin: 1800,
-          priceMax: 2500,
-          currency: 'USD',
-          duration: t('durations.hours68'),
-          hospitalization: t('hospitalization.night1'),
-          description: 'FUE tekniği ile doğal saç ekimi. 10 yıllık garantili sonuç.',
-          createdAt: new Date('2025-01-11'),
-          isVerified: true
-        },
-        {
-          id: 'offer5',
-          clinicName: t('clinics.bangkokHair'),
-          clinicCountry: t('countries.thailand'),
-          clinicRating: 4.8,
-          clinicReviews: 198,
-          priceMin: 2200,
-          priceMax: 3200,
-          currency: 'USD',
-          duration: t('durations.hours810'),
-          hospitalization: t('hospitalization.nights2'),
-          description: 'DHI tekniği ile hassas saç ekimi. 5 yıllık bakım dahil.',
-          createdAt: new Date('2025-01-12'),
-          isVerified: true
-        }
-      ]
+        const userRequests = await requestService.getUserRequests(user.id);
+        const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => ({
+          id: r.id,
+          procedure: r.procedure,
+          status: r.status ?? 'active',
+          createdAt: r.created_at ? new Date(r.created_at) : new Date(),
+          offersCount: r.offersCount ?? 0,
+          countries: r.countries ?? [],
+          photos: Array.isArray(r.photos) ? r.photos.length : (typeof r.photos === 'number' ? r.photos : 0),
+          photoUrls: Array.isArray(r.photos) ? r.photos : undefined,
+        }));
+        setRequests((prev) => {
+          const combined = [...prev];
+          mapped.forEach((r: any) => {
+            const idx = combined.findIndex((p) => p.id === r.id);
+            if (idx === -1) {
+              combined.push(r);
+            } else {
+              combined[idx] = { ...combined[idx], ...r };
+            }
+          });
+          return combined.sort((a, b) => {
+            const ad = a.createdAt instanceof Date ? a.createdAt : new Date(a.createdAt);
+            const bd = b.createdAt instanceof Date ? b.createdAt : new Date(b.createdAt);
+            return bd.getTime() - ad.getTime();
+          });
+        });
+      } catch (error) {
+        console.error('Kullanıcı talepleri yüklenirken hata:', error);
+        setRequests([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    if (user) {
+      loadUserRequests();
     }
-  ]);
+  }, [user]);
 
   const handleRequestClick = (request: any) => {
     setSelectedRequest(request);
@@ -160,6 +103,16 @@ const UserDashboard: React.FC = () => {
   const handleFilterClick = (filter: string) => {
     setActiveFilter(filter);
   };
+
+  // /request/new sayfasından navigate state ile gelen yeni talebi listeye ekle
+  useEffect(() => {
+    const state = location.state as { newRequest?: any } | undefined;
+    if (state?.newRequest) {
+      setRequests(prev => [state.newRequest, ...prev]);
+      // State'i temizleyerek tekrar girişte çift eklenmeyi önle
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state, navigate]);
 
   const getFilteredRequests = () => {
     switch (activeFilter) {
@@ -360,31 +313,75 @@ const UserDashboard: React.FC = () => {
 
         {/* Requests List */}
         <div className="space-y-6">
-          {getFilteredRequests().length === 0 ? (
+          {isLoading ? (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-              <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
-                <Camera className="w-10 h-10 text-gray-400" />
+              <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
+                <Clock className="w-10 h-10 text-blue-500" />
               </div>
-              <h3 className="text-xl font-semibold text-gray-900 mb-3">
-                {activeFilter === 'all' && t('userDashboard.empty.all.title')}
-                {activeFilter === 'active' && t('userDashboard.empty.active.title')}
-                {activeFilter === 'closed' && t('userDashboard.empty.closed.title')}
-                {activeFilter === 'offers' && t('userDashboard.empty.offers.title')}
-              </h3>
-              <p className="text-gray-600 mb-6 max-w-md mx-auto">
-                {activeFilter === 'all' && t('userDashboard.empty.all.description')}
-                {activeFilter === 'active' && t('userDashboard.empty.active.description')}
-                {activeFilter === 'closed' && t('userDashboard.empty.closed.description')}
-                {activeFilter === 'offers' && t('userDashboard.empty.offers.description')}
-              </p>
-              {activeFilter === 'all' && (
-                <button
-                  onClick={() => setIsRequestModalOpen(true)}
-                  className="inline-flex items-center space-x-2 px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200 font-medium shadow-lg"
-                >
-                  <Plus className="w-4 h-4" />
-                  <span>{t('userDashboard.empty.all.cta')}</span>
-                </button>
+              <h3 className="text-xl font-semibold text-gray-900 mb-3">{t('userDashboard.loadingTitle')}</h3>
+              <p className="text-gray-600">{t('userDashboard.loadingText')}</p>
+            </div>
+          ) : getFilteredRequests().length === 0 ? (
+            <div className="bg-gradient-to-br from-white via-blue-50 to-indigo-50 rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
+              {activeFilter === 'all' ? (
+                <>
+                  <button
+                    onClick={() => {
+                      // SPA içinde yönlendirerek talep oluşturmayı başlat
+                      navigate('/request/new');
+                    }}
+                    className="w-24 h-24 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full flex items-center justify-center mx-auto mb-8 shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 transition-transform hover:scale-105"
+                    aria-label={t('userDashboard.newRequest')}
+                  >
+                    <Plus className="w-12 h-12 text-white" />
+                  </button>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent mb-4">
+                    {t('userDashboard.empty.all.title')}
+                  </h3>
+                  <p className="text-lg text-gray-700 mb-6 max-w-2xl mx-auto leading-relaxed">
+                    {t('userDashboard.empty.all.description')}
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8 max-w-4xl mx-auto">
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                      <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <FileText className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-2">{t('userDashboard.empty.guide.step1.title')}</h4>
+                      <p className="text-sm text-gray-600">{t('userDashboard.empty.guide.step1.desc')}</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                      <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-cyan-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <Users className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-2">{t('userDashboard.empty.guide.step2.title')}</h4>
+                      <p className="text-sm text-gray-600">{t('userDashboard.empty.guide.step2.desc')}</p>
+                    </div>
+                    <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+                      <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-600 rounded-lg flex items-center justify-center mx-auto mb-4">
+                        <Star className="w-6 h-6 text-white" />
+                      </div>
+                      <h4 className="font-semibold text-gray-900 mb-2">{t('userDashboard.empty.guide.step3.title')}</h4>
+                      <p className="text-sm text-gray-600">{t('userDashboard.empty.guide.step3.desc')}</p>
+                    </div>
+                  </div>
+                  {/* CTA kaldırıldı: Artı düğmesi talep oluşturma akışını başlatıyor */}
+                </>
+              ) : (
+                <>
+                  <div className="w-20 h-20 bg-gradient-to-r from-gray-100 to-gray-200 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Camera className="w-10 h-10 text-gray-400" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-3">
+                    {activeFilter === 'active' && 'Aktif Talep Bulunamadı'}
+                    {activeFilter === 'closed' && 'Tamamlanmış Talep Bulunamadı'}
+                    {activeFilter === 'offers' && 'Teklif Alan Talep Bulunamadı'}
+                  </h3>
+                  <p className="text-gray-600 mb-6 max-w-md mx-auto">
+                    {activeFilter === 'active' && 'Henüz aktif bir talebiniz bulunmuyor.'}
+                    {activeFilter === 'closed' && 'Henüz tamamlanmış bir talebiniz bulunmuyor.'}
+                    {activeFilter === 'offers' && 'Henüz teklif alan bir talebiniz bulunmuyor.'}
+                  </p>
+                </>
               )}
             </div>
           ) : (
@@ -430,7 +427,7 @@ const UserDashboard: React.FC = () => {
                       <div className="mb-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">{t('userDashboard.photos')}</h4>
                         <div className="flex space-x-3">
-                          {request.photoUrls.slice(0, 4).map((url, index) => (
+                          {(request.photoUrls ?? []).slice(0, 4).map((url, index) => (
                             <div
                               key={index}
                               className="relative group/photo overflow-hidden"

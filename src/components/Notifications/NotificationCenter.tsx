@@ -25,7 +25,7 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
     requestNotificationPermission();
   }, [requestNotificationPermission]);
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: 'offer' | 'message' | 'payment' | 'system') => {
     switch (type) {
       case 'offer':
         return <DollarSign className="w-5 h-5 text-green-600" />;
@@ -68,7 +68,11 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
   };
 
   // Bildirime tıklayınca ilgili sayfaya git
-  const handleNotificationClick = async (notification: Notification) => {
+  const handleNotificationClick = async (notification: {
+    id: string;
+    type: 'offer' | 'message' | 'payment' | 'system';
+    actionUrl?: string;
+  }) => {
     // Bildirimi okundu olarak işaretle
     await markAsRead(notification.id);
 
@@ -208,4 +212,4 @@ const NotificationCenter: React.FC<NotificationCenterProps> = ({ isOpen, onClose
   );
 };
 
-export default NotificationCenter; 
+export default NotificationCenter;

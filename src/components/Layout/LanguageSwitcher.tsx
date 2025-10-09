@@ -14,7 +14,8 @@ const LanguageSwitcher: React.FC = () => {
     { code: 'ar', name: 'العربية', flag: '🇸🇦' }
   ];
 
-  const currentLanguage = languages.find(lang => lang.code === i18n.language) || languages[0];
+  const normalize = (lng: string) => lng?.split('-')[0] || lng;
+  const currentLanguage = languages.find(lang => lang.code === normalize(i18n.language)) || languages[0];
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

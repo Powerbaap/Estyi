@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48">
+  <defs>
+    <linearGradient id="primaryGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#667eea" stop-opacity="1" />
+      <stop offset="50%" stop-color="#764ba2" stop-opacity="1" />
+      <stop offset="100%" stop-color="#f093fb" stop-opacity="1" />
+    </linearGradient>
+    <linearGradient id="accentGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4facfe" stop-opacity="1" />
+      <stop offset="100%" stop-color="#00f2fe" stop-opacity="1" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+      <feMerge>
+        <feMergeNode in="coloredBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Dış hexagon -->
+  <path d="M24 2 L44 14 L44 34 L24 46 L4 34 L4 14 Z" fill="url(#primaryGradient)" stroke="url(#primaryGradient)" stroke-width="1" filter="url(#glow)" />
+
+  <!-- İç hexagon -->
+  <path d="M24 6 L40 16 L40 32 L24 42 L8 32 L8 16 Z" fill="white" stroke="white" stroke-width="1" />
+
+  <!-- Gül yaprağı -->
+  <path d="M24 12 Q28 8 32 12 Q28 16 24 12 Z" fill="url(#accentGradient)" stroke="url(#accentGradient)" stroke-width="0.5" />
+
+  <!-- Merkez daire -->
+  <circle cx="24" cy="24" r="8" fill="url(#primaryGradient)" stroke="url(#primaryGradient)" stroke-width="0.5" />
+
+  <!-- Kalp detay -->
+  <path d="M24 18 Q26 16 28 18 Q26 20 24 18 Z" fill="white" stroke="white" stroke-width="0.5" />
+
+  <!-- Parlama efekti -->
+  <circle cx="20" cy="20" r="2" fill="white" opacity="0.8" />
+</svg>

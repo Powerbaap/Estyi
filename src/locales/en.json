@@ -402,7 +402,11 @@
     "changePassword": "Change Password",
     "changePasswordDesc": "Update your password for account security",
     "twoFactor": "Two-Factor Authentication",
-    "twoFactorDesc": "Enable 2FA for additional security"
+    "twoFactorDesc": "Enable 2FA for additional security",
+    "preferences": "Preferences",
+    "notifications": "Notifications",
+    "language": "Language",
+    "timezone": "Timezone"
   },
   "reviews": {
     "title": "Platform Reviews",
@@ -640,6 +644,11 @@
       "finished": "Finished processes"
     },
     "empty": {
+      "guide": {
+        "step1": {"title": "1. Create Request", "desc": "Specify the procedure and your preferences"},
+        "step2": {"title": "2. Receive Offers", "desc": "Get special price offers from clinics"},
+        "step3": {"title": "3. Choose the Best", "desc": "Select the most suitable clinic and price"}
+      },
       "all": {
         "title": "No Requests Yet",
         "description": "Click the button above to create your first price request.",
@@ -658,6 +667,8 @@
         "description": "Your requests with offers will appear here."
       }
     },
+    "loadingTitle": "Loading...",
+    "loadingText": "Fetching your requests, please wait.",
     "offer": "offer",
     "photo": "photo",
     "photos": "Photos",
@@ -665,6 +676,9 @@
     "reviews": "reviews",
     "deleteRequest": "Delete Request",
     "enlargedPhoto": "Enlarged photo"
+  },
+  "priceRequest": {
+    "title": "Create Request"
   },
   "common": {
     "loading": "Loading...",
@@ -936,15 +950,6 @@
     "unread": "Unread",
     "online": "Online",
     "offline": "Offline"
-  },
-  "profile": {
-    "title": "Profile",
-    "personalInfo": "Personal Information",
-    "security": "Security",
-    "preferences": "Preferences",
-    "notifications": "Notifications",
-    "language": "Language",
-    "timezone": "Timezone"
   },
   "clinic": {
     "dashboard": "Clinic Dashboard",

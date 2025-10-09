@@ -9,8 +9,12 @@ interface PriceRequestModalProps {
   onRequestSubmitted: (request: any) => void;
 }
 
+import { useAuth } from '../../contexts/AuthContext';
+import { requestService } from '../../services/api';
+
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
   const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   
   // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
@@ -27,6 +31,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     description: '',
     photos: [] as File[]
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Get treatment areas in current language with fallback
   const getTreatmentAreas = () => {
@@ -199,38 +205,114 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
   const isAllSelected = formData.countries.length === countryKeys.length;
 
-  const handleSubmit = (e: React.FormEvent) => {
+  // Submit butonunun devre dışı kalma kontrolü ve kullanıcıya ipuçları
+  const isSubmitDisabled = () => {
+    const isMissingCities = formData.countries.includes('turkey') && formData.citiesTR.length === 0;
+    return (
+      formData.photos.length < 1 ||
+      !formData.procedure ||
+      formData.countries.length === 0 ||
+      !formData.age ||
+      !formData.gender ||
+      isMissingCities
+    );
+  };
+
+  const getMissingHints = () => {
+    const hints: string[] = [];
+    if (formData.photos.length < 1) hints.push(getTranslation('priceRequest.hintPhotos', 'En az 1 fotoğraf yükleyin'));
+    if (!formData.procedure) hints.push(getTranslation('priceRequest.hintProcedure', 'İşlem seçin'));
+    if (formData.countries.length === 0) hints.push(getTranslation('priceRequest.hintCountries', 'En az bir ülke seçin'));
+    if (formData.countries.includes('turkey') && formData.citiesTR.length === 0) hints.push(getTranslation('priceRequest.hintCitiesTR', 'Türkiye için şehir seçin'));
+    if (!formData.age) hints.push(getTranslation('priceRequest.hintAge', 'Yaşınızı girin'));
+    if (!formData.gender) hints.push(getTranslation('priceRequest.hintGender', 'Cinsiyet seçin'));
+    return hints;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setSubmitError(null);
+    setIsSubmitting(true);
     
-    // Create new request
-    const newRequest = {
-      id: Math.random().toString(36).substr(2, 9),
+    // Supabase'e kaydetmek için veri hazırla
+    const photoUrls = formData.photos.map((file) => URL.createObjectURL(file));
+    const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
+    const payload = {
+      user_id: user?.id,
       procedure: formData.procedure,
+      description: formData.description,
+      photos: photoUrls,
       status: 'active',
-      createdAt: new Date(),
-      offersCount: 0,
-      countries: formData.countries.map(key => countries.find(c => c.key === key)?.name || key),
-      citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-      photos: formData.photos.length,
-      offers: []
-    };
-    
-    // Dashboard'a yeni talebi ekle
-    onRequestSubmitted(newRequest);
-    
-    // Formu temizle
-    setFormData({
-      procedure: '',
-      countries: [],
-      citiesTR: [],
-      age: '',
-      gender: '',
-      treatmentDate: '',
-      description: '',
-      photos: []
-    });
-    
-    onClose();
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      // Not: countries alanı şemada yok; UI için state taşıyacağız
+    } as any;
+
+    try {
+      // Eğer user.id yoksa, local ekleme yapalım (geçici görünürlük)
+      if (!user?.id) {
+        const localRequest = {
+          id: Math.random().toString(36).slice(2),
+          procedure: formData.procedure,
+          status: 'active',
+          createdAt: new Date(),
+          offersCount: 0,
+          countries: countriesSelected,
+          citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
+          photos: photoUrls.length,
+          photoUrls,
+          offers: []
+        };
+        onRequestSubmitted(localRequest);
+      } else {
+        const inserted = await requestService.createRequest(payload);
+        const row = Array.isArray(inserted) ? inserted[0] : inserted;
+        const newRequest = {
+          id: row.id,
+          procedure: row.procedure,
+          status: row.status ?? 'active',
+          createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+          offersCount: 0,
+          countries: countriesSelected,
+          citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
+          photos: photoUrls.length,
+          photoUrls: photoUrls,
+          offers: []
+        };
+        onRequestSubmitted(newRequest);
+      }
+
+      setFormData({
+        procedure: '',
+        countries: [],
+        citiesTR: [],
+        age: '',
+        gender: '',
+        treatmentDate: '',
+        description: '',
+        photos: []
+      });
+      setIsSubmitting(false);
+      onClose();
+    } catch (err) {
+      console.error('Talep oluşturulamadı:', err);
+      // Supabase hatasında kullanıcıya görünür geri bildirim ver ve local fallback uygula
+      setSubmitError(getTranslation('priceRequest.submitError', 'Talep gönderilirken sunucu hatası oluştu. Talebiniz yerel olarak eklendi; yenilemede kaybolabilir.'));
+      const localRequest = {
+        id: Math.random().toString(36).slice(2),
+        procedure: formData.procedure,
+        status: 'active',
+        createdAt: new Date(),
+        offersCount: 0,
+        countries: countriesSelected,
+        citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
+        photos: photoUrls.length,
+        photoUrls,
+        offers: []
+      };
+      onRequestSubmitted(localRequest);
+      setIsSubmitting(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -520,20 +602,40 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             </button>
             <button
               type="submit"
-              disabled={
-                formData.photos.length < 5 ||
-                !formData.procedure ||
-                formData.countries.length === 0 ||
-                !formData.age ||
-                !formData.gender ||
-                !formData.treatmentDate ||
-                (formData.countries.includes('turkey') && formData.citiesTR.length === 0)
-              }
-              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+              disabled={isSubmitDisabled() || isSubmitting}
+              className="flex-1 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium flex items-center justify-center space-x-2"
             >
-              {isAllSelected ? getTranslation('priceRequest.submitAllCountries', 'Send to All Countries') : getTranslation('priceRequest.submitRequest', 'Create Request')}
+              {isSubmitting ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  <span>{getTranslation('priceRequest.submitting', 'Gönderiliyor...')}</span>
+                </>
+              ) : (
+                <>
+                  <span>{isAllSelected ? getTranslation('priceRequest.submitAllCountries', 'Send to All Countries') : getTranslation('priceRequest.submitRequest', 'Create Request')}</span>
+                </>
+              )}
             </button>
           </div>
+
+          {/* Submit Hata Mesajı */}
+          {submitError && (
+            <div className="mt-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg p-3">
+              {submitError}
+            </div>
+          )}
+
+          {/* Disabled ipucu listesi */}
+          {isSubmitDisabled() && (
+            <div className="mt-3 text-sm text-red-600">
+              <p className="font-medium mb-1">{getTranslation('priceRequest.missingFieldsTitle', 'Eksik bilgiler var:')}</p>
+              <ul className="list-disc pl-5 space-y-1">
+                {getMissingHints().map((hint, idx) => (
+                  <li key={idx}>{hint}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </form>
       </div>
     </div>

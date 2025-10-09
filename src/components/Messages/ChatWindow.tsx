@@ -11,7 +11,7 @@ interface Message {
 }
 
 interface ChatWindowProps {
-  conversationId: string;
+  conversationId: string | null;
   onBack: () => void;
 }
 
@@ -21,104 +21,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);
 
-  // Mock conversation data
-  const conversationData = {
-    '1': {
-      name: 'Dr. Ahmet Yılmaz',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face',
-      isOnline: true
-    },
-    '2': {
-      name: 'Estetik Kliniği',
-      avatar: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=40&h=40&fit=crop&crop=face',
-      isOnline: false
-    },
-    '3': {
-      name: 'Dr. Fatma Kaya',
-      avatar: 'https://images.unsplash.com/photo-1594824475545-9d0c7c4951c1?w=40&h=40&fit=crop&crop=face',
-      isOnline: true
-    }
-  };
+  // Konuşma bilgisi placeholder (gerçek veriye bağlanınca güncellenecek)
+  const conversationInfo = { name: '', avatar: '', isOnline: false };
 
-  const conversationInfo = conversationData[conversationId as keyof typeof conversationData] || conversationData['1'];
-
-  // Mock messages based on conversation ID
+  // Konuşma ID değiştiğinde mesajları sıfırla (mock yok)
   useEffect(() => {
-    const messagesData = {
-      '1': [
-        {
-          id: '1',
-          senderId: 'clinic',
-          content: 'Merhaba! Size nasıl yardımcı olabilirim?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 30),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '2',
-          senderId: 'user',
-          content: 'Merhaba doktor, tedavi planım hakkında bilgi almak istiyorum.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 25),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '3',
-          senderId: 'clinic',
-          content: 'Tabii ki! Hangi tedavi hakkında bilgi almak istiyorsunuz?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 20),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '4',
-          senderId: 'user',
-          content: 'Rinoplasti ameliyatı hakkında bilgi almak istiyorum. Fiyat ve süreç nasıl olacak?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 15),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '5',
-          senderId: 'clinic',
-          content: 'Rinoplasti ameliyatı hakkında detaylı bilgi gönderiyorum. Fiyat 3,500 USD ve süreç yaklaşık 2 saat sürüyor.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 10),
-          isRead: false,
-          isDelivered: true
-        }
-      ],
-      '2': [
-        {
-          id: '1',
-          senderId: 'clinic',
-          content: 'Merhaba! Tedavi süreciniz hakkında detaylı bilgi gönderiyorum.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60),
-          isRead: true,
-          isDelivered: true
-        },
-        {
-          id: '2',
-          senderId: 'user',
-          content: 'Teşekkürler! Bilgileri inceledim. Randevu almak istiyorum.',
-          timestamp: new Date(Date.now() - 1000 * 60 * 45),
-          isRead: false,
-          isDelivered: true
-        }
-      ],
-      '3': [
-        {
-          id: '1',
-          senderId: 'clinic',
-          content: 'Fiyat teklifiniz hazır. İncelemek ister misiniz?',
-          timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-          isRead: true,
-          isDelivered: true
-        }
-      ]
-    };
-
-    const conversationMessages = messagesData[conversationId as keyof typeof messagesData] || messagesData['1'];
-    setMessages(conversationMessages);
+    setMessages([]);
   }, [conversationId]);
 
   // Scroll to bottom when messages change
@@ -154,21 +62,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     setMessages(prev => [...prev, message]);
     setNewMessage('');
 
-    // Simulate typing indicator
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      // Simulate reply
-      const reply: Message = {
-        id: (Date.now() + 1).toString(),
-        senderId: 'clinic',
-        content: 'Mesajınız alındı. En kısa sürede size dönüş yapacağız.',
-        timestamp: new Date(),
-        isRead: false,
-        isDelivered: true
-      };
-      setMessages(prev => [...prev, reply]);
-    }, 2000);
+    // Otomatik cevap kaldırıldı; gerçek servis entegrasyonu eklenecek
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -213,17 +107,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
             <ArrowLeft className="w-5 h-5 text-gray-600" />
           </button>
           <div className="relative">
-            <img
-              src={conversationInfo.avatar}
-              alt={conversationInfo.name}
-              className="w-10 h-10 rounded-full object-cover"
-            />
+            {conversationInfo.avatar ? (
+              <img
+                src={conversationInfo.avatar}
+                alt={conversationInfo.name}
+                className="w-10 h-10 rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-gray-200" />
+            )}
             {conversationInfo.isOnline && (
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
             )}
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">{conversationInfo.name}</h3>
+            <h3 className="font-semibold text-gray-900">{conversationInfo.name || 'Sohbet'}</h3>
             <p className="text-sm text-gray-500">
               {conversationInfo.isOnline ? 'Çevrimiçi' : 'Çevrimdışı'}
             </p>
@@ -244,7 +142,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((message) => (
+        {messages.length === 0 ? (
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            <p className="text-sm">Henüz mesaj yok</p>
+          </div>
+        ) : (
+          messages.map((message) => (
           <div
             key={message.id}
             className={`flex ${message.senderId === 'user' ? 'justify-end' : 'justify-start'}`}
@@ -271,7 +174,8 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
               </div>
             </div>
           </div>
-        ))}
+        ))
+        )}
         
         {/* Typing Indicator */}
         {isTyping && (
@@ -313,4 +217,4 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   );
 };
 
-export default ChatWindow; 
+export default ChatWindow;

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Search, MessageCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface Conversation {
   id: string;
@@ -17,39 +18,12 @@ interface MessageListProps {
 }
 
 const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selectedConversation }) => {
+  const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
 
-  // Mock conversations
-  const conversations: Conversation[] = [
-    {
-      id: '1',
-      name: 'Dr. Ahmet Yılmaz',
-      avatar: 'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face',
-      lastMessage: 'Rinoplasti ameliyatı hakkında detaylı bilgi gönderiyorum. Fiyat 3,500 USD ve süreç yaklaşık 2 saat sürüyor.',
-      timestamp: '10 dk önce',
-      unreadCount: 2,
-      isOnline: true
-    },
-    {
-      id: '2',
-      name: 'Estetik Kliniği',
-      avatar: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1f?w=40&h=40&fit=crop&crop=face',
-      lastMessage: 'Teşekkürler! Bilgileri inceledim. Randevu almak istiyorum.',
-      timestamp: '45 dk önce',
-      unreadCount: 1,
-      isOnline: false
-    },
-    {
-      id: '3',
-      name: 'Dr. Fatma Kaya',
-      avatar: 'https://images.unsplash.com/photo-1594824475545-9d0c7c4951c1?w=40&h=40&fit=crop&crop=face',
-      lastMessage: 'Fiyat teklifiniz hazır. İncelemek ister misiniz?',
-      timestamp: '2 sa önce',
-      unreadCount: 0,
-      isOnline: true
-    }
-  ];
+  // Yeni hesaplar için başlangıçta boş konuşma listesi
+  const conversations: Conversation[] = [];
 
   const filteredConversations = conversations.filter(conversation => {
     const matchesSearch = conversation.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -108,8 +82,8 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
         {filteredConversations.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500 px-4">
             <MessageCircle className="w-16 h-16 mb-4 opacity-50" />
-            <p className="text-lg font-medium">Mesaj Yok</p>
-            <p className="text-sm text-center">Henüz mesajınız bulunmuyor</p>
+            <p className="text-lg font-medium">{t('messages.emptyConversations', { defaultValue: 'Mesaj Yok' })}</p>
+            <p className="text-sm text-center">{t('messages.startChatHint', { defaultValue: 'Henüz mesajınız bulunmuyor' })}</p>
           </div>
         ) : (
           <div className="p-2">
@@ -163,4 +137,4 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
   );
 };
 
-export default MessageList; 
+export default MessageList;

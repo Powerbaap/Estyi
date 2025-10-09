@@ -2,24 +2,16 @@ import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { User, LogOut, Settings, Bell, DollarSign, Building, X, Shield } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { getUserRole } from '../../utils/auth';
 import { useTranslation } from 'react-i18next';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from './Logo';
 import LanguageSwitcher from './LanguageSwitcher';
 import ClinicNotificationCenter from '../Notifications/ClinicNotificationCenter';
+import { useNotifications } from '../../hooks/useNotifications';
+import type { NotificationItem } from '../../services/notificationsService';
 
-interface Notification {
-  id: string;
-  type: 'offer' | 'message' | 'payment' | 'system';
-  title: string;
-  message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionUrl?: string;
-  priority: 'low' | 'medium' | 'high';
-  clinicName?: string;
-  offerAmount?: number;
-}
+// Bildirimler artık ortak hook ve servis üzerinden yönetiliyor
 
 const Header: React.FC = () => {
   const { user, logout } = useAuth();
@@ -28,65 +20,16 @@ const Header: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const { notifications, markAsRead, unreadCount } = useNotifications();
   const [isClinicNotificationOpen, setIsClinicNotificationOpen] = useState(false);
   
-  const userRole = user?.user_metadata?.role || user?.app_metadata?.role || 'user';
+  const userRole = getUserRole(user);
 
   // Ref'ler oluştur
   const userMenuRef = useRef<HTMLDivElement>(null);
   const notificationRef = useRef<HTMLDivElement>(null);
 
-  // Mock notifications - gerçek uygulamada API'den gelecek
-  useEffect(() => {
-    const mockNotifications: Notification[] = [
-      {
-        id: '1',
-        type: 'offer',
-        title: 'Yeni Teklif Aldınız!',
-        message: 'Dr. Ahmet Yılmaz Kliniği size botoks tedavisi için teklif gönderdi',
-        timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        isRead: false,
-        actionUrl: '/offers',
-        priority: 'high',
-        clinicName: 'Dr. Ahmet Yılmaz Kliniği',
-        offerAmount: 2500
-      },
-      {
-        id: '2',
-        type: 'offer',
-        title: t('notifications.rhinoplastyTreatmentOffer'),
-        message: t('notifications.rhinoplastyInfo'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 30),
-        isRead: false,
-        actionUrl: '/offers',
-        priority: 'high',
-        clinicName: 'Estetik Merkezi',
-        offerAmount: 15000
-      },
-      {
-        id: '3',
-        type: 'message',
-        title: t('common.messages'),
-        message: t('messages.rhinoplastyInquiry'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        isRead: false,
-        actionUrl: '/messages',
-        priority: 'medium'
-      },
-      {
-        id: '4',
-        type: 'payment',
-        title: t('auth.acceptSuccess'),
-        message: t('notifications.botoxTreatmentPayment'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-        isRead: true,
-        actionUrl: '/dashboard',
-        priority: 'low'
-      }
-    ];
-    setNotifications(mockNotifications);
-  }, []);
+  // Bildirimler ortak hook tarafından yönetiliyor; burada mock/init yok
 
   // Click outside handler
   useEffect(() => {
@@ -117,13 +60,9 @@ const Header: React.FC = () => {
   };
 
   // Bildirime tıklayınca ilgili sayfaya git
-  const handleNotificationClick = (notification: Notification) => {
+  const handleNotificationClick = (notification: NotificationItem) => {
     // Bildirimi okundu olarak işaretle
-    setNotifications(prev => 
-      prev.map(n => 
-        n.id === notification.id ? { ...n, isRead: true } : n
-      )
-    );
+    markAsRead(notification.id);
 
     // Bildirim türüne göre yönlendirme
     switch (notification.type) {
@@ -161,7 +100,7 @@ const Header: React.FC = () => {
     }
   };
 
-  const getNotificationIcon = (type: Notification['type']) => {
+  const getNotificationIcon = (type: NotificationItem['type']) => {
     switch (type) {
       case 'offer':
         return <DollarSign className="w-4 h-4 text-green-600" />;
@@ -190,7 +129,7 @@ const Header: React.FC = () => {
     return date.toLocaleDateString();
   };
 
-  const unreadCount = notifications.filter(n => !n.isRead).length;
+  // Unread count ortak hook'tan geliyor
 
   return (
     <React.Fragment>
@@ -231,7 +170,7 @@ const Header: React.FC = () => {
                 <div className="relative" ref={notificationRef}>
                   <button
                     onClick={() => {
-                      if (user?.role === 'clinic') {
+                      if (getUserRole(user) === 'clinic') {
                         setIsClinicNotificationOpen(true);
                       } else {
                         setIsNotificationOpen(!isNotificationOpen);
@@ -352,7 +291,7 @@ const Header: React.FC = () => {
                   {isUserMenuOpen && (
                     <div className="absolute right-0 mt-2 w-48 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 py-2 z-50">
                       {/* Admin Panel Link - Sadece admin kullanıcıları için */}
-                      {user.role === 'admin' && (
+                      {getUserRole(user) === 'admin' && (
                         <>
                           <Link
                             to="/admin/dashboard"
@@ -524,7 +463,7 @@ const Header: React.FC = () => {
     </header>
 
     {/* Clinic Notification Center */}
-    {user?.role === 'clinic' && (
+    {getUserRole(user) === 'clinic' && (
       <ClinicNotificationCenter
         isOpen={isClinicNotificationOpen}
         onClose={() => setIsClinicNotificationOpen(false)}

@@ -69,7 +69,8 @@ export const requestService = {
     const { data, error } = await supabase
       .from('requests')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false });
     
     if (error) throw error;
     return data;
@@ -80,7 +81,7 @@ export const requestService = {
     const { data, error } = await supabase
       .from('requests')
       .select('*')
-      .eq('status', 'pending');
+      .eq('status', 'active');
     
     if (error) throw error;
     return data;
@@ -90,7 +91,8 @@ export const requestService = {
   createRequest: async (requestData: any) => {
     const { data, error } = await supabase
       .from('requests')
-      .insert(requestData);
+      .insert(requestData)
+      .select('*');
     
     if (error) throw error;
     return data;

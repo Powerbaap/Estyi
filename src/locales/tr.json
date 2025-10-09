@@ -401,7 +401,11 @@
     "changePassword": "Şifre Değiştir",
     "changePasswordDesc": "Hesap güvenliğiniz için şifrenizi güncelleyin",
     "twoFactor": "İki Faktörlü Doğrulama",
-    "twoFactorDesc": "Ek güvenlik için 2FA'yı etkinleştirin"
+    "twoFactorDesc": "Ek güvenlik için 2FA'yı etkinleştirin",
+    "preferences": "Tercihler",
+    "notifications": "Bildirimler",
+    "language": "Dil",
+    "timezone": "Saat Dilimi"
   },
   "reviews": {
     "title": "Platform Değerlendirmeleri",
@@ -668,6 +672,11 @@
       "finished": "Bitirilen işlemler"
     },
     "empty": {
+      "guide": {
+        "step1": {"title": "1. Talep Oluşturun", "desc": "İstediğiniz işlemi ve tercihlerinizi belirtin"},
+        "step2": {"title": "2. Teklifler Alın", "desc": "Kliniklerden özel fiyat teklifleri gelsin"},
+        "step3": {"title": "3. En İyisini Seçin", "desc": "Size en uygun klinik ve fiyatı belirleyin"}
+      },
       "all": {
         "title": "Henüz Talep Yok",
         "description": "İlk fiyat talebinizi oluşturmak için yukarıdaki butona tıklayın.",
@@ -686,6 +695,8 @@
         "description": "Teklif alınmış talepleriniz burada görünecek."
       }
     },
+    "loadingTitle": "Yükleniyor...",
+    "loadingText": "Talepleriniz getiriliyor, lütfen bekleyin.",
     "offer": "teklif",
     "photo": "fotoğraf",
     "photos": "Fotoğraflar",
@@ -693,6 +704,9 @@
     "reviews": "değerlendirme",
     "deleteRequest": "Talebi Sil",
     "enlargedPhoto": "Büyütülmüş fotoğraf"
+  },
+  "priceRequest": {
+    "title": "Talep Oluştur"
   },
   "common": {
     "loading": "Yükleniyor...",
@@ -964,15 +978,6 @@
     "unread": "Okunmamış",
     "online": "Çevrimiçi",
     "offline": "Çevrimdışı"
-  },
-  "profile": {
-    "title": "Profil",
-    "personalInfo": "Kişisel Bilgiler",
-    "security": "Güvenlik",
-    "preferences": "Tercihler",
-    "notifications": "Bildirimler",
-    "language": "Dil",
-    "timezone": "Saat Dilimi"
   },
   "clinic": {
     "dashboard": "Klinik Paneli",

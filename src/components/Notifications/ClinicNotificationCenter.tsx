@@ -33,81 +33,9 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState<ClinicNotification[]>([]);
 
-  // Mock notifications - gerçek uygulamada API'den gelecek
+  // Mock kaldırıldı: API entegrasyonu geldiğinde burada gerçek fetch yapılacak
   useEffect(() => {
-    const mockNotifications: ClinicNotification[] = [
-      {
-        id: '1',
-        type: 'new_request',
-        title: t('notifications.newRhinoplastyRequest'),
-        message: t('rhinoplastyInquiry'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 5),
-        isRead: false,
-        actionUrl: '/clinic/requests',
-        priority: 'high',
-        userId: 'User1234',
-        procedure: 'Rhinoplasty',
-        requestId: 'req1'
-      },
-      {
-        id: '2',
-        type: 'offer_accepted',
-        title: t('auth.acceptSuccess'),
-        message: t('rhinoplastyInfo'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 30),
-        isRead: false,
-        actionUrl: '/clinic/offers',
-        priority: 'high',
-        userId: 'User5678',
-        procedure: 'Hair Transplant',
-        offerAmount: 2500
-      },
-      {
-        id: '3',
-        type: 'new_request',
-        title: t('notifications.newHairTransplantRequest'),
-        message: t('messages.hairTransplantDetails'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 2),
-        isRead: false,
-        actionUrl: '/clinic/requests',
-        priority: 'high',
-        userId: 'User9012',
-        procedure: 'Hair Transplant',
-        requestId: 'req2'
-      },
-      {
-        id: '4',
-        type: 'offer_rejected',
-        title: t('auth.rejectSuccess'),
-        message: t('messages.liposuctionQuestion'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24),
-        isRead: true,
-        actionUrl: '/clinic/offers',
-        priority: 'medium',
-        userId: 'User3456',
-        procedure: 'Breast Surgery'
-      },
-      {
-        id: '5',
-        type: 'message',
-        title: t('common.messages'),
-        message: t('messages.hairTransplantAppointment'),
-        timestamp: new Date(Date.now() - 1000 * 60 * 60 * 24 * 2),
-        isRead: true,
-        actionUrl: '/clinic/messages',
-        priority: 'medium'
-      }
-    ];
-    
-    // Sadece klinik uzmanlık alanlarıyla ilgili bildirimleri göster
-    const filteredNotifications = mockNotifications.filter(notification => {
-      if (notification.type === 'new_request' && notification.procedure) {
-        return clinicSpecialties.includes(notification.procedure);
-      }
-      return true; // Diğer bildirim türleri (mesaj, teklif kabul/red) her zaman gösterilir
-    });
-    
-    setNotifications(filteredNotifications);
+    setNotifications([]);
   }, [clinicSpecialties]);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
@@ -355,4 +283,4 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
   );
 };
 
-export default ClinicNotificationCenter; 
+export default ClinicNotificationCenter;

@@ -33,88 +33,22 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [messageNotifications, setMessageNotifications] = useState<string[]>([]);
 
-  // Mock admin kullanıcıları
-  const adminUsers = [
-    {
-              email: 'admin@estyi.com',
-      password: 'admin123',
-      name: 'Admin User',
-      role: 'admin' as const,
-      id: 'admin-1',
-      user_id: 'A1234567'
-    },
-    {
-              email: 'system@estyi.com', 
-      password: 'system123',
-      name: 'System Admin',
-      role: 'admin' as const,
-      id: 'admin-2',
-      user_id: 'S8765432'
-    },
-    {
-      email: 'change_seeker_admin',
-      password: 'seeker123456',
-      name: 'Değişim Arayan Admin',
-      role: 'admin' as const,
-      id: 'admin-3',
-      user_id: 'CSA123456'
-    },
-    {
-      email: 'change_creator_admin',
-      password: 'creator123456',
-      name: 'Değişim Yaratan Admin',
-      role: 'admin' as const,
-      id: 'admin-4',
-      user_id: 'CYA789012'
-    }
-  ];
-
-  // Mock klinik kullanıcıları
-  const mockClinics = [
-    {
-      email: 'info@istanbulestetik.com',
-      password: 'clinic123',
-      name: 'İstanbul Estetik Merkezi',
-      role: 'clinic' as const,
-      id: 'clinic-1',
-      user_id: 'C8765432'
-    },
-    {
-      email: 'info@hairworld.com',
-      password: 'clinic456',
-      name: 'Hair World İstanbul',
-      role: 'clinic' as const,
-      id: 'clinic-2',
-      user_id: 'H1234567'
-    },
-    {
-      email: 'test@user.com',
-      password: 'test123456',
-      name: 'Test Klinik',
-      role: 'clinic' as const,
-      id: 'clinic-3',
-      user_id: 'TC123456'
-    }
-  ];
-
-  // Mock normal kullanıcılar (Değişimi Arayan)
-  const mockUsers = [
-    {
-      email: 'user@test.com',
-      password: 'test123456',
-      name: 'Test Kullanıcı',
-      role: 'user' as const,
-      id: 'user-1',
-      user_id: 'TU123456'
-    }
-  ];
+  // Mock kullanıcılar kaldırıldı - artık sadece gerçek Supabase kullanıcıları kullanılıyor
 
   // Session'ı kontrol et
   useEffect(() => {
     const getSession = async () => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setIsLoading(false);
+      try {
+        const { data } = await supabase.auth.getSession();
+        const currentSession = data?.session ?? null;
+        setSession(currentSession);
+        setUser(currentSession?.user ?? null);
+      } catch (err) {
+        setSession(null);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
     getSession();
@@ -127,68 +61,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      try {
+        subscription.unsubscribe();
+      } catch {}
+    };
   }, []);
 
   const login = async (email: string, password: string, requestedRole?: 'user' | 'clinic' | 'admin') => {
     try {
       setIsLoading(true);
       
-      // Admin kullanıcı kontrolü
-      const adminUser = adminUsers.find(u => u.email === email && u.password === password);
-      if (adminUser) {
-        const mockUser: User = {
-          id: adminUser.id,
-          email: adminUser.email,
-          user_metadata: { name: adminUser.name, role: adminUser.role, user_id: adminUser.user_id },
-          app_metadata: { role: adminUser.role },
-          aud: 'authenticated',
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString(),
-          role: 'authenticated'
-        } as User;
-        setUser(mockUser);
-        return { success: true };
-      }
-
-      // Kullanıcının seçtiği role'e göre kontrol et
-      if (requestedRole === 'clinic') {
-        // Klinik kullanıcı kontrolü
-        const clinicUser = mockClinics.find(u => u.email === email && u.password === password);
-        if (clinicUser) {
-          const mockUser: User = {
-            id: clinicUser.id,
-            email: clinicUser.email,
-            user_metadata: { name: clinicUser.name, role: clinicUser.role, user_id: clinicUser.user_id },
-            app_metadata: { role: clinicUser.role },
-            aud: 'authenticated',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            role: 'authenticated'
-          } as User;
-          setUser(mockUser);
-          return { success: true };
-        }
-      } else {
-        // Normal kullanıcı kontrolü (Değişimi Arayan)
-        const normalUser = mockUsers.find(u => u.email === email && u.password === password);
-        if (normalUser) {
-          const mockUser: User = {
-            id: normalUser.id,
-            email: normalUser.email,
-            user_metadata: { name: normalUser.name, role: normalUser.role, user_id: normalUser.user_id },
-            app_metadata: { role: normalUser.role },
-            aud: 'authenticated',
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            role: 'authenticated'
-          } as User;
-          setUser(mockUser);
-          return { success: true };
-        }
-      }
-
-      // Supabase ile normal login
+      // Sadece Supabase authentication kullan
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -210,33 +94,49 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Backend API'sini kullanarak kullanıcı kaydı
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/register`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password, role })
+      // Direkt Supabase ile kayıt ol
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            role: role,
+            name: email.split('@')[0] // Email'den isim oluştur
+          }
+        }
       });
 
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { success: false, error: errorData.error || 'Kayıt olurken bir hata oluştu' };
+      if (error) {
+        return { success: false, error: error.message };
       }
 
-      const result = await response.json();
-      
-      if (result.success && result.userId) {
-        // Verification kodu oluştur ve gönder
-        const verificationCode = generateVerificationCode();
-        await saveVerificationCode(result.userId, verificationCode);
-        await sendVerificationEmail(email, verificationCode);
+      if (data.user) {
+        // Users tablosuna da ekle
+        const { error: dbError } = await supabase
+          .from('users')
+          .insert([
+            {
+              id: data.user.id,
+              email: email,
+              name: email.split('@')[0],
+              role: role,
+              is_verified: true, // Geçici olarak otomatik doğrulama
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ]);
 
-        return { success: true, userId: result.userId };
+        if (dbError) {
+          console.error('Database insert error:', dbError);
+          // Auth başarılı oldu ama DB'ye eklenemedi, yine de başarılı say
+        }
+
+        return { success: true, userId: data.user.id };
       }
 
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } catch (error) {
+      console.error('Signup error:', error);
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } finally {
       setIsLoading(false);
@@ -285,6 +185,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { error } = await supabase.auth.signOut();
       if (error) {
       }
+      setSession(null);
       setUser(null);
     } catch (error) {
     } finally {
