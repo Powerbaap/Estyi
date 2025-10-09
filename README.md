@@ -94,6 +94,25 @@ Proje otomatik olarak GitHub Actions ile deploy edilir:
 - **Main branch**: Production'a deploy
 - **Develop branch**: Staging'e deploy
 
+### GitHub Pages (Production)
+- `main` dalına push edildiğinde çalışır (`.github/workflows/deploy.yml`).
+- Gerekli Secrets: `VITE_SUPABASE_URL`, `VITE_SUPABASE_ANON_KEY`, `VITE_API_URL`.
+- Vite, Pages için `base`'i workflow tarafından `.env` içine `VITE_BASE=/Estyi/` yazarak ayarlar.
+- Artifact `dist/` klasöründen yüklenir ve Pages'a deploy edilir.
+
+Doğrulama:
+- Actions sekmesinde "Deploy to GitHub Pages" workflow'unu kontrol edin.
+- `Deploy` job'ındaki `page_url` alanı üretim URL'sini verir.
+
+### Netlify & Railway (Staging)
+- `develop` dalına push edildiğinde çalışır (`.github/workflows/auto-deploy.yml`).
+- Netlify Secrets: `NETLIFY_AUTH_TOKEN`, `NETLIFY_SITE_ID`.
+- Railway Secret: `RAILWAY_TOKEN`.
+
+### Sorun Giderme
+- Build hata veriyorsa `.env` değerlerinin eksik olup olmadığını kontrol edin.
+- Vite `base` yanlış ise, Pages üzerinde CSS/JS yolları 404 verebilir; `VITE_BASE` değerini repo adıyla eşleştirin.
+
 ## 🤝 Katkıda Bulunma
 
 1. Fork yapın
