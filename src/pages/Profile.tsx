@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserRole } from '../utils/auth';
 import { useTranslation } from 'react-i18next';
-import { User, Camera, Save, Edit, MapPin, Mail, Shield } from 'lucide-react';
+import { User, Save, Edit, MapPin, Mail, Shield } from 'lucide-react';
 
 // Güvenli çeviri fallback metinleri (bileşen dışında sabit)
 const profileFallbackTexts: Record<string, Record<string, string>> = {
@@ -102,19 +102,7 @@ const Profile: React.FC = () => {
     setIsEditing(false);
   };
 
-  const handleAvatarChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setProfileData(prev => ({
-          ...prev,
-          avatar: e.target?.result as string
-        }));
-      };
-      reader.readAsDataURL(file);
-    }
-  };
+  // Profil fotoğrafı yükleme seçeneği kaldırıldı; mevcut avatar sadece görüntülenir
 
   if (!user) {
     return (
@@ -148,17 +136,7 @@ const Profile: React.FC = () => {
                     alt="Profile"
                     className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                   />
-                  {isEditing && (
-                    <label className="absolute bottom-0 right-0 bg-blue-600 text-white p-2 rounded-full cursor-pointer hover:bg-blue-700 transition-colors">
-                      <Camera className="w-4 h-4" />
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={handleAvatarChange}
-                        className="hidden"
-                      />
-                    </label>
-                  )}
+                  {/* Profil fotoğrafı yükleme kontrolü kaldırıldı */}
                 </div>
                 <h2 className="text-xl font-bold text-gray-900 mt-4">
                   {user?.name || safeTranslate('profile.user')}

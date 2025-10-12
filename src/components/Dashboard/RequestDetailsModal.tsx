@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar, Eye, Phone, Mail } from 'lucide-react';
+import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar, Eye } from 'lucide-react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 
@@ -42,9 +42,9 @@ interface RequestDetailsModalProps {
 const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClose, request }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [enlargedPhoto, setEnlargedPhoto] = React.useState<string | null>(null);
   const [offerStatuses, setOfferStatuses] = React.useState<{[key: string]: 'pending' | 'accepted' | 'rejected'}>({});
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
+  const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
 
   if (!isOpen || !request) return null;
 
@@ -176,15 +176,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                   <div className="text-sm text-blue-700 font-medium">{t('requestDetails.offersReceived')}</div>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-100">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <Eye className="w-6 h-6 text-white" />
-                  </div>
-                  <div className="text-3xl font-bold text-green-600">{request.photos}</div>
-                  <div className="text-sm text-green-700 font-medium">{t('requestDetails.photos')}</div>
-                </div>
-              </div>
               <div className="bg-gradient-to-br from-purple-50 to-violet-50 rounded-2xl p-6 border border-purple-100">
                 <div className="text-center">
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-600 rounded-xl flex items-center justify-center mx-auto mb-3">
@@ -192,6 +183,15 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                   </div>
                   <div className="text-3xl font-bold text-purple-600">{request.countries.length}</div>
                   <div className="text-sm text-purple-700 font-medium">{t('requestDetails.countries')}</div>
+                </div>
+              </div>
+              <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-100">
+                <div className="text-center">
+                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl flex items-center justify-center mx-auto mb-3">
+                    <Eye className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="text-3xl font-bold text-pink-600">{request.photos}</div>
+                  <div className="text-sm text-pink-700 font-medium">{t('requestDetails.photos')}</div>
                 </div>
               </div>
             </div>
@@ -373,53 +373,38 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
             </div>
 
             {/* User's Photos */}
-            {request.photoUrls && request.photoUrls.length > 0 ? (
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                  <Eye className="w-5 h-5 text-blue-500 mr-2" />
-                  {t('requestDetails.myPhotos')} ({request.photos})
-                </h3>
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                  {request.photoUrls.map((photoUrl, index) => (
-                    <div key={index} className="relative group overflow-hidden">
+            <div className="mt-10">
+              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
+                <Eye className="w-5 h-5 text-blue-600 mr-2" />
+                {t('requestDetails.myPhotos')}
+              </h3>
+              {request.photoUrls && request.photoUrls.length > 0 ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {request.photoUrls.map((url, idx) => (
+                    <div key={idx} className="relative group">
                       <LazyLoadImage
-                        src={photoUrl}
-                        alt=""
+                        src={url}
+                        alt={`${t('requestDetails.photos')} ${idx + 1}`}
                         effect="blur"
-                        threshold={200}
-                        wrapperClassName="aspect-square"
-                        className="aspect-square object-cover rounded-xl border-2 border-gray-200 cursor-pointer hover:border-blue-300 transition-all duration-200 group-hover:scale-105 bg-gray-100"
-                        onClick={() => setEnlargedPhoto(photoUrl)}
+                        className="w-full h-40 object-cover rounded-xl border border-gray-200"
+                        onClick={() => setEnlargedPhoto(url)}
                       />
-                      <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center pointer-events-none">
-                        <button 
-                          className="opacity-0 group-hover:opacity-100 bg-white/90 backdrop-blur-sm text-gray-700 px-3 py-1.5 rounded-full text-xs font-medium transition-opacity shadow-lg cursor-pointer hover:bg-white hover:shadow-xl transform hover:scale-105 pointer-events-auto"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setEnlargedPhoto(photoUrl);
-                          }}
-                        >
-                          {t('requestDetails.enlarge')}
-                        </button>
-                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setEnlargedPhoto(url)}
+                        className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/30 text-white flex items-center justify-center rounded-xl transition-opacity"
+                      >
+                        <Eye className="w-6 h-6" />
+                      </button>
                     </div>
                   ))}
                 </div>
-              </div>
-            ) : (
-              <div className="mb-8">
-                <h3 className="text-xl font-semibold text-gray-900 mb-6 flex items-center">
-                  <Eye className="w-5 h-5 text-blue-500 mr-2" />
-                  {t('requestDetails.myPhotos')} ({request.photos})
-                </h3>
-                <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-12 text-center border border-gray-200">
-                  <div className="text-6xl mb-4">📷</div>
-                  <p className="text-gray-600 text-lg">
-                    {request.photos} {t('requestDetails.photosUploaded')}
-                  </p>
+              ) : (
+                <div className="text-gray-600 text-sm bg-gray-50 border border-gray-200 rounded-xl p-4">
+                  {t('requestDetails.photosUploaded')}
                 </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -427,24 +412,20 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
       {/* Photo Enlargement Modal */}
       {enlargedPhoto && (
         <div 
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-[60] p-4"
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
           onClick={() => setEnlargedPhoto(null)}
         >
-          <div className="relative max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center">
-            <button
-              onClick={() => setEnlargedPhoto(null)}
-              className="absolute top-4 right-4 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center text-gray-700 transition-all duration-200 hover:scale-110 backdrop-blur-sm shadow-2xl"
-            >
-              <X className="w-6 h-6" />
-            </button>
-            <LazyLoadImage
-              src={enlargedPhoto}
-              alt={t('requestDetails.enlargedPhoto')}
-              effect="blur"
-              wrapperClassName="max-w-full max-h-full"
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
+          <div className="bg-white rounded-2xl overflow-hidden max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between p-4 border-b border-gray-200">
+              <h4 className="text-lg font-semibold">{t('requestDetails.enlargedPhoto')}</h4>
+              <button
+                onClick={() => setEnlargedPhoto(null)}
+                className="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <img src={enlargedPhoto} alt={t('requestDetails.enlargedPhoto')} className="max-h-[70vh] w-full object-contain bg-black" />
           </div>
         </div>
       )}

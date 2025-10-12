@@ -221,7 +221,7 @@ const OfferSubmissionModal: React.FC<OfferSubmissionModalProps> = ({ isOpen, onC
                 <span className="text-gray-600">Ülkeler:</span> {request.countries.join(', ')}
               </div>
               <div>
-                <span className="text-gray-600">Fotoğraflar:</span> {request.photos.length} yüklendi
+                <span className="text-gray-600">Fotoğraflar:</span> {request.photos?.length || 0} yüklendi
               </div>
               <div>
                 <span className="text-gray-600">Talep Tarihi:</span> {request.createdAt.toLocaleDateString('tr-TR')}

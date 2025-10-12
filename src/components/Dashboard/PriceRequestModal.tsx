@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Upload, Plus, Minus } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TREATMENT_AREAS } from '../../types';
 
@@ -11,7 +11,7 @@ interface PriceRequestModalProps {
 
 import { useAuth } from '../../contexts/AuthContext';
 import { requestService } from '../../services/api';
-import { uploadRequestPhotos } from '../../services/storage';
+// Photo upload removed
 
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
   const { t, i18n } = useTranslation();
@@ -29,8 +29,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     age: '',
     gender: '',
     treatmentDate: '',
-    description: '',
-    photos: [] as File[]
+    description: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -142,20 +141,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     'İstanbul','Tekirdağ','Kırklareli','Edirne','Çanakkale','Kocaeli','Sakarya'
   ];
 
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setFormData(prev => ({
-      ...prev,
-      photos: [...prev.photos, ...files].slice(0, 10) // Max 10 photos
-    }));
-  };
-
-  const removePhoto = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      photos: prev.photos.filter((_, i) => i !== index)
-    }));
-  };
+  // Photo upload handlers removed
 
   const toggleCountry = (countryKey: string) => {
     setFormData(prev => ({
@@ -211,7 +197,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     const isMissingCities = formData.countries.includes('turkey') && formData.citiesTR.length === 0;
     return (
       !user?.id ||
-      formData.photos.length < 1 ||
       !formData.procedure ||
       formData.countries.length === 0 ||
       !formData.age ||
@@ -222,7 +207,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
   const getMissingHints = () => {
     const hints: string[] = [];
-    if (formData.photos.length < 1) hints.push(getTranslation('priceRequest.hintPhotos', 'En az 1 fotoğraf yükleyin'));
     if (!formData.procedure) hints.push(getTranslation('priceRequest.hintProcedure', 'İşlem seçin'));
     if (formData.countries.length === 0) hints.push(getTranslation('priceRequest.hintCountries', 'En az bir ülke seçin'));
     if (formData.countries.includes('turkey') && formData.citiesTR.length === 0) hints.push(getTranslation('priceRequest.hintCitiesTR', 'Türkiye için şehir seçin'));
@@ -241,22 +225,14 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       return;
     }
     
-    // Fotoğrafları Supabase Storage'a yükle (başarısızsa işlemi durdur)
-    let photoUrls: string[] = [];
-    try {
-      photoUrls = await uploadRequestPhotos(user.id, formData.photos);
-    } catch (e) {
-      console.error('Fotoğraflar yüklenemedi:', e);
-      setSubmitError(getTranslation('priceRequest.photoUploadError', 'Fotoğraflar yüklenemedi. Lütfen daha sonra tekrar deneyin.'));
-      setIsSubmitting(false);
-      return;
-    }
+    // Photo upload removed; create request without photos
+    const photoUrls: string[] = [];
     const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
     const payload = {
       user_id: user?.id,
       procedure: formData.procedure,
       description: formData.description,
-      photos: photoUrls,
+      photos: [],
       status: 'active',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -273,8 +249,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         offersCount: 0,
         countries: countriesSelected,
         citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-        photos: photoUrls.length,
-        photoUrls: photoUrls,
+        photos: 0,
+        photoUrls: [],
         offers: []
       };
       onRequestSubmitted(newRequest);
@@ -286,8 +262,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         age: '',
         gender: '',
         treatmentDate: '',
-        description: '',
-        photos: []
+        description: ''
       });
       setIsSubmitting(false);
       onClose();
@@ -351,54 +326,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             </select>
           </div>
 
-          {/* Photo Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.uploadPhotos', 'Upload Photos')} * ({getTranslation('priceRequest.minMax', 'Minimum 5, Maximum 10')})
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors">
-              <input
-                type="file"
-                multiple
-                accept="image/*"
-                onChange={handlePhotoUpload}
-                className="hidden"
-                id="photo-upload"
-              />
-              <label htmlFor="photo-upload" className="cursor-pointer">
-                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                <p className="text-lg font-medium text-gray-700 mb-2">{getTranslation('priceRequest.clickUpload', 'Click to upload photos')}</p>
-                <p className="text-sm text-gray-500">{getTranslation('priceRequest.fileFormat', 'JPG, PNG, maximum 10MB each')}</p>
-              </label>
-            </div>
-            
-            {/* Uploaded Photos */}
-            {formData.photos.length > 0 && (
-              <div className="mt-4">
-                <h4 className="text-sm font-medium text-gray-700 mb-2">
-                  {getTranslation('priceRequest.uploadedPhotos', 'Uploaded Photos')}: {formData.photos.length}/10
-                </h4>
-                <div className="grid grid-cols-5 gap-2">
-                  {formData.photos.map((photo, index) => (
-                    <div key={index} className="relative">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Photo ${index + 1}`}
-                        className="w-full h-20 object-cover rounded-lg"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removePhoto(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Photo upload removed */}
 
           {/* Countries Selection */}
           <div>
@@ -567,7 +495,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             <ul className="text-sm text-blue-800 space-y-1">
               <li>{getTranslation('priceRequest.requestActive', 'Clinics can send offers as long as your request is active.')}</li>
               <li>{getTranslation('priceRequest.onlyCertified', 'Only certified and approved clinics can send offers.')}</li>
-              <li>{getTranslation('priceRequest.photosEncrypted', 'Your photos are securely encrypted and stored.')}</li>
+              {/* Photo storage info removed */}
               <li>{getTranslation('priceRequest.notifications', 'You will be notified when new offers arrive.')}</li>
               {isAllSelected && (
                 <li className="text-blue-900 font-medium">{getTranslation('priceRequest.allCountriesInfo', 'You will receive offers from all countries. More options!')}</li>
