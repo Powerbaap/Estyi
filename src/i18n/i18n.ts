@@ -14,50 +14,28 @@ const detectLanguage = () => {
   }
 
   // 2. Tarayıcı dil ayarları
-  const browserLang = navigator.language || navigator.languages?.[0];
-  
-  // 3. IP tabanlı konum tespiti
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const region = Intl.DateTimeFormat().resolvedOptions().locale;
-  
-  // Arapça tespiti
-  const arabicLanguages = ['ar', 'ar-SA', 'ar-AE', 'ar-EG', 'ar-JO', 'ar-LB', 'ar-SY', 'ar-IQ', 'ar-KW', 'ar-QA', 'ar-BH', 'ar-OM', 'ar-YE', 'ar-MA', 'ar-TN', 'ar-DZ', 'ar-LY', 'ar-SD'];
-  const arabicTimezones = [
-    'Asia/Riyadh', 'Asia/Dubai', 'Africa/Cairo', 'Asia/Amman', 
-    'Asia/Beirut', 'Asia/Damascus', 'Asia/Baghdad', 'Asia/Kuwait', 
-    'Asia/Qatar', 'Asia/Bahrain', 'Asia/Muscat', 'Asia/Aden', 
-    'Africa/Casablanca', 'Africa/Tunis', 'Africa/Algiers', 
-    'Africa/Tripoli', 'Africa/Khartoum'
-  ];
-  
-  // Türkçe tespiti
-  const turkishLanguages = ['tr', 'tr-TR'];
-  const turkishTimezones = ['Europe/Istanbul', 'Asia/Istanbul'];
-  
-  // İngilizce tespiti
-  const englishLanguages = ['en', 'en-US', 'en-GB', 'en-AU', 'en-CA', 'en-NZ', 'en-ZA', 'en-IE'];
-  const englishTimezones = [
-    'America/New_York', 'America/Los_Angeles', 'America/Chicago', 
-    'Europe/London', 'Europe/Dublin', 'Australia/Sydney', 
-    'Australia/Melbourne', 'Pacific/Auckland'
-  ];
-  
-  // Dil tespiti öncelik sırası
-  if (arabicLanguages.includes(browserLang) || arabicTimezones.includes(timezone) || region?.includes('AR')) {
-    return 'ar';
-  } else if (turkishLanguages.includes(browserLang) || turkishTimezones.includes(timezone) || region?.includes('TR')) {
-    return 'tr';
-  } else if (englishLanguages.includes(browserLang) || englishTimezones.includes(timezone) || region?.includes('EN')) {
-    return 'en';
-  } else if (browserLang?.startsWith('ar')) {
-    return 'ar';
-  } else if (browserLang?.startsWith('tr')) {
-    return 'tr';
-  } else if (browserLang?.startsWith('en')) {
-    return 'en';
-  }
-  
-  // Varsayılan olarak İngilizce (uluslararası erişim için)
+  const browserLang = navigator.language || navigator.languages?.[0] || '';
+
+  // 3. Bölge ve zaman dilimi bilgisi
+  const { timeZone, locale } = Intl.DateTimeFormat().resolvedOptions();
+
+  // Türkiye tespiti (TR bölgesi veya İstanbul zaman dilimi ya da tarayıcı dili tr)
+  const isTurkey =
+    locale?.includes('TR') ||
+    timeZone === 'Europe/Istanbul' ||
+    timeZone === 'Asia/Istanbul' ||
+    browserLang?.startsWith('tr');
+
+  // Suudi Arabistan tespiti (SA bölgesi, Riyad zaman dilimi veya tarayıcı dili ar-SA)
+  const isSaudiArabia =
+    locale?.includes('SA') ||
+    timeZone === 'Asia/Riyadh' ||
+    browserLang === 'ar-SA';
+
+  if (isTurkey) return 'tr';
+  if (isSaudiArabia) return 'ar';
+
+  // Türkiye ve Suudi Arabistan dışı tüm bölgeler için varsayılan İngilizce
   return 'en';
 };
 

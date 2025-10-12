@@ -23,6 +23,7 @@ const Signup: React.FC = () => {
   const [error, setError] = useState('');
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationData, setVerificationData] = useState<{ userId: string; email: string } | null>(null);
+  const [diagnostic, setDiagnostic] = useState<{ ok: boolean; message: string } | null>(null);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -71,6 +72,41 @@ const Signup: React.FC = () => {
       // Google signup functionality would be implemented here
     } catch (err) {
       setError(t('signup.googleSignupError'));
+    }
+  };
+
+  // Supabase bağlantı tanılama
+  const checkSupabaseConnectivity = async () => {
+    try {
+      setDiagnostic(null);
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseAnonKey) {
+        setDiagnostic({ ok: false, message: 'ENV eksik: VITE_SUPABASE_URL veya VITE_SUPABASE_ANON_KEY tanımlı değil.' });
+        return;
+      }
+      // Basit bir sağlık kontrolü: auth ayarlarını çekmeyi dene
+      const resp = await fetch(`${supabaseUrl}/auth/v1/settings`, {
+        headers: {
+          apikey: supabaseAnonKey,
+          Authorization: `Bearer ${supabaseAnonKey}`
+        }
+      });
+      if (!resp.ok) {
+        const text = await resp.text();
+        setDiagnostic({ ok: false, message: `HTTP ${resp.status}: ${text || 'Supabase settings endpoint erişilemedi'}` });
+        return;
+      }
+      const data = await resp.json().catch(() => null);
+      setDiagnostic({ ok: true, message: `Bağlantı OK. Ayarlar çekildi: ${data ? 'auth settings alındı' : 'yanıt alındı'}.` });
+    } catch (e: any) {
+      const msg = (e?.message || '').toLowerCase();
+      const isNetwork = msg.includes('fetch') || msg.includes('network');
+      if (isNetwork) {
+        setDiagnostic({ ok: false, message: 'Ağ hatası: Supabase domenine erişilemedi (Failed to fetch). DNS/Firewall/CORS kontrol edin.' });
+      } else {
+        setDiagnostic({ ok: false, message: `Hata: ${e?.message || 'bilinmeyen hata'}` });
+      }
     }
   };
 
@@ -209,6 +245,24 @@ const Signup: React.FC = () => {
               </div>
             )}
 
+            {/* Diagnostic (Dev only) */}
+            {import.meta.env.MODE !== 'production' && (
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={checkSupabaseConnectivity}
+                  className="w-full flex justify-center items-center px-4 py-2 border border-blue-300 rounded-md shadow-sm bg-blue-50 text-sm font-medium text-blue-700 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                >
+                  Supabase bağlantısını test et
+                </button>
+                {diagnostic && (
+                  <div className={`text-sm text-center p-3 rounded-md ${diagnostic.ok ? 'text-green-700 bg-green-50' : 'text-red-700 bg-red-50'}`}>
+                    {diagnostic.message}
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Submit Button */}
             <div>
               <button
@@ -286,4 +340,4 @@ const Signup: React.FC = () => {
   );
 };
 
-export default Signup; 
+export default Signup;

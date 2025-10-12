@@ -36,7 +36,7 @@ export const saveVerificationCode = async (userId: string, code: string): Promis
 // Email gönderme fonksiyonu (backend API'sini kullan)
 export const sendVerificationEmail = async (email: string, code: string): Promise<void> => {
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/send-verification`, {
+    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/send-verification`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

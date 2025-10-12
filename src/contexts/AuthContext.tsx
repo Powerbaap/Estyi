@@ -93,6 +93,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signup = async (email: string, password: string, role: 'user' | 'clinic' | 'admin' = 'user') => {
     try {
       setIsLoading(true);
+      // Ortam değişkenleri ön kontrol
+      const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+      const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+      if (!supabaseUrl || !supabaseAnonKey) {
+        // Supabase env eksik ise doğrudan backend üzerinden kayıt fallback
+        try {
+          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+          const resp = await fetch(`${apiUrl}/api/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, role, name: email.split('@')[0] })
+          });
+          if (!resp.ok) {
+            const err = await resp.json().catch(() => null);
+            return { success: false, error: err?.error || 'Backend üzerinden kayıt başarısız' };
+          }
+          const result = await resp.json();
+          if (result?.userId) {
+            return { success: true, userId: result.userId };
+          }
+          return { success: false, error: 'Backend yanıtı beklenen formatta değil' };
+        } catch (be) {
+          const beMsg = ((be as any)?.message || '').toLowerCase();
+          const beNet = beMsg.includes('fetch') || beMsg.includes('network');
+          if (beNet) {
+            return { success: false, error: 'Backend API bağlantısı sağlanamadı. Lütfen .env içindeki VITE_API_URL değerini ve backend sunucusunun çalıştığını kontrol edin.' };
+          }
+          return { success: false, error: 'Supabase env eksik ve backend fallback başarısız' };
+        }
+      }
       
       // Direkt Supabase ile kayıt ol
       const { data, error } = await supabase.auth.signUp({
@@ -107,6 +137,52 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (error) {
+        const msg = (error.message || '').toLowerCase();
+        const isNetwork = msg.includes('fetch') || msg.includes('network');
+        if (isNetwork) {
+          // Backend üzerinden kayıt fallback
+          try {
+            const configured = import.meta.env.VITE_API_URL;
+            const local = 'http://localhost:3005';
+            const primaryUrl = `${(configured || local)}/api/register`;
+            let resp: Response | null = null;
+            try {
+              resp = await fetch(primaryUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password, role, name: email.split('@')[0] })
+              });
+            } catch (_) {
+              resp = null;
+            }
+            if (!resp || !resp.ok) {
+              if (configured && configured !== local) {
+                const fallbackResp = await fetch(`${local}/api/register`, {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ email, password, role, name: email.split('@')[0] })
+                });
+                if (fallbackResp.ok) {
+                  const result = await fallbackResp.json();
+                  if (result?.userId) return { success: true, userId: result.userId };
+                }
+              }
+            } else {
+              const result = await resp.json();
+              if (result?.userId) {
+                return { success: true, userId: result.userId };
+              }
+            }
+            return { success: false, error: 'Backend üzerinden kayıt başarısız' };
+          } catch (be) {
+            const beMsg = ((be as any)?.message || '').toLowerCase();
+            const beNet = beMsg.includes('fetch') || beMsg.includes('network');
+            if (beNet) {
+              return { success: false, error: 'Backend API bağlantısı sağlanamadı. Lütfen .env içindeki VITE_API_URL değerini ve backend sunucusunun çalıştığını kontrol edin.' };
+            }
+            return { success: false, error: 'Supabase bağlantısı sağlanamadı ve backend fallback başarısız' };
+          }
+        }
         return { success: false, error: error.message };
       }
 
@@ -137,6 +213,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } catch (error) {
       console.error('Signup error:', error);
+      const msg = ((error as any)?.message || '').toLowerCase();
+      const isNetwork = msg.includes('fetch') || msg.includes('network');
+      if (isNetwork) {
+        return { success: false, error: 'Supabase bağlantısı sağlanamadı (Failed to fetch). Lütfen internet bağlantınızı ve .env içindeki VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY değerlerinin doğruluğunu kontrol edin.' };
+      }
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } finally {
       setIsLoading(false);
@@ -148,17 +229,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(true);
       
       // Backend API'sini kullanarak doğrulama yap
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001'}/api/verify-code`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userId, code })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        return { success: false, error: errorData.error || 'Doğrulama başarısız' };
+      const configured = import.meta.env.VITE_API_URL;
+      const local = 'http://localhost:3005';
+      const primaryUrl = `${(configured || local)}/api/verify-code`;
+      let response: Response | null = null;
+      try {
+        response = await fetch(primaryUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId, code })
+        });
+      } catch (_) {
+        response = null;
+      }
+      if (!response || !response.ok) {
+        if (configured && configured !== local) {
+          const fallbackResp = await fetch(`${local}/api/verify-code`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, code })
+          });
+          if (!fallbackResp.ok) {
+            const errorData = await fallbackResp.json().catch(() => ({} as any));
+            return { success: false, error: errorData.error || 'Doğrulama başarısız' };
+          }
+          response = fallbackResp;
+        } else {
+          const errorData = await (response ? response.json() : Promise.resolve({} as any)).catch(() => ({} as any));
+          return { success: false, error: errorData.error || 'Doğrulama başarısız' };
+        }
       }
 
       // Kullanıcıyı doğrulanmış olarak işaretle
@@ -173,6 +272,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: true };
     } catch (error) {
+      const msg = ((error as any)?.message || '').toLowerCase();
+      const isNetwork = msg.includes('fetch') || msg.includes('network');
+      if (isNetwork) {
+        return { success: false, error: 'Backend API bağlantısı sağlanamadı (Failed to fetch). Lütfen .env içindeki VITE_API_URL değerini ve backend sunucusunun çalıştığını kontrol edin.' };
+      }
       return { success: false, error: 'Doğrulama işlemi başarısız' };
     } finally {
       setIsLoading(false);

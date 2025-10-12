@@ -11,6 +11,7 @@ interface PriceRequestModalProps {
 
 import { useAuth } from '../../contexts/AuthContext';
 import { requestService } from '../../services/api';
+import { uploadRequestPhotos } from '../../services/storage';
 
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
   const { t, i18n } = useTranslation();
@@ -209,6 +210,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   const isSubmitDisabled = () => {
     const isMissingCities = formData.countries.includes('turkey') && formData.citiesTR.length === 0;
     return (
+      !user?.id ||
       formData.photos.length < 1 ||
       !formData.procedure ||
       formData.countries.length === 0 ||
@@ -233,9 +235,22 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     e.preventDefault();
     setSubmitError(null);
     setIsSubmitting(true);
+    if (!user?.id) {
+      setSubmitError(getTranslation('priceRequest.loginRequired', 'Talep oluşturmak için lütfen giriş yapın.'));
+      setIsSubmitting(false);
+      return;
+    }
     
-    // Supabase'e kaydetmek için veri hazırla
-    const photoUrls = formData.photos.map((file) => URL.createObjectURL(file));
+    // Fotoğrafları Supabase Storage'a yükle (başarısızsa işlemi durdur)
+    let photoUrls: string[] = [];
+    try {
+      photoUrls = await uploadRequestPhotos(user.id, formData.photos);
+    } catch (e) {
+      console.error('Fotoğraflar yüklenemedi:', e);
+      setSubmitError(getTranslation('priceRequest.photoUploadError', 'Fotoğraflar yüklenemedi. Lütfen daha sonra tekrar deneyin.'));
+      setIsSubmitting(false);
+      return;
+    }
     const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
     const payload = {
       user_id: user?.id,
@@ -245,42 +260,24 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       status: 'active',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      // Not: countries alanı şemada yok; UI için state taşıyacağız
     } as any;
 
     try {
-      // Eğer user.id yoksa, local ekleme yapalım (geçici görünürlük)
-      if (!user?.id) {
-        const localRequest = {
-          id: Math.random().toString(36).slice(2),
-          procedure: formData.procedure,
-          status: 'active',
-          createdAt: new Date(),
-          offersCount: 0,
-          countries: countriesSelected,
-          citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-          photos: photoUrls.length,
-          photoUrls,
-          offers: []
-        };
-        onRequestSubmitted(localRequest);
-      } else {
-        const inserted = await requestService.createRequest(payload);
-        const row = Array.isArray(inserted) ? inserted[0] : inserted;
-        const newRequest = {
-          id: row.id,
-          procedure: row.procedure,
-          status: row.status ?? 'active',
-          createdAt: row.created_at ? new Date(row.created_at) : new Date(),
-          offersCount: 0,
-          countries: countriesSelected,
-          citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-          photos: photoUrls.length,
-          photoUrls: photoUrls,
-          offers: []
-        };
-        onRequestSubmitted(newRequest);
-      }
+      const inserted = await requestService.createRequest(payload);
+      const row = Array.isArray(inserted) ? inserted[0] : inserted;
+      const newRequest = {
+        id: row.id,
+        procedure: row.procedure,
+        status: row.status ?? 'active',
+        createdAt: row.created_at ? new Date(row.created_at) : new Date(),
+        offersCount: 0,
+        countries: countriesSelected,
+        citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
+        photos: photoUrls.length,
+        photoUrls: photoUrls,
+        offers: []
+      };
+      onRequestSubmitted(newRequest);
 
       setFormData({
         procedure: '',
@@ -296,21 +293,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       onClose();
     } catch (err) {
       console.error('Talep oluşturulamadı:', err);
-      // Supabase hatasında kullanıcıya görünür geri bildirim ver ve local fallback uygula
-      setSubmitError(getTranslation('priceRequest.submitError', 'Talep gönderilirken sunucu hatası oluştu. Talebiniz yerel olarak eklendi; yenilemede kaybolabilir.'));
-      const localRequest = {
-        id: Math.random().toString(36).slice(2),
-        procedure: formData.procedure,
-        status: 'active',
-        createdAt: new Date(),
-        offersCount: 0,
-        countries: countriesSelected,
-        citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-        photos: photoUrls.length,
-        photoUrls,
-        offers: []
-      };
-      onRequestSubmitted(localRequest);
+      // Supabase hatasında kullanıcıya görünür geri bildirim ver
+      setSubmitError(getTranslation('priceRequest.submitError', 'Talep gönderilirken sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.'));
       setIsSubmitting(false);
     }
   };

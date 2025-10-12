@@ -18,6 +18,13 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY || 'your-service-key'
 );
 
+// Dev fallback flags (decoupled):
+// - Email fallback: when SMTP creds are missing, don't send email; just log and return code
+// - Supabase fallback: when service key is missing, don't touch Supabase; keep codes in memory
+const useEmailFallback = !process.env.SMTP_USER || !process.env.SMTP_PASS;
+const useSupabaseFallback = !process.env.SUPABASE_SERVICE_KEY;
+const verificationStore = new Map(); // key: email or userId, value: { code, expiresAt }
+
 // Email transporter
 const transporter = nodemailer.createTransport({
   host: process.env.SMTP_HOST || 'smtp.gmail.com',
@@ -45,9 +52,17 @@ app.post('/api/send-verification', async (req, res) => {
     
     // If code is provided, use it; otherwise generate new one
     const verificationCode = code || Math.floor(100000 + Math.random() * 900000).toString();
-    
-    // If no code provided, save to database (for direct API calls)
-    if (!code) {
+
+    // Save code (Supabase or in-memory)
+    if (useSupabaseFallback) {
+      const key = email;
+      verificationStore.set(key, {
+        code: verificationCode,
+        expiresAt: Date.now() + 15 * 60 * 1000
+      });
+      console.log(`🔧 SUPABASE-FALLBACK: stored code for ${email}: ${verificationCode}`);
+    } else if (!code) {
+      // If no code provided, save to database (for direct API calls)
       const { error } = await supabase
         .from('verification_codes')
         .insert({
@@ -55,25 +70,53 @@ app.post('/api/send-verification', async (req, res) => {
           code: verificationCode,
           expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
         });
-      
       if (error) {
         console.error('Database error:', error);
         throw error;
       }
     }
-    
-    // Get email template
-    const template = emailTemplates.verification(verificationCode);
-    
-    // Send email
-    await transporter.sendMail({
-      from: process.env.SMTP_USER,
-      to: email,
-      subject: template.subject,
-      html: template.html
-    });
-    
-    res.json({ success: true, message: 'Verification code sent' });
+
+    // Email sending
+    if (useEmailFallback) {
+      // Optional: use Ethereal test SMTP when enabled
+      if (process.env.SMTP_USE_ETHEREAL === 'true') {
+        try {
+          const testAccount = await nodemailer.createTestAccount();
+          const etherealTransport = nodemailer.createTransport({
+            host: 'smtp.ethereal.email',
+            port: 587,
+            secure: false,
+            auth: {
+              user: testAccount.user,
+              pass: testAccount.pass,
+            },
+          });
+          const template = emailTemplates.verification(verificationCode);
+          const info = await etherealTransport.sendMail({
+            from: 'estyi@test',
+            to: email,
+            subject: template.subject,
+            html: template.html,
+          });
+          const previewUrl = nodemailer.getTestMessageUrl(info);
+          console.log(`✉️ ETHEREAL: message preview ${previewUrl}`);
+          return res.json({ success: true, message: 'Verification code sent (ethereal)', code: verificationCode, previewUrl });
+        } catch (e) {
+          console.warn('Ethereal send failed, falling back to dev code only:', e?.message || e);
+        }
+      }
+      console.log(`🔧 EMAIL-FALLBACK: code for ${email} (not sent via SMTP): ${verificationCode}`);
+      return res.json({ success: true, message: 'Dev: verification code generated (email not sent)', code: verificationCode });
+    } else {
+      const template = emailTemplates.verification(verificationCode);
+      await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: email,
+        subject: template.subject,
+        html: template.html
+      });
+      return res.json({ success: true, message: 'Verification code sent' });
+    }
     
   } catch (error) {
     console.error('Email send error:', error);
@@ -90,6 +133,17 @@ app.post('/api/verify-code', async (req, res) => {
       return res.status(400).json({ error: 'Email/UserId and code are required' });
     }
     
+    // If Supabase fallback is active, verify against in-memory store
+    if (useSupabaseFallback) {
+      const key = userId || email;
+      const entry = verificationStore.get(key);
+      if (!entry || entry.code !== code || Date.now() > entry.expiresAt) {
+        return res.status(400).json({ error: 'Invalid or expired verification code' });
+      }
+      verificationStore.delete(key);
+      return res.json({ success: true, message: 'Code verified successfully (dev store)' });
+    }
+
     // Check verification code by userId or email
     let query = supabase
       .from('verification_codes')
@@ -132,6 +186,12 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
     
+    if (useDevFallback) {
+      const userId = 'DEV_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      console.log(`🔧 DEV: registered user ${email} with id ${userId}`);
+      return res.json({ success: true, userId, message: 'User registered successfully (dev)' });
+    }
+
     // Generate user ID
     const userId = Math.random().toString(36).substring(2, 10).toUpperCase();
     
