@@ -314,6 +314,45 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
+          {/* Optional Photo Upload - moved to top */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {getTranslation('priceRequest.uploadPhotos', 'Fotoğraf Yükle')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => setPhotoFiles(Array.from(e.target.files || []))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              {getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}
+            </p>
+            {photoFiles.length > 0 && (
+              <>
+                <p className="text-xs text-gray-600 mt-1">
+                  {getTranslation('priceRequest.selectedFiles', 'Seçilen dosya sayısı')}: {photoFiles.length}
+                </p>
+                <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-3">
+                  {photoFiles.map((file, idx) => {
+                    const src = URL.createObjectURL(file);
+                    return (
+                      <div key={idx} className="relative w-full rounded-lg overflow-hidden border border-gray-200">
+                        <img
+                          src={src}
+                          alt={`preview-${idx}`}
+                          className="h-24 w-full object-cover"
+                          onLoad={() => URL.revokeObjectURL(src)}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            )}
+          </div>
+
           {/* Procedure Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -337,27 +376,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             </select>
           </div>
 
-          {/* Optional Photo Upload */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.uploadPhotos', 'Fotoğraf Yükle')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={(e) => setPhotoFiles(Array.from(e.target.files || []))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            />
-            <p className="text-xs text-gray-500 mt-2">
-              {getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}
-            </p>
-            {photoFiles.length > 0 && (
-              <p className="text-xs text-gray-600 mt-1">
-                {getTranslation('priceRequest.selectedFiles', 'Seçilen dosya sayısı')}: {photoFiles.length}
-              </p>
-            )}
-          </div>
+          
 
           {/* Countries Selection */}
           <div>
