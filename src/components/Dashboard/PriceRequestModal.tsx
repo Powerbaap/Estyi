@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { X, UploadCloud, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TREATMENT_AREAS } from '../../types';
 
@@ -18,6 +18,17 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+
+  // Create object URLs for previews and clean up when files change
+  const photoPreviews = useMemo(() =>
+    photoFiles.map(file => ({ file, url: URL.createObjectURL(file) })),
+  [photoFiles]);
+  useEffect(() => {
+    return () => {
+      photoPreviews.forEach(p => URL.revokeObjectURL(p.url));
+    };
+  }, [photoPreviews]);
 
   // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
@@ -315,6 +326,99 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
 
+          {/* Professional Photo Upload (Top, Optional) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                {getTranslation('priceRequest.uploadPhotos', 'Upload Photos')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
+              </label>
+              {photoFiles.length > 0 && (
+                <span className="text-xs text-gray-500">{photoFiles.length} {getTranslation('dashboard.photos', 'photos')}</span>
+              )}
+            </div>
+
+            {/* Dropzone */}
+            <div
+              className={`rounded-xl border-2 ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-dashed border-gray-300 bg-white'} p-4 transition-colors`}
+              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+              onDragLeave={() => setIsDragging(false)}
+              onDrop={(e) => {
+                e.preventDefault();
+                setIsDragging(false);
+                const files = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'));
+                if (files.length) {
+                  setPhotoFiles(prev => {
+                    const all = [...prev, ...files];
+                    // optional: limit to 8
+                    return all.slice(0, 8);
+                  });
+                }
+              }}
+            >
+              <div className="flex flex-col items-center justify-center text-center">
+                <UploadCloud className="w-10 h-10 text-blue-500 mb-2" />
+                <p className="text-sm text-gray-700 font-medium">{getTranslation('priceRequest.dragDropHint', 'Dosyaları sürükleyip bırakın veya aşağıdan seçin.')}</p>
+                <p className="text-xs text-gray-500 mt-1">{getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}</p>
+                <div className="mt-3">
+                  <input
+                    id="photo-input"
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
+                      setPhotoFiles(prev => {
+                        const all = [...prev, ...files];
+                        return all.slice(0, 8);
+                      });
+                    }}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="photo-input"
+                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 text-sm"
+                  >
+                    {getTranslation('priceRequest.chooseFiles', 'Dosya Seç')}
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            {/* Previews */}
+            {photoPreviews.length > 0 && (
+              <div className="mt-4">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  {photoPreviews.map((p, idx) => (
+                    <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
+                      <img src={p.url} alt={`photo-${idx + 1}`} className="w-full h-28 object-cover" />
+                      <button
+                        type="button"
+                        aria-label="Remove"
+                        onClick={() => {
+                          setPhotoFiles(prev => prev.filter((_, i) => i !== idx));
+                        }}
+                        className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition"
+                        title={getTranslation('priceRequest.removePhoto', 'Fotoğrafı Sil')}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <div className="mt-2 flex items-center justify-between">
+                  <p className="text-xs text-gray-500">{getTranslation('priceRequest.maxPhotosHint', 'En fazla 8 fotoğraf yükleyebilirsiniz.')}</p>
+                  <button
+                    type="button"
+                    onClick={() => setPhotoFiles([])}
+                    className="text-xs px-3 py-1 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
+                  >
+                    {getTranslation('priceRequest.clearPhotos', 'Tümünü Temizle')}
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* Procedure Selection */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -501,30 +605,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             />
           </div>
 
-          {/* Optional Photo Upload - restored simple input in dashed box */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.uploadPhotos', 'Upload Photos')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
-            </label>
-            <div className="border-2 border-dashed border-gray-300 rounded-xl p-3 bg-white">
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setPhotoFiles(prev => [...prev, ...files]);
-                }}
-                className="block"
-              />
-              <p className="text-xs text-gray-500 mt-2">
-                {getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}
-              </p>
-              <p className="text-xs text-gray-600 mt-1">
-                {getTranslation('priceRequest.dragDropHint', 'Dosyaları sürükleyip bırakın veya yukarıdan seçin.')}
-              </p>
-            </div>
-          </div>
+          {/* (Old simple photo input removed; professional uploader is at the top) */}
 
           {/* Important Notice */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
