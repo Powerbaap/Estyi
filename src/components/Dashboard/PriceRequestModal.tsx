@@ -18,7 +18,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [photoFiles, setPhotoFiles] = useState<File[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
 
   // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
@@ -315,71 +314,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Optional Photo Upload - moved to top with dropzone */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.uploadPhotos', 'Fotoğraf Yükle')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
-            </label>
-            <div
-              className={`border-2 rounded-xl p-4 transition-colors ${
-                isDragging ? 'border-blue-500 bg-blue-50 border-dashed' : 'border-gray-300 bg-gray-50 border-dashed'
-              }`}
-              onDragOver={(e) => {
-                e.preventDefault();
-                setIsDragging(true);
-              }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                const files = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'));
-                if (files.length > 0) {
-                  setPhotoFiles(prev => [...prev, ...files]);
-                }
-              }}
-            >
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setPhotoFiles(prev => [...prev, ...files]);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              />
-              <p className="text-xs text-gray-500 mt-2">
-                {getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}
-              </p>
-              {photoFiles.length === 0 && (
-                <div className="mt-3 text-sm text-gray-600">
-                  {getTranslation('priceRequest.dragDropHint', 'Dosyaları sürükleyip bırakın veya yukarıdan seçin.')}
-                </div>
-              )}
-              {photoFiles.length > 0 && (
-                <>
-                  <p className="text-xs text-gray-600 mt-2">
-                    {getTranslation('priceRequest.selectedFiles', 'Seçilen dosya sayısı')}: {photoFiles.length}
-                  </p>
-                  <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 gap-3">
-                    {photoFiles.map((file, idx) => {
-                      const src = URL.createObjectURL(file);
-                      return (
-                        <div key={idx} className="relative w-full rounded-lg overflow-hidden border border-gray-200">
-                          <img
-                            src={src}
-                            alt={`preview-${idx}`}
-                            className="h-40 w-full object-cover"
-                            onLoad={() => URL.revokeObjectURL(src)}
-                          />
-                        </div>
-                      );
-                    })}
-                  </div>
-                </>
-              )}
-            </div>
-          </div>
 
           {/* Procedure Selection */}
           <div>
@@ -565,6 +499,31 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               placeholder={getTranslation('priceRequest.descriptionPlaceholder', 'Additional information about treatment, your expectations, special requests...')}
             />
+          </div>
+
+          {/* Optional Photo Upload - restored simple input in dashed box */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {getTranslation('priceRequest.uploadPhotos', 'Upload Photos')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
+            </label>
+            <div className="border-2 border-dashed border-gray-300 rounded-xl p-3 bg-white">
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  setPhotoFiles(prev => [...prev, ...files]);
+                }}
+                className="block"
+              />
+              <p className="text-xs text-gray-500 mt-2">
+                {getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">
+                {getTranslation('priceRequest.dragDropHint', 'Dosyaları sürükleyip bırakın veya yukarıdan seçin.')}
+              </p>
+            </div>
           </div>
 
           {/* Important Notice */}
