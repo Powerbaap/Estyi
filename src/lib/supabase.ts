@@ -35,28 +35,69 @@ function createDevSupabaseMock() {
     }
   };
 
-  const devFrom = (_table: string) => {
+  // In-memory store for simple dev operations
+  const devStore: Record<string, any[]> = {
+    requests: [],
+    offers: [],
+    users: [],
+    messages: [],
+    clinics: [],
+    conversations: []
+  };
+
+  function withDefaults(table: string, values: any) {
+    const now = new Date().toISOString();
+    const id = values.id || Math.random().toString(36).substring(2, 10);
+    const base = { id, created_at: now, updated_at: now };
+    if (table === 'requests') {
+      return {
+        ...base,
+        user_id: values.user_id,
+        procedure: values.procedure || 'Unknown',
+        description: values.description || '',
+        photos: Array.isArray(values.photos) ? values.photos : [],
+        status: values.status || 'active'
+      };
+    }
+    return { ...values, ...base };
+  }
+
+  const devFrom = (table: string) => {
     return {
-      // select chain
+      // select chain (minimal support used in app)
       select(_cols?: string) {
+        const rows = devStore[table] || [];
         return {
-          eq(_column: string, _value: any) {
+          eq(column: string, value: any) {
+            const filtered = rows.filter((r: any) => r[column] === value);
             return {
+              order(_col: string, _opts: any) {
+                return Promise.resolve({ data: filtered, error: null });
+              },
               async single() {
-                return { data: null, error: { message: 'Supabase dev mock: select unavailable' } } as any;
+                return { data: filtered[0] || null, error: filtered[0] ? null : { message: 'Not found' } } as any;
               }
             };
           }
         };
       },
-      // insert direct
-      async insert(_values: any) {
-        return { data: null, error: null } as any;
+      // insert followed by optional select('*')
+      insert(values: any) {
+        const toInsert = Array.isArray(values) ? values : [values];
+        const inserted = toInsert.map(v => withDefaults(table, v));
+        devStore[table] = [...(devStore[table] || []), ...inserted];
+        return {
+          async select(_cols?: string) {
+            return { data: inserted, error: null } as any;
+          }
+        } as any;
       },
       // update chain ending in eq(...)
-      update(_values: any) {
+      update(updates: any) {
         return {
-          async eq(_column: string, _value: any) {
+          async eq(column: string, value: any) {
+            const rows = devStore[table] || [];
+            devStore[table] = rows.map(r => (r[column] === value ? { ...r, ...updates, updated_at: new Date().toISOString() } : r));
             return { data: { updated: true }, error: null } as any;
           }
         };
@@ -64,7 +105,9 @@ function createDevSupabaseMock() {
       // delete chain (used rarely)
       delete() {
         return {
-          async eq(_column: string, _value: any) {
+          async eq(column: string, value: any) {
+            const rows = devStore[table] || [];
+            devStore[table] = rows.filter(r => r[column] !== value);
             return { data: { deleted: true }, error: null } as any;
           }
         };

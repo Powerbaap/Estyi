@@ -186,7 +186,7 @@ app.post('/api/register', async (req, res) => {
       return res.status(400).json({ error: 'Email and password are required' });
     }
     
-    if (useDevFallback) {
+    if (useSupabaseFallback) {
       const userId = 'DEV_' + Math.random().toString(36).substring(2, 10).toUpperCase();
       console.log(`🔧 DEV: registered user ${email} with id ${userId}`);
       return res.json({ success: true, userId, message: 'User registered successfully (dev)' });

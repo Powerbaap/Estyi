@@ -11,12 +11,14 @@ interface PriceRequestModalProps {
 
 import { useAuth } from '../../contexts/AuthContext';
 import { requestService } from '../../services/api';
-// Photo upload removed
+import { uploadRequestPhotos } from '../../services/storage';
+// Photo upload restored as optional
 
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  
+  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
+
   // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
     const translation = t(key);
@@ -225,14 +227,23 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       return;
     }
     
-    // Photo upload removed; create request without photos
-    const photoUrls: string[] = [];
+    // Optional photo upload
+    let photoUrls: string[] = [];
+    try {
+      if (photoFiles.length > 0) {
+        photoUrls = await uploadRequestPhotos(user.id, photoFiles);
+      }
+    } catch (err: any) {
+      setSubmitError(getTranslation('priceRequest.photoUploadFailed', 'Fotoğraflar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.'));
+      setIsSubmitting(false);
+      return;
+    }
     const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
     const payload = {
       user_id: user?.id,
       procedure: formData.procedure,
       description: formData.description,
-      photos: [],
+      photos: photoUrls,
       status: 'active',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
@@ -249,8 +260,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         offersCount: 0,
         countries: countriesSelected,
         citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-        photos: 0,
-        photoUrls: [],
+        photos: photoUrls.length,
+        photoUrls: photoUrls,
         offers: []
       };
       onRequestSubmitted(newRequest);
@@ -326,7 +337,27 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             </select>
           </div>
 
-          {/* Photo upload removed */}
+          {/* Optional Photo Upload */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {getTranslation('priceRequest.uploadPhotos', 'Fotoğraf Yükle')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
+            </label>
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(e) => setPhotoFiles(Array.from(e.target.files || []))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            />
+            <p className="text-xs text-gray-500 mt-2">
+              {getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}
+            </p>
+            {photoFiles.length > 0 && (
+              <p className="text-xs text-gray-600 mt-1">
+                {getTranslation('priceRequest.selectedFiles', 'Seçilen dosya sayısı')}: {photoFiles.length}
+              </p>
+            )}
+          </div>
 
           {/* Countries Selection */}
           <div>
