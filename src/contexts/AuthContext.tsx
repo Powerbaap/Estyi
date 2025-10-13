@@ -39,6 +39,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const ensureUserRow = async (authUser: User | null) => {
     try {
       if (!authUser?.id) return;
+      const metadata = (authUser as any)?.user_metadata || {};
+      const metaName = (metadata?.name as string) || '';
+      const fallbackName = (authUser.email || '').split('@')[0] || 'User';
+      const displayName = (metaName || '').trim() || fallbackName;
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -57,7 +61,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: authUser.id,
           user_id: generateUserId(),
           email: authUser.email || '',
-          name: (authUser.email || '').split('@')[0] || 'User',
+          name: displayName,
           role: 'user' as const,
           is_verified: true,
           created_at: now,
@@ -70,6 +74,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (insertError) {
           console.error('Users row insert failed:', insertError);
+        }
+      } else {
+        // Mevcut satır var; isim eksikse veya placeholder ise metadata’daki isim ile güncelle
+        const currentName = (data as any)?.name as string | null;
+        const shouldUpdateName = !currentName || String(currentName).trim().length === 0 || String(currentName).trim().toLowerCase() === 'user';
+        if (shouldUpdateName && displayName) {
+          const { error: updateError } = await supabase
+            .from('users')
+            .update({ name: displayName })
+            .eq('id', authUser.id);
+          if (updateError) {
+            console.warn('Users name update failed:', updateError);
+          }
         }
       }
     } catch (e) {

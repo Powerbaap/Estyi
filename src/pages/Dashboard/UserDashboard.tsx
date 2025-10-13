@@ -33,7 +33,12 @@ const UserDashboard: React.FC = () => {
           setRequests([]);
           return;
         }
-        const userRequests = await requestService.getUserRequests(user.id);
+        // 10 saniyelik güvenli zaman aşımı ile veri çekme
+        const timeout = (ms: number) => new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), ms));
+        const userRequests = await Promise.race([
+          requestService.getUserRequests(user.id),
+          timeout(10000)
+        ]);
         const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => ({
           id: r.id,
           procedure: r.procedure,
@@ -66,11 +71,11 @@ const UserDashboard: React.FC = () => {
       } finally {
         setIsLoading(false);
       }
-    };
+      };
 
-    if (user) {
-      loadUserRequests();
-    }
+    // Kullanıcı oturumu olmasa bile yükleme akışını çalıştırarak
+    // isLoading durumunun takılı kalmasını önle
+    loadUserRequests();
   }, [user]);
 
   const handleRequestClick = (request: any) => {
