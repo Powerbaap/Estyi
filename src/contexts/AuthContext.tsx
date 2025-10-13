@@ -35,6 +35,48 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Mock kullanıcılar kaldırıldı - artık sadece gerçek Supabase kullanıcıları kullanılıyor
 
+  // Kullanıcı satırını garanti et: auth kullanıcısı varsa users tablosunda bir profil oluştur/varsa geç
+  const ensureUserRow = async (authUser: User | null) => {
+    try {
+      if (!authUser?.id) return;
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('id', authUser.id)
+        .single();
+
+      const notFound = !!error && (String((error as any)?.message || '').toLowerCase().includes('not found'));
+      if (error && !notFound) {
+        console.warn('Users lookup error:', error);
+        return;
+      }
+
+      if (!data) {
+        const now = new Date().toISOString();
+        const payload = {
+          id: authUser.id,
+          user_id: generateUserId(),
+          email: authUser.email || '',
+          name: (authUser.email || '').split('@')[0] || 'User',
+          role: 'user' as const,
+          is_verified: true,
+          created_at: now,
+          updated_at: now
+        } as any;
+
+        const { error: insertError } = await supabase
+          .from('users')
+          .insert([payload]);
+
+        if (insertError) {
+          console.error('Users row insert failed:', insertError);
+        }
+      }
+    } catch (e) {
+      console.error('ensureUserRow error:', e);
+    }
+  };
+
   // Session'ı kontrol et
   useEffect(() => {
     const getSession = async () => {
@@ -43,6 +85,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         const currentSession = data?.session ?? null;
         setSession(currentSession);
         setUser(currentSession?.user ?? null);
+        // Oturum varsa kullanıcı satırını garanti et
+        await ensureUserRow(currentSession?.user ?? null);
       } catch (err) {
         setSession(null);
         setUser(null);
@@ -58,6 +102,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
+        // Auth state değiştiğinde kullanıcı satırını garanti et
+        await ensureUserRow(session?.user ?? null);
       }
     );
 
@@ -193,6 +239,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           .insert([
             {
               id: data.user.id,
+              user_id: generateUserId(),
               email: email,
               name: email.split('@')[0],
               role: role,
