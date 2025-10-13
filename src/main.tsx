@@ -1,4 +1,3 @@
-import { supabase } from './lib/supabaseClient'
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App.tsx';

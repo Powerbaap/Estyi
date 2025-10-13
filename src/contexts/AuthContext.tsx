@@ -350,13 +350,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       setIsLoading(true);
-      const { error } = await supabase.auth.signOut();
-      if (error) {
-      }
+      // signOut fonksiyonu dev mock'ta olmayabilir; optional chaining ile çağır
+      await supabase.auth.signOut?.();
+    } catch (error) {
+      // Sessizce devam et; local state temizlenecek
+    } finally {
+      // Her durumda local oturum bilgisini temizle
       setSession(null);
       setUser(null);
-    } catch (error) {
-    } finally {
       setIsLoading(false);
     }
   };

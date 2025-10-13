@@ -19,6 +19,10 @@ function createDevSupabaseMock() {
     },
     async signUp(_: any) {
       return { data: null, error: { message: 'Supabase dev mock: signUp unavailable' } } as any;
+    },
+    async signOut() {
+      // Dev mock: hiçbir gerçek oturum yok, sadece başarı döndür
+      return { error: null } as any;
     }
   };
 
