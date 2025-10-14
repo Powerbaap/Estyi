@@ -34,7 +34,7 @@ jobs:
       - name: Deploy to Netlify
         uses: netlify/actions/cli@v4.0.0
         with:
-          args: deploy --dir=dist --prodIfUnlocked --message="GitHub Actions Staging Deploy"
+          args: deploy --dir=dist --prod --message="GitHub Actions Staging Deploy"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
