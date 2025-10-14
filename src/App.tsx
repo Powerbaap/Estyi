@@ -4,6 +4,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import ScrollToTop from './components/Layout/ScrollToTop';
+import ErrorBoundary from './components/Layout/ErrorBoundary';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -104,7 +105,9 @@ function App() {
     <AuthProvider>
       <Router>
         <ScrollToTop />
-        <AppContent />
+        <ErrorBoundary>
+          <AppContent />
+        </ErrorBoundary>
       </Router>
     </AuthProvider>
   );
