@@ -245,9 +245,11 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         photoUrls = await uploadRequestPhotos(user.id, photoFiles);
       }
     } catch (err: any) {
-      setSubmitError(getTranslation('priceRequest.photoUploadFailed', 'Fotoğraflar yüklenirken bir hata oluştu. Lütfen tekrar deneyin.'));
-      setIsSubmitting(false);
-      return;
+      console.error('Photo upload failed:', err);
+      // Fotoğraf yükleme başarısızsa talebi fotosuz göndermeye devam et
+      setSubmitError(getTranslation('priceRequest.photoUploadFailedProceed', 'Fotoğraflar yüklenemedi, talep fotosuz gönderildi.'));
+      photoUrls = [];
+      // Not: Gönderim akışını durdurmuyoruz; talep fotosuz ilerleyecek
     }
     const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
     const payload = {

@@ -26,6 +26,8 @@ const ClinicApplication: React.FC = () => {
     country: '',
     specialties: [] as string[],
     website: '',
+    phone: '',
+    email: '',
     description: '',
     certificates: [] as File[]
   });
@@ -225,6 +227,36 @@ const ClinicApplication: React.FC = () => {
                   />
                 </div>
 
+                {/* Contact Phone */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {getTranslation('clinicApplication.phone', 'Contact Number')} *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    value={formData.phone}
+                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+                    placeholder={getTranslation('clinicApplication.phonePlaceholder', '+90 XXX XXX XX XX')}
+                  />
+                </div>
+
+                {/* Contact Email */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {getTranslation('clinicApplication.email', 'Email Address')} *
+                  </label>
+                  <input
+                    type="email"
+                    required
+                    value={formData.email}
+                    onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+                    placeholder={getTranslation('clinicApplication.emailPlaceholder', 'clinic@example.com')}
+                  />
+                </div>
+
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -275,7 +307,7 @@ const ClinicApplication: React.FC = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={!formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description}
+                  disabled={!formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email}
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
                   {getTranslation('clinicApplication.submitApplication', 'Submit Application')}

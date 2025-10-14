@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Search, MessageCircle } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../../lib/supabase';
 
 interface Conversation {
   id: string;
@@ -22,7 +21,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
   const { t } = useTranslation();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
-  const [dbStatus, setDbStatus] = useState<{ state: 'checking' | 'ok' | 'reachable_needs_auth' | 'error'; detail?: string }>({ state: 'checking' });
+  // Supabase bağlantı durumu kullanıcıya gösterilmeyecek; ilgili state ve kontroller kaldırıldı
 
   // Yeni hesaplar için başlangıçta boş konuşma listesi
   const conversations: Conversation[] = [];
@@ -34,46 +33,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
     return matchesSearch && matchesFilter;
   });
 
-  useEffect(() => {
-    const checkDb = async () => {
-      const url = import.meta.env.VITE_SUPABASE_URL;
-      const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
-      if (!url || !key) {
-        setDbStatus({ state: 'error', detail: 'Supabase ortam değişkenleri eksik' });
-        return;
-      }
-
-      try {
-        const { error } = await supabase
-          .from('messages')
-          .select('id', { count: 'exact', head: true });
-
-        if (error) {
-          const msg = (error.message || '').toLowerCase();
-          const code = (error as any).code as string | undefined;
-          const isPermission = msg.includes('permission') || (code && code.startsWith('PGRST'));
-          if (isPermission) {
-            setDbStatus({ state: 'reachable_needs_auth', detail: 'Erişilebilir, RLS/yetki gerekli' });
-          } else if (msg.includes('fetch') || msg.includes('network')) {
-            setDbStatus({ state: 'error', detail: 'Ağ/erişim hatası' });
-          } else {
-            setDbStatus({ state: 'error', detail: error.message });
-          }
-        } else {
-          setDbStatus({ state: 'ok' });
-        }
-      } catch (e: any) {
-        const msg = (e?.message || '').toLowerCase();
-        if (msg.includes('fetch') || msg.includes('network')) {
-          setDbStatus({ state: 'error', detail: 'Ağ/erişim hatası' });
-        } else {
-          setDbStatus({ state: 'error', detail: e?.message || 'Bilinmeyen hata' });
-        }
-      }
-    };
-
-    checkDb();
-  }, []);
+  // Supabase bağlantı kontrolü kullanıcıya gösterilmediği için kaldırıldı
 
   return (
     <div className="bg-white rounded-2xl shadow-lg border border-gray-100 h-full flex flex-col">
@@ -83,27 +43,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
           <h2 className="text-xl font-bold text-gray-900">Mesajlar</h2>
         </div>
 
-        {/* Supabase Bağlantı Durumu */}
-        <div className="mb-3">
-          {dbStatus.state === 'checking' && (
-            <div className="text-sm text-gray-600">Veritabanı bağlantısı kontrol ediliyor…</div>
-          )}
-          {dbStatus.state === 'ok' && (
-            <div className="text-sm px-3 py-2 rounded-md bg-green-50 text-green-700 border border-green-200">
-              Supabase veritabanı durumu: Bağlı
-            </div>
-          )}
-          {dbStatus.state === 'reachable_needs_auth' && (
-            <div className="text-sm px-3 py-2 rounded-md bg-yellow-50 text-yellow-800 border border-yellow-200">
-              Supabase veritabanı durumu: Ulaşılabilir (RLS/yetki gerekli)
-            </div>
-          )}
-          {dbStatus.state === 'error' && (
-            <div className="text-sm px-3 py-2 rounded-md bg-red-50 text-red-700 border border-red-200">
-              Supabase veritabanı durumu: Sorun var{dbStatus.detail ? ` — ${dbStatus.detail}` : ''}
-            </div>
-          )}
-        </div>
+        {/* Supabase bağlantı durumu uyarısı kaldırıldı */}
 
         {/* Search */}
         <div className="relative mb-4">

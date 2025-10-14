@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserRole } from '../utils/auth';
 import { useTranslation } from 'react-i18next';
-import { User, Save, Edit, MapPin, Mail, Shield } from 'lucide-react';
+import { User, Save, Edit, Mail, Shield } from 'lucide-react';
 
 // Güvenli çeviri fallback metinleri (bileşen dışında sabit)
 const profileFallbackTexts: Record<string, Record<string, string>> = {
@@ -130,14 +130,6 @@ const Profile: React.FC = () => {
             <div className="bg-white rounded-2xl shadow-lg p-6">
               {/* Avatar Section */}
               <div className="text-center mb-6">
-                <div className="relative inline-block">
-                  <img
-                    src={profileData.avatar}
-                    alt="Profile"
-                    className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
-                  />
-                  {/* Profil fotoğrafı yükleme kontrolü kaldırıldı */}
-                </div>
                 <h2 className="text-xl font-bold text-gray-900 mt-4">
                   {user?.name || safeTranslate('profile.user')}
                 </h2>
@@ -232,23 +224,7 @@ const Profile: React.FC = () => {
                   </select>
                 </div>
 
-                {/* Location */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {safeTranslate('profile.location')}
-                  </label>
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value={profileData.location}
-                      onChange={(e) => setProfileData(prev => ({ ...prev, location: e.target.value }))}
-                      disabled={!isEditing}
-                      placeholder={safeTranslate('profile.locationPlaceholder')}
-                      className="w-full px-4 py-3 pl-10 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50"
-                    />
-                    <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  </div>
-                </div>
+                {/* Konum alanı kaldırıldı */}
               </div>
 
               {/* Security Section */}
