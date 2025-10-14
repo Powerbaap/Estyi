@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - develop
+      - deploy/netlify-railway
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
