@@ -1,11 +1,33 @@
 import React from 'react';
 import { Shield, Globe, Users, Star, Award, Clock, Sparkles, Heart, Zap } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
+import { getUserRole } from '../../utils/auth';
 
 const Features: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  
+  const handleCtaClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Giriş yapılmışsa kayıt sayfasına gitmeyi engelle
+    if (user) {
+      e.preventDefault();
+      const role = getUserRole(user);
+      if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'clinic') {
+        navigate('/clinic-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
+      return;
+    }
+    // Misafir kullanıcı için normal davranış
+    scrollToTopInstant();
+  };
   
   const features = [
     {
@@ -127,7 +149,7 @@ const Features: React.FC = () => {
               </p>
               <Link
                 to="/signup"
-                onClick={scrollToTopInstant}
+                onClick={handleCtaClick}
                 className="group inline-flex items-center bg-white text-purple-600 px-10 py-5 rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden"
               >
                 <span className="relative z-10">{t('home.features.cta.button')}</span>

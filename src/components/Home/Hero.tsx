@@ -9,8 +9,13 @@ import Logo from '../Layout/Logo';
 
 const Hero: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+  const [showPlayMessage, setShowPlayMessage] = useState(false);
+
+  const playMessage = i18n.language?.startsWith('en')
+    ? "We’re here to draw every eye to you 😊"
+    : "Her bakış sende toplansın diye buradayız 😊";
 
   const handlePriceRequestClick = () => {
     // Kullanıcı metadata'sından rolü al
@@ -105,13 +110,26 @@ const Hero: React.FC = () => {
 
             </div>
 
-            {/* Video Placeholder */}
-            <div className="relative inline-block group">
+            {/* Video Placeholder + Click Message */}
+            <div
+              className="relative inline-block group"
+              onClick={() => setShowPlayMessage(prev => !prev)}
+            >
               <div className="w-24 h-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:shadow-3xl transform hover:scale-110 transition-all duration-500 group-hover:rotate-12">
                 <Play className="w-10 h-10 text-white ml-1" />
               </div>
               <div className="absolute -inset-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full opacity-20 animate-ping group-hover:animate-pulse"></div>
               <div className="absolute -inset-12 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full opacity-10 animate-pulse"></div>
+
+              {showPlayMessage && (
+                <div className="mt-6 flex justify-center">
+                  <div className="inline-block px-6 py-4 rounded-2xl bg-white/80 backdrop-blur-md shadow-xl border border-white/50">
+                    <p className="text-lg md:text-xl font-semibold text-gray-900">
+                      {playMessage}
+                    </p>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
