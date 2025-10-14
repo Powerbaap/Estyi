@@ -43,6 +43,8 @@ const UserDashboard: React.FC = () => {
           countries: r.countries ?? [],
           photos: Array.isArray(r.photos) ? r.photos.length : (typeof r.photos === 'number' ? r.photos : 0),
           photoUrls: Array.isArray(r.photos) ? r.photos : undefined,
+          // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
+          offers: Array.isArray(r.offers) ? r.offers : []
         }));
         setRequests((prev) => {
           const combined = [...prev];
