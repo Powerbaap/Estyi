@@ -50,18 +50,62 @@ const ClinicApplication: React.FC = () => {
 
   const handleCertificateUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setFormData(prev => ({
-      ...prev,
-      certificates: [...prev.certificates, ...files]
-    }));
+    if (!files.length) return;
+
+    // Kabul edilen türler ve maksimum dosya boyutu (10MB)
+    const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png'];
+    const MAX_BYTES = 10 * 1024 * 1024;
+
+    const valid: File[] = [];
+    const rejected: string[] = [];
+
+    for (const f of files) {
+      const typeOk = allowedTypes.includes(f.type);
+      const sizeOk = f.size <= MAX_BYTES;
+      if (typeOk && sizeOk) {
+        valid.push(f);
+      } else {
+        const reason = !typeOk && !sizeOk
+          ? 'Dosya türü ve boyutu geçersiz'
+          : !typeOk
+          ? 'Dosya türü geçersiz'
+          : 'Dosya 10MB sınırını aşıyor';
+        rejected.push(`${f.name} (${reason})`);
+      }
+    }
+
+    if (rejected.length) {
+      alert(
+        'Bazı dosyalar eklenemedi:\n' +
+        rejected.join('\n') +
+        '\n\nLütfen yalnızca PDF, JPG veya PNG ve en fazla 10MB ekleyin.'
+      );
+    }
+
+    if (valid.length) {
+      setFormData(prev => ({
+        ...prev,
+        certificates: [...prev.certificates, ...valid]
+      }));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setSubmitting(true);
-      // 1) Başvuru kaydı oluştur
-      const created = await clinicApplicationService.createApplication({
+      // 1) Sertifikalar varsa önce depoya yükle (anon kullanıcılar için güncelleme RLS'inden kaçınmak amacıyla)
+      let certificateUrls: string[] = [];
+      if (formData.certificates.length > 0) {
+        const tmpId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
+          ? crypto.randomUUID()
+          : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const { uploadClinicCertificates } = await import('../services/storage');
+        certificateUrls = await uploadClinicCertificates(tmpId, formData.certificates);
+      }
+
+      // 2) Başvuru kaydı oluştur (sertifika URL'leri dahil)
+      await clinicApplicationService.createApplication({
         clinic_name: formData.clinicName,
         country: formData.country,
         specialties: formData.specialties,
@@ -69,16 +113,30 @@ const ClinicApplication: React.FC = () => {
         phone: formData.phone,
         email: formData.email,
         description: formData.description,
+        certificate_urls: certificateUrls,
         submitted_by: user?.id || null
       });
-      // 2) Sertifikaları yükle ve başvuruya ekle
-      if (formData.certificates.length > 0 && created?.id) {
-        await clinicApplicationService.attachCertificates(created.id, formData.certificates);
-      }
       setIsSubmitted(true);
-    } catch (err) {
+    } catch (err: any) {
       console.error('Başvuru gönderilirken hata:', err);
-      alert('Başvuru gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+      // Supabase hata mesajını kullanıcıya daha anlaşılır ver
+      const raw = err?.message || err?.error?.message || '';
+      const normalized = (raw || '').toLowerCase();
+
+      let friendly = '';
+      if (normalized.includes('row-level security') || normalized.includes('rls')) {
+        friendly = 'Yetki politikası nedeniyle başvuru kaydı reddedildi (RLS). Lütfen yönetici politikalarını kontrol edin.';
+      } else if (normalized.includes('permission denied')) {
+        friendly = 'İzin hatası oluştu. Lütfen Supabase tabloları/depoyu ve politikaları kontrol edin.';
+      } else if (normalized.includes('bucket') && normalized.includes('not found')) {
+        friendly = 'Depolama kovası bulunamadı. Sertifika yüklemeleri için ilgili kovayı oluşturun.';
+      }
+
+      alert(
+        'Başvuru gönderilirken bir hata oluştu. ' +
+          (friendly ? `\n\n${friendly}` : '') +
+          (raw ? `\n\nDetay: ${raw}` : '')
+      );
     } finally {
       setSubmitting(false);
     }
