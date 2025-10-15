@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserRole } from '../utils/auth';
 import { useTranslation } from 'react-i18next';
 import { User, Save, Edit, Mail, Shield } from 'lucide-react';
+import { requestService } from '../services/api';
 
 // Güvenli çeviri fallback metinleri (bileşen dışında sabit)
 const profileFallbackTexts: Record<string, Record<string, string>> = {
@@ -97,6 +98,51 @@ const Profile: React.FC = () => {
     avatar: user?.avatar || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face'
   });
 
+  // Dinamik istatistikler
+  const [totalRequests, setTotalRequests] = useState<number>(0);
+  const [receivedOffers, setReceivedOffers] = useState<number>(0);
+  const [memberSince, setMemberSince] = useState<string>('');
+
+  useEffect(() => {
+    // Üyelik tarihini Supabase kullanıcısından al
+    try {
+      if (user?.created_at) {
+        const dateStr = new Date(user.created_at).toLocaleDateString(i18n.language || 'tr-TR');
+        setMemberSince(dateStr);
+      } else {
+        setMemberSince('—');
+      }
+    } catch {
+      setMemberSince('—');
+    }
+  }, [user, i18n.language]);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        if (!user?.id) {
+          setTotalRequests(0);
+          setReceivedOffers(0);
+          return;
+        }
+        const reqs = await requestService.getUserRequests(user.id);
+        const list = Array.isArray(reqs) ? reqs : [];
+        setTotalRequests(list.length);
+        const offersTotal = list.reduce((sum: number, r: any) => {
+          const countFromField = typeof r.offersCount === 'number' ? r.offersCount : 0;
+          const countFromArray = Array.isArray(r.offers) ? r.offers.length : 0;
+          return sum + (countFromField || countFromArray);
+        }, 0);
+        setReceivedOffers(offersTotal);
+      } catch (err) {
+        setTotalRequests(0);
+        setReceivedOffers(0);
+      }
+    };
+
+    loadStats();
+  }, [user]);
+
   const handleSave = () => {
     // Burada API çağrısı yapılacak
     setIsEditing(false);
@@ -140,15 +186,15 @@ const Profile: React.FC = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">{safeTranslate('profile.totalRequests')}</span>
-                  <span className="font-semibold text-gray-900">5</span>
+                  <span className="font-semibold text-gray-900">{totalRequests}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">{safeTranslate('profile.receivedOffers')}</span>
-                  <span className="font-semibold text-gray-900">12</span>
+                  <span className="font-semibold text-gray-900">{receivedOffers}</span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                   <span className="text-sm text-gray-600">{safeTranslate('profile.memberSince')}</span>
-                  <span className="font-semibold text-gray-900">15.01.2024</span>
+                  <span className="font-semibold text-gray-900">{memberSince}</span>
                 </div>
               </div>
             </div>

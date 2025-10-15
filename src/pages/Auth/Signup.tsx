@@ -155,8 +155,8 @@ const Signup: React.FC = () => {
                   <User className="w-5 h-5" />
                   <span className="font-medium">{t('auth.patient')}</span>
                 </button>
-              </div>
             </div>
+          </div>
 
             {/* Email Field */}
             <div>

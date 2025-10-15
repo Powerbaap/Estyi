@@ -48,6 +48,20 @@ CREATE POLICY "Clinics can update own profile" ON clinics
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
+-- Adminlar için klinik yönetimi (JWT içinde role=admin olduğunda)
+CREATE POLICY "Admins can view clinics" ON clinics
+  FOR SELECT
+  USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can insert clinics" ON clinics
+  FOR INSERT
+  WITH CHECK ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+
+CREATE POLICY "Admins can update clinics" ON clinics
+  FOR UPDATE
+  USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
+  WITH CHECK ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+
 -- (Opsiyonel) OFFERS tablosu: klinikler kendi tekliflerini görsün ve kullanıcılar kendi taleplerine gelen teklifleri görebilsin
 ALTER TABLE offers ENABLE ROW LEVEL SECURITY;
 
@@ -63,3 +77,22 @@ CREATE POLICY "Users can view offers on own requests" ON offers
       WHERE r.id = offers.request_id AND r.user_id = auth.uid()
     )
   );
+
+-- CLINIC APPLICATIONS tablosu: herkes başvuru oluşturabilsin, admin görebilsin ve yönetsin
+ALTER TABLE clinic_applications ENABLE ROW LEVEL SECURITY;
+
+-- Public insert: herkese açık formdan başvuru yapılabilsin
+CREATE POLICY "Anyone can insert clinic applications" ON clinic_applications
+  FOR INSERT
+  WITH CHECK (true);
+
+-- Admin görüntüleme
+CREATE POLICY "Admins can view clinic applications" ON clinic_applications
+  FOR SELECT
+  USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+
+-- Admin güncelleme
+CREATE POLICY "Admins can update clinic applications" ON clinic_applications
+  FOR UPDATE
+  USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')
+  WITH CHECK ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');

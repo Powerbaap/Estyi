@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase';
+import { uploadClinicCertificates } from './storage';
 
 // Kullanıcı servisleri
 export const userService = {
@@ -59,6 +60,91 @@ export const clinicService = {
     
     if (error) throw error;
     return data;
+  }
+};
+
+// Klinik başvuru servisleri
+export const clinicApplicationService = {
+  // Başvuru oluştur (sertifikalar olmadan)
+  createApplication: async (payload: {
+    clinic_name: string;
+    country?: string;
+    specialties?: string[];
+    website?: string;
+    phone?: string;
+    email: string;
+    description?: string;
+    submitted_by?: string | null;
+  }) => {
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .insert(payload)
+      .select('*');
+    if (error) throw error;
+    return Array.isArray(data) ? data[0] : data;
+  },
+
+  // Sertifikaları yükle ve başvuruya ekle
+  attachCertificates: async (applicationId: string, files: File[]) => {
+    const urls = await uploadClinicCertificates(applicationId, files);
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .update({ certificate_urls: urls })
+      .eq('id', applicationId)
+      .select('*');
+    if (error) throw error;
+    return Array.isArray(data) ? data[0] : data;
+  },
+
+  // Başvuruları getir (admin)
+  getApplications: async () => {
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  },
+
+  // Başvuruyu onayla: clinics tablosuna ekle ve status=approved yap
+  approveApplication: async (application: any) => {
+    // 1) clinics tablosuna ekle
+    const clinicInsert = {
+      name: application.clinic_name,
+      email: application.email,
+      phone: application.phone || '',
+      website: application.website || '',
+      location: application.country || '',
+      status: 'active',
+      rating: 0,
+      reviews: 0,
+      specialties: application.specialties || []
+    };
+    const { data: clinicRow, error: clinicErr } = await supabase
+      .from('clinics')
+      .insert(clinicInsert)
+      .select('*');
+    if (clinicErr) throw clinicErr;
+    const createdClinic = Array.isArray(clinicRow) ? clinicRow[0] : clinicRow;
+
+    // 2) Başvuruyu güncelle
+    const { error: appErr } = await supabase
+      .from('clinic_applications')
+      .update({ status: 'approved' })
+      .eq('id', application.id);
+    if (appErr) throw appErr;
+    return createdClinic;
+  },
+
+  // Başvuruyu reddet
+  rejectApplication: async (applicationId: string, reason?: string) => {
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .update({ status: 'rejected', description: reason || null })
+      .eq('id', applicationId)
+      .select('*');
+    if (error) throw error;
+    return Array.isArray(data) ? data[0] : data;
   }
 };
 

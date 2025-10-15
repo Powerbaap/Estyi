@@ -53,7 +53,20 @@ const UserDashboard: React.FC = () => {
             if (idx === -1) {
               combined.push(r);
             } else {
-              combined[idx] = { ...combined[idx], ...r };
+              const prevItem = combined[idx];
+              // Undefined değerlerin mevcut bilgiyi ezmesini engelle
+              const merged = { ...prevItem, ...r } as any;
+              // Fotoğraf URL'leri yeni kayıtta yoksa eskileri koru
+              merged.photoUrls = Array.isArray(r.photoUrls) ? r.photoUrls : prevItem.photoUrls;
+              // Fotoğraf sayısını URL'lere göre senkronize et
+              if (Array.isArray(merged.photoUrls)) {
+                merged.photos = merged.photoUrls.length;
+              } else if (typeof r.photos === 'number') {
+                merged.photos = r.photos;
+              } else {
+                merged.photos = prevItem.photos ?? 0;
+              }
+              combined[idx] = merged;
             }
           });
           return combined.sort((a, b) => {

@@ -401,7 +401,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 </div>
               ) : (
                 <div className="text-gray-600 text-sm bg-gray-50 border border-gray-200 rounded-xl p-4">
-                  {t('requestDetails.photosUploaded')}
+                  {t('userDashboard.noPhotos')}
                 </div>
               )}
             </div>

@@ -101,7 +101,41 @@
   },
   "faq": {
     "title": "Sık Sorulan Sorular",
-    "subtitle": "Size yardımcı olmak için buradayız"
+    "subtitle": "Size yardımcı olmak için buradayız",
+    "questions": {
+      "howItWorks": {
+        "question": "Estyi nasıl çalışır?",
+        "answer": "Estyi, hastaların estetik tedavi taleplerini dünya çapındaki sertifikalı kliniklere iletir. Hastalar fotoğraf ve bilgilerini paylaşır, klinikler teklif gönderir."
+      },
+      "pricing": {
+        "question": "Hizmet ücretli mi?",
+        "answer": "Hayır, Estyi platformu hastalar için tamamen ücretsizdir. Sadece tedavi ücretlerini kliniklere ödersiniz."
+      },
+      "dataSafety": {
+        "question": "Verilerim güvende mi?",
+        "answer": "Evet, tüm verileriniz şifrelenmiş olarak saklanır ve GDPR uyumludur. Kişisel bilgileriniz güvenle korunur."
+      },
+      "countries": {
+        "question": "Hangi ülkelerde hizmet veriyorsunuz?",
+        "answer": "Türkiye, Güney Kore, Tayland, Meksika, Brezilya, Almanya, Polonya, Çek Cumhuriyeti, Hindistan ve Dubai'de hizmet veriyoruz."
+      },
+      "clinicSelection": {
+        "question": "Klinik seçimi nasıl yapılır?",
+        "answer": "Tüm kliniklerimiz sertifikalı ve akreditelidir. Kliniklerin profillerini inceleyebilir, değerlendirmelerini okuyabilirsiniz."
+      },
+      "postTreatmentSupport": {
+        "question": "Tedavi sonrası destek var mı?",
+        "answer": "Evet, tedavi öncesi ve sonrası sürekli destek sağlıyoruz. Herhangi bir sorunuzda bize ulaşabilirsiniz."
+      },
+      "payment": {
+        "question": "Ödeme nasıl yapılır?",
+        "answer": "Ödemeler güvenli ödeme sistemleri üzerinden yapılır. Klinik ile anlaştığınız fiyat üzerinden ödeme yaparsınız."
+      }
+    },
+    "stillHaveQuestions": "Hala sorunuz mu var?",
+    "contactDescription": "Sorularınız için bizimle iletişime geçebilirsiniz. Size en kısa sürede yanıt vereceğiz.",
+    "sendEmail": "E-posta Gönder",
+    "contactPage": "İletişim Sayfası"
   },
   "contact": {
     "badge": "İletişim",

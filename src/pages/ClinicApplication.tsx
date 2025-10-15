@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { CheckCircle, Upload, Award, Globe, Sparkles, Heart, Star, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TREATMENT_AREAS } from '../types';
+import { useAuth } from '../contexts/AuthContext';
+import { clinicApplicationService } from '../services/api';
+import { useLocation } from 'react-router-dom';
 
 const ClinicApplication: React.FC = () => {
   const { t, i18n } = useTranslation();
@@ -32,6 +35,9 @@ const ClinicApplication: React.FC = () => {
     certificates: [] as File[]
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const { user } = useAuth();
+  const location = useLocation();
 
   const handleSpecialtyToggle = (specialty: string) => {
     setFormData(prev => ({
@@ -50,10 +56,64 @@ const ClinicApplication: React.FC = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitted(true);
+    try {
+      setSubmitting(true);
+      // 1) Başvuru kaydı oluştur
+      const created = await clinicApplicationService.createApplication({
+        clinic_name: formData.clinicName,
+        country: formData.country,
+        specialties: formData.specialties,
+        website: formData.website,
+        phone: formData.phone,
+        email: formData.email,
+        description: formData.description,
+        submitted_by: user?.id || null
+      });
+      // 2) Sertifikaları yükle ve başvuruya ekle
+      if (formData.certificates.length > 0 && created?.id) {
+        await clinicApplicationService.attachCertificates(created.id, formData.certificates);
+      }
+      setIsSubmitted(true);
+    } catch (err) {
+      console.error('Başvuru gönderilirken hata:', err);
+      alert('Başvuru gönderilirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+    } finally {
+      setSubmitting(false);
+    }
   };
+
+  // Otomatik gönderim testi: /clinic-application?auto=1 ile çalışır
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get('auto') === '1' && !isSubmitted && !submitting) {
+      (async () => {
+        try {
+          setSubmitting(true);
+          // Test verileri
+          const payload = {
+            clinic_name: formData.clinicName || 'Test Klinik',
+            country: formData.country || 'Türkiye',
+            specialties: formData.specialties.length ? formData.specialties : ['Hair Transplant'],
+            website: formData.website || 'https://example.com',
+            phone: formData.phone || '+90 212 555 0000',
+            email: formData.email || 'test.clinic@example.com',
+            description: formData.description || 'Otomatik test başvurusu',
+            submitted_by: user?.id || null
+          };
+          const created = await clinicApplicationService.createApplication(payload);
+          // Sertifika ekleme opsiyonel, dosya yoksa atla
+          setIsSubmitted(true);
+          console.log('Otomatik başvuru oluşturuldu:', created);
+        } catch (err) {
+          console.error('Otomatik başvuru hatası:', err);
+        } finally {
+          setSubmitting(false);
+        }
+      })();
+    }
+  }, [location.search]);
 
   if (isSubmitted) {
     return (
@@ -307,10 +367,10 @@ const ClinicApplication: React.FC = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={!formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email}
+                  disabled={submitting || !formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email}
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
-                  {getTranslation('clinicApplication.submitApplication', 'Submit Application')}
+                  {submitting ? getTranslation('clinicApplication.submitting', 'Submitting...') : getTranslation('clinicApplication.submitApplication', 'Submit Application')}
                 </button>
               </form>
             </div>

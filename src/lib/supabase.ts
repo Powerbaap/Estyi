@@ -42,7 +42,8 @@ function createDevSupabaseMock() {
     users: [],
     messages: [],
     clinics: [],
-    conversations: []
+    conversations: [],
+    clinic_applications: []
   };
 
   function withDefaults(table: string, values: any) {
@@ -57,6 +58,21 @@ function createDevSupabaseMock() {
         description: values.description || '',
         photos: Array.isArray(values.photos) ? values.photos : [],
         status: values.status || 'active'
+      };
+    }
+    if (table === 'clinic_applications') {
+      return {
+        ...base,
+        clinic_name: values.clinic_name,
+        country: values.country || '',
+        specialties: Array.isArray(values.specialties) ? values.specialties : [],
+        website: values.website || '',
+        phone: values.phone || '',
+        email: values.email,
+        description: values.description || '',
+        certificate_urls: Array.isArray(values.certificate_urls) ? values.certificate_urls : [],
+        status: values.status || 'pending',
+        submitted_by: values.submitted_by || null
       };
     }
     return { ...values, ...base };
@@ -159,6 +175,53 @@ export interface Database {
           name?: string;
           role?: 'user' | 'clinic' | 'admin';
           avatar_url?: string;
+          created_at?: string;
+          updated_at?: string;
+        };
+      };
+      clinic_applications: {
+        Row: {
+          id: string;
+          clinic_name: string;
+          country: string | null;
+          specialties: string[];
+          website: string | null;
+          phone: string | null;
+          email: string;
+          description: string | null;
+          certificate_urls: string[];
+          status: 'pending' | 'approved' | 'rejected';
+          submitted_by: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          clinic_name: string;
+          country?: string;
+          specialties?: string[];
+          website?: string;
+          phone?: string;
+          email: string;
+          description?: string;
+          certificate_urls?: string[];
+          status?: 'pending' | 'approved' | 'rejected';
+          submitted_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          clinic_name?: string;
+          country?: string;
+          specialties?: string[];
+          website?: string;
+          phone?: string;
+          email?: string;
+          description?: string;
+          certificate_urls?: string[];
+          status?: 'pending' | 'approved' | 'rejected';
+          submitted_by?: string | null;
           created_at?: string;
           updated_at?: string;
         };

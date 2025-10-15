@@ -131,7 +131,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         options: {
           data: {
             role: role,
-            name: email.split('@')[0] // Email'den isim oluştur
+            name: email.split('@')[0]
           }
         }
       });

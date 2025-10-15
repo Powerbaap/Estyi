@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -16,6 +16,7 @@ import {
   X,
   LogOut
 } from 'lucide-react';
+import { clinicApplicationService } from '../../services/api';
 
 const ClinicManagement: React.FC = () => {
   const { user, logout } = useAuth();
@@ -25,6 +26,11 @@ const ClinicManagement: React.FC = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedClinic, setSelectedClinic] = useState<any>(null);
   const [showClinicModal, setShowClinicModal] = useState(false);
+  // Başvurular için durumlar
+  const [applications, setApplications] = useState<any[]>([]);
+  const [loadingApps, setLoadingApps] = useState(false);
+  const [selectedApplication, setSelectedApplication] = useState<any>(null);
+  const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [newClinic, setNewClinic] = useState({
     name: '',
     email: '',
@@ -37,6 +43,22 @@ const ClinicManagement: React.FC = () => {
     await logout();
     navigate('/');
   };
+
+  // Başvuruları yükle
+  useEffect(() => {
+    const load = async () => {
+      try {
+        setLoadingApps(true);
+        const data = await clinicApplicationService.getApplications();
+        setApplications(data || []);
+      } catch (err) {
+        console.error('Başvurular yüklenemedi:', err);
+      } finally {
+        setLoadingApps(false);
+      }
+    };
+    load();
+  }, []);
 
   const clinics = [
     {
@@ -121,6 +143,35 @@ const ClinicManagement: React.FC = () => {
 
   const handleDeleteClinic = (clinicId: string) => {
     // Delete clinic logic
+  };
+
+  // Başvuru detayını görüntüle
+  const handleViewApplication = (application: any) => {
+    setSelectedApplication(application);
+    setShowApplicationModal(true);
+  };
+
+  // Başvuruyu onayla
+  const handleApproveApplication = async (application: any) => {
+    try {
+      const clinic = await clinicApplicationService.approveApplication(application);
+      // UI güncelle: başvuruyu approved yap ve clinics listesine ekle (geçici)
+      setApplications(prev => prev.map(a => a.id === application.id ? { ...a, status: 'approved' } : a));
+    } catch (err) {
+      console.error('Başvuru onaylama hatası:', err);
+      alert('Başvuru onaylanamadı. RLS veya yetki ayarlarını kontrol edin.');
+    }
+  };
+
+  // Başvuruyu reddet
+  const handleRejectApplication = async (applicationId: string) => {
+    try {
+      await clinicApplicationService.rejectApplication(applicationId);
+      setApplications(prev => prev.map(a => a.id === applicationId ? { ...a, status: 'rejected' } : a));
+    } catch (err) {
+      console.error('Başvuru reddetme hatası:', err);
+      alert('Başvuru reddedilemedi.');
+    }
   };
 
   const specialties = [
@@ -224,6 +275,92 @@ const ClinicManagement: React.FC = () => {
                 <option value="rejected">Reddedilmiş</option>
               </select>
             </div>
+          </div>
+        </div>
+
+        {/* Başvurular Tablosu */}
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 mb-8">
+          <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-gray-900">Klinik Başvuruları ({applications.length})</h3>
+            {loadingApps && <span className="text-sm text-gray-500">Yükleniyor...</span>}
+          </div>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200">
+              <thead className="bg-gray-50">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Klinik</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">İletişim</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ülke</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Durum</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sertifikalar</th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">İşlemler</th>
+                </tr>
+              </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {applications.map((app) => (
+                  <tr key={app.id} className="hover:bg-gray-50">
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm font-medium text-gray-900">{app.clinic_name}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{app.email}</div>
+                      <div className="text-sm text-gray-500">{app.phone}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="text-sm text-gray-900">{app.country}</div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                        app.status === 'approved' ? 'bg-green-100 text-green-800' :
+                        app.status === 'rejected' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800'
+                      }`}>
+                        {app.status || 'pending'}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex flex-col gap-1">
+                        {(app.certificate_urls || []).map((url: string, idx: number) => (
+                          <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm">Belge {idx + 1}</a>
+                        ))}
+                        {(!app.certificate_urls || app.certificate_urls.length === 0) && (
+                          <span className="text-gray-500 text-sm">Belge yok</span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                      <div className="flex items-center justify-end space-x-2">
+                        <button
+                          onClick={() => handleViewApplication(app)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Görüntüle"
+                        >
+                          <Eye className="w-4 h-4" />
+                        </button>
+                        {app.status !== 'approved' && (
+                          <button
+                            onClick={() => handleApproveApplication(app)}
+                            className="text-green-600 hover:text-green-900"
+                            title="Onayla"
+                          >
+                            <CheckCircle className="w-4 h-4" />
+                          </button>
+                        )}
+                        {app.status !== 'rejected' && (
+                          <button
+                            onClick={() => handleRejectApplication(app.id)}
+                            className="text-red-600 hover:text-red-900"
+                            title="Reddet"
+                          >
+                            <XCircle className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -435,6 +572,81 @@ const ClinicManagement: React.FC = () => {
       )}
 
       {/* Clinic Details Modal */}
+      {/* Application Details Modal */}
+      {showApplicationModal && selectedApplication && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg max-w-md w-full p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Başvuru Detayları</h3>
+              <button
+                onClick={() => setShowApplicationModal(false)}
+                className="text-gray-400 hover:text-gray-600"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Klinik Adı</label>
+                <p className="text-sm text-gray-900">{selectedApplication.clinic_name}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">E-posta</label>
+                <p className="text-sm text-gray-900">{selectedApplication.email}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Telefon</label>
+                <p className="text-sm text-gray-900">{selectedApplication.phone}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Ülke</label>
+                <p className="text-sm text-gray-900">{selectedApplication.country}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Uzmanlık Alanları</label>
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {(selectedApplication.specialties || []).map((s: string, index: number) => (
+                    <span key={index} className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Sertifikalar</label>
+                <div className="flex flex-col gap-1 mt-1">
+                  {(selectedApplication.certificate_urls || []).map((url: string, idx: number) => (
+                    <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm">Belge {idx + 1}</a>
+                  ))}
+                  {(!selectedApplication.certificate_urls || selectedApplication.certificate_urls.length === 0) && (
+                    <span className="text-gray-500 text-sm">Belge yok</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="mt-6 flex space-x-3">
+              <button
+                onClick={() => handleApproveApplication(selectedApplication)}
+                className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+              >
+                Onayla
+              </button>
+              <button
+                onClick={() => handleRejectApplication(selectedApplication.id)}
+                className="flex-1 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
+              >
+                Reddet
+              </button>
+              <button
+                onClick={() => setShowApplicationModal(false)}
+                className="flex-1 bg-gray-300 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-400 transition-colors"
+              >
+                Kapat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {showClinicModal && selectedClinic && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-md w-full p-6">
@@ -503,4 +715,4 @@ const ClinicManagement: React.FC = () => {
   );
 };
 
-export default ClinicManagement; 
+export default ClinicManagement;

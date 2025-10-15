@@ -38,6 +38,23 @@ CREATE TABLE clinics (
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- Clinic applications tablosu (admin inceleme/onay akışı için)
+CREATE TABLE IF NOT EXISTS clinic_applications (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  clinic_name TEXT NOT NULL,
+  country TEXT,
+  specialties TEXT[] DEFAULT '{}',
+  website TEXT,
+  phone TEXT,
+  email TEXT NOT NULL,
+  description TEXT,
+  certificate_urls TEXT[] DEFAULT '{}',
+  status TEXT CHECK (status IN ('pending','approved','rejected')) DEFAULT 'pending',
+  submitted_by UUID, -- opsiyonel: başvuran kullanıcı
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
 -- Requests tablosu
 CREATE TABLE requests (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -78,6 +95,7 @@ CREATE TABLE messages (
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE verification_codes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE clinics ENABLE ROW LEVEL SECURITY;
+ALTER TABLE clinic_applications ENABLE ROW LEVEL SECURITY;
 ALTER TABLE requests ENABLE ROW LEVEL SECURITY;
 ALTER TABLE offers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
@@ -108,4 +126,4 @@ INSERT INTO clinics (id, name, email, status, specialties) VALUES (
   'info@istanbulestetik.com',
   'active',
   ARRAY['Rhinoplasty', 'Hair Transplant']
-); 
+);
