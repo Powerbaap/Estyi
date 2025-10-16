@@ -1,9 +1,9 @@
-name: Staging Deploy to Netlify
+name: Netlify Deploy
 
 on:
   push:
-    branches:
-      - develop
+    branches: [ main, develop ]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy:
@@ -32,7 +32,7 @@ jobs:
       - name: Deploy to Netlify
         uses: netlify/actions/cli@v4.0.0
         with:
-          args: deploy --dir=dist --prodIfUnlocked --message="GitHub Actions Staging Deploy"
+          args: deploy --dir=dist --prodIfUnlocked --message="GitHub Actions Netlify Deploy"
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
