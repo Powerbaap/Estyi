@@ -3,6 +3,8 @@
 
 Estyi, hastalar ve klinikler arasında köprü kuran modern bir sağlık hizmetleri platformudur.
 
+> CI/CD test notu: Netlify production deployu tetiklemek için bu dosyada küçük bir değişiklik yapıldı.
+
 ## ✨ Özellikler
 
 - 👤 **Kullanıcı Yönetimi**: Güvenli kayıt ve giriş sistemi
