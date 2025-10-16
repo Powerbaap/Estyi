@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar, Eye } from 'lucide-react';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
+import { signRequestPhotoUrls } from '../../services/storage';
 
 interface Offer {
   id: string;
@@ -45,8 +46,29 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const [offerStatuses, setOfferStatuses] = React.useState<{[key: string]: 'pending' | 'accepted' | 'rejected'}>({});
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
+  const [displayPhotoUrls, setDisplayPhotoUrls] = useState<string[]>([]);
 
   if (!isOpen || !request) return null;
+
+  // Fotoğrafları imzalı URL'lere çevir ve ekranda bunları göster
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      const urls = Array.isArray(request?.photoUrls) ? request!.photoUrls! : [];
+      if (urls.length === 0) {
+        setDisplayPhotoUrls([]);
+        return;
+      }
+      try {
+        const signed = await signRequestPhotoUrls(urls, 3600);
+        if (!cancelled) setDisplayPhotoUrls(signed);
+      } catch {
+        if (!cancelled) setDisplayPhotoUrls(urls);
+      }
+    };
+    run();
+    return () => { cancelled = true; };
+  }, [request?.photoUrls]);
 
   const handleContactClinic = (clinicName: string) => {
     // Mesaj bölümüne yönlendir
@@ -378,9 +400,9 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 <Eye className="w-5 h-5 text-blue-600 mr-2" />
                 {t('requestDetails.myPhotos')}
               </h3>
-              {request.photoUrls && request.photoUrls.length > 0 ? (
+              {displayPhotoUrls && displayPhotoUrls.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {request.photoUrls.map((url, idx) => (
+                  {displayPhotoUrls.map((url, idx) => (
                     <div key={idx} className="relative group">
                       <LazyLoadImage
                         src={url}

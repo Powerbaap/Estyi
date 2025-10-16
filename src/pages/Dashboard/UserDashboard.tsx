@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { requestService } from '../../services/api';
+import { signRequestPhotoUrls } from '../../services/storage';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 const UserDashboard: React.FC = () => {
@@ -105,6 +106,30 @@ const UserDashboard: React.FC = () => {
       loadUserRequests();
     }
   }, [user]);
+
+  // Fotoğraf önizlemeleri için imzalı URL kullanımı (bucket private olabilir)
+  useEffect(() => {
+    const signMissingPhotoUrls = async () => {
+      if (!requests || requests.length === 0) return;
+      const updated = await Promise.all(requests.map(async (r: any) => {
+        const urls: string[] = Array.isArray(r.photoUrls) ? r.photoUrls : [];
+        if (urls.length === 0) return r;
+        // Zaten imzalıysa tekrar işlem yapma
+        const alreadySigned = urls.some(u => u.includes('token='));
+        if (alreadySigned) return r;
+        try {
+          const signed = await signRequestPhotoUrls(urls, 3600);
+          return { ...r, photoUrls: signed };
+        } catch {
+          return r;
+        }
+      }));
+      setRequests(updated);
+    };
+    // Uzun döngüleri engellemek için sadece liste uzunluğu değiştiğinde çalıştır
+    signMissingPhotoUrls();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [requests.length]);
 
   const handleRequestClick = (request: any) => {
     setSelectedRequest(request);
