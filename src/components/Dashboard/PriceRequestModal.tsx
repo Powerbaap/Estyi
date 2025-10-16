@@ -273,8 +273,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         offersCount: 0,
         countries: countriesSelected,
         citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-        photos: photoUrls.length,
-        photoUrls: photoUrls,
+        photos: Array.isArray(row?.photos) ? row.photos.length : photoUrls.length,
+        photoUrls: Array.isArray(row?.photos) ? row.photos : photoUrls,
         offers: []
       };
       onRequestSubmitted(newRequest);

@@ -34,18 +34,36 @@ const UserDashboard: React.FC = () => {
           return;
         }
         const userRequests = await requestService.getUserRequests(user.id);
-        const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => ({
-          id: r.id,
-          procedure: r.procedure,
-          status: r.status ?? 'active',
-          createdAt: r.created_at ? new Date(r.created_at) : new Date(),
-          offersCount: r.offersCount ?? 0,
-          countries: r.countries ?? [],
-          photos: Array.isArray(r.photos) ? r.photos.length : (typeof r.photos === 'number' ? r.photos : 0),
-          photoUrls: Array.isArray(r.photos) ? r.photos : undefined,
-          // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
-          offers: Array.isArray(r.offers) ? r.offers : []
-        }));
+        const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => {
+          // photos alanı dizi, sayı veya JSON-string olabilir; güvenli şekilde çözümle
+          let photoUrlsResolved: string[] | undefined = undefined;
+          const rawPhotos = r?.photos;
+          if (Array.isArray(rawPhotos)) {
+            photoUrlsResolved = rawPhotos as string[];
+          } else if (typeof rawPhotos === 'string') {
+            try {
+              const parsed = JSON.parse(rawPhotos);
+              if (Array.isArray(parsed)) {
+                photoUrlsResolved = parsed as string[];
+              }
+            } catch (_) {
+              // geçersiz JSON-string ise yok say
+            }
+          }
+
+          return {
+            id: r.id,
+            procedure: r.procedure,
+            status: r.status ?? 'active',
+            createdAt: r.created_at ? new Date(r.created_at) : new Date(),
+            offersCount: r.offersCount ?? 0,
+            countries: r.countries ?? [],
+            photos: photoUrlsResolved ? photoUrlsResolved.length : (typeof rawPhotos === 'number' ? rawPhotos : 0),
+            photoUrls: photoUrlsResolved,
+            // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
+            offers: Array.isArray(r.offers) ? r.offers : []
+          };
+        });
         setRequests((prev) => {
           const combined = [...prev];
           mapped.forEach((r: any) => {
