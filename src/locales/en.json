@@ -629,57 +629,45 @@
   "userDashboard": {
     "welcome": "Welcome, {{name}}",
     "user": "User",
-    "subtitle": "Manage your treatment requests, compare offers and find the best clinic",
-    "newRequest": "New Price Request",
-    "status": {
-      "active": "Active",
-      "closed": "Completed",
-      "cancelled": "Cancelled",
-      "unknown": "Unknown"
-    },
-    "stats": {
-      "totalRequests": "Total Requests",
-      "allRequests": "All your requests",
-      "activeRequests": "Active Requests",
-      "ongoing": "Ongoing processes",
-      "totalOffers": "Total Offers",
-      "receivedOffers": "Received offers",
-      "completed": "Completed",
-      "finished": "Finished processes"
-    },
-    "empty": {
-      "guide": {
-        "step1": {"title": "1. Create Request", "desc": "Specify the procedure and your preferences"},
-        "step2": {"title": "2. Receive Offers", "desc": "Get special price offers from clinics"},
-        "step3": {"title": "3. Choose the Best", "desc": "Select the most suitable clinic and price"}
-      },
-      "all": {
-        "title": "No Requests Yet",
-        "description": "Click the button above to create your first price request.",
-        "cta": "Create First Request"
-      },
-      "active": {
-        "title": "No Active Requests",
-        "description": "Your active requests will appear here."
-      },
-      "closed": {
-        "title": "No Completed Requests",
-        "description": "Your completed requests will appear here."
-      },
-      "offers": {
-        "title": "No Requests with Offers",
-        "description": "Your requests with offers will appear here."
-      }
-    },
-    "loadingTitle": "Loading...",
-    "loadingText": "Fetching your requests, please wait.",
-    "offer": "offer",
-    "photo": "photo",
-    "photos": "Photos",
+    "subtitle": "Track your request status, offers and photos here.",
+    "newRequest": "New Request",
+    "offer": "Offer",
+    "photo": "Photo",
+    "photos": "My Photos",
     "latestOffers": "Latest Offers",
     "reviews": "reviews",
     "deleteRequest": "Delete Request",
-    "enlargedPhoto": "Enlarged photo"
+    "enlargedPhoto": "Enlarged Photo",
+    "noPhotos": "No photos uploaded yet",
+    "loadingTitle": "Loading requests",
+    "loadingText": "Please wait, fetching data...",
+    "stats": {
+      "totalRequests": "Total Requests",
+      "allRequests": "All requests in the system",
+      "activeRequests": "Active Requests",
+      "ongoing": "Currently ongoing requests",
+      "totalOffers": "Total Offers",
+      "receivedOffers": "Total offers received",
+      "completed": "Completed Requests",
+      "finished": "Closed and completed requests"
+    },
+    "status": {
+      "active": "Active",
+      "closed": "Closed",
+      "cancelled": "Cancelled",
+      "unknown": "Unknown"
+    },
+    "empty": {
+      "all": {
+        "title": "You don't have any requests yet",
+        "description": "Create a new request to get price quotes from clinics."
+      },
+      "guide": {
+        "step1": { "title": "Choose procedure", "desc": "Pick treatments like acne, hair transplant, etc." },
+        "step2": { "title": "Add photos", "desc": "Upload photos to receive more accurate quotes." },
+        "step3": { "title": "Select countries", "desc": "Choose the countries to receive offers from." }
+      }
+    }
   },
   "priceRequest": {
     "title": "Create Request"

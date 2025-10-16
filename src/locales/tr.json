@@ -685,59 +685,47 @@
     "submitAllCountries": "Tüm Ülkelere Gönder"
   },
   "userDashboard": {
-    "welcome": "Hoş Geldiniz, {{name}}",
+    "welcome": "Hoş geldin, {{name}}",
     "user": "Kullanıcı",
-    "subtitle": "Tedavi taleplerinizi yönetin, teklifleri karşılaştırın ve en uygun kliniği bulun",
-    "newRequest": "Yeni Fiyat Talebi",
+    "subtitle": "Talep durumunu, teklifler ve fotoğrafları buradan takip edebilirsin.",
+    "newRequest": "Yeni Talep",
+    "offer": "Teklif",
+    "photo": "Fotoğraf",
+    "photos": "Fotoğraflarım",
+    "latestOffers": "Son Teklifler",
+    "reviews": "yorum",
+    "deleteRequest": "Talebi Sil",
+    "enlargedPhoto": "Büyütülmüş Fotoğraf",
+    "noPhotos": "Henüz fotoğraf yüklenmemiş",
+    "loadingTitle": "Talepler yükleniyor",
+    "loadingText": "Lütfen bekleyin, veriler getiriliyor...",
+    "stats": {
+      "totalRequests": "Toplam Talepler",
+      "allRequests": "Sistemdeki tüm talepleriniz",
+      "activeRequests": "Aktif Talepler",
+      "ongoing": "Şu anda devam eden talepler",
+      "totalOffers": "Toplam Teklif",
+      "receivedOffers": "Aldığınız toplam teklifler",
+      "completed": "Tamamlanan Talepler",
+      "finished": "Kapanan ve tamamlanan talepler"
+    },
     "status": {
       "active": "Aktif",
-      "closed": "Tamamlandı",
-      "cancelled": "İptal Edildi",
+      "closed": "Kapalı",
+      "cancelled": "İptal",
       "unknown": "Bilinmiyor"
     },
-    "stats": {
-      "totalRequests": "Toplam Talep",
-      "allRequests": "Tüm talepleriniz",
-      "activeRequests": "Aktif Talepler",
-      "ongoing": "Devam eden işlemler",
-      "totalOffers": "Toplam Teklif",
-      "receivedOffers": "Alınan teklifler",
-      "completed": "Tamamlanan",
-      "finished": "Bitirilen işlemler"
-    },
     "empty": {
-      "guide": {
-        "step1": {"title": "1. Talep Oluşturun", "desc": "İstediğiniz işlemi ve tercihlerinizi belirtin"},
-        "step2": {"title": "2. Teklifler Alın", "desc": "Kliniklerden özel fiyat teklifleri gelsin"},
-        "step3": {"title": "3. En İyisini Seçin", "desc": "Size en uygun klinik ve fiyatı belirleyin"}
-      },
       "all": {
-        "title": "Henüz Talep Yok",
-        "description": "İlk fiyat talebinizi oluşturmak için yukarıdaki butona tıklayın.",
-        "cta": "İlk Talebi Oluştur"
+        "title": "Henüz talebiniz yok",
+        "description": "Hemen yeni bir talep oluşturarak kliniklerden fiyat teklifi alın."
       },
-      "active": {
-        "title": "Aktif Talep Yok",
-        "description": "Aktif talepleriniz burada görünecek."
-      },
-      "closed": {
-        "title": "Tamamlanmış Talep Yok",
-        "description": "Tamamlanmış talepleriniz burada görünecek."
-      },
-      "offers": {
-        "title": "Teklif Alınmış Talep Yok",
-        "description": "Teklif alınmış talepleriniz burada görünecek."
+      "guide": {
+        "step1": { "title": "İşlem seçin", "desc": "Akne tedavisi, saç ekimi gibi işlemleri seçin." },
+        "step2": { "title": "Fotoğraf ekleyin", "desc": "Daha doğru fiyat almak için fotoğraf yükleyin." },
+        "step3": { "title": "Ülke seçin", "desc": "Teklif almak istediğiniz ülkeleri belirleyin." }
       }
-    },
-    "loadingTitle": "Yükleniyor...",
-    "loadingText": "Talepleriniz getiriliyor, lütfen bekleyin.",
-    "offer": "teklif",
-    "photo": "fotoğraf",
-    "photos": "Fotoğraflar",
-    "latestOffers": "Son Teklifler",
-    "reviews": "değerlendirme",
-    "deleteRequest": "Talebi Sil",
-    "enlargedPhoto": "Büyütülmüş fotoğraf"
+    }
   },
   "priceRequest": {
     "title": "Talep Oluştur"

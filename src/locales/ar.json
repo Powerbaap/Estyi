@@ -536,7 +536,8 @@
     "more": "المزيد",
     "daysAgo": "أيام مضت",
     "submitOffer": "تقديم عرض",
-    "enlargedPhoto": "صورة مكبرة"
+    "enlargedPhoto": "صورة مكبرة",
+    "noPhotos": "لا توجد صور محملة بعد"
   },
   "clinicDashboard": {
     "menu": {"dashboard": "لوحة التحكم", "requests": "الطلبات", "offers": "العروض", "profile": "الملف الشخصي", "membership": "العضوية"},
