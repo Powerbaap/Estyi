@@ -203,7 +203,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                   <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-violet-600 rounded-xl flex items-center justify-center mx-auto mb-3">
                     <MapPin className="w-6 h-6 text-white" />
                   </div>
-                  <div className="text-3xl font-bold text-purple-600">{request.countries.length}</div>
+                  <div className="text-3xl font-bold text-purple-600">{Array.isArray(request.countries) ? request.countries.length : (typeof (request as any).countries === 'string' && (request as any).countries.trim().length > 0 ? (request as any).countries.split(',').filter((c: string) => c.trim().length > 0).length : 0)}</div>
                   <div className="text-sm text-purple-700 font-medium">{t('requestDetails.countries')}</div>
                 </div>
               </div>
@@ -239,8 +239,8 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex items-start space-x-4 flex-1 min-w-0">
                           <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                            <span className="text-white font-bold text-xl">
-                              {offer.clinicName.charAt(0)}
+                              <span className="text-white font-bold text-xl">
+                              {String(offer.clinicName ?? 'K').charAt(0)}
                             </span>
                           </div>
                           <div className="min-w-0 flex-1">
@@ -281,10 +281,10 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         </div>
                         <div className="text-right flex-shrink-0 ml-6">
                           <div className="text-3xl font-bold text-green-600 mb-1">
-                            ${offer.priceMin.toLocaleString()} - ${offer.priceMax.toLocaleString()}
+                            ${Number(offer.priceMin ?? 0).toLocaleString()} - ${Number(offer.priceMax ?? 0).toLocaleString()}
                           </div>
                           <div className="text-sm text-gray-600">
-                            {offer.createdAt.toLocaleDateString('tr-TR')} {t('requestDetails.onDate')}
+                            {(offer.createdAt instanceof Date ? offer.createdAt : new Date((offer as any).createdAt)).toLocaleDateString('tr-TR')} {t('requestDetails.onDate')}
                           </div>
                         </div>
                       </div>

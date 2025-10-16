@@ -36,19 +36,39 @@ const UserDashboard: React.FC = () => {
         }
         const userRequests = await requestService.getUserRequests(user.id);
         const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => {
-          // photos alanı dizi, sayı veya JSON-string olabilir; güvenli şekilde çözümle
+          // photos alanı dizi, sayı veya string olabilir; güvenli şekilde çözümle
           let photoUrlsResolved: string[] | undefined = undefined;
-          const rawPhotos = r?.photos;
+          const rawPhotos = r?.photos as unknown;
           if (Array.isArray(rawPhotos)) {
             photoUrlsResolved = rawPhotos as string[];
           } else if (typeof rawPhotos === 'string') {
-            try {
-              const parsed = JSON.parse(rawPhotos);
-              if (Array.isArray(parsed)) {
-                photoUrlsResolved = parsed as string[];
+            const s = rawPhotos.trim();
+            // JSON array string
+            if (s.startsWith('[') && s.endsWith(']')) {
+              try {
+                const parsed = JSON.parse(s);
+                if (Array.isArray(parsed)) photoUrlsResolved = parsed as string[];
+              } catch (_) {
+                // JSON parse hatası
               }
-            } catch (_) {
-              // geçersiz JSON-string ise yok say
+            } else if (s.startsWith('{') && s.endsWith('}')) {
+              // Postgres array literal e.g. {"url1","url2"}
+              const content = s.slice(1, -1);
+              const parts = content
+                .split(',')
+                .map((p) => p.trim().replace(/^"|"$/g, ''))
+                .filter((p) => p.length > 0);
+              if (parts.length > 0) photoUrlsResolved = parts;
+            } else if (s.includes(',')) {
+              // Virgülle ayrılmış liste
+              const parts = s
+                .split(',')
+                .map((p) => p.trim())
+                .filter((p) => p.length > 0);
+              if (parts.length > 0) photoUrlsResolved = parts;
+            } else if (/^https?:\/\//.test(s)) {
+              // Tek URL
+              photoUrlsResolved = [s];
             }
           }
 
@@ -59,7 +79,11 @@ const UserDashboard: React.FC = () => {
             createdAt: r.created_at ? new Date(r.created_at) : new Date(),
             offersCount: r.offersCount ?? 0,
             countries: r.countries ?? [],
-            photos: photoUrlsResolved ? photoUrlsResolved.length : (typeof rawPhotos === 'number' ? rawPhotos : 0),
+            photos: Array.isArray(photoUrlsResolved)
+              ? photoUrlsResolved.length
+              : typeof rawPhotos === 'number'
+              ? rawPhotos
+              : 0,
             photoUrls: photoUrlsResolved,
             // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
             offers: Array.isArray(r.offers) ? r.offers : []
@@ -485,7 +509,7 @@ const UserDashboard: React.FC = () => {
                       <div className="mb-4">
                         <h4 className="text-sm font-medium text-gray-700 mb-3">{t('userDashboard.photos')}</h4>
                         <div className="flex space-x-3">
-                          {(request.photoUrls ?? []).slice(0, 4).map((url, index) => (
+                          {(Array.isArray(request.photoUrls) ? request.photoUrls : []).slice(0, 4).map((url, index) => (
                             <div
                               key={index}
                               className="relative group/photo overflow-hidden"
