@@ -465,7 +465,7 @@ const UserDashboard: React.FC = () => {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Calendar className="w-4 h-4 text-gray-400" />
-                          <span>{request.createdAt.toLocaleDateString('tr-TR')}</span>
+                          <span>{(request.createdAt instanceof Date ? request.createdAt : new Date(request.createdAt)).toLocaleDateString('tr-TR')}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <DollarSign className="w-4 h-4 text-gray-400" />
@@ -516,7 +516,7 @@ const UserDashboard: React.FC = () => {
                       </div>
 
                       {/* Offers Preview */}
-                      {request.offers.length > 0 && (
+                      {Array.isArray(request.offers) && request.offers.length > 0 && (
                         <div className="bg-gradient-to-r from-gray-50 to-blue-50 rounded-xl p-4 border border-gray-100">
                           <h4 className="font-semibold text-gray-900 mb-3 flex items-center">
                             <Star className="w-4 h-4 text-amber-500 mr-2" />

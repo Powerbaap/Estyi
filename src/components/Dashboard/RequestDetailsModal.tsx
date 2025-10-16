@@ -166,11 +166,11 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               <div className="flex items-center space-x-6 mt-3 text-sm text-gray-600 flex-wrap">
                 <span className="flex items-center space-x-2 flex-shrink-0">
                   <Calendar className="w-4 h-4 text-blue-500" />
-                  <span>{request.createdAt.toLocaleDateString('tr-TR')}</span>
+                  <span>{(request.createdAt instanceof Date ? request.createdAt : new Date(request.createdAt)).toLocaleDateString('tr-TR')}</span>
                 </span>
                 <span className="flex items-center space-x-2 flex-shrink-0">
                   <MapPin className="w-4 h-4 text-green-500" />
-                  <span>{request.countries.join(', ')}</span>
+                  <span>{Array.isArray(request.countries) ? request.countries.join(', ') : (request.countries ? String(request.countries) : '')}</span>
                 </span>
                 <span className={`px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(request.status)}`}>
                   {getStatusText(request.status)}
@@ -224,14 +224,14 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 <Star className="w-5 h-5 text-amber-500 mr-2" />
                 {t('requestDetails.receivedOffers')} ({request.offersCount})
               </h3>
-              {request.offers.length === 0 ? (
+              {(!Array.isArray(request.offers) || request.offers.length === 0) ? (
                 <div className="text-center py-12 text-gray-500 bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl border border-gray-200">
                   <Clock className="w-16 h-16 mx-auto mb-4 text-gray-300" />
                   <p className="text-lg">{t('requestDetails.noOffersYet')}</p>
                 </div>
               ) : (
                 <div className="space-y-6">
-                  {request.offers.map((offer) => (
+                  {(Array.isArray(request.offers) ? request.offers : []).map((offer) => (
                     <div
                       key={offer.id}
                       className="border border-gray-200 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 bg-white group"
