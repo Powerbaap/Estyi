@@ -15,6 +15,34 @@ const UserDashboard: React.FC = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const safeFormatDateTR = (value: any): string => {
+    try {
+      if (!value) return '';
+      let d: Date;
+      if (value instanceof Date) {
+        d = value as Date;
+      } else if (typeof value === 'string') {
+        const s = value.trim();
+        const m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+        if (m) {
+          const day = parseInt(m[1], 10);
+          const month = parseInt(m[2], 10) - 1;
+          const year = parseInt(m[3], 10);
+          d = new Date(year, month, day);
+        } else {
+          d = new Date(s);
+        }
+      } else if (typeof value === 'number') {
+        d = new Date(value);
+      } else {
+        d = new Date(value);
+      }
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('tr-TR');
+    } catch {
+      return '';
+    }
+  };
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
@@ -489,7 +517,7 @@ const UserDashboard: React.FC = () => {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <Calendar className="w-4 h-4 text-gray-400" />
-                          <span>{(request.createdAt instanceof Date ? request.createdAt : new Date(request.createdAt)).toLocaleDateString('tr-TR')}</span>
+                          <span>{safeFormatDateTR(request.createdAt)}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <DollarSign className="w-4 h-4 text-gray-400" />

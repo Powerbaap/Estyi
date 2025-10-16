@@ -48,6 +48,35 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
   const [displayPhotoUrls, setDisplayPhotoUrls] = useState<string[]>([]);
 
+  const safeFormatDateTR = (value: any): string => {
+    try {
+      if (!value) return '';
+      let d: Date;
+      if (value instanceof Date) {
+        d = value as Date;
+      } else if (typeof value === 'string') {
+        const s = value.trim();
+        const m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+        if (m) {
+          const day = parseInt(m[1], 10);
+          const month = parseInt(m[2], 10) - 1;
+          const year = parseInt(m[3], 10);
+          d = new Date(year, month, day);
+        } else {
+          d = new Date(s);
+        }
+      } else if (typeof value === 'number') {
+        d = new Date(value);
+      } else {
+        d = new Date(value);
+      }
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('tr-TR');
+    } catch {
+      return '';
+    }
+  };
+
   if (!isOpen || !request) return null;
 
   // Fotoğrafları imzalı URL'lere çevir ve ekranda bunları göster
@@ -166,7 +195,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               <div className="flex items-center space-x-6 mt-3 text-sm text-gray-600 flex-wrap">
                 <span className="flex items-center space-x-2 flex-shrink-0">
                   <Calendar className="w-4 h-4 text-blue-500" />
-                  <span>{(request.createdAt instanceof Date ? request.createdAt : new Date(request.createdAt)).toLocaleDateString('tr-TR')}</span>
+                  <span>{safeFormatDateTR(request.createdAt)}</span>
                 </span>
                 <span className="flex items-center space-x-2 flex-shrink-0">
                   <MapPin className="w-4 h-4 text-green-500" />
@@ -284,7 +313,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             ${Number(offer.priceMin ?? 0).toLocaleString()} - ${Number(offer.priceMax ?? 0).toLocaleString()}
                           </div>
                           <div className="text-sm text-gray-600">
-                            {(offer.createdAt instanceof Date ? offer.createdAt : new Date((offer as any).createdAt)).toLocaleDateString('tr-TR')} {t('requestDetails.onDate')}
+                            {safeFormatDateTR((offer as any).createdAt)} {t('requestDetails.onDate')}
                           </div>
                         </div>
                       </div>
@@ -316,7 +345,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
 
                       <div className="flex items-center justify-between pt-6 border-t border-gray-100">
                         <div className="text-sm text-gray-500 flex-shrink-0 bg-gray-100 px-3 py-1.5 rounded-full">
-                          {t('requestDetails.offerNumber')} #{offer.id.slice(-6).toUpperCase()}
+                          {t('requestDetails.offerNumber')} #{(typeof offer.id === 'string' ? offer.id : String(offer.id ?? '')).slice(-6).toUpperCase()}
                         </div>
                         
                         {/* Teklif Durumu */}
