@@ -47,6 +47,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
   const [displayPhotoUrls, setDisplayPhotoUrls] = useState<string[]>([]);
+  const [photoLoadError, setPhotoLoadError] = useState<boolean>(false);
 
   const safeFormatDateTR = (value: any): string => {
     try {
@@ -83,6 +84,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
+      setPhotoLoadError(false);
       const urls = Array.isArray(request?.photoUrls) ? request!.photoUrls! : [];
       if (urls.length === 0) {
         setDisplayPhotoUrls([]);
@@ -92,6 +94,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
         const signed = await signRequestPhotoUrls(urls, 3600);
         if (!cancelled) setDisplayPhotoUrls(signed);
       } catch {
+        if (!cancelled) setPhotoLoadError(true);
         if (!cancelled) setDisplayPhotoUrls(urls);
       }
     };
@@ -429,6 +432,11 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 <Eye className="w-5 h-5 text-blue-600 mr-2" />
                 {t('requestDetails.myPhotos')}
               </h3>
+              {photoLoadError && (
+                <div className="mb-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
+                  Fotoğraflar için imzalı bağlantılar oluşturulamadı. Orijinal URL’ler gösteriliyor.
+                </div>
+              )}
               {displayPhotoUrls && displayPhotoUrls.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {displayPhotoUrls.map((url, idx) => (

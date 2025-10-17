@@ -74,6 +74,7 @@ export const clinicApplicationService = {
     phone?: string;
     email: string;
     description?: string;
+    certificate_urls?: string[];
     submitted_by?: string | null;
   }) => {
     const { data, error } = await supabase
