@@ -181,10 +181,13 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
     } catch {
       return '';
     }
-  };
-
-  return (
-    <>
+  }; 
+ 
+  // Modal kapalıyken veya request yokken render etme
+  if (!isOpen || !request) return null;
+ 
+   return (
+     <>
       <div 
         className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4"
         onClick={onClose}
