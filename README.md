@@ -1,4 +1,6 @@
 # Estyi Platform - Production Live
+
+Güncelleme doğrulama: otomatik push testi
 # 🏥 Estyi - Sağlık Hizmetleri Platformu
 
 Estyi, hastalar ve klinikler arasında köprü kuran modern bir sağlık hizmetleri platformudur.
