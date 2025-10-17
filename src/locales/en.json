@@ -581,7 +581,13 @@
     "accept": "Accept",
     "reject": "Reject",
     "contactClinic": "Contact Clinic",
-    "enlargedPhoto": "Enlarged photo"
+    "enlargedPhoto": "Enlarged photo",
+    "photoSignError": "Failed to generate signed links for photos. Showing original URLs."
+  },
+  "errorBoundary": {
+    "title": "An unexpected error occurred",
+    "description": "You can continue by refreshing the page. If the error persists, please let us know.",
+    "reload": "Refresh Page"
   },
   "priceRequest": {
     "title": "Get Price Quote",

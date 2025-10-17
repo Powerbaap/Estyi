@@ -434,7 +434,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               </h3>
               {photoLoadError && (
                 <div className="mb-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                  Fotoğraflar için imzalı bağlantılar oluşturulamadı. Orijinal URL’ler gösteriliyor.
+                  {t('requestDetails.photoSignError')}
                 </div>
               )}
               {displayPhotoUrls && displayPhotoUrls.length > 0 ? (

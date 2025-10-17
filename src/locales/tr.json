@@ -643,7 +643,13 @@
     "accept": "Kabul Et",
     "reject": "Reddet",
     "contactClinic": "Klinik ile İletişim",
-    "enlargedPhoto": "Büyütülmüş fotoğraf"
+    "enlargedPhoto": "Büyütülmüş fotoğraf",
+    "photoSignError": "Fotoğraflar için imzalı bağlantılar oluşturulamadı. Orijinal URL’ler gösteriliyor."
+  },
+  "errorBoundary": {
+    "title": "Beklenmeyen bir hata oluştu",
+    "description": "Sayfayı yenileyerek devam edebilirsiniz. Hata devam ederse lütfen bize bildirin.",
+    "reload": "Sayfayı Yenile"
   },
   "priceRequest": {
     "title": "Fiyat Teklifi Al",
