@@ -48,43 +48,18 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
   const [displayPhotoUrls, setDisplayPhotoUrls] = useState<string[]>([]);
   const [photoLoadError, setPhotoLoadError] = useState<boolean>(false);
+  const [failedPhotos, setFailedPhotos] = useState<Record<number, boolean>>({});
 
-  const safeFormatDateTR = (value: any): string => {
-    try {
-      if (!value) return '';
-      let d: Date;
-      if (value instanceof Date) {
-        d = value as Date;
-      } else if (typeof value === 'string') {
-        const s = value.trim();
-        const m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
-        if (m) {
-          const day = parseInt(m[1], 10);
-          const month = parseInt(m[2], 10) - 1;
-          const year = parseInt(m[3], 10);
-          d = new Date(year, month, day);
-        } else {
-          d = new Date(s);
-        }
-      } else if (typeof value === 'number') {
-        d = new Date(value);
-      } else {
-        d = new Date(value);
-      }
-      if (isNaN(d.getTime())) return '';
-      return d.toLocaleDateString('tr-TR');
-    } catch {
-      return '';
-    }
+  const handleImageError = (idx: number) => {
+    setPhotoLoadError(true);
+    setFailedPhotos(prev => ({ ...prev, [idx]: true }));
   };
 
-  if (!isOpen || !request) return null;
-
-  // Fotoğrafları imzalı URL'lere çevir ve ekranda bunları göster
   useEffect(() => {
     let cancelled = false;
     const run = async () => {
       setPhotoLoadError(false);
+      setFailedPhotos({});
       const urls = Array.isArray(request?.photoUrls) ? request!.photoUrls! : [];
       if (urls.length === 0) {
         setDisplayPhotoUrls([]);
@@ -176,6 +151,35 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
         return t('requestDetails.status.cancelled');
       default:
         return t('requestDetails.status.unknown');
+    }
+  };
+
+  const safeFormatDateTR = (value: any): string => {
+    try {
+      if (!value) return '';
+      let d: Date;
+      if (value instanceof Date) {
+        d = value as Date;
+      } else if (typeof value === 'string') {
+        const s = value.trim();
+        const m = s.match(/^(\d{1,2})\.(\d{1,2})\.(\d{4})$/);
+        if (m) {
+          const day = parseInt(m[1], 10);
+          const month = parseInt(m[2], 10) - 1;
+          const year = parseInt(m[3], 10);
+          d = new Date(year, month, day);
+        } else {
+          d = new Date(s);
+        }
+      } else if (typeof value === 'number') {
+        d = new Date(value);
+      } else {
+        d = new Date(value);
+      }
+      if (isNaN(d.getTime())) return '';
+      return d.toLocaleDateString('tr-TR');
+    } catch {
+      return '';
     }
   };
 
@@ -440,23 +444,26 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               {displayPhotoUrls && displayPhotoUrls.length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {displayPhotoUrls.map((url, idx) => (
-                    <div key={idx} className="relative group">
-                      <LazyLoadImage
-                        src={url}
-                        alt={`${t('requestDetails.photos')} ${idx + 1}`}
-                        effect="blur"
-                        className="w-full h-40 object-cover rounded-xl border border-gray-200"
-                        onClick={() => setEnlargedPhoto(url)}
-                        onError={() => setPhotoLoadError(true)}
-                      />
-                      <button
-                        type="button"
-                        onClick={() => setEnlargedPhoto(url)}
-                        className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/30 text-white flex items-center justify-center rounded-xl transition-opacity"
-                      >
-                        <Eye className="w-6 h-6" />
-                      </button>
-                    </div>
+                    // Gizle: yüklenemeyen görseller
+                    failedPhotos[idx] ? null : (
+                      <div key={idx} className="relative group">
+                        <LazyLoadImage
+                          src={url}
+                          alt={`${t('requestDetails.photos')} ${idx + 1}`}
+                          effect="blur"
+                          className="w-full h-40 object-cover rounded-xl border border-gray-200"
+                          onClick={() => setEnlargedPhoto(url)}
+                          onError={() => handleImageError(idx)}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setEnlargedPhoto(url)}
+                          className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/30 text-white flex items-center justify-center rounded-xl transition-opacity"
+                        >
+                          <Eye className="w-6 h-6" />
+                        </button>
+                      </div>
+                    )
                   ))}
                 </div>
               ) : (
