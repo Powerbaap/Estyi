@@ -39,7 +39,7 @@ CREATE TABLE clinics (
 );
 
 -- Clinic applications tablosu (admin inceleme/onay akışı için)
-CREATE TABLE IF NOT EXISTS clinic_applications (
+CREATE TABLE clinic_applications (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   clinic_name TEXT NOT NULL,
   country TEXT,
@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS clinic_applications (
   description TEXT,
   certificate_urls TEXT[] DEFAULT '{}',
   status TEXT CHECK (status IN ('pending','approved','rejected')) DEFAULT 'pending',
-  submitted_by UUID, -- opsiyonel: başvuran kullanıcı
+  submitted_by UUID,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
