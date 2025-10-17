@@ -3,7 +3,7 @@ import { supabase } from '../lib/supabase';
 export const uploadRequestPhotos = async (userId: string, files: File[]): Promise<string[]> => {
   if (!files || files.length === 0) return [];
 
-  const bucket = 'request-photos';
+  const bucket = 'images';
   const uploadedUrls: string[] = [];
 
   for (let i = 0; i < files.length; i++) {
@@ -35,7 +35,7 @@ const extractBucketPath = (url: string, bucket: string): string | null => {
     const idx = url.indexOf(marker);
     if (idx === -1) return null;
     const after = url.substring(idx + marker.length);
-    // public/request-photos/<path> veya private/request-photos/<path>
+    // public/images/<path> veya private/images/<path>
     const parts = after.split('/');
     // parts[0] = public|private, parts[1] = bucket name
     if (parts.length >= 3 && parts[1] === bucket) {
@@ -51,7 +51,7 @@ const extractBucketPath = (url: string, bucket: string): string | null => {
 // Fotoğraf URL'lerini imzala: bucket private olsa bile görüntülenebilir link üretir
 export const signRequestPhotoUrls = async (urls: string[], expiresInSeconds: number = 3600): Promise<string[]> => {
   if (!urls || urls.length === 0) return [];
-  const bucket = 'request-photos';
+  const bucket = 'images';
   const out: string[] = [];
   for (const u of urls) {
     const path = extractBucketPath(u, bucket);
@@ -86,7 +86,7 @@ export const signRequestPhotoUrls = async (urls: string[], expiresInSeconds: num
 export const uploadClinicCertificates = async (applicationId: string, files: File[]): Promise<string[]> => {
   if (!files || files.length === 0) return [];
 
-  const bucket = 'clinic-certificates';
+  const bucket = 'images';
   const uploadedUrls: string[] = [];
 
   for (let i = 0; i < files.length; i++) {
@@ -109,4 +109,35 @@ export const uploadClinicCertificates = async (applicationId: string, files: Fil
   }
 
   return uploadedUrls;
+};
+
+// Genel imzalama: images bucket’taki herhangi bir dosya URL listesini imzalar
+export const signImageUrls = async (urls: string[], expiresInSeconds: number = 3600): Promise<string[]> => {
+  if (!urls || urls.length === 0) return [];
+  const bucket = 'images';
+  const out: string[] = [];
+  for (const u of urls) {
+    const path = extractBucketPath(u, bucket);
+    if (!path) {
+      out.push(u);
+      continue;
+    }
+    try {
+      const anyStorage: any = supabase.storage;
+      const fromBucket = anyStorage.from(bucket);
+      if (typeof fromBucket.createSignedUrl === 'function') {
+        const { data, error } = await fromBucket.createSignedUrl(path, expiresInSeconds);
+        if (!error && data?.signedUrl) {
+          out.push(data.signedUrl);
+        } else {
+          out.push(u);
+        }
+      } else {
+        out.push(u);
+      }
+    } catch {
+      out.push(u);
+    }
+  }
+  return out;
 };

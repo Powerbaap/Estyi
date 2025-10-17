@@ -17,6 +17,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { clinicApplicationService } from '../../services/api';
+import { signImageUrls } from '../../services/storage';
 
 const ClinicManagement: React.FC = () => {
   const { user, logout } = useAuth();
@@ -50,7 +51,14 @@ const ClinicManagement: React.FC = () => {
       try {
         setLoadingApps(true);
         const data = await clinicApplicationService.getApplications();
-        setApplications(data || []);
+        const apps = Array.isArray(data) ? data : [];
+        // Sertifika URL’lerini imzala (bucket private olsa dahi erişim sağlamak için)
+        const signedApps = await Promise.all(apps.map(async (app: any) => {
+          const urls = Array.isArray(app.certificate_urls) ? app.certificate_urls : [];
+          const signed = await signImageUrls(urls, 3600);
+          return { ...app, certificate_urls: signed };
+        }));
+        setApplications(signedApps);
       } catch (err) {
         console.error('Başvurular yüklenemedi:', err);
       } finally {
