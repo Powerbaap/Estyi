@@ -447,6 +447,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         effect="blur"
                         className="w-full h-40 object-cover rounded-xl border border-gray-200"
                         onClick={() => setEnlargedPhoto(url)}
++                       onError={() => setPhotoLoadError(true)}
                       />
                       <button
                         type="button"

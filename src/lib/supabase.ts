@@ -30,6 +30,11 @@ function createDevSupabaseMock() {
         },
         getPublicUrl(path: string) {
           return { data: { publicUrl: `http://localhost:5175/${path}` }, error: null } as any;
+        },
+        async createSignedUrl(path: string, expiresInSeconds: number) {
+          const exp = Date.now() + (expiresInSeconds || 3600) * 1000;
+          const signed = `http://localhost:5175/${path}?token=dev&exp=${exp}`;
+          return { data: { signedUrl: signed }, error: null } as any;
         }
       };
     }

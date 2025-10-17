@@ -33,15 +33,32 @@ const extractBucketPath = (url: string, bucket: string): string | null => {
   try {
     const marker = `/storage/v1/object/`;
     const idx = url.indexOf(marker);
-    if (idx === -1) return null;
-    const after = url.substring(idx + marker.length);
-    // public/images/<path> veya private/images/<path>
-    const parts = after.split('/');
-    // parts[0] = public|private, parts[1] = bucket name
-    if (parts.length >= 3 && parts[1] === bucket) {
-      const path = parts.slice(2).join('/');
-      return path;
+    if (idx !== -1) {
+      const after = url.substring(idx + marker.length);
+      const parts = after.split('/');
+      // parts[0] = public|private, parts[1] = bucket name
+      if (parts.length >= 3 && parts[1] === bucket) {
+        const path = parts.slice(2).join('/');
+        return path;
+      }
     }
+
+    // Dev/local fallback: URL supabase formatında değilse path'i domain sonrası olarak al
+    // Örnek: http://localhost:5175/requests/<...> veya http://localhost:5175/images/requests/<...>
+    const u = new URL(url);
+    const cleaned = u.pathname.replace(/^\/+/, '');
+
+    // images/<realPath>
+    if (cleaned.startsWith(`${bucket}/`)) {
+      return cleaned.slice(bucket.length + 1);
+    }
+
+    // direct resource paths we use in dev mock
+    const knownRoots = ['requests/', 'applications/', 'avatars/', 'profiles/'];
+    for (const root of knownRoots) {
+      if (cleaned.startsWith(root)) return cleaned;
+    }
+
     return null;
   } catch {
     return null;
