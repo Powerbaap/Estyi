@@ -77,12 +77,21 @@ export const clinicApplicationService = {
     certificate_urls?: string[];
     submitted_by?: string | null;
   }) => {
-    const { data, error } = await supabase
+    // Anonim başvurular için RLS SELECT engeline takılmamak adına
+    // sadece INSERT yap ve temsil isteme; oturum açıkken temsil döndür.
+    const insertQuery = supabase
       .from('clinic_applications')
-      .insert(payload)
-      .select('*');
-    if (error) throw error;
-    return Array.isArray(data) ? data[0] : data;
+      .insert(payload);
+
+    if (payload.submitted_by) {
+      const { data, error } = await insertQuery.select('*');
+      if (error) throw error;
+      return Array.isArray(data) ? data[0] : data;
+    } else {
+      const { error } = await insertQuery; // return=minimal
+      if (error) throw error;
+      return { ok: true } as const;
+    }
   },
 
   // Sertifikaları yükle ve başvuruya ekle
