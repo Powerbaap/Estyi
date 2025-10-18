@@ -5,6 +5,8 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, User, Building, Mail, X } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
+import { supabase } from '../../lib/supabase';
+import { getUserRole } from '../../utils/auth';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -34,12 +36,22 @@ const Login: React.FC = () => {
     const result = await login(formData.email, formData.password, formData.role);
     
     if (result.success) {
-      if (formData.email === 'admin@estyi.com' || formData.email === 'system@estyi.com') {
-        navigate('/admin/dashboard');
-      } else if (formData.role === 'clinic') {
-        navigate('/clinic-dashboard');
-      } else {
-        navigate('/dashboard');
+      try {
+        const { data: sessionData } = await supabase.auth.getSession();
+        const role = getUserRole(sessionData?.session?.user || null);
+        if (role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (formData.role === 'clinic') {
+          navigate('/clinic-dashboard');
+        } else {
+          navigate('/dashboard');
+        }
+      } catch {
+        if (formData.role === 'clinic') {
+          navigate('/clinic-dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       }
     } else {
       setError(result.error || t('login.loginError'));
