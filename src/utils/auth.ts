@@ -7,7 +7,12 @@ export function getUserRole(user: User | null | undefined): 'user' | 'clinic' | 
     .split(',')
     .map((id) => id.trim())
     .filter(Boolean);
+  const fallbackAdminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+    .split(',')
+    .map((em) => em.trim().toLowerCase())
+    .filter(Boolean);
   if (fallbackAdminIds.includes(user.id)) return 'admin';
+  if (user.email && fallbackAdminEmails.includes(user.email.toLowerCase())) return 'admin';
   const meta = (user as any).user_metadata || {};
   const appMeta = (user as any).app_metadata || {};
   const role = meta.role || appMeta.role || meta.roleType || appMeta.roleType;

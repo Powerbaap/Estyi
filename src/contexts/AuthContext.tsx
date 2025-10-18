@@ -72,17 +72,46 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
-      // Sadece Supabase authentication kullan
+      // Önce Supabase ile normal giriş dene
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
-      if (error) {
-        return { success: false, error: error.message };
+      if (!error) {
+        return { success: true };
       }
 
-      return { success: true };
+      // Başarısızsa ve admin e-postası ise backend üzerinden admin provision fallback dene
+      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+        .split(',')
+        .map((e) => e.trim().toLowerCase())
+        .filter(Boolean);
+      const isAdminEmail = !!email && adminEmails.includes(email.toLowerCase());
+
+      if (isAdminEmail) {
+        try {
+          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+          const resp = await fetch(`${apiUrl}/api/admin/provision`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password, name: email.split('@')[0] })
+          });
+
+          if (resp.ok) {
+            // Provision sonrası tekrar giriş dene
+            const retry = await supabase.auth.signInWithPassword({ email, password });
+            if (!retry.error) {
+              return { success: true };
+            }
+          }
+        } catch (be) {
+          // Backend erişilemiyorsa sessizce devam et
+        }
+      }
+
+      // Hala başarısız ise hata dön
+      return { success: false, error: error?.message || 'Geçersiz e-posta veya şifre' };
     } catch (error) {
       return { success: false, error: 'Giriş yapılırken bir hata oluştu' };
     } finally {
