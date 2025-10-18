@@ -294,6 +294,112 @@ app.post('/api/send-password-reset', async (req, res) => {
   }
 });
 
+// Admin user provision (create or promote to admin)
+app.post('/api/admin/provision', async (req, res) => {
+  try {
+    const { email, password, name } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
+
+    if (useSupabaseFallback) {
+      console.log(`🔧 SUPABASE-FALLBACK: provision admin ${email} with password (dev only)`);
+      return res.json({ success: true, message: 'Admin provisioned (dev fallback)' });
+    }
+
+    // Try to find user by email in users table first
+    const { data: profile, error: profileError } = await supabase
+      .from('users')
+      .select('id, email, name, role')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (profileError) {
+      console.warn('User profile query warning:', profileError?.message || profileError);
+    }
+
+    let userId = profile?.id;
+
+    // Fallback: search auth users by email
+    if (!userId) {
+      const { data: list, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (listError) {
+        console.error('List users error:', listError?.message || listError);
+      } else {
+        const found = list?.users?.find((u) => u.email?.toLowerCase() === email.toLowerCase());
+        if (found) {
+          userId = found.id;
+        }
+      }
+    }
+
+    if (userId) {
+      // Update existing user: set password and role=admin
+      const { error: updateError } = await supabase.auth.admin.updateUserById(userId, {
+        password,
+        user_metadata: {
+          ...(profile?.name ? { name: profile.name } : {}),
+          role: 'admin',
+        },
+      });
+
+      if (updateError) {
+        console.error('Update user error:', updateError?.message || updateError);
+        return res.status(400).json({ error: updateError.message });
+      }
+
+      // Update users table role as well
+      const { error: updateProfileError } = await supabase
+        .from('users')
+        .update({ role: 'admin' })
+        .eq('id', userId);
+
+      if (updateProfileError) {
+        console.warn('Profile update warning:', updateProfileError?.message || updateProfileError);
+      }
+
+      return res.json({ success: true, message: 'Existing user promoted to admin and password set', userId });
+    } else {
+      // Create new admin user
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        user_metadata: {
+          role: 'admin',
+          name: name || email.split('@')[0],
+        },
+      });
+
+      if (authError) {
+        console.error('Create user error:', authError?.message || authError);
+        return res.status(400).json({ error: authError.message });
+      }
+
+      // Create profile in users table
+      const { error: profileInsertError } = await supabase
+        .from('users')
+        .insert({
+          id: authData.user.id,
+          user_id: Math.random().toString(36).substring(2, 10).toUpperCase(),
+          email,
+          name: name || email.split('@')[0],
+          role: 'admin',
+          is_verified: true,
+        });
+
+      if (profileInsertError) {
+        console.warn('Profile insert warning:', profileInsertError?.message || profileInsertError);
+      }
+
+      return res.json({ success: true, message: 'Admin user created', userId: authData.user.id });
+    }
+  } catch (error) {
+    console.error('Admin provision error:', error);
+    res.status(500).json({ error: 'Failed to provision admin' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Estyi Backend Server running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);

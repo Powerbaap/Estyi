@@ -40,6 +40,9 @@ const ClinicManagement: React.FC = () => {
     specialties: [] as string[]
   });
 
+  // Belge türü algılama yardımcıları
+  const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
+  const isPdfUrl = (url: string) => /\.pdf(\?.*)?$/i.test(url);
   const handleLogout = async () => {
     await logout();
     navigate('/');
@@ -622,9 +625,20 @@ const ClinicManagement: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Sertifikalar</label>
-                <div className="flex flex-col gap-1 mt-1">
+                <div className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                   {(selectedApplication.certificate_urls || []).map((url: string, idx: number) => (
-                    <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm">Belge {idx + 1}</a>
+                    <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50">
+                      {isImageUrl(url) ? (
+                        <img src={url} alt={`Belge ${idx + 1}`} className="w-full h-40 object-cover" />
+                      ) : isPdfUrl(url) ? (
+                        <iframe title={`Belge ${idx + 1}`} src={url} className="w-full h-40" />
+                      ) : (
+                        <div className="p-3">
+                          <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-sm">Belge {idx + 1}</a>
+                          <p className="text-xs text-gray-500 mt-1">Desteklenmeyen önizleme, tıklayarak açın</p>
+                        </div>
+                      )}
+                    </div>
                   ))}
                   {(!selectedApplication.certificate_urls || selectedApplication.certificate_urls.length === 0) && (
                     <span className="text-gray-500 text-sm">Belge yok</span>

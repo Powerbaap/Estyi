@@ -5,6 +5,7 @@ import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import ScrollToTop from './components/Layout/ScrollToTop';
 import ErrorBoundary from './components/Layout/ErrorBoundary';
+import AdminRoute from './components/AdminRoute';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -74,14 +75,14 @@ function AppContent() {
             <Route path="/request/new" element={<NewRequest />} />
             
             {/* Admin Routes */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/users" element={<UserManagement />} />
-            <Route path="/admin/clinics" element={<ClinicManagement />} />
-            <Route path="/admin/requests" element={<RequestManagement />} />
-            <Route path="/admin/messages" element={<MessageManagement />} />
-            <Route path="/admin/reports" element={<Reports />} />
-            <Route path="/admin/settings" element={<Settings />} />
-            <Route path="/admin/change-control" element={<ChangeControl />} />
+            <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+            <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
+            <Route path="/admin/clinics" element={<AdminRoute><ClinicManagement /></AdminRoute>} />
+            <Route path="/admin/requests" element={<AdminRoute><RequestManagement /></AdminRoute>} />
+            <Route path="/admin/messages" element={<AdminRoute><MessageManagement /></AdminRoute>} />
+            <Route path="/admin/reports" element={<AdminRoute><Reports /></AdminRoute>} />
+            <Route path="/admin/settings" element={<AdminRoute><Settings /></AdminRoute>} />
+            <Route path="/admin/change-control" element={<AdminRoute><ChangeControl /></AdminRoute>} />
             
             {/* Legal Routes */}
             <Route path="/about" element={<AboutUs />} />
