@@ -16,7 +16,6 @@ import {
   X,
   LogOut
 } from 'lucide-react';
-import { clinicApplicationService } from '../../services/api';
 import { signImageUrls } from '../../services/storage';
 import { adminService } from '../../services/adminService';
 
@@ -29,7 +28,7 @@ const ClinicManagement: React.FC = () => {
   const [selectedClinic, setSelectedClinic] = useState<any>(null);
   const [showClinicModal, setShowClinicModal] = useState(false);
   // Başvurular için durumlar
-+ const [clinics, setClinics] = useState<any[]>([]);
+const [clinics, setClinics] = useState<any[]>([]);
   const [applications, setApplications] = useState<any[]>([]);
   const [loadingApps, setLoadingApps] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
@@ -55,8 +54,7 @@ const ClinicManagement: React.FC = () => {
     const load = async () => {
       try {
         setLoadingApps(true);
--       const data = await clinicApplicationService.getApplications();
-+       const data = await adminService.getClinicApplications();
+        const data = await adminService.getClinicApplications();
         const apps = Array.isArray(data) ? data : [];
         // Sertifika URL’lerini imzala (bucket private olsa dahi erişim sağlamak için)
         const signedApps = await Promise.all(apps.map(async (app: any) => {
@@ -74,12 +72,12 @@ const ClinicManagement: React.FC = () => {
     load();
   }, []);
 
-+ // Klinikleri yükle
-+ useEffect(() => {
-+   adminService.getClinics()
-+     .then((rows) => setClinics(Array.isArray(rows) ? rows : []))
-+     .catch((err) => console.error('Klinikler yüklenemedi:', err));
-+ }, []);
+  // Klinikleri yükle
+  useEffect(() => {
+    adminService.getClinics()
+      .then((rows) => setClinics(Array.isArray(rows) ? rows : []))
+      .catch((err) => console.error('Klinikler yüklenemedi:', err));
+  }, []);
   // Klinik listesi adminService üzerinden yüklenir
 
 
@@ -135,40 +133,18 @@ const ClinicManagement: React.FC = () => {
     setShowApplicationModal(true);
   };
 
-  // Başvuruyu onayla
   const handleApproveApplication = async (application: any) => {
     try {
-      const clinic = await clinicApplicationService.approveApplication(application);
-      // UI güncelle: başvuruyu approved yap ve clinics listesine ekle (geçici)
+      await adminService.approveClinicApplication(application.id);
       setApplications(prev => prev.map(a => a.id === application.id ? { ...a, status: 'approved' } : a));
+      // Klinik listesi yenile
+      const refreshed = await adminService.getClinics();
+      setClinics(Array.isArray(refreshed) ? refreshed : []);
     } catch (err) {
       console.error('Başvuru onaylama hatası:', err);
-      alert('Başvuru onaylanamadı. RLS veya yetki ayarlarını kontrol edin.');
+      alert('Başvuru onaylanamadı.');
     }
   };
-
-  // Başvuruyu reddet
-  const handleRejectApplication = async (applicationId: string) => {
-    try {
-      await clinicApplicationService.rejectApplication(applicationId);
-      setApplications(prev => prev.map(a => a.id === applicationId ? { ...a, status: 'rejected' } : a));
-    } catch (err) {
-      console.error('Başvuru reddetme hatası:', err);
-      alert('Başvuru reddedilemedi.');
-    }
-  };
-+  const handleApproveApplication = async (application: any) => {
-+    try {
-+      await adminService.approveClinicApplication(application.id);
-+      setApplications(prev => prev.map(a => a.id === application.id ? { ...a, status: 'approved' } : a));
-+      // Klinik listesi yenile
-+      const refreshed = await adminService.getClinics();
-+      setClinics(Array.isArray(refreshed) ? refreshed : []);
-+    } catch (err) {
-+      console.error('Başvuru onaylama hatası:', err);
-+      alert('Başvuru onaylanamadı.');
-+    }
-+  };
 
   // Başvuruyu reddet
   const handleRejectApplication = async (applicationId: string) => {

@@ -23,64 +23,18 @@ const RequestManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
-+ const [requests, setRequests] = useState<AdminRequest[]>([]);
+const [requests, setRequests] = useState<AdminRequest[]>([]);
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
--  const requests = [
--    {
--      id: '1',
--      user: 'Ahmet Yılmaz',
--      userEmail: 'ahmet@example.com',
--      procedure: 'Rhinoplasty',
--      description: 'Burun estetiği için fiyat teklifi istiyorum',
--      status: 'active',
--      photos: 3,
--      createdAt: '2024-01-20',
--      offers: 2
--    },
--    {
--      id: '2',
--      user: 'Fatma Demir',
--      userEmail: 'fatma@example.com',
--      procedure: 'Hair Transplant',
--      description: 'Saç ekimi için detaylı bilgi ve fiyat',
--      status: 'active',
--      photos: 2,
--      createdAt: '2024-01-19',
--      offers: 1
--    },
--    {
--      id: '3',
--      user: 'Mehmet Kaya',
--      userEmail: 'mehmet@example.com',
--      procedure: 'Liposuction',
--      description: 'Karın bölgesi liposuction fiyat teklifi',
--      status: 'closed',
--      photos: 1,
--      createdAt: '2024-01-18',
--      offers: 3
--    },
--    {
--      id: '4',
--      user: 'Ayşe Özkan',
--      userEmail: 'ayse@example.com',
--      procedure: 'Breast Augmentation',
--      description: 'Göğüs büyütme ameliyatı bilgisi',
--      status: 'completed',
--      photos: 4,
--      createdAt: '2024-01-17',
--      offers: 2
--    }
--  ];
-+  useEffect(() => {
-+    adminService.getRequests()
-+      .then((rows) => setRequests(Array.isArray(rows) ? rows : []))
-+      .catch((err) => console.error('Talepler yüklenemedi:', err));
-+  }, []);
+  useEffect(() => {
+    adminService.getRequests()
+      .then((rows) => setRequests(Array.isArray(rows) ? rows : []))
+      .catch((err) => console.error('Talepler yüklenemedi:', err));
+  }, []);
 
   const filteredRequests = requests.filter((request: any) => {
     const title = (request.title || '').toLowerCase();
@@ -89,13 +43,6 @@ const RequestManagement: React.FC = () => {
     const matchesStatus = statusFilter === 'all' || (request.status || 'active') === statusFilter;
     return matchesSearch && matchesStatus;
   });
-+  const filteredRequests = requests.filter((request: any) => {
-+    const title = (request.title || '').toLowerCase();
-+    const desc = (request.description || '').toLowerCase();
-+    const matchesSearch = title.includes(searchTerm.toLowerCase()) || desc.includes(searchTerm.toLowerCase());
-+    const matchesStatus = statusFilter === 'all' || (request.status || 'active') === statusFilter;
-+    return matchesSearch && matchesStatus;
-+  });
 
   const handleViewRequest = (request: any) => {
     setSelectedRequest(request);
@@ -323,10 +270,8 @@ const RequestManagement: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Kullanıcı</label>
--               <p className="text-sm text-gray-900">{selectedRequest.user}</p>
--               <p className="text-xs text-gray-500">{selectedRequest.userEmail}</p>
-+               <p className="text-sm text-gray-900">{selectedRequest.user_name || selectedRequest.user_id || '—'}</p>
-+               <p className="text-xs text-gray-500">{selectedRequest.user_email || ''}</p>
+                <p className="text-sm text-gray-900">{selectedRequest.user_name || selectedRequest.user_id || '—'}</p>
+                <p className="text-xs text-gray-500">{selectedRequest.user_email || ''}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">İşlem</label>
