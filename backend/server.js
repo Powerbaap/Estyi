@@ -464,7 +464,7 @@ app.get('/api/admin/clinic-applications', async (req, res) => {
 app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
   try {
     if (useSupabaseFallback) {
-      return res.json({ success: true, message: 'Dev fallback: approved' });
+      return res.json({ success: true, message: 'Dev fallback: approved', passwordSetRequired: true });
     }
     const id = req.params.id;
     // Fetch application
@@ -478,6 +478,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
 
     // Create or update clinic auth user
     let clinicAuthId = null;
+    let tempPasswordUsed = false;
     try {
       // Try finding existing auth user by email
       const { data: list, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -496,6 +497,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
         });
         if (authError) return res.status(400).json({ error: authError.message });
         clinicAuthId = authData.user.id;
+        if (!app.password) tempPasswordUsed = true;
       } else if (app.password) {
         // Update existing user password and metadata
         const { error: updUserErr } = await supabase.auth.admin.updateUserById(clinicAuthId, {
@@ -522,6 +524,42 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
     } catch (userErr) {
       console.error('Clinic user provision error:', userErr);
       return res.status(500).json({ error: 'Failed to provision clinic user' });
+    }
+
+    // If no password provided in application, generate a recovery link and email it
+    let recoveryLinkSent = false;
+    if (!app.password) {
+      try {
+        const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+          type: 'recovery',
+          email: app.email,
+          options: { redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/reset-password` : undefined) }
+        });
+        if (!linkErr && linkData?.action_link) {
+          if (!useEmailFallback) {
+            const html = `
+              <div style="font-family: Arial, sans-serif;">
+                <h2>Estyi Klinik Erişimi</h2>
+                <p>Başvurunuz onaylandı. Şifrenizi belirlemek için aşağıdaki bağlantıyı kullanın:</p>
+                <p><a href="${linkData.action_link}" target="_blank">Şifre Belirleme Linki</a></p>
+                <p>Bağlantı bir süre sonra geçersiz olur. Sorunuz olursa bu e-postayı yanıtlayabilirsiniz.</p>
+              </div>
+            `;
+            await transporter.sendMail({
+              from: process.env.SMTP_USER,
+              to: app.email,
+              subject: 'Estyi Klinik Giriş – Şifre Belirleme',
+              html,
+            });
+            recoveryLinkSent = true;
+          } else {
+            console.log(`🔗 DEV: Recovery link for ${app.email}: ${linkData.action_link}`);
+            recoveryLinkSent = true;
+          }
+        }
+      } catch (e) {
+        console.warn('Recovery link email failed:', (e && (e as any).message) || e);
+      }
     }
 
     // Create clinic (link to auth user id)
@@ -552,7 +590,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
       .eq('id', id);
     if (updErr) return res.status(400).json({ error: updErr.message });
 
-    res.json({ success: true, clinic: createdClinic });
+    res.json({ success: true, clinic: createdClinic, passwordSetRequired: !app.password, recoveryLinkSent, tempPasswordUsed });
   } catch (error) {
     console.error('Approve clinic application error:', error);
     res.status(500).json({ error: 'Failed to approve application' });
