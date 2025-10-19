@@ -16,6 +16,11 @@ CREATE POLICY "Users can update own profile" ON users
   USING (auth.uid() = id)
   WITH CHECK (auth.uid() = id);
 
+-- Adminlar: tüm kullanıcıları görüntüleyebilir
+CREATE POLICY "Admins can view all users" ON users
+  FOR SELECT
+  USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
+
 -- REQUESTS tablosu: kullanıcılar kendi taleplerini görebilsin/oluşturabilsin/güncelleyebilsin
 ALTER TABLE requests ENABLE ROW LEVEL SECURITY;
 
@@ -31,6 +36,11 @@ CREATE POLICY "Users can update own requests" ON requests
   FOR UPDATE
   USING (auth.uid() = user_id)
   WITH CHECK (auth.uid() = user_id);
+
+-- Adminlar: tüm talepleri görüntüleyebilir
+CREATE POLICY "Admins can view all requests" ON requests
+  FOR SELECT
+  USING ((auth.jwt() -> 'user_metadata' ->> 'role') = 'admin' OR (auth.jwt() -> 'app_metadata' ->> 'role') = 'admin');
 
 -- (Opsiyonel) CLINICS tablosu: klinikler kendi profilini yönetebilsin
 ALTER TABLE clinics ENABLE ROW LEVEL SECURITY;

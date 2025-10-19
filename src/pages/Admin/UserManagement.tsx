@@ -221,12 +221,12 @@ const UserManagement: React.FC = () => {
                       <div className="flex items-center">
                         <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full flex items-center justify-center shadow-lg">
                           <span className="text-white text-sm font-medium">
-                            {user.name.charAt(0)}
+                            {user.name?.charAt(0) || user.email?.charAt(0)?.toUpperCase() || '?'}
                           </span>
                         </div>
                         <div className="ml-3">
-                          <div className="text-sm font-medium text-gray-900">{user.name}</div>
-                          <div className="text-sm text-gray-500">{user.email}</div>
+                          <div className="text-sm font-medium text-gray-900">{user.name || user.email || 'Bilinmiyor'}</div>
+                          <div className="text-sm text-gray-500">{user.email || '-'}</div>
                         </div>
                       </div>
                     </td>
@@ -251,7 +251,7 @@ const UserManagement: React.FC = () => {
                         ) : (
                           <>
                             <UserX className="w-3 h-3 mr-1" />
-                            Engellenmiş
+                            Engelli
                           </>
                         )}
                       </span>

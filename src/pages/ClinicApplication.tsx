@@ -31,6 +31,7 @@ const ClinicApplication: React.FC = () => {
     website: '',
     phone: '',
     email: '',
+    password: '',
     description: '',
     certificates: [] as File[]
   });
@@ -112,6 +113,7 @@ const ClinicApplication: React.FC = () => {
         website: formData.website,
         phone: formData.phone,
         email: formData.email,
+        password: formData.password,
         description: formData.description,
         certificate_urls: certificateUrls,
         submitted_by: user?.id || null
@@ -157,6 +159,7 @@ const ClinicApplication: React.FC = () => {
             website: formData.website || 'https://example.com',
             phone: formData.phone || '+90 212 555 0000',
             email: formData.email || 'test.clinic@example.com',
+            password: formData.password || 'EstyiTemp123!',
             description: formData.description || 'Otomatik test başvurusu',
             submitted_by: user?.id || null
           };
@@ -375,6 +378,24 @@ const ClinicApplication: React.FC = () => {
                   />
                 </div>
 
+                {/* Password */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {getTranslation('clinicApplication.password', 'Password')} *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+                    placeholder={getTranslation('clinicApplication.passwordPlaceholder', 'Choose a strong password')}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    {getTranslation('clinicApplication.passwordHint', 'Minimum 8 karakter, kolay tahmin edilemeyen bir şifre seçin')}
+                  </p>
+                </div>
+
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -425,11 +446,14 @@ const ClinicApplication: React.FC = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={submitting || !formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email}
+                  disabled={submitting || !formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email || !formData.password}
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
                   {submitting ? getTranslation('clinicApplication.submitting', 'Submitting...') : getTranslation('clinicApplication.submitApplication', 'Submit Application')}
                 </button>
+                <p className="text-xs text-gray-600 mt-3 italic text-center">
+                  {getTranslation('clinicApplication.loginNote', 'Onayınız geldiğinde formda belirttiğiniz e-posta ve şifreyle giriş sağlayacaksınız.')}
+                </p>
               </form>
             </div>
           </div>

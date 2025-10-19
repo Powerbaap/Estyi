@@ -73,6 +73,7 @@ export const clinicApplicationService = {
     website?: string;
     phone?: string;
     email: string;
+    password?: string;
     description?: string;
     certificate_urls?: string[];
     submitted_by?: string | null;

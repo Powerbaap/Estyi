@@ -1,7 +1,7 @@
 import { clinicApplicationService } from './api';
 import { supabase } from '../lib/supabase';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005';
 
 async function fetchJSON(path: string, options?: RequestInit) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -56,6 +56,13 @@ export type AdminClinicApplication = {
   status?: string | null;
   created_at?: string | null;
   specialties?: string[] | null;
+};
+
+export type AdminStats = {
+  totalUsers: number;
+  activeClinics: number;
+  pendingRequests: number;
+  monthlyRevenue: number;
 };
 
 export const adminService = {
@@ -153,5 +160,52 @@ export const adminService = {
       const updated = await clinicApplicationService.rejectApplication(id, reason);
       return { success: true, application: updated } as const;
     }
+  },
+  async getAdminStats(): Promise<AdminStats> {
+    const [users, clinics, requests] = await Promise.all([
+      this.getUsers(),
+      this.getClinics(),
+      this.getRequests(),
+    ]);
+
+    const activeClinics = clinics.filter(
+      (c) => (c.status ?? 'active').toLowerCase() === 'active'
+    ).length;
+
+    const pendingStatuses = new Set(['pending', 'awaiting', 'open', 'active']);
+    const pendingRequests = requests.filter((r) =>
+      pendingStatuses.has((r.status ?? '').toLowerCase())
+    ).length;
+
+    let monthlyRevenue = 0;
+    try {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1);
+      startOfMonth.setHours(0, 0, 0, 0);
+
+      const { data, error } = await supabase
+        .from('offers')
+        .select('min_price, max_price, status, created_at')
+        .eq('status', 'accepted')
+        .gte('created_at', startOfMonth.toISOString());
+
+      if (!error && Array.isArray(data)) {
+        monthlyRevenue = data.reduce((sum, o: any) => {
+          const min = Number(o?.min_price ?? 0);
+          const max = Number(o?.max_price ?? 0);
+          const avg = (min + max) / 2;
+          return sum + (isFinite(avg) ? avg : 0);
+        }, 0);
+      }
+    } catch {
+      // gelir hesaplanamadıysa 0 döner
+    }
+
+    return {
+      totalUsers: users.length,
+      activeClinics,
+      pendingRequests,
+      monthlyRevenue,
+    };
   },
 };

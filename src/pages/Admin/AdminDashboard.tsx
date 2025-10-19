@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -21,6 +21,7 @@ import {
   Eye,
   LogOut
 } from 'lucide-react';
+import { adminService } from '../../services/adminService';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -32,40 +33,86 @@ const AdminDashboard: React.FC = () => {
     navigate('/');
   };
 
-  const stats = [
+  const [stats, setStats] = useState([
     {
       title: 'Toplam Kullanıcı',
-      value: '1,247',
-      change: '+12%',
+      value: '–',
+      change: '',
       icon: Users,
       color: 'from-blue-500 to-blue-600',
       bgColor: 'bg-blue-50'
     },
     {
       title: 'Aktif Klinikler',
-      value: '89',
-      change: '+5%',
+      value: '–',
+      change: '',
       icon: Building,
       color: 'from-green-500 to-green-600',
       bgColor: 'bg-green-50'
     },
     {
       title: 'Bekleyen Talepler',
-      value: '156',
-      change: '+8%',
+      value: '–',
+      change: '',
       icon: FileText,
       color: 'from-purple-500 to-purple-600',
       bgColor: 'bg-purple-50'
     },
     {
       title: 'Aylık Gelir',
-      value: '$45,230',
-      change: '+15%',
+      value: '–',
+      change: '',
       icon: TrendingUp,
       color: 'from-orange-500 to-orange-600',
       bgColor: 'bg-orange-50'
     }
-  ];
+  ]);
+
+  useEffect(() => {
+    let mounted = true;
+    adminService.getAdminStats()
+      .then((s) => {
+        if (!mounted) return;
+        setStats([
+          {
+            title: 'Toplam Kullanıcı',
+            value: s.totalUsers.toLocaleString(),
+            change: '',
+            icon: Users,
+            color: 'from-blue-500 to-blue-600',
+            bgColor: 'bg-blue-50'
+          },
+          {
+            title: 'Aktif Klinikler',
+            value: s.activeClinics.toLocaleString(),
+            change: '',
+            icon: Building,
+            color: 'from-green-500 to-green-600',
+            bgColor: 'bg-green-50'
+          },
+          {
+            title: 'Bekleyen Talepler',
+            value: s.pendingRequests.toLocaleString(),
+            change: '',
+            icon: FileText,
+            color: 'from-purple-500 to-purple-600',
+            bgColor: 'bg-purple-50'
+          },
+          {
+            title: 'Aylık Gelir',
+            value: `$${Math.round(s.monthlyRevenue).toLocaleString()}`,
+            change: '',
+            icon: TrendingUp,
+            color: 'from-orange-500 to-orange-600',
+            bgColor: 'bg-orange-50'
+          }
+        ]);
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const quickActions = [
     {

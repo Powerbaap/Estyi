@@ -74,6 +74,7 @@ function createDevSupabaseMock() {
         website: values.website || '',
         phone: values.phone || '',
         email: values.email,
+        password: values.password || '',
         description: values.description || '',
         certificate_urls: Array.isArray(values.certificate_urls) ? values.certificate_urls : [],
         status: values.status || 'pending',
@@ -193,6 +194,7 @@ export interface Database {
           website: string | null;
           phone: string | null;
           email: string;
+          password: string | null;
           description: string | null;
           certificate_urls: string[];
           status: 'pending' | 'approved' | 'rejected';
@@ -208,6 +210,7 @@ export interface Database {
           website?: string;
           phone?: string;
           email: string;
+          password?: string;
           description?: string;
           certificate_urls?: string[];
           status?: 'pending' | 'approved' | 'rejected';
@@ -223,6 +226,7 @@ export interface Database {
           website?: string;
           phone?: string;
           email?: string;
+          password?: string;
           description?: string;
           certificate_urls?: string[];
           status?: 'pending' | 'approved' | 'rejected';

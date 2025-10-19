@@ -47,6 +47,7 @@ CREATE TABLE clinic_applications (
   website TEXT,
   phone TEXT,
   email TEXT NOT NULL,
+  password TEXT,
   description TEXT,
   certificate_urls TEXT[] DEFAULT '{}',
   status TEXT CHECK (status IN ('pending','approved','rejected')) DEFAULT 'pending',

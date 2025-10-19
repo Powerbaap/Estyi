@@ -476,8 +476,57 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
     if (appErr) return res.status(400).json({ error: appErr.message });
     if (!app) return res.status(404).json({ error: 'Application not found' });
 
-    // Create clinic
+    // Create or update clinic auth user
+    let clinicAuthId = null;
+    try {
+      // Try finding existing auth user by email
+      const { data: list, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
+      if (!listError) {
+        const found = list?.users?.find((u) => u.email?.toLowerCase() === String(app.email).toLowerCase());
+        if (found) clinicAuthId = found.id;
+      }
+
+      if (!clinicAuthId) {
+        const tempPassword = app.password || `Estyi${Math.random().toString(36).slice(2, 8)}!${Math.floor(Math.random() * 10)}`;
+        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+          email: app.email,
+          password: tempPassword,
+          email_confirm: true,
+          user_metadata: { role: 'clinic', name: app.clinic_name }
+        });
+        if (authError) return res.status(400).json({ error: authError.message });
+        clinicAuthId = authData.user.id;
+      } else if (app.password) {
+        // Update existing user password and metadata
+        const { error: updUserErr } = await supabase.auth.admin.updateUserById(clinicAuthId, {
+          password: app.password,
+          user_metadata: { role: 'clinic', name: app.clinic_name }
+        });
+        if (updUserErr) return res.status(400).json({ error: updUserErr.message });
+      }
+
+      // Upsert profile in users table
+      const randomUserId = Math.random().toString(36).substring(2, 10).toUpperCase();
+      const { data: profileRow, error: profileErr } = await supabase
+        .from('users')
+        .upsert({
+          id: clinicAuthId,
+          user_id: randomUserId,
+          email: app.email,
+          name: app.clinic_name,
+          role: 'clinic',
+          is_verified: true
+        })
+        .select('*');
+      if (profileErr) return res.status(400).json({ error: profileErr.message });
+    } catch (userErr) {
+      console.error('Clinic user provision error:', userErr);
+      return res.status(500).json({ error: 'Failed to provision clinic user' });
+    }
+
+    // Create clinic (link to auth user id)
     const clinicInsert = {
+      id: clinicAuthId, // align with RLS policies (auth.uid() = id)
       name: app.clinic_name,
       email: app.email,
       phone: app.phone || '',
@@ -490,7 +539,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
     };
     const { data: clinicRow, error: clinicErr } = await supabase
       .from('clinics')
-      .insert(clinicInsert)
+      .upsert(clinicInsert)
       .select('*');
     if (clinicErr) return res.status(400).json({ error: clinicErr.message });
 
