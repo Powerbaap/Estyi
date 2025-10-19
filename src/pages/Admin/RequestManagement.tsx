@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
@@ -14,6 +14,7 @@ import {
   Building,
   LogOut
 } from 'lucide-react';
+import { adminService, AdminRequest } from '../../services/adminService';
 
 const RequestManagement: React.FC = () => {
   const { user, logout } = useAuth();
@@ -22,66 +23,79 @@ const RequestManagement: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [showRequestModal, setShowRequestModal] = useState(false);
++ const [requests, setRequests] = useState<AdminRequest[]>([]);
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
-  const requests = [
-    {
-      id: '1',
-      user: 'Ahmet Yılmaz',
-      userEmail: 'ahmet@example.com',
-      procedure: 'Rhinoplasty',
-      description: 'Burun estetiği için fiyat teklifi istiyorum',
-      status: 'active',
-      photos: 3,
-      createdAt: '2024-01-20',
-      offers: 2
-    },
-    {
-      id: '2',
-      user: 'Fatma Demir',
-      userEmail: 'fatma@example.com',
-      procedure: 'Hair Transplant',
-      description: 'Saç ekimi için detaylı bilgi ve fiyat',
-      status: 'active',
-      photos: 2,
-      createdAt: '2024-01-19',
-      offers: 1
-    },
-    {
-      id: '3',
-      user: 'Mehmet Kaya',
-      userEmail: 'mehmet@example.com',
-      procedure: 'Liposuction',
-      description: 'Karın bölgesi liposuction fiyat teklifi',
-      status: 'closed',
-      photos: 1,
-      createdAt: '2024-01-18',
-      offers: 3
-    },
-    {
-      id: '4',
-      user: 'Ayşe Özkan',
-      userEmail: 'ayse@example.com',
-      procedure: 'Breast Augmentation',
-      description: 'Göğüs büyütme ameliyatı bilgisi',
-      status: 'completed',
-      photos: 4,
-      createdAt: '2024-01-17',
-      offers: 2
-    }
-  ];
+-  const requests = [
+-    {
+-      id: '1',
+-      user: 'Ahmet Yılmaz',
+-      userEmail: 'ahmet@example.com',
+-      procedure: 'Rhinoplasty',
+-      description: 'Burun estetiği için fiyat teklifi istiyorum',
+-      status: 'active',
+-      photos: 3,
+-      createdAt: '2024-01-20',
+-      offers: 2
+-    },
+-    {
+-      id: '2',
+-      user: 'Fatma Demir',
+-      userEmail: 'fatma@example.com',
+-      procedure: 'Hair Transplant',
+-      description: 'Saç ekimi için detaylı bilgi ve fiyat',
+-      status: 'active',
+-      photos: 2,
+-      createdAt: '2024-01-19',
+-      offers: 1
+-    },
+-    {
+-      id: '3',
+-      user: 'Mehmet Kaya',
+-      userEmail: 'mehmet@example.com',
+-      procedure: 'Liposuction',
+-      description: 'Karın bölgesi liposuction fiyat teklifi',
+-      status: 'closed',
+-      photos: 1,
+-      createdAt: '2024-01-18',
+-      offers: 3
+-    },
+-    {
+-      id: '4',
+-      user: 'Ayşe Özkan',
+-      userEmail: 'ayse@example.com',
+-      procedure: 'Breast Augmentation',
+-      description: 'Göğüs büyütme ameliyatı bilgisi',
+-      status: 'completed',
+-      photos: 4,
+-      createdAt: '2024-01-17',
+-      offers: 2
+-    }
+-  ];
++  useEffect(() => {
++    adminService.getRequests()
++      .then((rows) => setRequests(Array.isArray(rows) ? rows : []))
++      .catch((err) => console.error('Talepler yüklenemedi:', err));
++  }, []);
 
-  const filteredRequests = requests.filter(request => {
-    const matchesSearch = request.user.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.procedure.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || request.status === statusFilter;
-    
+  const filteredRequests = requests.filter((request: any) => {
+    const title = (request.title || '').toLowerCase();
+    const desc = (request.description || '').toLowerCase();
+    const matchesSearch = title.includes(searchTerm.toLowerCase()) || desc.includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || (request.status || 'active') === statusFilter;
     return matchesSearch && matchesStatus;
   });
++  const filteredRequests = requests.filter((request: any) => {
++    const title = (request.title || '').toLowerCase();
++    const desc = (request.description || '').toLowerCase();
++    const matchesSearch = title.includes(searchTerm.toLowerCase()) || desc.includes(searchTerm.toLowerCase());
++    const matchesStatus = statusFilter === 'all' || (request.status || 'active') === statusFilter;
++    return matchesSearch && matchesStatus;
++  });
 
   const handleViewRequest = (request: any) => {
     setSelectedRequest(request);
@@ -245,13 +259,13 @@ const RequestManagement: React.FC = () => {
                           <User className="w-4 h-4 text-gray-600" />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{request.user}</div>
-                          <div className="text-sm text-gray-500">{request.userEmail}</div>
+                          <div className="text-sm font-medium text-gray-900">{request.user_name || request.user_id || '—'}</div>
+                          <div className="text-sm text-gray-500">{request.user_email || ''}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{request.procedure}</div>
+                      <div className="text-sm font-medium text-gray-900">{request.title || '—'}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900 max-w-xs truncate">
@@ -266,14 +280,14 @@ const RequestManagement: React.FC = () => {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <FileText className="w-4 h-4 text-gray-400 mr-1" />
-                        <span className="text-sm text-gray-900">{request.photos}</span>
+                        <span className="text-sm text-gray-900">{Array.isArray((request as any).photo_urls) ? (request as any).photo_urls.length : '—'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{request.offers}</div>
+                      <div className="text-sm text-gray-900">{'—'}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {request.createdAt}
+                      {request.created_at ? new Date(request.created_at).toLocaleDateString('tr-TR') : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button
@@ -309,8 +323,10 @@ const RequestManagement: React.FC = () => {
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">Kullanıcı</label>
-                <p className="text-sm text-gray-900">{selectedRequest.user}</p>
-                <p className="text-xs text-gray-500">{selectedRequest.userEmail}</p>
+-               <p className="text-sm text-gray-900">{selectedRequest.user}</p>
+-               <p className="text-xs text-gray-500">{selectedRequest.userEmail}</p>
++               <p className="text-sm text-gray-900">{selectedRequest.user_name || selectedRequest.user_id || '—'}</p>
++               <p className="text-xs text-gray-500">{selectedRequest.user_email || ''}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">İşlem</label>
@@ -330,7 +346,7 @@ const RequestManagement: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Teklif Sayısı</label>
-                <p className="text-sm text-gray-900">{selectedRequest.offers}</p>
+                <p className="text-sm text-gray-900">{'—'}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Oluşturulma Tarihi</label>
@@ -353,4 +369,4 @@ const RequestManagement: React.FC = () => {
   );
 };
 
-export default RequestManagement; 
+export default RequestManagement;

@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { getUserRole } from '../../utils/auth';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Users, 
@@ -21,6 +20,7 @@ import {
   Lock,
   LogOut
 } from 'lucide-react';
+import { adminService, AdminUser } from '../../services/adminService';
 
 const UserManagement: React.FC = () => {
   const { user, logout } = useAuth();
@@ -30,56 +30,27 @@ const UserManagement: React.FC = () => {
   const [roleFilter, setRoleFilter] = useState('all');
   const [selectedUser, setSelectedUser] = useState<any>(null);
   const [showUserModal, setShowUserModal] = useState(false);
+  const [users, setUsers] = useState<AdminUser[]>([]);
+
+  useEffect(() => {
+    adminService.getUsers()
+      .then(setUsers)
+      .catch((err) => console.error('Admin getUsers error', err));
+  }, []);
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
-  const users = [
-    {
-      id: '1',
-      name: 'Ahmet Yılmaz',
-      email: 'ahmet@example.com',
-      role: 'user',
-      status: 'active',
-      joinDate: '2024-01-15',
-      lastLogin: '2024-01-20'
-    },
-    {
-      id: '2',
-      name: 'Fatma Demir',
-      email: 'fatma@example.com',
-      role: 'user',
-      status: 'active',
-      joinDate: '2024-01-10',
-      lastLogin: '2024-01-19'
-    },
-    {
-      id: '3',
-      name: 'Mehmet Kaya',
-      email: 'mehmet@example.com',
-      role: 'user',
-      status: 'blocked',
-      joinDate: '2024-01-05',
-      lastLogin: '2024-01-15'
-    },
-    {
-      id: '4',
-      name: 'Ayşe Özkan',
-      email: 'ayse@example.com',
-      role: 'clinic',
-      status: 'active',
-      joinDate: '2024-01-12',
-      lastLogin: '2024-01-20'
-    }
-  ];
+  // Kullanıcılar backend'den yükleniyor (adminService)
+
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         user.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || user.status === statusFilter;
-  const matchesRole = roleFilter === 'all' || getUserRole(user as any) === roleFilter;
+    const matchesSearch = (user.name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (user.email || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStatus = statusFilter === 'all' || (user.status || 'active') === statusFilter;
+    const matchesRole = roleFilter === 'all' || (user.role || 'user') === roleFilter;
     
     return matchesSearch && matchesStatus && matchesRole;
   });
@@ -261,11 +232,11 @@ const UserManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                  getUserRole(user as any) === 'admin' ? 'bg-red-100 text-red-800' :
-                  getUserRole(user as any) === 'clinic' ? 'bg-green-100 text-green-800' :
+                  (user.role || 'user') === 'admin' ? 'bg-red-100 text-red-800' :
+                  (user.role || 'user') === 'clinic' ? 'bg-green-100 text-green-800' :
                         'bg-blue-100 text-blue-800'
                       }`}>
-                {getUserRole(user as any) === 'admin' ? 'Admin' : getUserRole(user as any) === 'clinic' ? 'Klinik' : 'Kullanıcı'}
+                {(user.role || 'user') === 'admin' ? 'Admin' : (user.role || 'user') === 'clinic' ? 'Klinik' : 'Kullanıcı'}
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -286,10 +257,10 @@ const UserManagement: React.FC = () => {
                       </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.joinDate).toLocaleDateString('tr-TR')}
+                      {user.created_at ? new Date(user.created_at).toLocaleDateString('tr-TR') : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(user.lastLogin).toLocaleDateString('tr-TR')}
+                      {'lastLogin' in user && (user as any).lastLogin ? new Date((user as any).lastLogin).toLocaleDateString('tr-TR') : '-'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                       <div className="flex items-center space-x-2">
@@ -348,7 +319,7 @@ const UserManagement: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Rol</label>
-                <p className="text-sm text-gray-900">{getUserRole(selectedUser as any)}</p>
+                <p className="text-sm text-gray-900">{selectedUser.role || 'user'}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Durum</label>
@@ -356,11 +327,11 @@ const UserManagement: React.FC = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Kayıt Tarihi</label>
-                <p className="text-sm text-gray-900">{selectedUser.joinDate}</p>
+                <p className="text-sm text-gray-900">{selectedUser.created_at || '-'}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Son Giriş</label>
-                <p className="text-sm text-gray-900">{selectedUser.lastLogin}</p>
+                <p className="text-sm text-gray-900">{selectedUser.lastLogin || '-'}</p>
               </div>
             </div>
             

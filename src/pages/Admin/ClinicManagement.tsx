@@ -18,6 +18,7 @@ import {
 } from 'lucide-react';
 import { clinicApplicationService } from '../../services/api';
 import { signImageUrls } from '../../services/storage';
+import { adminService } from '../../services/adminService';
 
 const ClinicManagement: React.FC = () => {
   const { user, logout } = useAuth();
@@ -28,6 +29,7 @@ const ClinicManagement: React.FC = () => {
   const [selectedClinic, setSelectedClinic] = useState<any>(null);
   const [showClinicModal, setShowClinicModal] = useState(false);
   // Başvurular için durumlar
++ const [clinics, setClinics] = useState<any[]>([]);
   const [applications, setApplications] = useState<any[]>([]);
   const [loadingApps, setLoadingApps] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
@@ -53,7 +55,8 @@ const ClinicManagement: React.FC = () => {
     const load = async () => {
       try {
         setLoadingApps(true);
-        const data = await clinicApplicationService.getApplications();
+-       const data = await clinicApplicationService.getApplications();
++       const data = await adminService.getClinicApplications();
         const apps = Array.isArray(data) ? data : [];
         // Sertifika URL’lerini imzala (bucket private olsa dahi erişim sağlamak için)
         const signedApps = await Promise.all(apps.map(async (app: any) => {
@@ -71,44 +74,14 @@ const ClinicManagement: React.FC = () => {
     load();
   }, []);
 
-  const clinics = [
-    {
-      id: '1',
-      name: 'İstanbul Estetik Merkezi',
-      email: 'info@istanbulestetik.com',
-      phone: '+90 212 555 0123',
-      location: 'İstanbul, Türkiye',
-      status: 'active',
-      specialties: ['Rhinoplasty', 'Hair Transplant'],
-      rating: 4.8,
-      reviews: 156,
-      joinDate: '2024-01-15'
-    },
-    {
-      id: '2',
-      name: 'Hair World İstanbul',
-      email: 'info@hairworld.com',
-      phone: '+90 212 555 0456',
-      location: 'İstanbul, Türkiye',
-      status: 'active',
-      specialties: ['Hair Transplant'],
-      rating: 4.6,
-      reviews: 89,
-      joinDate: '2024-01-10'
-    },
-    {
-      id: '3',
-      name: 'Ankara Estetik Merkezi',
-      email: 'info@ankaraestetik.com',
-      phone: '+90 312 555 0789',
-      location: 'Ankara, Türkiye',
-      status: 'pending',
-      specialties: ['Rhinoplasty', 'Liposuction'],
-      rating: 0,
-      reviews: 0,
-      joinDate: '2024-01-20'
-    }
-  ];
++ // Klinikleri yükle
++ useEffect(() => {
++   adminService.getClinics()
++     .then((rows) => setClinics(Array.isArray(rows) ? rows : []))
++     .catch((err) => console.error('Klinikler yüklenemedi:', err));
++ }, []);
+  // Klinik listesi adminService üzerinden yüklenir
+
 
   const filteredClinics = clinics.filter(clinic => {
     const matchesSearch = clinic.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -178,6 +151,29 @@ const ClinicManagement: React.FC = () => {
   const handleRejectApplication = async (applicationId: string) => {
     try {
       await clinicApplicationService.rejectApplication(applicationId);
+      setApplications(prev => prev.map(a => a.id === applicationId ? { ...a, status: 'rejected' } : a));
+    } catch (err) {
+      console.error('Başvuru reddetme hatası:', err);
+      alert('Başvuru reddedilemedi.');
+    }
+  };
++  const handleApproveApplication = async (application: any) => {
++    try {
++      await adminService.approveClinicApplication(application.id);
++      setApplications(prev => prev.map(a => a.id === application.id ? { ...a, status: 'approved' } : a));
++      // Klinik listesi yenile
++      const refreshed = await adminService.getClinics();
++      setClinics(Array.isArray(refreshed) ? refreshed : []);
++    } catch (err) {
++      console.error('Başvuru onaylama hatası:', err);
++      alert('Başvuru onaylanamadı.');
++    }
++  };
+
+  // Başvuruyu reddet
+  const handleRejectApplication = async (applicationId: string) => {
+    try {
+      await adminService.rejectClinicApplication(applicationId);
       setApplications(prev => prev.map(a => a.id === applicationId ? { ...a, status: 'rejected' } : a));
     } catch (err) {
       console.error('Başvuru reddetme hatası:', err);

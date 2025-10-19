@@ -400,6 +400,137 @@ app.post('/api/admin/provision', async (req, res) => {
   }
 });
 
+// Admin data endpoints
+app.get('/api/admin/users', async (req, res) => {
+  try {
+    if (useSupabaseFallback) return res.json([]);
+    const { data, error } = await supabase
+      .from('users')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data || []);
+  } catch (error) {
+    console.error('Admin users error:', error);
+    res.status(500).json({ error: 'Failed to fetch users' });
+  }
+});
+
+app.get('/api/admin/clinics', async (req, res) => {
+  try {
+    if (useSupabaseFallback) return res.json([]);
+    const { data, error } = await supabase
+      .from('clinics')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data || []);
+  } catch (error) {
+    console.error('Admin clinics error:', error);
+    res.status(500).json({ error: 'Failed to fetch clinics' });
+  }
+});
+
+app.get('/api/admin/requests', async (req, res) => {
+  try {
+    if (useSupabaseFallback) return res.json([]);
+    const { data, error } = await supabase
+      .from('requests')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data || []);
+  } catch (error) {
+    console.error('Admin requests error:', error);
+    res.status(500).json({ error: 'Failed to fetch requests' });
+  }
+});
+
+app.get('/api/admin/clinic-applications', async (req, res) => {
+  try {
+    if (useSupabaseFallback) return res.json([]);
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) return res.status(400).json({ error: error.message });
+    res.json(data || []);
+  } catch (error) {
+    console.error('Admin clinic applications error:', error);
+    res.status(500).json({ error: 'Failed to fetch clinic applications' });
+  }
+});
+
+app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
+  try {
+    if (useSupabaseFallback) {
+      return res.json({ success: true, message: 'Dev fallback: approved' });
+    }
+    const id = req.params.id;
+    // Fetch application
+    const { data: app, error: appErr } = await supabase
+      .from('clinic_applications')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (appErr) return res.status(400).json({ error: appErr.message });
+    if (!app) return res.status(404).json({ error: 'Application not found' });
+
+    // Create clinic
+    const clinicInsert = {
+      name: app.clinic_name,
+      email: app.email,
+      phone: app.phone || '',
+      website: app.website || '',
+      location: app.country || '',
+      status: 'active',
+      rating: 0,
+      reviews: 0,
+      specialties: app.specialties || []
+    };
+    const { data: clinicRow, error: clinicErr } = await supabase
+      .from('clinics')
+      .insert(clinicInsert)
+      .select('*');
+    if (clinicErr) return res.status(400).json({ error: clinicErr.message });
+
+    const createdClinic = Array.isArray(clinicRow) ? clinicRow[0] : clinicRow;
+
+    // Update application status
+    const { error: updErr } = await supabase
+      .from('clinic_applications')
+      .update({ status: 'approved' })
+      .eq('id', id);
+    if (updErr) return res.status(400).json({ error: updErr.message });
+
+    res.json({ success: true, clinic: createdClinic });
+  } catch (error) {
+    console.error('Approve clinic application error:', error);
+    res.status(500).json({ error: 'Failed to approve application' });
+  }
+});
+
+app.post('/api/admin/clinic-applications/:id/reject', async (req, res) => {
+  try {
+    if (useSupabaseFallback) {
+      return res.json({ success: true, message: 'Dev fallback: rejected' });
+    }
+    const id = req.params.id;
+    const { reason } = req.body || {};
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .update({ status: 'rejected', description: reason || null })
+      .eq('id', id)
+      .select('*');
+    if (error) return res.status(400).json({ error: error.message });
+    const updated = Array.isArray(data) ? data[0] : data;
+    res.json({ success: true, application: updated });
+  } catch (error) {
+    console.error('Reject clinic application error:', error);
+    res.status(500).json({ error: 'Failed to reject application' });
+  }
+});
+
 app.listen(PORT, () => {
   console.log(`🚀 Estyi Backend Server running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
