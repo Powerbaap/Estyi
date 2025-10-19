@@ -1,3 +1,5 @@
+import { clinicApplicationService } from './api';
+
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000';
 
 async function fetchJSON(path: string, options?: RequestInit) {
@@ -66,7 +68,24 @@ export const adminService = {
     return fetchJSON('/api/admin/requests');
   },
   async getClinicApplications(): Promise<AdminClinicApplication[]> {
-    return fetchJSON('/api/admin/clinic-applications');
+    try {
+      const data = await fetchJSON('/api/admin/clinic-applications');
+      // Backend Supabase fallback aktifse boş dönebilir; dev’de Supabase mock’tan çek.
+      const isDevSupabaseFallback = !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY;
+      if (isDevSupabaseFallback && (!Array.isArray(data) || data.length === 0)) {
+        const supaData = await clinicApplicationService.getApplications();
+        return Array.isArray(supaData) ? supaData : [];
+      }
+      return Array.isArray(data) ? data : [];
+    } catch (err) {
+      // Backend erişilemezse dev fallback ile Supabase mock’tan dene
+      const isDevSupabaseFallback = !import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY;
+      if (isDevSupabaseFallback) {
+        const supaData = await clinicApplicationService.getApplications();
+        return Array.isArray(supaData) ? supaData : [];
+      }
+      throw err;
+    }
   },
   async approveClinicApplication(id: string) {
     return fetchJSON(`/api/admin/clinic-applications/${id}/approve`, { method: 'POST' });
