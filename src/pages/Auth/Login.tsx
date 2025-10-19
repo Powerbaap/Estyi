@@ -36,22 +36,20 @@ const Login: React.FC = () => {
     const result = await login(formData.email, formData.password, formData.role);
     
     if (result.success) {
-      try {
-        const { data: sessionData } = await supabase.auth.getSession();
-        const role = getUserRole(sessionData?.session?.user || null);
-        if (role === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (formData.role === 'clinic') {
-          navigate('/clinic-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
-      } catch {
-        if (formData.role === 'clinic') {
-          navigate('/clinic-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
+      // Admin kontrolü - environment variable'dan 
+      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
+        .split(',')
+        .map(e => e.trim().toLowerCase())
+        .filter(Boolean);
+      
+      const isAdmin = adminEmails.includes(formData.email.toLowerCase());
+      
+      if (isAdmin) {
+        navigate('/admin/dashboard');
+      } else if (formData.role === 'clinic') {
+        navigate('/clinic-dashboard');
+      } else {
+        navigate('/dashboard');
       }
     } else {
       setError(result.error || t('login.loginError'));
