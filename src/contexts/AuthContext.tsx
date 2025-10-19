@@ -91,18 +91,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (isAdminEmail) {
         try {
-          const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
-          const resp = await fetch(`${apiUrl}/api/admin/provision`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email, password, name: email.split('@')[0] })
-          });
+          const apiUrl = import.meta.env.VITE_API_URL;
+          if (apiUrl && apiUrl.startsWith('http')) {
+            const resp = await fetch(`${apiUrl}/api/admin/provision`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password, name: email.split('@')[0] })
+            });
 
-          if (resp.ok) {
-            // Provision sonrası tekrar giriş dene
-            const retry = await supabase.auth.signInWithPassword({ email, password });
-            if (!retry.error) {
-              return { success: true };
+            if (resp.ok) {
+              // Provision sonrası tekrar giriş dene
+              const retry = await supabase.auth.signInWithPassword({ email, password });
+              if (!retry.error) {
+                return { success: true };
+              }
             }
           }
         } catch (be) {
