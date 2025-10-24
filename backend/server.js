@@ -558,7 +558,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
           }
         }
       } catch (e) {
-        console.warn('Recovery link email failed:', (e && (e as any).message) || e);
+        console.warn('Recovery link email failed:', (e && e.message) || e);
       }
     }
 
