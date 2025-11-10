@@ -1270,6 +1270,9 @@
       "dashboard": "Dashboard",
       "requests": "Requests",
       "offers": "Offers",
+      "messages": "Messages",
+      "doctors": "Doctors",
+      "fixedPrices": "Fixed Prices",
       "profile": "Profile",
       "membership": "Membership"
     },

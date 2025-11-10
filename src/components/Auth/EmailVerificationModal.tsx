@@ -17,7 +17,8 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   email
 }) => {
   const { t } = useTranslation();
-  const { verifyEmail, isLoading } = useAuth();
+  // verifyEmail yerine email tabanlı doğrulamayı kullan
+  const { verifyEmailByEmail, isLoading } = useAuth() as any;
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
@@ -46,7 +47,8 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
       return;
     }
 
-    const result = await verifyEmail(userId, code);
+    // Email tabanlı doğrulama çağrısı
+    const result = await verifyEmailByEmail(email, code);
     
     if (result.success) {
       setSuccess(true);
@@ -152,4 +154,4 @@ const EmailVerificationModal: React.FC<EmailVerificationModalProps> = ({
   );
 };
 
-export default EmailVerificationModal; 
+export default EmailVerificationModal;

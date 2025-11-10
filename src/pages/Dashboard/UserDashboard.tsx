@@ -6,7 +6,7 @@ import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal'
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { requestService } from '../../services/api';
+import { requestService, appointmentService } from '../../services/api';
 import { signRequestPhotoUrls } from '../../services/storage';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -52,6 +52,8 @@ const UserDashboard: React.FC = () => {
   // Gerçek kullanıcı verileri - başlangıçta boş
   const [requests, setRequests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [appointments, setAppointments] = useState<any[]>([]);
+  const [isAppointmentsLoading, setIsAppointmentsLoading] = useState(true);
 
   // Gerçek veri yükleme (Supabase API entegrasyonu)
   useEffect(() => {
@@ -183,6 +185,23 @@ const UserDashboard: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requests.length]);
 
+  // Randevuları yükle
+  useEffect(() => {
+    const loadAppointments = async () => {
+      try {
+        setIsAppointmentsLoading(true);
+        if (!user?.id) { setAppointments([]); return; }
+        const appts = await appointmentService.getUserAppointments(user.id);
+        setAppointments(Array.isArray(appts) ? appts : []);
+      } catch (e) {
+        setAppointments([]);
+      } finally {
+        setIsAppointmentsLoading(false);
+      }
+    };
+    if (user) loadAppointments();
+  }, [user]);
+
   const handleRequestClick = (request: any) => {
     setSelectedRequest(request);
     setIsDetailsModalOpen(true);
@@ -225,11 +244,16 @@ const UserDashboard: React.FC = () => {
   }, [location.state, navigate]);
 
   const getFilteredRequests = () => {
+    const isOlderThanDays = (date: any, days: number) => {
+      const d = date instanceof Date ? date : new Date(date);
+      const diffMs = Date.now() - d.getTime();
+      return diffMs >= days * 24 * 60 * 60 * 1000;
+    };
     switch (activeFilter) {
       case 'active':
-        return requests.filter(req => req.status === 'active');
+        return requests.filter(req => req.status === 'active' && !isOlderThanDays(req.createdAt, 5));
       case 'closed':
-        return requests.filter(req => req.status === 'closed');
+        return requests.filter(req => req.status === 'closed' || (req.status === 'active' && isOlderThanDays(req.createdAt, 5)));
       case 'offers':
         return requests.filter(req => req.offersCount > 0);
       case 'all':
@@ -319,29 +343,8 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <div 
-            className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-              activeFilter === 'all' ? 'ring-2 ring-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50' : 'hover:bg-gradient-to-br hover:from-gray-50 hover:to-blue-50'
-            }`}
-            onClick={() => handleFilterClick('all')}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.totalRequests')}</p>
-                <p className="text-3xl font-bold text-gray-900">{requests.length}</p>
-                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.allRequests')}</p>
-              </div>
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                activeFilter === 'all' ? 'bg-gradient-to-r from-blue-500 to-indigo-600' : 'bg-gradient-to-r from-blue-100 to-indigo-100 group-hover:from-blue-200 group-hover:to-indigo-200'
-              }`}>
-                <Camera className={`w-7 h-7 ${activeFilter === 'all' ? 'text-white' : 'text-blue-600'}`} />
-              </div>
-            </div>
-            {activeFilter === 'all' && (
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-2xl"></div>
-            )}
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+          {/* Removed total requests card per new design */}
 
           <div 
             className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
@@ -353,7 +356,10 @@ const UserDashboard: React.FC = () => {
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.activeRequests')}</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {requests.filter(req => req.status === 'active').length}
+                  {requests.filter(req => {
+                    const d = req.createdAt instanceof Date ? req.createdAt : new Date(req.createdAt);
+                    return req.status === 'active' && (Date.now() - d.getTime() < 5 * 24 * 60 * 60 * 1000);
+                  }).length}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.ongoing')}</p>
               </div>
@@ -368,55 +374,52 @@ const UserDashboard: React.FC = () => {
             )}
           </div>
 
-          <div 
-            className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-              activeFilter === 'offers' ? 'ring-2 ring-amber-500 bg-gradient-to-br from-amber-50 to-yellow-50' : 'hover:bg-gradient-to-br hover:from-gray-50 hover:to-amber-50'
-            }`}
-            onClick={() => handleFilterClick('offers')}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.totalOffers')}</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {requests.reduce((total, req) => total + req.offersCount, 0)}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.receivedOffers')}</p>
-              </div>
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                activeFilter === 'offers' ? 'bg-gradient-to-r from-amber-500 to-yellow-600' : 'bg-gradient-to-r from-amber-100 to-yellow-100 group-hover:from-amber-200 group-hover:to-yellow-200'
-              }`}>
-                <DollarSign className={`w-7 h-7 ${activeFilter === 'offers' ? 'text-white' : 'text-amber-600'}`} />
-              </div>
-            </div>
-            {activeFilter === 'offers' && (
-              <div className="absolute inset-0 bg-gradient-to-r from-amber-500/5 to-yellow-500/5 rounded-2xl"></div>
-            )}
-          </div>
+          {/* Removed offers card per new design */}
 
-          <div 
-            className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
-              activeFilter === 'closed' ? 'ring-2 ring-purple-500 bg-gradient-to-br from-purple-50 to-violet-50' : 'hover:bg-gradient-to-br hover:from-gray-50 hover:to-purple-50'
-            }`}
-            onClick={() => handleFilterClick('closed')}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.completed')}</p>
-                <p className="text-3xl font-bold text-gray-900">
-                  {requests.filter(req => req.status === 'closed').length}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.finished')}</p>
-              </div>
-              <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
-                activeFilter === 'closed' ? 'bg-gradient-to-r from-purple-500 to-violet-600' : 'bg-gradient-to-r from-purple-100 to-violet-100 group-hover:from-purple-200 group-hover:to-violet-200'
-              }`}>
-                <CheckCircle className={`w-7 h-7 ${activeFilter === 'closed' ? 'text-white' : 'text-purple-600'}`} />
-              </div>
-            </div>
-            {activeFilter === 'closed' && (
-              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-2xl"></div>
-            )}
-          </div>
+          {/* Completed (History) Card */}
+           <div 
+             className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+               activeFilter === 'closed' ? 'ring-2 ring-purple-500 bg-gradient-to-br from-purple-50 to-violet-50' : 'hover:bg-gradient-to-br hover:from-gray-50 hover:to-purple-50'
+             }`}
+             onClick={() => handleFilterClick('closed')}
+           >
+             <div className="flex items-center justify-between">
+               <div className="flex-1">
+                 <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.completed')}</p>
+                 <p className="text-3xl font-bold text-gray-900">
+                   {requests.filter(req => {
+                     const d = req.createdAt instanceof Date ? req.createdAt : new Date(req.createdAt);
+                     return req.status === 'closed' || (req.status === 'active' && (Date.now() - d.getTime() >= 5 * 24 * 60 * 60 * 1000));
+                   }).length}
+                 </p>
+                 <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.finished')}</p>
+               </div>
+               <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                 activeFilter === 'closed' ? 'bg-gradient-to-r from-purple-500 to-violet-600' : 'bg-gradient-to-r from-purple-100 to-violet-100 group-hover:from-purple-200 group-hover:to-violet-200'
+               }`}>
+                 <CheckCircle className={`w-7 h-7 ${activeFilter === 'closed' ? 'text-white' : 'text-purple-600'}`} />
+               </div>
+             </div>
+             {activeFilter === 'closed' && (
+               <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-2xl"></div>
+             )}
+           </div>
+
+           {/* Appointments Card (same size, side-by-side) */}
+           <div className="group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+             <div className="flex items-center justify-between">
+               <div className="flex-1">
+                 <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.myAppointments')}</p>
+                 <p className="text-3xl font-bold text-gray-900">{isAppointmentsLoading ? '—' : appointments.length}</p>
+                 <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.appointmentsSubtitle')}</p>
+               </div>
+               <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-r from-blue-100 to-indigo-100">
+                 <Calendar className="w-7 h-7 text-blue-600" />
+               </div>
+             </div>
+             {/* optional background highlight on hover */}
+             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-2xl"></div>
+           </div>
         </div>
 
 

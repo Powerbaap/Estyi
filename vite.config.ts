@@ -9,9 +9,9 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     base: isPages ? env.VITE_BASE : '/',
     server: {
-      port: 5175,
-      strictPort: false,
-      host: true
+      port: 5176,
+      strictPort: true,
+      host: '127.0.0.1'
     },
     build: {
       outDir: 'dist'

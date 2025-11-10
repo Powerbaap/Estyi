@@ -20,6 +20,7 @@ const Reviews = lazy(() => import('./pages/Reviews'));
 const ClinicProfile = lazy(() => import('./pages/ClinicProfile'));
 const ClinicApplication = lazy(() => import('./pages/ClinicApplication'));
 const NewRequest = lazy(() => import('./pages/Requests/NewRequest'));
+const FixedPriceRequest = lazy(() => import('./pages/Requests/FixedPriceRequest'));
 
 // Admin pages
 const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
@@ -73,6 +74,7 @@ function AppContent() {
             <Route path="/clinic-profile" element={<ClinicProfile />} />
             <Route path="/clinic-application" element={<ClinicApplication />} />
             <Route path="/request/new" element={<NewRequest />} />
+            <Route path="/request" element={<FixedPriceRequest />} />
             
             {/* Admin Routes */}
             <Route path="/admin/dashboard" element={<AdminRoute><AdminDashboard /></AdminRoute>} />

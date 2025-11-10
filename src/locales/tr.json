@@ -589,6 +589,9 @@
       "dashboard": "Dashboard",
       "requests": "Talepler",
       "offers": "Teklifler",
+      "messages": "Mesajlar",
+      "doctors": "Doktorlar",
+      "fixedPrices": "Sabit Fiyatlar",
       "profile": "Profil",
       "membership": "Üyelik"
     },
@@ -708,12 +711,14 @@
     "stats": {
       "totalRequests": "Toplam Talepler",
       "allRequests": "Sistemdeki tüm talepleriniz",
-      "activeRequests": "Aktif Talepler",
+      "activeRequests": "Aktif Taleplerim",
       "ongoing": "Şu anda devam eden talepler",
       "totalOffers": "Toplam Teklif",
       "receivedOffers": "Aldığınız toplam teklifler",
-      "completed": "Tamamlanan Talepler",
-      "finished": "Kapanan ve tamamlanan talepler"
+      "completed": "Talep Geçmişi",
+      "finished": "Kapanan ve tamamlanan talepler",
+      "myAppointments": "Randevularım",
+      "appointmentsSubtitle": "Planlanmış randevularınız"
     },
     "status": {
       "active": "Aktif",

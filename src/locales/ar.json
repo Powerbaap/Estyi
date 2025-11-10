@@ -1279,6 +1279,9 @@
       "dashboard": "لوحة التحكم",
       "requests": "الطلبات",
       "offers": "العروض",
+      "messages": "الرسائل",
+      "doctors": "الأطباء",
+      "fixedPrices": "الأسعار الثابتة",
       "profile": "الملف الشخصي",
       "membership": "العضوية"
     },

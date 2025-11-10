@@ -3,12 +3,16 @@ import { supabase } from '../lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { generateUserId, generateVerificationCode, saveVerificationCode, sendVerificationEmail, verifyCode } from '../lib/emailService';
 
+const offline = import.meta.env.VITE_OFFLINE_MODE === 'true';
+
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   login: (email: string, password: string, role?: 'user' | 'clinic' | 'admin') => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, role?: 'user' | 'clinic' | 'admin') => Promise<{ success: boolean; error?: string; userId?: string }>;
   verifyEmail: (userId: string, code: string) => Promise<{ success: boolean; error?: string }>;
+  // Yeni: email ile doğrulama
+  verifyEmailByEmail: (email: string, code: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   isLoading: boolean;
@@ -39,6 +43,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     const getSession = async () => {
       try {
+        if (offline) {
+          const raw = localStorage.getItem('estyi_offline_user');
+          if (raw) {
+            try { setUser(JSON.parse(raw)); } catch {}
+          }
+          setSession(null);
+          setIsLoading(false);
+          return;
+        }
         const { data } = await supabase.auth.getSession();
         const currentSession = data?.session ?? null;
         setSession(currentSession);
@@ -55,6 +68,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        if (offline) {
+          return;
+        }
         setSession(session);
         setUser(session?.user ?? null);
         setIsLoading(false);
@@ -72,6 +88,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       
+      if (offline) {
+        const devUser: any = {
+          id: 'DEV_' + Math.random().toString(36).substring(2, 10),
+          email,
+          user_metadata: { role: requestedRole || 'user', name: email.split('@')[0] }
+        };
+        setUser(devUser);
+        try { localStorage.setItem('estyi_offline_user', JSON.stringify(devUser)); } catch {}
+        return { success: true };
+      }
       // Önce Supabase ile normal giriş dene
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
@@ -121,9 +147,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const triggerVerificationEmail = async (email: string) => {
+    try {
+      if (offline) {
+        return true;
+      }
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+      const resp = await fetch(`${apiUrl}/api/send-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      if (!resp.ok) {
+        return false;
+      }
+      return true;
+    } catch {
+      return false;
+    }
+  };
+
   const signup = async (email: string, password: string, role: 'user' | 'clinic' | 'admin' = 'user') => {
     try {
       setIsLoading(true);
+      if (offline) {
+        const devId = generateUserId();
+        await supabase.from('users').insert({ id: devId, email, role });
+        await triggerVerificationEmail(email);
+        return { success: true, userId: devId };
+      }
       // Ortam değişkenleri ön kontrol
       const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
       const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -142,6 +194,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           }
           const result = await resp.json();
           if (result?.userId) {
+            // Kayıttan hemen sonra doğrulama e-postası gönder
+            await triggerVerificationEmail(email);
             return { success: true, userId: result.userId };
           }
           return { success: false, error: 'Backend yanıtı beklenen formatta değil' };
@@ -169,86 +223,73 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       if (error) {
         const msg = (error.message || '').toLowerCase();
-        const isNetwork = msg.includes('fetch') || msg.includes('network');
-        if (isNetwork) {
-          // Backend üzerinden kayıt fallback
+        const isAlreadyExists = (msg.includes('already') && (msg.includes('exists') || msg.includes('registered')));
+
+        // E-posta zaten kayıtlı ise kullanıcı dostu mesaj ver
+        if (isAlreadyExists) {
+          return { success: false, error: 'Bu e-posta zaten kayıtlı. Lütfen giriş yapın.' };
+        }
+
+        // Hata ne olursa olsun (ağ/DB/diğer), backend üzerinden kayıt fallback dene
+        try {
+          const configured = import.meta.env.VITE_API_URL;
+          const local = 'http://localhost:3005';
+          const primaryUrl = `${(configured || local)}/api/register`;
+          let resp: Response | null = null;
           try {
-            const configured = import.meta.env.VITE_API_URL;
-            const local = 'http://localhost:3005';
-            const primaryUrl = `${(configured || local)}/api/register`;
-            let resp: Response | null = null;
-            try {
-              resp = await fetch(primaryUrl, {
+            resp = await fetch(primaryUrl, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, password, role, name: email.split('@')[0] })
+            });
+          } catch (_) {
+            resp = null;
+          }
+          if (!resp || !resp.ok) {
+            if (configured && configured !== local) {
+              const fallbackResp = await fetch(`${local}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password, role, name: email.split('@')[0] })
               });
-            } catch (_) {
-              resp = null;
-            }
-            if (!resp || !resp.ok) {
-              if (configured && configured !== local) {
-                const fallbackResp = await fetch(`${local}/api/register`, {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ email, password, role, name: email.split('@')[0] })
-                });
-                if (fallbackResp.ok) {
-                  const result = await fallbackResp.json();
-                  if (result?.userId) return { success: true, userId: result.userId };
+              if (fallbackResp.ok) {
+                const result = await fallbackResp.json();
+                if (result?.userId) {
+                  await triggerVerificationEmail(email);
+                  return { success: true, userId: result.userId };
                 }
               }
             } else {
-              const result = await resp.json();
-              if (result?.userId) {
-                return { success: true, userId: result.userId };
-              }
+              // Yerel backend mevcut değil
+              const errJson = await (resp ? resp.json().catch(() => null) : Promise.resolve(null));
+              return { success: false, error: errJson?.error || 'Backend üzerinden kayıt başarısız' };
             }
-            return { success: false, error: 'Backend üzerinden kayıt başarısız' };
-          } catch (be) {
-            const beMsg = ((be as any)?.message || '').toLowerCase();
-            const beNet = beMsg.includes('fetch') || beMsg.includes('network');
-            if (beNet) {
-              return { success: false, error: 'Backend API bağlantısı sağlanamadı. Lütfen .env içindeki VITE_API_URL değerini ve backend sunucusunun çalıştığını kontrol edin.' };
+          } else {
+            const result = await resp.json();
+            if (result?.userId) {
+              await triggerVerificationEmail(email);
+              return { success: true, userId: result.userId };
             }
-            return { success: false, error: 'Supabase bağlantısı sağlanamadı ve backend fallback başarısız' };
           }
+          return { success: false, error: 'Backend üzerinden kayıt başarısız' };
+        } catch (be) {
+          const beMsg = ((be as any)?.message || '').toLowerCase();
+          const beNet = beMsg.includes('fetch') || beMsg.includes('network') || beMsg.includes('timeout');
+          if (beNet) {
+            return { success: false, error: 'Backend API bağlantısı sağlanamadı. Lütfen .env içindeki VITE_API_URL değerini ve backend sunucusunun çalıştığını kontrol edin.' };
+          }
+          return { success: false, error: 'Supabase bağlantısı sağlanamadı ve backend fallback başarısız' };
         }
-        return { success: false, error: error.message };
       }
 
-      if (data.user) {
-        // Users tablosuna da ekle
-        const { error: dbError } = await supabase
-          .from('users')
-          .insert([
-            {
-              id: data.user.id,
-              email: email,
-              name: email.split('@')[0],
-              role: role,
-              is_verified: true, // Geçici olarak otomatik doğrulama
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
-          ]);
-
-        if (dbError) {
-          console.error('Database insert error:', dbError);
-          // Auth başarılı oldu ama DB'ye eklenemedi, yine de başarılı say
-        }
-
-        return { success: true, userId: data.user.id };
+      // Başarılı supabase kaydı
+      const newUserId = data?.user?.id;
+      if (newUserId) {
+        await triggerVerificationEmail(email);
+        return { success: true, userId: newUserId };
       }
-
-      return { success: false, error: 'Kayıt olurken bir hata oluştu' };
+      return { success: false, error: 'Beklenmeyen hata: kullanıcı ID alınamadı' };
     } catch (error) {
-      console.error('Signup error:', error);
-      const msg = ((error as any)?.message || '').toLowerCase();
-      const isNetwork = msg.includes('fetch') || msg.includes('network');
-      if (isNetwork) {
-        return { success: false, error: 'Supabase bağlantısı sağlanamadı (Failed to fetch). Lütfen internet bağlantınızı ve .env içindeki VITE_SUPABASE_URL/VITE_SUPABASE_ANON_KEY değerlerinin doğruluğunu kontrol edin.' };
-      }
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } finally {
       setIsLoading(false);
@@ -258,7 +299,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const verifyEmail = async (userId: string, code: string) => {
     try {
       setIsLoading(true);
-      
+      if (offline) {
+        return { success: true };
+      }
       // Backend API'sini kullanarak doğrulama yap
       const configured = import.meta.env.VITE_API_URL;
       const local = 'http://localhost:3005';
@@ -291,24 +334,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       }
 
-      // Kullanıcıyı doğrulanmış olarak işaretle
-      const { error } = await supabase
-        .from('users')
-        .update({ is_verified: true })
-        .eq('id', userId);
-
-      if (error) {
-        return { success: false, error: 'Kullanıcı durumu güncellenemedi' };
-      }
-
+      await response.json().catch(() => ({} as any));
       return { success: true };
     } catch (error) {
-      const msg = ((error as any)?.message || '').toLowerCase();
-      const isNetwork = msg.includes('fetch') || msg.includes('network');
-      if (isNetwork) {
-        return { success: false, error: 'Backend API bağlantısı sağlanamadı (Failed to fetch). Lütfen .env içindeki VITE_API_URL değerini ve backend sunucusunun çalıştığını kontrol edin.' };
-      }
-      return { success: false, error: 'Doğrulama işlemi başarısız' };
+      return { success: false, error: 'Doğrulama sırasında hata oluştu' };
     } finally {
       setIsLoading(false);
     }
@@ -317,6 +346,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     try {
       setIsLoading(true);
+      if (offline) {
+        try { localStorage.removeItem('estyi_offline_user'); } catch {}
+        setSession(null);
+        setUser(null);
+        return;
+      }
       const { error } = await supabase.auth.signOut();
       if (error) {
       }
@@ -359,12 +394,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMessageNotifications([]);
   };
 
+  const verifyEmailByEmail = async (email: string, code: string) => {
+    try {
+      setIsLoading(true);
+      if (offline) {
+        return { success: true, message: 'OFFLINE: Doğrulama varsayılan olarak başarılı.' };
+      }
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+      const resp = await fetch(`${apiUrl}/api/verify-code`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, code })
+      });
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => null);
+        return { success: false, error: err?.error || 'Doğrulama başarısız' };
+      }
+      const result = await resp.json();
+      return { success: true, message: result?.message || 'Doğrulama başarılı' };
+    } catch (error) {
+      return { success: false, error: 'Doğrulama sırasında hata oluştu' };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const value: AuthContextType = {
     user,
     session,
     login,
     signup,
     verifyEmail,
+    // Yeni: email ile doğrulamayı dışa aç
+    verifyEmailByEmail,
     logout,
     resetPassword,
     isLoading,

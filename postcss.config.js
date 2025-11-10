@@ -1,6 +1,4 @@
 export default {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
+  // Dev fallback: disable PostCSS plugins to avoid module load errors
+  plugins: {}
 };

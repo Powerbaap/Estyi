@@ -166,6 +166,18 @@ const Header: React.FC = () => {
                   <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse"></span>
                 </Link>
 
+                {/* Create Request Link */}
+                <Link
+                  to="/request"
+                  className="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 group"
+                  onClick={scrollToTopInstant}
+                >
+                  <svg className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                  </svg>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700 transition-colors">{t('request.title')}</span>
+                </Link>
+
                 {/* Notifications Dropdown */}
                 <div className="relative" ref={notificationRef}>
                   <button
@@ -405,6 +417,16 @@ const Header: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     <span>{t('common.messages')}</span>
+                  </Link>
+                  <Link
+                    to="/request"
+                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all duration-300"
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <span>{t('request.title')}</span>
                   </Link>
                   <Link
                     to={getDashboardPath()}

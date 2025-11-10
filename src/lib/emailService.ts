@@ -1,5 +1,7 @@
 import { supabase } from './supabase';
 
+const offline = import.meta.env.VITE_OFFLINE_MODE === 'true';
+
 // 8 haneli kullanıcı ID'si oluştur
 export const generateUserId = (): string => {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -35,6 +37,10 @@ export const saveVerificationCode = async (userId: string, code: string): Promis
 
 // Email gönderme fonksiyonu (backend API'sini kullan)
 export const sendVerificationEmail = async (email: string, code: string): Promise<void> => {
+  if (offline) {
+    console.warn(`OFFLINE: Doğrulama kodu ${code} ${email} adresine gönderilmiş varsayılıyor.`);
+    return;
+  }
   try {
     const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/send-verification`, {
       method: 'POST',
@@ -93,6 +99,14 @@ export const sendVerificationCodeByEmail = async (email: string): Promise<void> 
     .single();
 
   if (userError || !user) {
+    if (offline) {
+      // OFFLINE: kullanıcıyı dev store'a ekleyip devam edelim
+      const devId = generateUserId();
+      await supabase.from('users').insert({ id: devId, email });
+      await saveVerificationCode(devId, code);
+      console.warn(`OFFLINE: ${email} için doğrulama kodu ${code} üretildi.`);
+      return;
+    }
     throw new Error('Kullanıcı bulunamadı');
   }
 

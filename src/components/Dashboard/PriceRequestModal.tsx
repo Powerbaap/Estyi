@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { X, UploadCloud, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { TREATMENT_AREAS } from '../../types';
 
@@ -11,24 +11,13 @@ interface PriceRequestModalProps {
 
 import { useAuth } from '../../contexts/AuthContext';
 import { requestService } from '../../services/api';
-import { uploadRequestPhotos } from '../../services/storage';
+
 // Photo upload restored as optional
 
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
-  const [photoFiles, setPhotoFiles] = useState<File[]>([]);
-  const [isDragging, setIsDragging] = useState(false);
 
-  // Create object URLs for previews and clean up when files change
-  const photoPreviews = useMemo(() =>
-    photoFiles.map(file => ({ file, url: URL.createObjectURL(file) })),
-  [photoFiles]);
-  useEffect(() => {
-    return () => {
-      photoPreviews.forEach(p => URL.revokeObjectURL(p.url));
-    };
-  }, [photoPreviews]);
 
   // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
@@ -41,7 +30,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     citiesTR: [] as string[],
     age: '',
     gender: '',
-    treatmentDate: '',
+
     description: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -61,13 +50,15 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   
   // Countries list with translation keys and fallbacks
   const countryKeys = [
-    'turkey', 'southKorea', 'thailand', 'brazil', 'mexico', 'colombia', 
+    // ABD ve Meksika en üstte
+    'usa', 'mexico',
+    'turkey', 'southKorea', 'thailand', 'brazil', 'colombia', 
     'argentina', 'chile', 'peru', 'venezuela', 'ecuador', 'uruguay', 
     'paraguay', 'bolivia', 'guyana', 'suriname', 'frenchGuiana',
     'india', 'singapore', 'malaysia', 'indonesia', 'philippines',
     'vietnam', 'cambodia', 'laos', 'myanmar', 'bangladesh', 'sriLanka',
     'nepal', 'bhutan', 'maldives', 'pakistan', 'afghanistan',
-    'usa', 'russia', 'china', 'canada', 'japan', 'germany', 
+    'russia', 'china', 'canada', 'japan', 'germany', 
     'unitedKingdom', 'netherlands', 'sweden'
   ];
   
@@ -154,15 +145,75 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     'İstanbul','Tekirdağ','Kırklareli','Edirne','Çanakkale','Kocaeli','Sakarya'
   ];
 
+  // City options per country (subset for UI)
+  const cityOptions: Record<string, string[]> = {
+    turkey: turkishCities,
+    // Güney Kore için kapsamlı şehir listesi
+    southKorea: [
+      'Seoul','Busan','Incheon','Daegu','Daejeon','Gwangju','Ulsan','Sejong',
+      'Suwon','Seongnam','Goyang','Yongin','Bucheon','Ansan','Anyang','Cheongju',
+      'Jeonju','Cheonan','Gimhae','Pohang','Gumi','Uijeongbu','Hwaseong','Pyeongtaek',
+      'Jeju','Mokpo','Gunsan','Gwangmyeong','Yangsan','Jinju','Wonju','Chungju',
+      'Sokcho','Gangneung','Paju','Gimpo','Icheon','Asan','Dangjin','Naju','Yeosu',
+      'Andong','Gyeongju','Samcheok','Donghae','Taebaek','Geoje','Tongyeong','Masan',
+      'Suncheon','Jeongeup','Gyeongsan','Miryang','Yeongju','Boryeong','Hongseong','Goesan'
+    ],
+    thailand: ['Bangkok','Chiang Mai','Phuket','Pattaya','Chiang Rai'],
+    brazil: ['São Paulo','Rio de Janeiro','Brasília','Belo Horizonte','Curitiba'],
+    mexico: ['Mexico City','Guadalajara','Monterrey','Puebla','Cancún'],
+    colombia: ['Bogotá','Medellín','Cali','Barranquilla','Cartagena'],
+    germany: ['Berlin','Munich','Hamburg','Frankfurt','Cologne'],
+    // ABD için kapsamlı şehir listesi (eyalet başkentleri + büyük şehirler)
+    usa: [
+      // Büyük şehirler
+      'New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Antonio','San Diego','Dallas','San Jose',
+      'Austin','Jacksonville','Fort Worth','Columbus','Charlotte','San Francisco','Indianapolis','Seattle','Denver','Washington',
+      'Boston','El Paso','Nashville','Detroit','Oklahoma City','Portland','Las Vegas','Memphis','Louisville','Baltimore',
+      'Milwaukee','Albuquerque','Tucson','Fresno','Mesa','Sacramento','Atlanta','Kansas City','Colorado Springs','Miami',
+      'Raleigh','Omaha','Long Beach','Virginia Beach','Oakland','Minneapolis','Tulsa','Arlington','Tampa','New Orleans',
+      // Eyalet başkentleri (tam liste)
+      'Montgomery','Juneau','Phoenix','Little Rock','Sacramento','Denver','Hartford','Dover','Tallahassee','Atlanta',
+      'Honolulu','Boise','Springfield','Indianapolis','Des Moines','Topeka','Frankfort','Baton Rouge','Augusta','Annapolis',
+      'Boston','Lansing','Saint Paul','Jackson','Jefferson City','Helena','Lincoln','Carson City','Concord','Trenton',
+      'Santa Fe','Albany','Raleigh','Bismarck','Columbus','Oklahoma City','Salem','Harrisburg','Providence','Columbia',
+      'Pierre','Nashville','Austin','Salt Lake City','Montpelier','Richmond','Olympia','Charleston','Madison','Cheyenne'
+    ],
+    unitedKingdom: ['London','Manchester','Birmingham','Edinburgh','Glasgow'],
+    netherlands: ['Amsterdam','Rotterdam','The Hague','Utrecht','Eindhoven'],
+    sweden: ['Stockholm','Gothenburg','Malmö','Uppsala','Västerås'],
+    canada: ['Toronto','Vancouver','Montreal','Calgary','Ottawa'],
+    japan: ['Tokyo','Osaka','Yokohama','Nagoya','Sapporo'],
+    russia: ['Moscow','Saint Petersburg','Novosibirsk','Yekaterinburg','Kazan'],
+    china: ['Beijing','Shanghai','Guangzhou','Shenzhen','Hangzhou'],
+    india: ['Delhi','Mumbai','Bengaluru','Chennai','Hyderabad'],
+    malaysia: ['Kuala Lumpur','George Town','Johor Bahru','Ipoh','Kuching'],
+    singapore: ['Singapore']
+  };
+
+  const [citiesByCountry, setCitiesByCountry] = useState<Record<string, string[]>>({});
+
   // Photo upload handlers removed
 
   const toggleCountry = (countryKey: string) => {
-    setFormData(prev => ({
-      ...prev,
-      countries: prev.countries.includes(countryKey)
+    setFormData(prev => {
+      const exists = prev.countries.includes(countryKey);
+      const nextCountries = exists
         ? prev.countries.filter(c => c !== countryKey)
-        : [...prev.countries, countryKey]
-    }));
+        : [...prev.countries, countryKey];
+
+      if (exists) {
+        // Ülke kaldırıldığında şehir seçimlerini temizle
+        setCitiesByCountry(prevMap => {
+          const { [countryKey]: _, ...rest } = prevMap;
+          return rest;
+        });
+        // Türkiye özel şehir state'ini de temizle
+        if (countryKey === 'turkey') {
+          return { ...prev, countries: nextCountries, citiesTR: [] };
+        }
+      }
+      return { ...prev, countries: nextCountries };
+    });
   };
 
   // Türkiye şehir seçim fonksiyonları
@@ -187,6 +238,29 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       ...prev,
       citiesTR: []
     }));
+  };
+
+  // Genel şehir seçim fonksiyonları (Türkiye dışındaki ülkeler için)
+  const toggleCity = (countryKey: string, city: string) => {
+    setCitiesByCountry(prev => {
+      const current = prev[countryKey] || [];
+      const next = current.includes(city)
+        ? current.filter(c => c !== city)
+        : [...current, city];
+      return { ...prev, [countryKey]: next };
+    });
+  };
+
+  const selectAllCities = (countryKey: string) => {
+    const list = cityOptions[countryKey] || [];
+    setCitiesByCountry(prev => ({ ...prev, [countryKey]: [...list] }));
+  };
+
+  const clearCities = (countryKey: string) => {
+    setCitiesByCountry(prev => {
+      const { [countryKey]: _, ...rest } = prev;
+      return rest;
+    });
   };
 
   const selectAllCountries = () => {
@@ -238,19 +312,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       return;
     }
     
-    // Optional photo upload
-    let photoUrls: string[] = [];
-    try {
-      if (photoFiles.length > 0) {
-        photoUrls = await uploadRequestPhotos(user.id, photoFiles);
-      }
-    } catch (err: any) {
-      console.error('Photo upload failed:', err);
-      // Fotoğraf yükleme başarısızsa talebi fotosuz göndermeye devam et
-      setSubmitError(getTranslation('priceRequest.photoUploadFailedProceed', 'Fotoğraflar yüklenemedi, talep fotosuz gönderildi.'));
-      photoUrls = [];
-      // Not: Gönderim akışını durdurmuyoruz; talep fotosuz ilerleyecek
-    }
+    // Photo upload removed; always submit without photos
+    const photoUrls: string[] = [];
     const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
     const payload = {
       user_id: user?.id,
@@ -285,7 +348,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         citiesTR: [],
         age: '',
         gender: '',
-        treatmentDate: '',
         description: ''
       });
       setIsSubmitting(false);
@@ -328,98 +390,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
 
-          {/* Professional Photo Upload (Top, Optional) */}
-          <div>
-            <div className="flex items-center justify-between mb-2">
-              <label className="block text-sm font-medium text-gray-700">
-                {getTranslation('priceRequest.uploadPhotos', 'Upload Photos')} ({getTranslation('priceRequest.optional', 'Opsiyonel')})
-              </label>
-              {photoFiles.length > 0 && (
-                <span className="text-xs text-gray-500">{photoFiles.length} {getTranslation('dashboard.photos', 'photos')}</span>
-              )}
-            </div>
 
-            {/* Dropzone */}
-            <div
-              className={`rounded-xl border-2 ${isDragging ? 'border-blue-500 bg-blue-50' : 'border-dashed border-gray-300 bg-white'} p-4 transition-colors`}
-              onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-              onDragLeave={() => setIsDragging(false)}
-              onDrop={(e) => {
-                e.preventDefault();
-                setIsDragging(false);
-                const files = Array.from(e.dataTransfer.files || []).filter(f => f.type.startsWith('image/'));
-                if (files.length) {
-                  setPhotoFiles(prev => {
-                    const all = [...prev, ...files];
-                    // optional: limit to 8
-                    return all.slice(0, 8);
-                  });
-                }
-              }}
-            >
-              <div className="flex flex-col items-center justify-center text-center">
-                <UploadCloud className="w-10 h-10 text-blue-500 mb-2" />
-                <p className="text-sm text-gray-700 font-medium">{getTranslation('priceRequest.dragDropHint', 'Dosyaları sürükleyip bırakın veya aşağıdan seçin.')}</p>
-                <p className="text-xs text-gray-500 mt-1">{getTranslation('priceRequest.photoNoteAccurate', 'Fotoğraf yüklerseniz daha doğru fiyatlar ile karşılaşırsınız.')}</p>
-                <div className="mt-3">
-                  <input
-                    id="photo-input"
-                    type="file"
-                    accept="image/*"
-                    multiple
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []).filter(f => f.type.startsWith('image/'));
-                      setPhotoFiles(prev => {
-                        const all = [...prev, ...files];
-                        return all.slice(0, 8);
-                      });
-                    }}
-                    className="hidden"
-                  />
-                  <label
-                    htmlFor="photo-input"
-                    className="inline-block px-4 py-2 bg-blue-600 text-white rounded-lg cursor-pointer hover:bg-blue-700 text-sm"
-                  >
-                    {getTranslation('priceRequest.chooseFiles', 'Dosya Seç')}
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            {/* Previews */}
-            {photoPreviews.length > 0 && (
-              <div className="mt-4">
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  {photoPreviews.map((p, idx) => (
-                    <div key={idx} className="relative group rounded-lg overflow-hidden border border-gray-200 bg-gray-50">
-                      <img src={p.url} alt={`photo-${idx + 1}`} className="w-full h-28 object-cover" />
-                      <button
-                        type="button"
-                        aria-label="Remove"
-                        onClick={() => {
-                          setPhotoFiles(prev => prev.filter((_, i) => i !== idx));
-                        }}
-                        className="absolute top-2 right-2 bg-white/80 hover:bg-white rounded-full p-1 shadow-sm opacity-0 group-hover:opacity-100 transition"
-                        title={getTranslation('priceRequest.removePhoto', 'Fotoğrafı Sil')}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-600" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-2 flex items-center justify-between">
-                  <p className="text-xs text-gray-500">{getTranslation('priceRequest.maxPhotosHint', 'En fazla 8 fotoğraf yükleyebilirsiniz.')}</p>
-                  <button
-                    type="button"
-                    onClick={() => setPhotoFiles([])}
-                    className="text-xs px-3 py-1 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50"
-                  >
-                    {getTranslation('priceRequest.clearPhotos', 'Tümünü Temizle')}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
 
           {/* Procedure Selection */}
           <div>
@@ -543,6 +514,50 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             </div>
           )}
 
+          {/* Cities selection for other selected countries */}
+          {formData.countries.filter(c => c !== 'turkey').map((ckey) => {
+            const cityList = cityOptions[ckey] || [];
+            if (cityList.length === 0) return null;
+            return (
+              <div key={ckey}>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {getTranslation('priceRequest.selectCities', 'Select Cities')} ({getCountryName(ckey)})
+                </label>
+                <div className="flex space-x-2 mb-3">
+                  <button
+                    type="button"
+                    onClick={() => selectAllCities(ckey)}
+                    className="px-3 py-1 text-sm rounded-lg border bg-white text-blue-600 border-blue-600 hover:bg-blue-50 transition-colors"
+                  >
+                    {getTranslation('priceRequest.selectAll', 'Select All')}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => clearCities(ckey)}
+                    className="px-3 py-1 text-sm rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 transition-colors"
+                  >
+                    {getTranslation('priceRequest.clear', 'Clear')}
+                  </button>
+                </div>
+                <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+                    {cityList.map((city) => (
+                      <label key={city} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
+                        <input
+                          type="checkbox"
+                          checked={(citiesByCountry[ckey] || []).includes(city)}
+                          onChange={() => toggleCity(ckey, city)}
+                          className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm text-gray-700">{city}</span>
+                      </label>
+                    ))}
+                  </div>
+                </div>
+                <p className="text-xs text-gray-500 mt-1">{getTranslation('priceRequest.selected', 'Selected')}: {(citiesByCountry[ckey] || []).length} {getTranslation('priceRequest.city', 'city')}</p>
+              </div>
+            );
+          })}
           {/* Age */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -577,21 +592,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             </select>
           </div>
 
-          {/* Treatment Date */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.treatmentDate', 'Treatment Date')} *
-            </label>
-            <input
-              type="date"
-              required
-              value={formData.treatmentDate}
-              onChange={(e) => setFormData(prev => ({ ...prev, treatmentDate: e.target.value }))}
-              min={new Date().toISOString().split('T')[0]}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder={getTranslation('priceRequest.treatmentDatePlaceholder', 'Select treatment date')}
-            />
-          </div>
+
 
           {/* Description */}
           <div>

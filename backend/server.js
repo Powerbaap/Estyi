@@ -63,16 +63,31 @@ app.post('/api/send-verification', async (req, res) => {
       console.log(`🔧 SUPABASE-FALLBACK: stored code for ${email}: ${verificationCode}`);
     } else if (!code) {
       // If no code provided, save to database (for direct API calls)
-      const { error } = await supabase
-        .from('verification_codes')
-        .insert({
-          email,
-          code: verificationCode,
-          expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
-        });
-      if (error) {
-        console.error('Database error:', error);
-        throw error;
+      try {
+        const { error } = await supabase
+          .from('verification_codes')
+          .insert({
+            email,
+            code: verificationCode,
+            expires_at: new Date(Date.now() + 15 * 60 * 1000) // 15 minutes
+          });
+        if (error) {
+          throw error;
+        }
+      } catch (dbErr) {
+        const msg = ((dbErr || {}).message || '').toLowerCase();
+        const missing = msg.includes('relation') && msg.includes('verification_codes');
+        if (missing) {
+          const key = email;
+          verificationStore.set(key, {
+            code: verificationCode,
+            expiresAt: Date.now() + 15 * 60 * 1000
+          });
+          console.warn(`🔧 SUPABASE TABLE MISSING: falling back to memory store for ${email}`);
+        } else {
+          console.error('Database error:', dbErr);
+          throw dbErr;
+        }
       }
     }
 
@@ -159,7 +174,21 @@ app.post('/api/verify-code', async (req, res) => {
     
     const { data, error } = await query.single();
     
-    if (error || !data) {
+    if (error) {
+      const msg = ((error || {}).message || '').toLowerCase();
+      const missing = msg.includes('relation') && msg.includes('verification_codes');
+      if (missing) {
+        const key = userId || email;
+        const entry = verificationStore.get(key);
+        if (!entry || entry.code !== code || Date.now() > entry.expiresAt) {
+          return res.status(400).json({ error: 'Invalid or expired verification code' });
+        }
+        verificationStore.delete(key);
+        return res.json({ success: true, message: 'Code verified successfully (dev store)' });
+      }
+    }
+    
+    if (!data) {
       return res.status(400).json({ error: 'Invalid or expired verification code' });
     }
     
@@ -558,23 +587,24 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
           }
         }
       } catch (e) {
-        console.warn('Recovery link email failed:', (e && (e as any).message) || e);
+-        console.warn('Recovery link email failed:', (e && (e as any).message) || e);
++        console.warn('Recovery link email failed:', (e && e.message) || e);
+        }
       }
-    }
 
-    // Create clinic (link to auth user id)
-    const clinicInsert = {
-      id: clinicAuthId, // align with RLS policies (auth.uid() = id)
-      name: app.clinic_name,
-      email: app.email,
-      phone: app.phone || '',
-      website: app.website || '',
-      location: app.country || '',
-      status: 'active',
-      rating: 0,
-      reviews: 0,
-      specialties: app.specialties || []
-    };
+      // Create clinic (link to auth user id)
+      const clinicInsert = {
+        id: clinicAuthId, // align with RLS policies (auth.uid() = id)
+        name: app.clinic_name,
+        email: app.email,
+        phone: app.phone || '',
+        website: app.website || '',
+        location: app.country || '',
+        status: 'active',
+        rating: 0,
+        reviews: 0,
+        specialties: app.specialties || []
+      };
     const { data: clinicRow, error: clinicErr } = await supabase
       .from('clinics')
       .upsert(clinicInsert)

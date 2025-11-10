@@ -27,6 +27,31 @@ export const userService = {
   }
 };
 
+// Randevu servisleri
+export const appointmentService = {
+  // Kullanıcının randevularını getir
+  getUserAppointments: async (userId: string) => {
+    const { data, error } = await supabase
+      .from('appointments')
+      .select('*')
+      .in('user_id', [userId, 'DEV_USER'])
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return data;
+  },
+
+  // Randevu iptal et
+  cancelAppointment: async (appointmentId: string) => {
+    const { data, error } = await supabase
+      .from('appointments')
+      .update({ status: 'cancelled' })
+      .eq('id', appointmentId)
+      .select('*');
+    if (error) throw error;
+    return Array.isArray(data) ? data[0] : data;
+  }
+};
+
 // Klinik servisleri
 export const clinicService = {
   // Klinik profil bilgilerini getir

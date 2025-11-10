@@ -108,9 +108,10 @@ const Login: React.FC = () => {
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm py-10 px-8 shadow-2xl rounded-3xl border border-white/20">
-          {error && (
-            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-center space-x-2">
-              <span className="text-sm text-red-600">{error}</span>
+
+          {import.meta.env.VITE_OFFLINE_MODE === 'true' && (
+            <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-800">
+              Offline geliştirme modu: Mock verilerle çalışıyorsunuz; gerçek bağlantılar kapalı.
             </div>
           )}
 

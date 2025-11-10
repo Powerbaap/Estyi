@@ -139,6 +139,11 @@ const Signup: React.FC = () => {
         </div>
 
         <div className="bg-white/80 backdrop-blur-sm py-10 px-8 shadow-2xl rounded-3xl border border-white/20">
+          {import.meta.env.VITE_OFFLINE_MODE === 'true' && (
+            <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-xl p-3 text-sm text-yellow-800">
+              Offline geliştirme modu: Mock verilerle çalışıyorsunuz; gerçek bağlantılar kapalı.
+            </div>
+          )}
           <form className="space-y-6" onSubmit={handleSubmit}>
             {/* Role Selection */}
             <div className="space-y-4">
