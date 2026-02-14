@@ -96,11 +96,15 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
       
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'accepted' }));
       
-      // Kliniğe bildirim gönder
-      
-      // Başarı mesajı göster
-      alert(t('auth.acceptSuccess', { clinicName }));
-      
+      // Estyi: Teklif kabul edilince konuşma (chat) açılır
+      navigate('/messages', { 
+        state: { 
+          selectedClinic: clinicName,
+          messageType: 'clinic_contact',
+          offerAccepted: true
+        } 
+      });
+      onClose();
     } catch (error) {
       alert(t('auth.acceptError'));
     } finally {
@@ -320,9 +324,13 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         </div>
                         <div className="text-right flex-shrink-0 ml-6">
                           <div className="text-3xl font-bold text-green-600 mb-1">
-                            ${Number(offer.priceMin ?? 0).toLocaleString()} - ${Number(offer.priceMax ?? 0).toLocaleString()}
+                            ${Number(offer.priceMin ?? 0).toLocaleString()}{offer.priceMax != null && offer.priceMax !== offer.priceMin ? ` - $${Number(offer.priceMax).toLocaleString()}` : ''} <span className="text-base font-normal text-gray-500">USD</span>
                           </div>
-                          <div className="text-sm text-gray-600">
+                          <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
+                            <span aria-hidden>🔒</span>
+                            <span>{t('requestDetails.priceLocked')}</span>
+                          </div>
+                          <div className="text-sm text-gray-600 mt-2">
                             {safeFormatDateTR((offer as any).createdAt)} {t('requestDetails.onDate')}
                           </div>
                         </div>

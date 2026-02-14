@@ -45,10 +45,6 @@ const PrivacyPolicy: React.FC = () => {
                     <span>{t('privacy.dataCollection.email')}</span>
                   </li>
                   <li className="flex items-center space-x-2">
-                    <Star className="w-4 h-4 text-blue-500" />
-                    <span>{t('privacy.dataCollection.photos')}</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
                     <Globe className="w-4 h-4 text-blue-500" />
                     <span>{t('privacy.dataCollection.preferences')}</span>
                   </li>
@@ -93,23 +89,6 @@ const PrivacyPolicy: React.FC = () => {
                   <li className="flex items-center space-x-2">
                     <Lock className="w-4 h-4 text-pink-500" />
                     <span>{t('privacy.dataSharing.noMarketing')}</span>
-                  </li>
-                </ul>
-              </section>
-
-              <section className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200">
-                <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-                  <Star className="w-5 h-5 text-green-600" />
-                  <span>{t('privacy.dataRetention.title')}</span>
-                </h2>
-                <ul className="space-y-3 text-gray-700">
-                  <li className="flex items-center space-x-2">
-                    <Heart className="w-4 h-4 text-green-500" />
-                    <span>{t('privacy.dataRetention.photos')}</span>
-                  </li>
-                  <li className="flex items-center space-x-2">
-                    <Shield className="w-4 h-4 text-green-500" />
-                    <span>{t('privacy.dataRetention.documents')}</span>
                   </li>
                 </ul>
               </section>

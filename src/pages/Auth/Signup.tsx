@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
-import { Eye, EyeOff, User, Building } from 'lucide-react';
+import { Eye, EyeOff, User } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
 import EmailVerificationModal from '../../components/Auth/EmailVerificationModal';
+import { logLegalAcceptance } from '../../services/legalAcceptance';
 
 const Signup: React.FC = () => {
   const { t } = useTranslation();
   const { signup, isLoading } = useAuth();
-  const navigate = useNavigate();
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -24,19 +24,13 @@ const Signup: React.FC = () => {
   const [showVerificationModal, setShowVerificationModal] = useState(false);
   const [verificationData, setVerificationData] = useState<{ userId: string; email: string } | null>(null);
   const [diagnostic, setDiagnostic] = useState<{ ok: boolean; message: string } | null>(null);
+  const [acceptTerms, setAcceptTerms] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
-    }));
-  };
-
-  const handleRoleChange = (role: 'user' | 'clinic') => {
-    setFormData(prev => ({
-      ...prev,
-      role
     }));
   };
 
@@ -55,8 +49,15 @@ const Signup: React.FC = () => {
     }
 
     const result = await signup(formData.email, formData.password, formData.role);
-    
+
     if (result.success && result.userId) {
+      try {
+        await logLegalAcceptance('user', result.userId, 'tos');
+        await logLegalAcceptance('user', result.userId, 'privacy');
+        await logLegalAcceptance('user', result.userId, 'notice_at_collection');
+        await logLegalAcceptance('user', result.userId, 'explicit_consent');
+        await logLegalAcceptance('user', result.userId, 'age_gate');
+      } catch (_) { /* non-blocking */ }
       setVerificationData({
         userId: result.userId,
         email: formData.email
@@ -145,23 +146,22 @@ const Signup: React.FC = () => {
             </div>
           )}
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {/* Role Selection */}
-            <div className="space-y-4">
+            {/* Role Selection — Sadece Değişim Arayan kayıt olabilir */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                {t('login.selectAccountType')}
+              </label>
               <div className="flex justify-center">
-                <button
-                  type="button"
-                  onClick={() => handleRoleChange('user')}
-                  className={`flex items-center justify-center space-x-2 p-4 rounded-lg border-2 transition-all duration-200 ${
-                    formData.role === 'user'
-                      ? 'border-blue-500 bg-blue-50 text-blue-700'
-                      : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                  }`}
-                >
-                  <User className="w-5 h-5" />
-                  <span className="font-medium">{t('auth.patient')}</span>
-                </button>
+                <div className="p-4 rounded-2xl border-2 border-blue-500 bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg w-full max-w-xs">
+                  <div className="flex flex-col items-center space-y-2">
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                      <User className="w-6 h-6 text-blue-600" />
+                    </div>
+                    <div className="text-sm font-bold">{t('auth.patient')}</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
 
             {/* Email Field */}
             <div>
@@ -243,6 +243,22 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
+            {/* Legal clickwrap — tek onay: Şartlar ve Politikalar (/legal) */}
+            <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                />
+                <span className="text-sm text-gray-700">
+                  {t('legal.clickwrap.acceptAll')}{' '}
+                  <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrap.legalPage')}</a>
+                </span>
+              </label>
+            </div>
+
             {/* Error Message */}
             {error && (
               <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">
@@ -272,7 +288,7 @@ const Signup: React.FC = () => {
             <div>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !acceptTerms}
                 className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
                 {isLoading ? t('signup.signingUp') : t('signup.signupButton')}
@@ -316,19 +332,6 @@ const Signup: React.FC = () => {
               </button>
             </div>
           </form>
-
-          {/* Terms and Privacy */}
-          <p className="text-xs text-gray-500 text-center">
-            {t('signup.termsAgree')}{' '}
-            <Link to="/terms" className="text-blue-600 hover:text-blue-500">
-              {t('signup.termsLink')}
-            </Link>{' '}
-            {t('signup.and')}{' '}
-            <Link to="/privacy" className="text-blue-600 hover:text-blue-500">
-              {t('signup.privacyLink')}
-            </Link>{' '}
-            {t('signup.accept')}.
-          </p>
         </div>
       </div>
 

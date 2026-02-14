@@ -1,7 +1,10 @@
 import { clinicApplicationService } from './api';
 import { supabase } from '../lib/supabase';
 
-const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+const BASE_URL =
+  (import.meta as any).env.VITE_API_BASE_URL ||
+  (import.meta as any).env.VITE_API_URL ||
+  'http://localhost:3005';
 
 async function fetchJSON(path: string, options?: RequestInit) {
   const res = await fetch(`${BASE_URL}${path}`, {
@@ -138,16 +141,12 @@ export const adminService = {
     try {
       return await fetchJSON(`/api/admin/clinic-applications/${id}/approve`, { method: 'POST' });
     } catch (err) {
-      // Backend başarısızsa Supabase üzerinden onaylama fallback
-      const { data: app, error } = await supabase
-        .from('clinic_applications')
-        .select('*')
-        .eq('id', id)
-        .single();
-      if (error) throw error;
-      const createdClinic = await clinicApplicationService.approveApplication(app);
-      return { success: true, clinic: createdClinic } as const;
+      // Backend başarısızsa hata fırlat (artık client-side approve riskli)
+      throw err;
     }
+  },
+  async resendInviteLink(id: string) {
+    return await fetchJSON(`/api/admin/clinic-applications/${id}/resend-invite`, { method: 'POST' });
   },
   async rejectClinicApplication(id: string, reason?: string) {
     try {

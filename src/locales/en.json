@@ -1,6 +1,6 @@
 {
   "footer": {
-    "description": "We bring together certified aesthetic clinics worldwide with patients. Safe, transparent, and professional service.",
+    "description": "We bring together people seeking change with certified aesthetic clinics worldwide. Safe, transparent, and professional service.",
     "gdpr": "GDPR Compliant",
     "ssl": "SSL Encrypted",
     "worldwide": "Worldwide",
@@ -14,7 +14,7 @@
     "termsOfUse": "Terms of Use",
     "cookiePolicy": "Cookie Policy",
     "aboutUs": "About Us",
-    "copyright": "© 2025 Estyi. All rights reserved.",
+    "copyright": "© 2026 Estyi. All rights reserved.",
     "trustMessage": "10,000+ trusted patients prefer us"
   },
   "countries": {
@@ -96,7 +96,7 @@
     "questions": {
       "howItWorks": {
         "question": "How does Estyi work?",
-        "answer": "Estyi connects patients' aesthetic treatment requests to certified clinics worldwide. Patients share photos and information, clinics send offers."
+        "answer": "Estyi connects people seeking change with certified clinics worldwide for aesthetic treatment requests. Clinics send offers."
       },
       "pricing": {
         "question": "Is the service paid?",
@@ -114,13 +114,9 @@
         "question": "How is clinic selection made?",
         "answer": "All our clinics are certified and accredited. You can review clinic profiles and read their reviews."
       },
-      "postTreatmentSupport": {
-        "question": "Is there post-treatment support?",
-        "answer": "Yes, we provide continuous support before and after treatment. You can contact us for any questions."
-      },
       "payment": {
         "question": "How is payment made?",
-        "answer": "Payments are made through secure payment systems. You pay based on the price agreed with the clinic."
+        "answer": "Payments are made directly to the clinic. Users do not make any payment through the platform."
       }
     },
     "stillHaveQuestions": "Still have questions?",
@@ -340,7 +336,6 @@
     "dataCollection": {
       "title": "Data Collection",
       "email": "Email address and contact information",
-      "photos": "Pre-treatment photos",
       "preferences": "Treatment preferences and budget information",
       "clinicInfo": "Clinic information and certificates"
     },
@@ -354,11 +349,6 @@
       "title": "Data Sharing",
       "clinics": "Shared only with approved clinics",
       "noMarketing": "Not shared for marketing purposes"
-    },
-    "dataRetention": {
-      "title": "Data Retention",
-      "photos": "Photos are stored for 2 years",
-      "documents": "Clinic documents are stored for 5 years"
     },
     "userRights": {
       "title": "User Rights",
@@ -521,12 +511,43 @@
     "submitting": "Submitting...",
     "submit": "Submit Offer"
   },
+  "clinicProcedures": {
+    "automaticPricesTitle": "Automatic Prices",
+    "automaticPricesBadge": "Instant price per specialty (USD)",
+    "automaticPricesDesc": "Set the instant price (USD) for each of your profile specialties. These prices are shown when a user creates a request. The entire system runs on instant pricing.",
+    "noSpecialtiesHint": "If your profile has no specialties yet, save your specialty areas in your profile or application first.",
+    "newPrice": "New Price",
+    "procedure": "Procedure",
+    "selectProcedure": "Select",
+    "currency": "Currency",
+    "amount": "Amount",
+    "amountPlaceholder": "e.g. 3500",
+    "save": "Save",
+    "update": "Update",
+    "clear": "Clear",
+    "priceList": "Price List",
+    "noFixedPrices": "No prices defined yet.",
+    "loading": "Loading..."
+  },
   "clinicRequests": {
     "title": "Requests",
     "subtitle": "User aesthetic treatment requests",
-    "status": {"new": "New", "offered": "Offer Sent", "expired": "Expired", "unknown": "Unknown"},
-    "stats": {"total": "Total Requests", "newRequests": "New Requests", "offeredRequests": "Offered", "expiredRequests": "Expired"},
-    "filter": {"allStatuses": "All Statuses", "allProcedures": "All Procedures"},
+    "status": {
+      "new": "New",
+      "offered": "Offer Sent",
+      "expired": "Expired",
+      "unknown": "Unknown"
+    },
+    "stats": {
+      "total": "Total Requests",
+      "newRequests": "New Requests",
+      "offeredRequests": "Offered",
+      "expiredRequests": "Expired"
+    },
+    "filter": {
+      "allStatuses": "All Statuses",
+      "allProcedures": "All Procedures"
+    },
     "searchPlaceholder": "Search requests...",
     "noRequests": "No Requests Found",
     "noRequestsDesc": "No requests match your search criteria.",
@@ -536,11 +557,27 @@
     "more": "more",
     "daysAgo": "days ago",
     "submitOffer": "Submit Offer",
-    "enlargedPhoto": "Enlarged photo"
+    "enlargedPhoto": "Enlarged photo",
+    "slaCountdown": "24h SLA",
+    "slaExpired": "Expired",
+    "offerTypeAuto": "Auto offer sent",
+    "offerTypeManual": "Manual offer",
+    "offerTypeSlaDefault": "System sent automatic offer"
   },
   "clinicDashboard": {
-    "menu": {"dashboard": "Dashboard", "requests": "Requests", "offers": "Offers", "profile": "Profile", "membership": "Membership"},
-    "stats": {"totalRequests": "Total Requests", "activeOffers": "Active Offers", "acceptedOffers": "Accepted Offers", "responseRate": "Response Rate"},
+    "menu": {
+      "dashboard": "Dashboard",
+      "requests": "Requests",
+      "offers": "Offers",
+      "profile": "Profile",
+      "membership": "Membership"
+    },
+    "stats": {
+      "totalRequests": "Total Requests",
+      "activeOffers": "Active Offers",
+      "acceptedOffers": "Accepted Offers",
+      "responseRate": "Response Rate"
+    },
     "welcome": "Welcome, {{name}}!",
     "clinic": "Clinic",
     "today": "Today",
@@ -557,7 +594,12 @@
     "pending": "Pending"
   },
   "requestDetails": {
-    "status": {"active": "Active", "closed": "Completed", "cancelled": "Cancelled", "unknown": "Unknown"},
+    "status": {
+      "active": "Active",
+      "closed": "Completed",
+      "cancelled": "Cancelled",
+      "unknown": "Unknown"
+    },
     "acceptSuccess": "You accepted {{clinicName}}'s offer!",
     "acceptError": "An error occurred while accepting the offer.",
     "rejectSuccess": "You rejected {{clinicName}}'s offer.",
@@ -581,8 +623,39 @@
     "accept": "Accept",
     "reject": "Reject",
     "contactClinic": "Contact Clinic",
+    "priceLocked": "Price locked (cannot increase)",
     "enlargedPhoto": "Enlarged photo",
     "photoSignError": "Failed to generate signed links for photos. Showing original URLs."
+  },
+  "procedureCategories": {
+    "searchPlaceholder": "Search procedure (e.g. hair transplant, laser)...",
+    "categories": {
+      "medikal_estetik": "Medical Aesthetics – Injectables & Fillers",
+      "cilt_dermatoloji": "Skin & Dermatology – Laser / Peeling / Treatments",
+      "sac_kas": "Hair & Brow – Transplant and Treatments",
+      "dis": "Dental – Aesthetics & Treatment",
+      "yuz_cerrahi": "Facial Surgery – Plastic Surgery",
+      "gogus_cerrahi": "Breast Surgery",
+      "vucut_cerrahi": "Body Surgery & Contouring",
+      "ameliyatsiz_incelme": "Non-Surgical Weight Loss & Body Contouring",
+      "kadin_sagligi": "Women's Health – Genital Aesthetics",
+      "erkek_sagligi": "Men's Health – Andrology Aesthetics"
+    },
+    "paramTypes": {
+      "bolge": "Area",
+      "seans": "Sessions",
+      "ml": "ML",
+      "ip_sayisi": "Number of threads",
+      "seviye": "Level",
+      "adet": "Count",
+      "greft_araligi": "Graft range",
+      "paket": "Package",
+      "sac_uzunlugu": "Hair length",
+      "plak_paket": "Aligner package",
+      "dis_tipi": "Tooth type",
+      "taraf": "Side",
+      "implant_tipi": "Implant type"
+    }
   },
   "errorBoundary": {
     "title": "An unexpected error occurred",
@@ -623,14 +696,23 @@
     "additionalDetails": "Additional Details",
     "descriptionPlaceholder": "Additional information about treatment, your expectations, special requests...",
     "importantInfo": "Important Information",
-    "requestActive": "Clinics can send offers as long as your request is active.",
-    "onlyCertified": "Only certified and approved clinics can send offers.",
+    "requestActive": "Your request will remain active for 7 days.",
     "photosEncrypted": "Your photos are securely encrypted and stored.",
     "notifications": "You will be notified when new offers arrive.",
     "allCountriesInfo": "You will receive offers from all countries. More options!",
     "cancel": "Cancel",
     "submitRequest": "Create Request",
-    "submitAllCountries": "Send to All Countries"
+    "submitAllCountries": "Send to All Countries",
+    "mlOption": "Select ML",
+    "selectMl": "Select",
+    "photoRequiredForProcedure": "For this procedure you must upload at least 3 photos.",
+    "photoRequiredMinThree": "For this procedure you must upload at least 3 photos.",
+    "photoOptional": "Optional.",
+    "photoNotAllowed": "Photo upload is not allowed for this procedure.",
+    "clickToSelectPhotos": "Select files or drag here",
+    "photosSelected": "photo(s) selected",
+    "hintMl": "Select ml for lip filler (1, 2 or 3 ml)",
+    "hintPhotoRequired": "Upload at least 3 photos for this procedure"
   },
   "userDashboard": {
     "welcome": "Welcome, {{name}}",
@@ -669,14 +751,20 @@
         "description": "Create a new request to get price quotes from clinics."
       },
       "guide": {
-        "step1": { "title": "Choose procedure", "desc": "Pick treatments like acne, hair transplant, etc." },
-        "step2": { "title": "Add photos", "desc": "Upload photos to receive more accurate quotes." },
-        "step3": { "title": "Select countries", "desc": "Choose the countries to receive offers from." }
+        "step1": {
+          "title": "Choose procedure",
+          "desc": "Pick treatments like acne, hair transplant, etc."
+        },
+        "step2": {
+          "title": "Select countries",
+          "desc": "Choose the countries to receive offers from."
+        },
+        "step3": {
+          "title": "Get Transparent Price",
+          "desc": "Receive transparent and clear price offers from clinics."
+        }
       }
     }
-  },
-  "priceRequest": {
-    "title": "Create Request"
   },
   "common": {
     "loading": "Loading...",
@@ -784,6 +872,14 @@
       "cta": "Get Free Quote",
       "learnMore": "Learn More"
     },
+    "heroStats": {
+      "clinics": "Partner Clinics",
+      "patients": "Happy Clients",
+      "procedures": "Aesthetic Procedures",
+      "netPrice": "Price Guarantee",
+      "instantOffer": "Instant Offer",
+      "anonymousSharing": "Anonymous Sharing"
+    },
     "features": {
       "title": "Why Choose",
       "subtitle": "Experience the future of aesthetic medicine and meet our innovative platform",
@@ -810,6 +906,14 @@
       "support": {
         "title": "24/7 Support",
         "description": "We are always with you. Get instant support for your questions."
+      },
+      "fixedPrice": {
+        "title": "Fixed Price",
+        "description": "When an offer is made, the amount is locked. It cannot be increased later."
+      },
+      "locationFilter": {
+        "title": "City/Country Filtered Requests",
+        "description": "You only receive offers from clinics in the location you selected."
       },
       "cta": {
         "title": "Get Started Now",
@@ -884,6 +988,9 @@
     "allCountriesInfo": "You will receive offers from clinics in all countries",
     "submitAllCountries": "Get Quotes from All Countries"
   },
+  "request": {
+    "title": "Create Request"
+  },
   "offers": {
     "title": "Offers",
     "receivedOffers": "Received Offers",
@@ -898,6 +1005,7 @@
   },
   "priceRequest": {
     "title": "Get Price Quote",
+    "procedure": "Select Procedure",
     "selectProcedure": "Select Procedure",
     "chooseProcedure": "Choose procedure",
     "uploadPhotos": "Upload Photos",
@@ -910,13 +1018,23 @@
     "fileFormatOptional": "Optional: JPG, PNG, max 10MB each",
     "uploadedPhotos": "Uploaded Photos",
     "selectCountries": "Select Countries",
+    "selectCountriesHint": "Select countries you want to receive offers from",
     "chooseCountries": "Select countries you want to get quotes from",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "selected": "Selected",
+    "country": "country",
     "selectedCountries": "Selected",
     "countriesText": "countries",
     "allCountries": "All countries",
+    "selectCities": "Select Cities",
+    "istanbulRegion": "Istanbul and Surrounding Cities",
+    "city": "city",
     "age": "Age",
+    "agePlaceholder": "Enter your age",
     "enterAge": "Enter your age",
     "gender": "Gender",
+    "selectGender": "Select gender",
     "chooseGender": "Select gender",
     "female": "Female",
     "male": "Male",
@@ -925,14 +1043,28 @@
     "additionalDetails": "Additional Details",
     "descriptionPlaceholder": "Additional information about treatment, your expectations, special requests...",
     "importantInfo": "Important Information",
-    "requestActive": "Your request will remain active for 30 days",
-    "onlyCertified": "You will only receive offers from certified clinics",
+    "requestActive": "Your request will remain active for 7 days.",
     "photosEncrypted": "Your photos are stored encrypted",
     "notifications": "You will receive notifications when new offers arrive",
     "allCountriesInfo": "You will receive offers from clinics in all countries",
     "cancel": "Cancel",
-    "submitRequest": "Submit Request",
-    "submitAllCountries": "Get Quotes from All Countries",
+    "submitRequest": "Create Request",
+    "submitAllCountries": "Send to All Countries",
+    "submitting": "Submitting...",
+    "missingFieldsTitle": "Missing information:",
+    "loginRequired": "Please log in to create a request.",
+    "submitError": "Server error while submitting request. Please try again later.",
+    "hintProcedure": "Select procedure",
+    "hintCountries": "Select at least one country",
+    "hintCitiesTR": "Select city for Turkey",
+    "hintProcedureParams": "Please fill in area/sessions etc. for the selected procedure",
+    "noResults": "No results found",
+    "procedureOptions": "Procedure options",
+    "selectOption": "Select",
+    "hintAge": "Enter your age",
+    "hintAgeUnder18": "Users under 18 cannot create requests",
+    "ageUnder18Error": "Users under 18 cannot create requests.",
+    "hintGender": "Select gender",
     "additionalNotes": "Additional Notes",
     "addAdditionalInfo": "Add additional information...",
     "costBreakdown": "Cost Breakdown",
@@ -955,6 +1087,13 @@
   },
   "clinic": {
     "dashboard": "Clinic Dashboard",
+    "messages": "Messages",
+    "chatWithPatients": "Chat with your patients",
+    "noConversations": "No conversations yet",
+    "typeMessage": "Type your message...",
+    "translationEnabled": "Translation enabled",
+    "selectConversation": "Select a conversation",
+    "choosePatient": "Choose a patient from the list to chat",
     "applicationTitle": "Clinic Application",
     "applicationSuccess": "Your application has been submitted successfully! We will contact you soon.",
     "clinicName": "Clinic Name",
@@ -965,7 +1104,6 @@
     "submitApplication": "Submit Application",
     "requests": "Incoming Requests",
     "offers": "My Offers",
-    "messages": "Messages",
     "profileTitle": "Profile",
     "profileSubtitle": "Manage your clinic information",
     "membershipTitle": "Membership",
@@ -1352,10 +1490,16 @@
     "documents": "Documents",
     "photos": "Photos",
     "specialtyAreas": "Specialty Areas",
+    "specialtiesSameAsPrices": "Fixed Prices (Automatic Prices) only allow you to set prices for procedures in this list.",
     "certifications": "Certifications",
     "languages": "Languages",
     "membership": "Membership",
     "manageMembership": "Manage your membership plan",
+    "quotaUnlimited": "Unlimited",
+    "quotaOffers": "offers",
+    "quotaUsedThisMonth": "Offers used this month",
+    "quotaIncludesAutoManualSLA": "Includes auto, manual and SLA offers",
+    "renewalDate": "Renewal date",
     "downloadInvoice": "Download Invoice",
     "upgradePlan": "Upgrade Plan",
     "professionalPlan": "Professional Plan",
@@ -1409,7 +1553,7 @@
     "daysLeft": "days left"
   },
   "footer": {
-    "description": "We connect patients with certified aesthetic clinics worldwide.",
+    "description": "We bring together people seeking change with certified aesthetic clinics worldwide.",
     "support": "Support",
     "legal": "Legal",
     "contact": "Contact",
@@ -1422,6 +1566,55 @@
     "cookies": "Cookie Policy"
   },
   "legal": {
+    "clickwrap": {
+      "acceptAll": "I accept the Terms & Policies.",
+      "termsPrivacy": "I have read and agree to the Terms of Service, Privacy Notice and Notice at Collection.",
+      "explicitConsent": "I explicitly consent to the processing and sharing of my sensitive/health-related data (including procedure request details and photos, if provided) with matched clinics for the purpose of obtaining quotes and communicating.",
+      "ageGate": "I confirm I am 18+ years old.",
+      "legalPage": "Terms & Policies"
+    },
+    "clickwrapClinic": {
+      "acceptAll": "I accept the Terms & Policies.",
+      "clinicAgreement": "I have read and accept the Clinic Provider Agreement (licensing, compliance, 24h SLA, USD pricing).",
+      "dataSecurity": "I have read and accept the Data Use & Security Addendum."
+    },
+    "medicalDisclaimer": "Estyi does not provide medical advice or medical services. Quotes are provided by clinics. In emergencies, contact local emergency services.",
+    "pages": {
+      "noticeAtCollection": "Notice at Collection",
+      "consent": "Explicit Sensitive/Health Data Consent",
+      "clinicAgreement": "Clinic Provider Agreement",
+      "dataSecurityAddendum": "Data Use & Security Addendum",
+      "dmca": "DMCA",
+      "medicalDisclaimer": "Medical Disclaimer"
+    },
+    "noticeAtCollectionIntro": "This notice summarizes how Estyi collects and uses your personal and sensitive data. Please read before signing up or creating a request.",
+    "consentIntro": "Your explicit consent is required for the processing of your sensitive and health-related data (request details, photos, etc.) with matched clinics solely for obtaining quotes and communication.",
+    "clinicAgreementIntro": "As a clinic you must accept the Clinic Provider Agreement before activating your profile and sending offers. It includes licensing warranty, compliance obligations, Estyi is not a provider, indemnity, 24h SLA rule, and USD pricing obligations.",
+    "dataSecurityAddendumIntro": "Clinics may use user data only for quote and communication purposes; no resale. Security measures and retention/deletion policies apply.",
+    "dmcaIntro": "DMCA compliance. Designated agent details for copyright infringement notices [placeholder].",
+    "medicalDisclaimerIntro": "Estyi is not a healthcare provider and does not provide medical advice or medical services. All quotes are provided by clinics. In emergencies, contact local emergency services.",
+    "full": {
+      "pageTitle": "Terms & Policies",
+      "pageSubtitle": "All legal documents in one place: user and clinic obligations.",
+      "tocTitle": "Contents",
+      "lastUpdated": "Last updated: February 2026. Estyi is a US-based technology intermediary platform; it is not a healthcare provider.",
+      "termsTitle": "1. Terms of Service",
+      "termsContent": "By using the Estyi platform you agree to the following terms.\n\nEstyi is an intermediary technology platform that matches aesthetic treatment requests with certified clinics. Estyi is not a healthcare provider and does not provide medical advice or medical services. All quotes and medical information are provided by clinics.\n\nThe service is provided \"as is.\" To the maximum extent permitted by law, Estyi is not liable for treatment outcomes, clinic practices, or third-party conduct. Disputes are subject to mediation first, then courts as applicable; arbitration and class-action waiver may apply per US standards.",
+      "privacyTitle": "2. Privacy Policy",
+      "privacyContent": "Your personal data (email, contact details, request details, photos) is stored with secure encryption and used only for service delivery, matching, and legal obligations.\n\nYour data is shared only with matched and approved clinics for the purpose of obtaining quotes and communication; no marketing or sale to third parties. Retention and deletion policies comply with applicable law. Your rights of access, objection, and data portability are preserved.",
+      "noticeAtCollectionTitle": "3. Notice at Collection",
+      "noticeAtCollectionContent": "Before you sign up or create a request, you should know what data we collect.\n\nWe collect: identity and contact information, request details (procedure type, country/city preferences, age, gender), and if provided, photos and notes. This data is processed to obtain quotes, match you with clinics, and communicate. Legal basis and retention periods are set out in the Privacy Policy.",
+      "consentTitle": "4. Explicit Sensitive / Health Data Consent",
+      "consentContent": "Your explicit consent is required for the processing of your sensitive and health-related data (request details, photos, notes).\n\nBy agreeing, you expressly consent to the processing and sharing of this data with matched clinics solely for the purpose of providing you with quotes and communication. You may withdraw consent later; withdrawal will be handled in accordance with our retention policy.",
+      "ageGateTitle": "5. Age 18 and Over",
+      "ageGateContent": "Estyi services are for users aged 18 and over. By signing up or creating a request you confirm that you are at least 18 years old and accept this requirement. Consent to processing and sharing of your sensitive data is also covered under Terms & Policies. Users under 18 may not use the platform.",
+      "medicalDisclaimerTitle": "6. Medical Disclaimer",
+      "medicalDisclaimerContent": "Estyi is not a healthcare provider and does not provide medical advice or medical services.\n\nAll quotes, prices, and medical information you see on the platform are provided by clinics. You should consult a healthcare provider in person before making decisions. In emergencies, contact local emergency services.",
+      "clinicAgreementTitle": "7. Clinic Provider Agreement",
+      "clinicAgreementContent": "As a clinic you must accept this agreement before activating your profile and sending offers.\n\nLicensing and compliance: The clinic represents that it holds valid licenses, certificates, and complies with local law. Estyi endeavours to verify this information but the ultimate responsibility lies with the clinic.\n\nEstyi's role: Estyi is not an agent or healthcare provider; it only facilitates matching between users and clinics via technology. The clinic is responsible for treatment, pricing, and medical decisions.\n\nIndemnity: The clinic agrees to indemnify Estyi for claims arising from use of the platform, the clinic's own practices, or breaches.\n\n24-hour SLA: A response must be sent within 24 hours for each request, or a predefined default offer will be sent automatically. Breach of this rule may result in sanctions related to subscription and access.\n\nPricing: All offers are in USD. After an offer is sent for a request, the price for that request cannot be increased (price is locked).\n\nSubscription and quota: Monthly request quotas apply according to your plan; overage may result in additional fees or restrictions.",
+      "dataSecurityTitle": "8. Data Use & Security Addendum",
+      "dataSecurityContent": "Clinics may use user data accessed through the platform only for the purpose of providing quotes and communication.\n\nProhibitions: Use of user data for marketing, resale, or off-platform purposes is prohibited. Data must be processed only within the secure platform environment; unnecessary copying or sharing with third parties is prohibited.\n\nSecurity: Access, encryption, and access logs are managed in accordance with applicable law. In the event of a data breach, notification and required steps will be taken in accordance with Estyi policies.\n\nRetention and deletion: User data is retained only as long as necessary; deletion requests and retention periods are subject to the Privacy Policy and data processing agreements."
+    },
     "help": {
       "title": "Help Center",
       "description": "How can we help you? You can reach us through the contact channels below.",
@@ -1512,7 +1705,6 @@
       "dataCollected": {
         "title": "Data Collected",
         "email": "Email address and contact information",
-        "photos": "Pre-treatment photos",
         "preferences": "Treatment preferences and budget information",
         "clinicInfo": "Clinic information and certificates"
       },
@@ -1526,11 +1718,6 @@
         "title": "Data Sharing",
         "clinics": "Shared only with approved clinics",
         "noMarketing": "Not shared for marketing purposes"
-      },
-      "retention": {
-        "title": "Data Retention",
-        "photos": "Photos are stored for 2 years",
-        "clinicDocs": "Clinic documents are stored for 5 years"
       },
       "rights": {
         "title": "User Rights",
@@ -1681,7 +1868,10 @@
     "nailProcedures": "Nail Procedures",
     "hairColoring": "Hair Coloring",
     "hairProsthesis": "Hair Prosthesis",
-    "otherHairProcedures": "Other Hair Procedures"
+    "otherHairProcedures": "Other Hair Procedures",
+    "otherDental": "Other Dental Procedures",
+    "otherFacial": "Other Facial Procedures",
+    "otherBody": "Other Body Procedures"
   },
   "countries": {
     "turkey": "Turkey",

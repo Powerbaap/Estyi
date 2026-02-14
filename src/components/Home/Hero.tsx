@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Play, Sparkles, Heart, Star } from 'lucide-react';
+import { Play, Sparkles, Heart, Star, ShieldCheck, Zap, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import { useAuth } from '../../contexts/AuthContext';
@@ -11,11 +11,7 @@ const Hero: React.FC = () => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
-  const [showPlayMessage, setShowPlayMessage] = useState(false);
-
-  const playMessage = i18n.language?.startsWith('en')
-    ? "We’re here to draw every eye to you 😊"
-    : "Her bakış sende toplansın diye buradayız 😊";
+  
 
   const handlePriceRequestClick = () => {
     // Kullanıcı metadata'sından rolü al
@@ -110,45 +106,52 @@ const Hero: React.FC = () => {
 
             </div>
 
-            {/* Video Placeholder + Click Message */}
+            {/* Video Placeholder (click message removed) */}
             <div
               className="relative inline-block group"
-              onClick={() => setShowPlayMessage(prev => !prev)}
             >
               <div className="w-24 h-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:shadow-3xl transform hover:scale-110 transition-all duration-500 group-hover:rotate-12">
                 <Play className="w-10 h-10 text-white ml-1" />
               </div>
               <div className="absolute -inset-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full opacity-20 animate-ping group-hover:animate-pulse"></div>
               <div className="absolute -inset-12 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full opacity-10 animate-pulse"></div>
-
-              {showPlayMessage && (
-                <div className="mt-6 flex justify-center">
-                  <div className="inline-block px-6 py-4 rounded-2xl bg-white/80 backdrop-blur-md shadow-xl border border-white/50">
-                    <p className="text-lg md:text-xl font-semibold text-gray-900">
-                      {playMessage}
-                    </p>
-                  </div>
-                </div>
-              )}
+              
             </div>
           </div>
 
-          {/* Enhanced Stats */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-center group">
-              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">500+</div>
-              <div className="text-gray-600 font-medium">{t('home.features.secure.title')}</div>
-              <div className="w-16 h-1 bg-gradient-to-r from-purple-500 to-pink-500 mx-auto mt-3 rounded-full"></div>
+          {/* Özellikler: Fiyat Güvencesi, Anında Teklif, Anonim Paylaşım */}
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            {/* Fiyat Güvencesi */}
+            <div className="relative group p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="p-3 bg-white/60 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <ShieldCheck className="w-8 h-8 text-purple-600" />
+                </div>
+                <div className="text-gray-700 font-semibold text-lg tracking-wide text-center">{t('home.heroStats.netPrice')}</div>
+              </div>
             </div>
-            <div className="text-center group">
-              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-pink-600 to-blue-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">10K+</div>
-              <div className="text-gray-600 font-medium">{t('common.success')} {t('auth.patient')}</div>
-              <div className="w-16 h-1 bg-gradient-to-r from-pink-500 to-blue-500 mx-auto mt-3 rounded-full"></div>
+
+            {/* Anında Teklif */}
+            <div className="relative group p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-blue-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="p-3 bg-white/60 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <Zap className="w-8 h-8 text-pink-600" />
+                </div>
+                <div className="text-gray-700 font-semibold text-lg tracking-wide text-center">{t('home.heroStats.instantOffer')}</div>
+              </div>
             </div>
-            <div className="text-center group">
-              <div className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3 group-hover:scale-110 transition-transform duration-300">50+</div>
-              <div className="text-gray-600 font-medium">{t('requests.procedure')}</div>
-              <div className="w-16 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto mt-3 rounded-full"></div>
+
+            {/* Anonim Paylaşım */}
+            <div className="relative group p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+              <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="relative z-10 flex flex-col items-center">
+                <div className="p-3 bg-white/60 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <EyeOff className="w-8 h-8 text-blue-600" />
+                </div>
+                <div className="text-gray-700 font-semibold text-lg tracking-wide text-center">{t('home.heroStats.anonymousSharing')}</div>
+              </div>
             </div>
           </div>
         </div>

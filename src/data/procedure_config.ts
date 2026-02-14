@@ -1,0 +1,35 @@
+import type { PhotoPolicy } from '../types';
+
+export interface ProcedureConfigItem {
+  procedure_id: string;
+  name_key?: string;
+  photo_policy: PhotoPolicy;
+  required_params?: Record<string, { type?: string; required?: boolean; min?: number; max?: number; options?: string[] }>;
+}
+
+/** Procedure-level photo and param rules. Not all procedures require photos. */
+export const procedureConfig: ProcedureConfigItem[] = [
+  { procedure_id: 'abdominoplasty', name_key: 'procedures.abdominoplasty', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'acne_treatment', name_key: 'procedures.acneTreatment', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'anti_aging', name_key: 'procedures.antiAging', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'leg_aesthetics', name_key: 'procedures.legAesthetics', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'hip_aesthetics', name_key: 'procedures.hipAesthetics', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'botox', name_key: 'procedures.botox', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'height_surgery', name_key: 'procedures.heightSurgery', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'rhinoplasty', name_key: 'procedures.rhinoplasty', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'chin_aesthetics', name_key: 'procedures.chinAesthetics', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'skin_rejuvenation', name_key: 'procedures.skinRejuvenation', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'lip_filler', name_key: 'procedures.lipFiller', photo_policy: 'optional', required_params: { ml: { type: 'number', required: true, min: 0.5, max: 5, options: ['1', '2', '3'] } } },
+  { procedure_id: 'arm_lift', name_key: 'procedures.armLift', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'hair_transplant', name_key: 'procedures.hairTransplant', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'beard_transplant', name_key: 'procedures.beardTransplant', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'facelift', name_key: 'procedures.faceLift', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'facial_contouring', name_key: 'procedures.facialContouring', photo_policy: 'required', required_params: {} },
+  { procedure_id: 'other_dental', name_key: 'procedures.otherDental', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'other_facial', name_key: 'procedures.otherFacial', photo_policy: 'optional', required_params: {} },
+  { procedure_id: 'other_body', name_key: 'procedures.otherBody', photo_policy: 'optional', required_params: {} },
+];
+
+export const procedureConfigMap: Record<string, ProcedureConfigItem> = Object.fromEntries(
+  procedureConfig.map(p => [p.procedure_id, p])
+);

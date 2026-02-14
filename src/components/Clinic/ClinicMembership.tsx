@@ -2,88 +2,70 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Crown, Check, CreditCard, Calendar, TrendingUp, Star, Zap, Shield } from 'lucide-react';
 
+// Estyi spec: Planlar aylık teklif kotasına göre (auto + manual + sla_default hepsi sayılır)
 const ClinicMembership: React.FC = () => {
   const { t } = useTranslation();
   const [currentPlan] = useState({
-    name: 'Professional',
-    price: 299,
+    name: 'Plan 1',
+    price: 10,
+    quota: 100,
     billingCycle: 'monthly',
-    startDate: new Date('2024-12-01'),
-    endDate: new Date('2025-12-01'),
-    autoRenew: true,
-    features: [
-      'Unlimited patient requests',
-      'Advanced analytics',
-      'Priority support',
-      'Multi-language translation',
-      'Document storage (10GB)',
-      'Video consultations'
-    ]
+    startDate: new Date('2025-01-01'),
+    endDate: new Date('2025-02-01'),
+    autoRenew: true
   });
+
+  const quotaUsed = 42;
+  const quotaTotal = currentPlan.quota;
+  const quotaPercentage = quotaTotal > 0 ? Math.min(100, (quotaUsed / quotaTotal) * 100) : 0;
 
   const plans = [
     {
-      name: 'Basic',
-      price: 99,
-      billingCycle: 'monthly',
-      description: 'Perfect for small clinics starting out',
+      name: 'Plan 1',
+      price: 10,
+      quota: 100,
+      quotaLabel: '0–100 teklif/ay',
+      description: 'Küçük klinikler için',
       features: [
-        'Up to 50 patient requests/month',
-        'Basic analytics',
-        'Email support',
-        'Document storage (2GB)',
-        'Standard profile listing'
+        'Ayda 100 teklif hakkı (otomatik + manuel + SLA)',
+        'Temel talep paneli',
+        'E-posta destek'
       ],
-      limitations: [
-        'Limited to 2 specialties',
-        'No video consultations',
-        'Basic translation only'
-      ],
+      limitations: [] as string[],
       popular: false
     },
     {
-      name: 'Professional',
-      price: 299,
-      billingCycle: 'monthly',
-      description: 'Most popular for growing clinics',
+      name: 'Plan 2',
+      price: 18,
+      quota: 200,
+      quotaLabel: '100–200 teklif/ay',
+      description: 'Büyüyen klinikler için',
       features: [
-        'Unlimited patient requests',
-        'Advanced analytics',
-        'Priority support',
-        'Multi-language translation',
-        'Document storage (10GB)',
-        'Video consultations',
-        'Featured profile listing',
-        'Custom branding'
+        'Ayda 200 teklif hakkı',
+        'Gelişmiş filtreler',
+        'Öncelikli destek'
       ],
-      limitations: [],
+      limitations: [] as string[],
       popular: true
     },
     {
-      name: 'Enterprise',
-      price: 599,
-      billingCycle: 'monthly',
-      description: 'For large medical centers',
+      name: 'Plan 3',
+      price: 40,
+      quota: -1,
+      quotaLabel: 'Sınırsız teklif/ay',
+      description: 'Yoğun hacim için',
       features: [
-        'Everything in Professional',
-        'Dedicated account manager',
-        'Custom integrations',
-        'White-label solution',
-        'Unlimited document storage',
-        'Advanced reporting',
-        'API access',
-        'Multi-clinic management'
+        'Sınırsız teklif',
+        'Tüm özellikler',
+        'Öncelikli destek'
       ],
-      limitations: [],
+      limitations: [] as string[],
       popular: false
     }
   ];
 
   const usage = {
-    requests: { current: 156, limit: 'Unlimited', percentage: 0 },
-    storage: { current: 3.2, limit: 10, percentage: 32 },
-    translations: { current: 89, limit: 'Unlimited', percentage: 0 },
-    videoConsultations: { current: 12, limit: 50, percentage: 24 }
+    offers: { current: quotaUsed, limit: quotaTotal === -1 ? '∞' : String(quotaTotal), percentage: quotaPercentage }
   };
 
   const getDaysUntilRenewal = () => {
@@ -119,10 +101,12 @@ const ClinicMembership: React.FC = () => {
               <Crown className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold">{currentPlan.name} {t('clinicDashboard.professionalPlan')}</h2>
+              <h2 className="text-2xl font-bold">{currentPlan.name}</h2>
               <p className="text-blue-100">
-                ${currentPlan.price}/{t('clinicDashboard.monthly')} • 
-                {currentPlan.autoRenew ? ` ${t('clinicDashboard.autoRenewal')}` : ` ${t('clinicDashboard.manualRenewal')}`}
+                ${currentPlan.price}/{t('clinicDashboard.monthly')} • {currentPlan.quota === -1 ? t('clinicDashboard.quotaUnlimited') : `0–${currentPlan.quota} ${t('clinicDashboard.quotaOffers')}`}
+              </p>
+              <p className="text-sm text-blue-200 mt-1">
+                {currentPlan.autoRenew ? t('clinicDashboard.autoRenewal') : t('clinicDashboard.manualRenewal')}
               </p>
             </div>
           </div>
@@ -134,70 +118,31 @@ const ClinicMembership: React.FC = () => {
         </div>
       </div>
 
-      {/* Usage Statistics */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Teklif kotası (Estyi: auto + manual + sla_default hepsi sayılır) */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.requestUsage')}</h3>
+            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.quotaUsedThisMonth')}</h3>
             <TrendingUp className="w-4 h-4 text-blue-600" />
           </div>
           <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">{usage.requests.current}</span>
-            <span className="text-sm text-gray-500">/ {usage.requests.limit}</span>
+            <span className="text-2xl font-bold text-gray-900">{quotaUsed}</span>
+            <span className="text-sm text-gray-500">/ {quotaTotal === -1 ? '∞' : quotaTotal} {t('clinicDashboard.quotaOffers')}</span>
           </div>
           <div className="mt-2">
             <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${usage.requests.percentage}%` }}></div>
+              <div className="bg-blue-600 h-2 rounded-full" style={{ width: `${quotaTotal === -1 ? 0 : usage.offers.percentage}%` }}></div>
             </div>
           </div>
+          <p className="text-xs text-gray-500 mt-1">{t('clinicDashboard.quotaIncludesAutoManualSLA')}</p>
         </div>
-
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.storage')}</h3>
-            <Shield className="w-4 h-4 text-green-600" />
+            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.renewalDate')}</h3>
+            <Calendar className="w-4 h-4 text-green-600" />
           </div>
-          <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">{usage.storage.current}GB</span>
-            <span className="text-sm text-gray-500">/ {usage.storage.limit}GB</span>
-          </div>
-          <div className="mt-2">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-green-600 h-2 rounded-full" style={{ width: `${usage.storage.percentage}%` }}></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.translation')}</h3>
-            <Zap className="w-4 h-4 text-purple-600" />
-          </div>
-          <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">{usage.translations.current}</span>
-            <span className="text-sm text-gray-500">/ {usage.translations.limit}</span>
-          </div>
-          <div className="mt-2">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-purple-600 h-2 rounded-full" style={{ width: `${usage.translations.percentage}%` }}></div>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium text-gray-600">{t('clinicDashboard.videoConsultation')}</h3>
-            <Star className="w-4 h-4 text-yellow-600" />
-          </div>
-          <div className="flex items-baseline space-x-2">
-            <span className="text-2xl font-bold text-gray-900">{usage.videoConsultations.current}</span>
-            <span className="text-sm text-gray-500">/ {usage.videoConsultations.limit}</span>
-          </div>
-          <div className="mt-2">
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div className="bg-yellow-600 h-2 rounded-full" style={{ width: `${usage.videoConsultations.percentage}%` }}></div>
-            </div>
-          </div>
+          <p className="text-xl font-bold text-gray-900">{currentPlan.endDate.toLocaleDateString()}</p>
+          <p className="text-sm text-gray-500">{getDaysUntilRenewal()} {t('clinicDashboard.daysLeft')}</p>
         </div>
       </div>
 
@@ -237,19 +182,20 @@ const ClinicMembership: React.FC = () => {
                   <span className="text-3xl font-bold text-gray-900">${plan.price}</span>
                   <span className="text-gray-600">/{t('clinicDashboard.monthly')}</span>
                 </div>
-                <p className="text-sm text-gray-600">{plan.description}</p>
+                <p className="text-sm font-medium text-blue-600">{plan.quotaLabel}</p>
+                <p className="text-sm text-gray-600 mt-1">{plan.description}</p>
               </div>
 
               <div className="space-y-3 mb-6">
                 {plan.features.map((feature, index) => (
                   <div key={index} className="flex items-center space-x-2">
-                    <Check className="w-4 h-4 text-green-600" />
+                    <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
                     <span className="text-sm text-gray-700">{feature}</span>
                   </div>
                 ))}
-                {plan.limitations.map((limitation, index) => (
+                {(plan.limitations || []).map((limitation, index) => (
                   <div key={index} className="flex items-center space-x-2 opacity-60">
-                    <div className="w-4 h-4 border border-gray-300 rounded-full"></div>
+                    <div className="w-4 h-4 border border-gray-300 rounded-full flex-shrink-0"></div>
                     <span className="text-sm text-gray-500">{limitation}</span>
                   </div>
                 ))}

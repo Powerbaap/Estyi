@@ -1,9 +1,13 @@
 import React from 'react';
-import { withTranslation, WithTranslation } from 'react-i18next';
 
 type ErrorBoundaryState = { hasError: boolean; error?: Error };
 
-type ErrorBoundaryProps = React.PropsWithChildren & WithTranslation;
+type ErrorBoundaryProps = React.PropsWithChildren;
+
+// Statik metin: i18n yüklenmeden veya hata verirse bile ekran her zaman gösterilir
+const FALLBACK_TITLE = 'Beklenmeyen bir hata oluştu';
+const FALLBACK_DESC = 'Sayfayı yenileyerek devam edebilirsiniz. Hata devam ederse lütfen bize bildirin.';
+const FALLBACK_BTN = 'Sayfayı Yenile';
 
 class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundaryState> {
   constructor(props: ErrorBoundaryProps) {
@@ -16,20 +20,22 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 
   componentDidCatch(error: Error, errorInfo: React.ErrorInfo) {
-    // Basic logging; can be wired to a logging service if needed
     console.error('UI crashed:', error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      const { t } = this.props;
       return (
         <div className="min-h-screen flex items-center justify-center p-6 bg-gray-50">
           <div className="max-w-md w-full bg-white rounded-2xl shadow p-6 text-center">
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">{t('errorBoundary.title')}</h2>
-            <p className="text-sm text-gray-600 mb-4">{t('errorBoundary.description')}</p>
-            <button className="px-4 py-2 bg-blue-600 text-white rounded-lg" onClick={() => location.reload()}>
-              {t('errorBoundary.reload')}
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">{FALLBACK_TITLE}</h2>
+            <p className="text-sm text-gray-600 mb-4">{FALLBACK_DESC}</p>
+            <button
+              type="button"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              onClick={() => window.location.reload()}
+            >
+              {FALLBACK_BTN}
             </button>
           </div>
         </div>
@@ -39,4 +45,4 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
   }
 }
 
-export default withTranslation()(ErrorBoundary);
+export default ErrorBoundary;

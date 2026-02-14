@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useMemo } from 'react';
+import { X, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { TREATMENT_AREAS } from '../../types';
 
 interface PriceRequestModalProps {
   isOpen: boolean;
@@ -11,184 +10,72 @@ interface PriceRequestModalProps {
 
 import { useAuth } from '../../contexts/AuthContext';
 import { requestService } from '../../services/api';
-
-// Photo upload restored as optional
+import { COUNTRY_KEYS, CITY_OPTIONS, TURKISH_CITIES } from '../../data/countriesAndCities';
+import {
+  PROCEDURE_CATEGORIES,
+  getProcedure,
+  filterProcedures,
+  type ProcedureItem,
+  type ProcedureCategory,
+} from '../../data/procedureCategories';
 
 const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, onRequestSubmitted }) => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
 
-
-  // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
     const translation = t(key);
     return translation === key ? fallback : translation;
   };
+
   const [formData, setFormData] = useState({
     procedure: '',
+    procedureKey: '',
+    procedureParams: {} as Record<string, string>,
     countries: [] as string[],
     citiesTR: [] as string[],
     age: '',
     gender: '',
-
-    description: ''
+    description: '',
   });
+  const [procedureSearch, setProcedureSearch] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
 
-  // Get treatment areas in current language with fallback
-  const getTreatmentAreas = () => {
-    const currentLang = i18n.language || 'en';
-    return TREATMENT_AREAS.map(area => ({
-      key: area.key,
-      name: area.name[currentLang as keyof typeof area.name] || area.name.en,
-      description: area.description[currentLang as keyof typeof area.description] || area.description.en
-    }));
+  const selectedProcedure = formData.procedureKey ? getProcedure(formData.procedureKey) : undefined;
+  const hasParams = selectedProcedure && selectedProcedure.params.length > 0;
+  const paramsFilled =
+    !hasParams ||
+    selectedProcedure!.params.every((p) => {
+      const val = formData.procedureParams[p.type];
+      return val != null && val !== '';
+    });
+
+  const getProcedureDisplayName = (proc: ProcedureItem) => {
+    const key = `procedureCategories.procedures.${proc.key}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : proc.name;
+  };
+  const getCategoryDisplayName = (cat: ProcedureCategory) => {
+    const key = `procedureCategories.categories.${cat.key}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : cat.name;
   };
 
-  const treatmentAreas = getTreatmentAreas();
-  
-  // Countries list with translation keys and fallbacks
-  const countryKeys = [
-    // ABD ve Meksika en üstte
-    'usa', 'mexico',
-    'turkey', 'southKorea', 'thailand', 'brazil', 'colombia', 
-    'argentina', 'chile', 'peru', 'venezuela', 'ecuador', 'uruguay', 
-    'paraguay', 'bolivia', 'guyana', 'suriname', 'frenchGuiana',
-    'india', 'singapore', 'malaysia', 'indonesia', 'philippines',
-    'vietnam', 'cambodia', 'laos', 'myanmar', 'bangladesh', 'sriLanka',
-    'nepal', 'bhutan', 'maldives', 'pakistan', 'afghanistan',
-    'russia', 'china', 'canada', 'japan', 'germany', 
-    'unitedKingdom', 'netherlands', 'sweden'
-  ];
-  
-  // Country fallbacks in English
-  const countryFallbacks: { [key: string]: string } = {
-    turkey: 'Turkey',
-    southKorea: 'South Korea',
-    thailand: 'Thailand',
-    brazil: 'Brazil',
-    mexico: 'Mexico',
-    colombia: 'Colombia',
-    argentina: 'Argentina',
-    chile: 'Chile',
-    peru: 'Peru',
-    venezuela: 'Venezuela',
-    ecuador: 'Ecuador',
-    uruguay: 'Uruguay',
-    paraguay: 'Paraguay',
-    bolivia: 'Bolivia',
-    guyana: 'Guyana',
-    suriname: 'Suriname',
-    frenchGuiana: 'French Guiana',
-    india: 'India',
-    singapore: 'Singapore',
-    malaysia: 'Malaysia',
-    indonesia: 'Indonesia',
-    philippines: 'Philippines',
-    vietnam: 'Vietnam',
-    cambodia: 'Cambodia',
-    laos: 'Laos',
-    myanmar: 'Myanmar',
-    bangladesh: 'Bangladesh',
-    sriLanka: 'Sri Lanka',
-    nepal: 'Nepal',
-    bhutan: 'Bhutan',
-    maldives: 'Maldives',
-    pakistan: 'Pakistan',
-    afghanistan: 'Afghanistan',
-    usa: 'United States',
-    russia: 'Russian Federation',
-    china: 'China',
-    canada: 'Canada',
-    japan: 'Japan',
-    germany: 'Germany',
-    unitedKingdom: 'United Kingdom',
-    netherlands: 'Netherlands',
-    sweden: 'Sweden'
-  };
-  
-  // Get translated country names with fallback
-  const getCountryName = (key: string) => {
-    const translation = t(`countries.${key}`);
-    // If translation failed (returns the key), use fallback
-    if (translation === `countries.${key}`) {
-      return countryFallbacks[key] || key;
-    }
-    return translation;
-  };
-  
-  const countries = countryKeys.map(key => ({
-    key,
-    name: getCountryName(key)
-  }));
+  const searchResults = useMemo(() => {
+    const q = procedureSearch.trim().toLowerCase();
+    if (!q) return null;
+    return filterProcedures(procedureSearch);
+  }, [procedureSearch]);
 
-  // Türkiye şehirleri (81 il)
-  const turkishCities = [
-    'Adana','Adıyaman','Afyonkarahisar','Ağrı','Aksaray','Amasya','Ankara','Antalya','Ardahan','Artvin','Aydın',
-    'Balıkesir','Bartın','Batman','Bayburt','Bilecik','Bingöl','Bitlis','Bolu','Burdur','Bursa',
-    'Çanakkale','Çankırı','Çorum','Denizli','Diyarbakır','Düzce',
-    'Edirne','Elazığ','Erzincan','Erzurum','Eskişehir',
-    'Gaziantep','Giresun','Gümüşhane',
-    'Hakkari','Hatay','Iğdır','Isparta','İstanbul','İzmir',
-    'Kahramanmaraş','Karabük','Karaman','Kars','Kastamonu','Kayseri','Kırıkkale','Kırklareli','Kırşehir','Kilis',
-    'Kocaeli','Konya','Kütahya',
-    'Malatya','Manisa','Mardin','Mersin','Muğla','Muş',
-    'Nevşehir','Niğde','Ordu','Osmaniye',
-    'Rize','Sakarya','Samsun','Siirt','Sinop','Sivas','Şanlıurfa','Şırnak',
-    'Tekirdağ','Tokat','Trabzon','Tunceli',
-    'Uşak','Van',
-    'Yalova','Yozgat','Zonguldak'
-  ];
-
-  const istanbulRegionCities = [
-    'İstanbul','Tekirdağ','Kırklareli','Edirne','Çanakkale','Kocaeli','Sakarya'
-  ];
-
-  // City options per country (subset for UI)
-  const cityOptions: Record<string, string[]> = {
-    turkey: turkishCities,
-    // Güney Kore için kapsamlı şehir listesi
-    southKorea: [
-      'Seoul','Busan','Incheon','Daegu','Daejeon','Gwangju','Ulsan','Sejong',
-      'Suwon','Seongnam','Goyang','Yongin','Bucheon','Ansan','Anyang','Cheongju',
-      'Jeonju','Cheonan','Gimhae','Pohang','Gumi','Uijeongbu','Hwaseong','Pyeongtaek',
-      'Jeju','Mokpo','Gunsan','Gwangmyeong','Yangsan','Jinju','Wonju','Chungju',
-      'Sokcho','Gangneung','Paju','Gimpo','Icheon','Asan','Dangjin','Naju','Yeosu',
-      'Andong','Gyeongju','Samcheok','Donghae','Taebaek','Geoje','Tongyeong','Masan',
-      'Suncheon','Jeongeup','Gyeongsan','Miryang','Yeongju','Boryeong','Hongseong','Goesan'
-    ],
-    thailand: ['Bangkok','Chiang Mai','Phuket','Pattaya','Chiang Rai'],
-    brazil: ['São Paulo','Rio de Janeiro','Brasília','Belo Horizonte','Curitiba'],
-    mexico: ['Mexico City','Guadalajara','Monterrey','Puebla','Cancún'],
-    colombia: ['Bogotá','Medellín','Cali','Barranquilla','Cartagena'],
-    germany: ['Berlin','Munich','Hamburg','Frankfurt','Cologne'],
-    // ABD için kapsamlı şehir listesi (eyalet başkentleri + büyük şehirler)
-    usa: [
-      // Büyük şehirler
-      'New York','Los Angeles','Chicago','Houston','Phoenix','Philadelphia','San Antonio','San Diego','Dallas','San Jose',
-      'Austin','Jacksonville','Fort Worth','Columbus','Charlotte','San Francisco','Indianapolis','Seattle','Denver','Washington',
-      'Boston','El Paso','Nashville','Detroit','Oklahoma City','Portland','Las Vegas','Memphis','Louisville','Baltimore',
-      'Milwaukee','Albuquerque','Tucson','Fresno','Mesa','Sacramento','Atlanta','Kansas City','Colorado Springs','Miami',
-      'Raleigh','Omaha','Long Beach','Virginia Beach','Oakland','Minneapolis','Tulsa','Arlington','Tampa','New Orleans',
-      // Eyalet başkentleri (tam liste)
-      'Montgomery','Juneau','Phoenix','Little Rock','Sacramento','Denver','Hartford','Dover','Tallahassee','Atlanta',
-      'Honolulu','Boise','Springfield','Indianapolis','Des Moines','Topeka','Frankfort','Baton Rouge','Augusta','Annapolis',
-      'Boston','Lansing','Saint Paul','Jackson','Jefferson City','Helena','Lincoln','Carson City','Concord','Trenton',
-      'Santa Fe','Albany','Raleigh','Bismarck','Columbus','Oklahoma City','Salem','Harrisburg','Providence','Columbia',
-      'Pierre','Nashville','Austin','Salt Lake City','Montpelier','Richmond','Olympia','Charleston','Madison','Cheyenne'
-    ],
-    unitedKingdom: ['London','Manchester','Birmingham','Edinburgh','Glasgow'],
-    netherlands: ['Amsterdam','Rotterdam','The Hague','Utrecht','Eindhoven'],
-    sweden: ['Stockholm','Gothenburg','Malmö','Uppsala','Västerås'],
-    canada: ['Toronto','Vancouver','Montreal','Calgary','Ottawa'],
-    japan: ['Tokyo','Osaka','Yokohama','Nagoya','Sapporo'],
-    russia: ['Moscow','Saint Petersburg','Novosibirsk','Yekaterinburg','Kazan'],
-    china: ['Beijing','Shanghai','Guangzhou','Shenzhen','Hangzhou'],
-    india: ['Delhi','Mumbai','Bengaluru','Chennai','Hyderabad'],
-    malaysia: ['Kuala Lumpur','George Town','Johor Bahru','Ipoh','Kuching'],
-    singapore: ['Singapore']
-  };
+  const categoriesToShow = searchResults !== null ? null : PROCEDURE_CATEGORIES;
+  
+  // Talep formu ve klinik başvurusu ile aynı ülke/şehir listesi (countriesAndCities)
+  const getCountryName = (key: string) => t(`countries.${key}`) || key;
+  const countries = COUNTRY_KEYS.map(key => ({ key, name: getCountryName(key) }));
+  const turkishCities = TURKISH_CITIES;
+  const istanbulRegionCities = ['İstanbul', 'Tekirdağ', 'Kırklareli', 'Edirne', 'Çanakkale', 'Kocaeli', 'Sakarya'];
+  const cityOptions = CITY_OPTIONS;
 
   const [citiesByCountry, setCitiesByCountry] = useState<Record<string, string[]>>({});
 
@@ -266,7 +153,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   const selectAllCountries = () => {
     setFormData(prev => ({
       ...prev,
-      countries: countryKeys
+      countries: [...COUNTRY_KEYS]
     }));
   };
 
@@ -277,27 +164,34 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     }));
   };
 
-  const isAllSelected = formData.countries.length === countryKeys.length;
+  const isAllSelected = formData.countries.length === COUNTRY_KEYS.length;
 
-  // Submit butonunun devre dışı kalma kontrolü ve kullanıcıya ipuçları
   const isSubmitDisabled = () => {
     const isMissingCities = formData.countries.includes('turkey') && formData.citiesTR.length === 0;
+    const ageValue = formData.age ? parseInt(formData.age, 10) : 0;
+    const isUnder18 = ageValue < 18;
     return (
       !user?.id ||
       !formData.procedure ||
       formData.countries.length === 0 ||
       !formData.age ||
       !formData.gender ||
-      isMissingCities
+      isMissingCities ||
+      !paramsFilled ||
+      isUnder18
     );
   };
 
   const getMissingHints = () => {
     const hints: string[] = [];
     if (!formData.procedure) hints.push(getTranslation('priceRequest.hintProcedure', 'İşlem seçin'));
+    if (hasParams && !paramsFilled)
+      hints.push(getTranslation('priceRequest.hintProcedureParams', 'Seçtiğiniz işlem için bölge/seans vb. alanları doldurun'));
     if (formData.countries.length === 0) hints.push(getTranslation('priceRequest.hintCountries', 'En az bir ülke seçin'));
     if (formData.countries.includes('turkey') && formData.citiesTR.length === 0) hints.push(getTranslation('priceRequest.hintCitiesTR', 'Türkiye için şehir seçin'));
     if (!formData.age) hints.push(getTranslation('priceRequest.hintAge', 'Yaşınızı girin'));
+    const ageValue = formData.age ? parseInt(formData.age, 10) : 0;
+    if (formData.age && ageValue < 18) hints.push(getTranslation('priceRequest.hintAgeUnder18', '18 yaşından küçükler talep oluşturamaz'));
     if (!formData.gender) hints.push(getTranslation('priceRequest.hintGender', 'Cinsiyet seçin'));
     return hints;
   };
@@ -312,17 +206,32 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       return;
     }
     
-    // Photo upload removed; always submit without photos
+    // Yaş kontrolü: 18'den küçükse talep oluşturamaz
+    const ageValue = formData.age ? parseInt(formData.age, 10) : 0;
+    if (ageValue < 18) {
+      setSubmitError(getTranslation('priceRequest.ageUnder18Error', '18 yaşından küçükler talep oluşturamaz.'));
+      setIsSubmitting(false);
+      return;
+    }
+    
     const photoUrls: string[] = [];
     const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
+    const params: Record<string, string | number> = { ...formData.procedureParams };
     const payload = {
       user_id: user?.id,
       procedure: formData.procedure,
+      procedure_key: formData.procedureKey,
       description: formData.description,
       photos: photoUrls,
+      params,
       status: 'active',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
+      age: formData.age ? parseInt(formData.age, 10) : null,
+      gender: formData.gender || null,
+      countries: countriesSelected,
+      citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
+      cities_by_country: citiesByCountry,
     } as any;
 
     try {
@@ -344,12 +253,15 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
       setFormData({
         procedure: '',
+        procedureKey: '',
+        procedureParams: {},
         countries: [],
         citiesTR: [],
         age: '',
         gender: '',
-        description: ''
+        description: '',
       });
+      setProcedureSearch('');
       setIsSubmitting(false);
       onClose();
     } catch (err) {
@@ -389,33 +301,123 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-
-
-
-          {/* Procedure Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.procedure', 'Select Procedure')} *
-            </label>
-            <select
-              required
-              value={formData.procedure}
-              onChange={(e) => setFormData(prev => ({ ...prev, procedure: e.target.value }))}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">{getTranslation('priceRequest.selectProcedure', 'Select procedure')}</option>
-              {treatmentAreas.map((area) => (
-                <option key={area.key} value={area.name}>
-                  {area.name}
-                </option>
-              ))}
-              <option value={getTranslation('procedures.otherDental', 'Other Dental Procedures')}>{getTranslation('procedures.otherDental', 'Other Dental Procedures')}</option>
-              <option value={getTranslation('procedures.otherFacial', 'Other Facial Procedures')}>{getTranslation('procedures.otherFacial', 'Other Facial Procedures')}</option>
-              <option value={getTranslation('procedures.otherBody', 'Other Body Procedures')}>{getTranslation('procedures.otherBody', 'Other Body Procedures')}</option>
-            </select>
+          {/* Medical disclaimer (reinforce before submit) */}
+          <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">
+            {t('legal.medicalDisclaimer')}
           </div>
 
-          
+          {/* Procedure Selection: Arama + Kategorilere göre işlemler */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              {getTranslation('priceRequest.procedure', 'İşlem Seçin')} *
+            </label>
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+              <input
+                type="text"
+                value={procedureSearch}
+                onChange={(e) => setProcedureSearch(e.target.value)}
+                placeholder={t('procedureCategories.searchPlaceholder') || 'İşlem ara (örn. saç ekimi, lazer)...'}
+                className="w-full pl-9 pr-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+              />
+            </div>
+            <div className="max-h-56 overflow-y-auto border border-gray-300 rounded-lg p-2 space-y-2">
+              {searchResults !== null ? (
+                searchResults.length === 0 ? (
+                  <p className="text-sm text-gray-500 py-2">{getTranslation('priceRequest.noResults', 'Sonuç bulunamadı')}</p>
+                ) : (
+                  searchResults.map(({ category, procedure }) => (
+                    <button
+                      key={procedure.key}
+                      type="button"
+                      onClick={() => {
+                        setFormData((prev) => ({
+                          ...prev,
+                          procedureKey: procedure.key,
+                          procedure: getProcedureDisplayName(procedure),
+                          procedureParams: {},
+                        }));
+                      }}
+                      className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                        formData.procedureKey === procedure.key
+                          ? 'bg-blue-100 text-blue-800 font-medium'
+                          : 'hover:bg-gray-100 text-gray-800'
+                      }`}
+                    >
+                      <span className="font-medium">{getProcedureDisplayName(procedure)}</span>
+                      <span className="text-gray-500 ml-1"> — {getCategoryDisplayName(category)}</span>
+                    </button>
+                  ))
+                )
+              ) : (
+                categoriesToShow?.map((cat) => (
+                  <div key={cat.key}>
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-2 py-1 sticky top-0 bg-gray-50 rounded">
+                      {getCategoryDisplayName(cat)}
+                    </p>
+                    {cat.procedures.map((proc) => (
+                      <button
+                        key={proc.key}
+                        type="button"
+                        onClick={() => {
+                          setFormData((prev) => ({
+                            ...prev,
+                            procedureKey: proc.key,
+                            procedure: getProcedureDisplayName(proc),
+                            procedureParams: {},
+                          }));
+                        }}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
+                          formData.procedureKey === proc.key ? 'bg-blue-100 text-blue-800 font-medium' : 'hover:bg-gray-100 text-gray-800'
+                        }`}
+                      >
+                        {getProcedureDisplayName(proc)}
+                      </button>
+                    ))}
+                  </div>
+                ))
+              )}
+            </div>
+            {formData.procedureKey && (
+              <p className="text-xs text-gray-500 mt-1">
+                {getTranslation('priceRequest.selected', 'Seçilen')}: {formData.procedure}
+              </p>
+            )}
+          </div>
+
+          {/* İşlem parametreleri (bölge, seans, ml vb.) — seçilen işlemde varsa zorunlu */}
+          {hasParams && selectedProcedure && (
+            <div className="rounded-xl border-2 border-blue-100 bg-blue-50/50 p-4 space-y-4">
+              <h4 className="text-sm font-semibold text-gray-800">
+                {getTranslation('priceRequest.procedureOptions', 'İşlem seçenekleri')} *
+              </h4>
+              {selectedProcedure.params.map((param) => (
+                <div key={param.type}>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {t(`procedureCategories.paramTypes.${param.type}`) || param.type} *
+                  </label>
+                  <select
+                    required
+                    value={formData.procedureParams[param.type] ?? ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        procedureParams: { ...prev.procedureParams, [param.type]: e.target.value },
+                      }))
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  >
+                    <option value="">{getTranslation('priceRequest.selectOption', 'Seçiniz')}</option>
+                    {param.options.map((opt) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ))}
+            </div>
+          )}
 
           {/* Countries Selection */}
           <div>
@@ -561,18 +563,31 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
           {/* Age */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.age', 'Age')} *
+              {getTranslation('priceRequest.age', 'Age')} * <span className="text-xs text-gray-500">(18 yaş ve üzeri)</span>
             </label>
             <input
               type="number"
               required
               min="18"
-              max="80"
+              max="100"
               value={formData.age}
-              onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value }))}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder={getTranslation('priceRequest.agePlaceholder', 'Enter your age')}
+              onChange={(e) => {
+                const value = e.target.value;
+                const numValue = parseInt(value, 10);
+                if (value === '' || (!isNaN(numValue) && numValue >= 18)) {
+                  setFormData(prev => ({ ...prev, age: value }));
+                }
+              }}
+              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+                formData.age && parseInt(formData.age, 10) < 18 ? 'border-red-500 bg-red-50' : 'border-gray-300'
+              }`}
+              placeholder={getTranslation('priceRequest.agePlaceholder', 'Enter your age (minimum 18)')}
             />
+            {formData.age && parseInt(formData.age, 10) < 18 && (
+              <p className="mt-1 text-sm text-red-600">
+                {getTranslation('priceRequest.ageUnder18Error', '18 yaşından küçükler talep oluşturamaz.')}
+              </p>
+            )}
           </div>
 
           {/* Gender */}
@@ -615,8 +630,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
             <h4 className="font-semibold text-blue-900 mb-2">{getTranslation('priceRequest.importantInfo', 'Important Information')}</h4>
             <ul className="text-sm text-blue-800 space-y-1">
               <li>{getTranslation('priceRequest.requestActive', 'Clinics can send offers as long as your request is active.')}</li>
-              <li>{getTranslation('priceRequest.onlyCertified', 'Only certified and approved clinics can send offers.')}</li>
-              {/* Photo storage info removed */}
               <li>{getTranslation('priceRequest.notifications', 'You will be notified when new offers arrive.')}</li>
               {isAllSelected && (
                 <li className="text-blue-900 font-medium">{getTranslation('priceRequest.allCountriesInfo', 'You will receive offers from all countries. More options!')}</li>

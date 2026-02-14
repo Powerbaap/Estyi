@@ -1,24 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabase';
+import { getProcedure } from '../../data/procedureCategories';
 import { Save, Upload, MapPin, Phone, Mail, Globe, Award, Users, FileText, Camera, X } from 'lucide-react';
 
+// Profil ve Otomatik Fiyatlar aynı kaynağı kullanır: clinics.specialties (procedure key listesi)
+function getSpecialtyDisplayName(key: string, t: (k: string) => string): string {
+  const proc = getProcedure(key);
+  if (proc) {
+    const trKey = `procedureCategories.procedures.${key}`;
+    const translated = t(trKey);
+    return translated && translated !== trKey ? translated : proc.name;
+  }
+  return key;
+}
+
 const ClinicProfile: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [profileData, setProfileData] = useState({
-    clinicName: 'Istanbul Aesthetic Center',
-    address: 'Nişantaşı, Teşvikiye Cd. No:123, 34365 Şişli/İstanbul',
-    phone: '+90 212 555 0123',
-    email: 'info@istanbulaesthetic.com',
-    website: 'https://www.istanbulaesthetic.com',
-    branchCity: 'İstanbul',
-    specialties: ['Rhinoplasty', 'Hair Transplant', 'Breast Surgery', 'Face Lift'],
-    teamDescription: 'Our experienced team of 15+ medical professionals has been serving international patients for over 10 years.',
-    aboutUs: 'Istanbul Aesthetic Center is a leading medical tourism destination specializing in cosmetic and reconstructive surgery. We combine advanced medical technology with Turkish hospitality to provide world-class care.',
-    languages: ['Turkish', 'English', 'Arabic', 'Russian'],
-    certifications: ['JCI Accredited', 'ISO 9001:2015', 'Turkish Ministry of Health'],
-    workingHours: 'Monday - Saturday: 9:00 AM - 6:00 PM'
+    clinicName: '',
+    address: '',
+    phone: '',
+    email: '',
+    website: '',
+    branchCity: '',
+    specialties: [] as string[],
+    teamDescription: '',
+    aboutUs: '',
+    languages: [] as string[],
+    certifications: [] as string[],
+    workingHours: ''
   });
+  const [profileLoading, setProfileLoading] = useState(true);
 
   const [documents, setDocuments] = useState([
     { id: 1, name: 'Medical License.pdf', type: 'License', uploadDate: '2024-01-15', size: '2.3 MB' },
@@ -77,10 +93,43 @@ const ClinicProfile: React.FC = () => {
     }
   };
 
-  const specialtyOptions = [
-    'Rhinoplasty', 'Hair Transplant', 'Breast Surgery', 'Face Lift', 'Liposuction',
-    'Tummy Tuck', 'Botox & Fillers', 'Dental Surgery', 'Eye Surgery', 'Body Contouring'
-  ];
+  const lang = (i18n.language || 'en') as string;
+
+  useEffect(() => {
+    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    if (!clinicId) {
+      setProfileLoading(false);
+      return;
+    }
+    setProfileLoading(true);
+    (async () => {
+      try {
+        const { data, error } = await (supabase as any).from('clinics').select('*').eq('id', clinicId).single();
+        if (error) throw error;
+        if (data) {
+          setProfileData(prev => ({
+            ...prev,
+            clinicName: data.name ?? prev.clinicName,
+            address: data.address ?? prev.address,
+            phone: data.phone ?? prev.phone,
+            email: data.email ?? prev.email,
+            website: data.website ?? prev.website,
+            branchCity: data.location ?? data.branch_city ?? prev.branchCity,
+            specialties: Array.isArray(data.specialties) ? data.specialties : [],
+            aboutUs: data.description ?? prev.aboutUs,
+            teamDescription: data.team_description ?? prev.teamDescription,
+            languages: Array.isArray(data.languages) ? data.languages : prev.languages,
+            certifications: Array.isArray(data.certifications) ? data.certifications : prev.certifications,
+            workingHours: data.working_hours ?? prev.workingHours
+          }));
+        }
+      } catch (e) {
+        console.error('Profil yükleme hatası:', e);
+      } finally {
+        setProfileLoading(false);
+      }
+    })();
+  }, [user]);
 
   return (
     <div className="space-y-6">
@@ -144,16 +193,23 @@ const ClinicProfile: React.FC = () => {
             </div>
           </div>
 
-          {/* Specialties */}
+          {/* Uzmanlık Alanları — Sabit Fiyatlar (Otomatik Fiyatlar) sadece bu listedeki işlemler için fiyat kabul eder */}
           <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">{t('clinicDashboard.specialties')}</h2>
-            <div className="flex flex-wrap gap-2">
-              {profileData.specialties.map((specialty) => (
-                <span key={specialty} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                  {specialty}
-                </span>
-              ))}
-            </div>
+            {profileLoading ? (
+              <p className="text-gray-500 text-sm">{t('clinicProcedures.loading')}</p>
+            ) : profileData.specialties.length === 0 ? (
+              <p className="text-gray-500 text-sm">{t('clinicProcedures.noSpecialtiesHint')}</p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {profileData.specialties.map((key) => (
+                  <span key={key} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                    {getSpecialtyDisplayName(key, t)}
+                  </span>
+                ))}
+              </div>
+            )}
+            <p className="text-xs text-gray-500 mt-3">{t('clinicDashboard.specialtiesSameAsPrices')}</p>
           </div>
 
           {/* About Us */}

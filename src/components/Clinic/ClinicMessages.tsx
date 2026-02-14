@@ -451,7 +451,7 @@ const ClinicMessages: React.FC = () => {
           >
             {/* Modal Header */}
             <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-              <h2 className="text-lg font-semibold text-gray-900">Mesaj</h2>
+              <h2 className="text-lg font-semibold text-gray-900">{t('clinic.messages')}</h2>
               <button
                 onClick={closeModal}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors"

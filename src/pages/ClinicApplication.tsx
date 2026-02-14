@@ -1,51 +1,100 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, Upload, Award, Globe, Sparkles, Heart, Star, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
-import { TREATMENT_AREAS } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { clinicApplicationService } from '../services/api';
 import { useLocation } from 'react-router-dom';
+import { logLegalAcceptance } from '../services/legalAcceptance';
+import { COUNTRY_KEYS, CITY_OPTIONS } from '../data/countriesAndCities';
+import { PROCEDURE_CATEGORIES } from '../data/procedureCategories';
 
 const ClinicApplication: React.FC = () => {
   const { t, i18n } = useTranslation();
   
-  // Helper function to get translation with fallback
   const getTranslation = (key: string, fallback: string) => {
     const translation = t(key);
     return translation === key ? fallback : translation;
   };
-  
-  // Get treatment areas in current language
-  const getSpecialtyOptions = () => {
-    const currentLang = i18n.language || 'en';
-    return TREATMENT_AREAS.map(area => 
-      area.name[currentLang as keyof typeof area.name] || area.name.en
-    );
-  };
 
-  const specialtyOptions = getSpecialtyOptions();
+  // Talep formu ile birebir aynı: procedureCategories (tek kaynak)
+  const specialtyOptions: { key: string; name: string; categoryKey: string }[] = PROCEDURE_CATEGORIES.flatMap((cat) =>
+    cat.procedures.map((proc) => {
+      const trKey = `procedureCategories.procedures.${proc.key}`;
+      const translated = t(trKey);
+      const name = translated && translated !== trKey ? translated : proc.name;
+      return { key: proc.key, name, categoryKey: cat.key };
+    })
+  );
   const [formData, setFormData] = useState({
     clinicName: '',
-    country: '',
+    countries: [] as string[],
     specialties: [] as string[],
     website: '',
     phone: '',
     email: '',
-    password: '',
     description: '',
     certificates: [] as File[]
   });
+  const [citiesByCountry, setCitiesByCountry] = useState<Record<string, string[]>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [acceptTerms, setAcceptTerms] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
 
-  const handleSpecialtyToggle = (specialty: string) => {
+  const toggleCountry = (countryKey: string) => {
+    setFormData(prev => {
+      const exists = prev.countries.includes(countryKey);
+      const nextCountries = exists
+        ? prev.countries.filter(c => c !== countryKey)
+        : [...prev.countries, countryKey];
+      return { ...prev, countries: nextCountries };
+    });
+    if (formData.countries.includes(countryKey)) {
+      setCitiesByCountry(prev => {
+        const { [countryKey]: _, ...rest } = prev;
+        return rest;
+      });
+    }
+  };
+
+  const toggleCity = (countryKey: string, city: string) => {
+    setCitiesByCountry(prev => {
+      const current = prev[countryKey] || [];
+      const next = current.includes(city)
+        ? current.filter(c => c !== city)
+        : [...current, city];
+      return { ...prev, [countryKey]: next };
+    });
+  };
+
+  const selectAllCities = (countryKey: string) => {
+    const list = CITY_OPTIONS[countryKey] || [];
+    setCitiesByCountry(prev => ({ ...prev, [countryKey]: [...list] }));
+  };
+
+  const clearCities = (countryKey: string) => {
+    setCitiesByCountry(prev => {
+      const { [countryKey]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const selectAllCountries = () => {
+    setFormData(prev => ({ ...prev, countries: [...COUNTRY_KEYS] }));
+  };
+
+  const clearAllCountries = () => {
+    setFormData(prev => ({ ...prev, countries: [] }));
+    setCitiesByCountry({});
+  };
+
+  const handleSpecialtyToggle = (key: string) => {
     setFormData(prev => ({
       ...prev,
-      specialties: prev.specialties.includes(specialty)
-        ? prev.specialties.filter(s => s !== specialty)
-        : [...prev.specialties, specialty]
+      specialties: prev.specialties.includes(key)
+        ? prev.specialties.filter(s => s !== key)
+        : [...prev.specialties, key]
     }));
   };
 
@@ -108,16 +157,22 @@ const ClinicApplication: React.FC = () => {
       // 2) Başvuru kaydı oluştur (sertifika URL'leri dahil)
       await clinicApplicationService.createApplication({
         clinic_name: formData.clinicName,
-        country: formData.country,
+        countries: formData.countries,
+        cities_by_country: Object.keys(citiesByCountry).length ? citiesByCountry : undefined,
+        country: formData.countries[0] || undefined,
         specialties: formData.specialties,
         website: formData.website,
         phone: formData.phone,
         email: formData.email,
-        password: formData.password,
         description: formData.description,
         certificate_urls: certificateUrls,
         submitted_by: user?.id || null
       });
+      const actorId = user?.id || formData.email;
+      try {
+        await logLegalAcceptance('clinic', actorId, 'clinic_agreement');
+        await logLegalAcceptance('clinic', actorId, 'data_security_addendum');
+      } catch (_) { /* non-blocking */ }
       setIsSubmitted(true);
     } catch (err: any) {
       console.error('Başvuru gönderilirken hata:', err);
@@ -154,12 +209,13 @@ const ClinicApplication: React.FC = () => {
           // Test verileri
           const payload = {
             clinic_name: formData.clinicName || 'Test Klinik',
-            country: formData.country || 'Türkiye',
-            specialties: formData.specialties.length ? formData.specialties : ['Hair Transplant'],
+            countries: formData.countries.length ? formData.countries : ['turkey'],
+            cities_by_country: Object.keys(citiesByCountry).length ? citiesByCountry : undefined,
+            country: formData.countries[0] || 'turkey',
+            specialties: formData.specialties.length ? formData.specialties : ['sac_ekimi_fue'],
             website: formData.website || 'https://example.com',
             phone: formData.phone || '+90 212 555 0000',
             email: formData.email || 'test.clinic@example.com',
-            password: formData.password || 'EstyiTemp123!',
             description: formData.description || 'Otomatik test başvurusu',
             submitted_by: user?.id || null
           };
@@ -254,83 +310,111 @@ const ClinicApplication: React.FC = () => {
                   />
                 </div>
 
-                {/* Country */}
+                {/* Ülkeler — birden fazla seçim (talep formu ile aynı liste) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {getTranslation('clinicApplication.country', 'Country')} *
+                    {getTranslation('clinicApplication.countries', 'Ülkeler')} * ({getTranslation('clinicApplication.selectAll', 'Tümünü seçin')})
                   </label>
-                  <select
-                    required
-                    value={formData.country}
-                    onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                  >
-                    <option value="">{getTranslation('clinicApplication.selectCountry', 'Select your country')}</option>
-                    <option value="Turkey">{getTranslation('countries.turkey', 'Turkey')}</option>
-                    <option value="South Korea">{getTranslation('countries.southKorea', 'South Korea')}</option>
-                    <option value="Thailand">{getTranslation('countries.thailand', 'Thailand')}</option>
-                    <option value="Brazil">{getTranslation('countries.brazil', 'Brazil')}</option>
-                    <option value="Mexico">{getTranslation('countries.mexico', 'Mexico')}</option>
-                    <option value="Colombia">{getTranslation('countries.colombia', 'Colombia')}</option>
-                    <option value="Argentina">{getTranslation('countries.argentina', 'Argentina')}</option>
-                    <option value="Chile">{getTranslation('countries.chile', 'Chile')}</option>
-                    <option value="Peru">{getTranslation('countries.peru', 'Peru')}</option>
-                    <option value="Venezuela">{getTranslation('countries.venezuela', 'Venezuela')}</option>
-                    <option value="Ecuador">{getTranslation('countries.ecuador', 'Ecuador')}</option>
-                    <option value="Uruguay">{getTranslation('countries.uruguay', 'Uruguay')}</option>
-                    <option value="Paraguay">{getTranslation('countries.paraguay', 'Paraguay')}</option>
-                    <option value="Bolivia">{getTranslation('countries.bolivia', 'Bolivia')}</option>
-                    <option value="Guyana">{getTranslation('countries.guyana', 'Guyana')}</option>
-                    <option value="Suriname">{getTranslation('countries.suriname', 'Suriname')}</option>
-                    <option value="French Guiana">{getTranslation('countries.frenchGuiana', 'French Guiana')}</option>
-                    <option value="India">{getTranslation('countries.india', 'India')}</option>
-                    <option value="Singapore">{getTranslation('countries.singapore', 'Singapore')}</option>
-                    <option value="Malaysia">{getTranslation('countries.malaysia', 'Malaysia')}</option>
-                    <option value="Indonesia">{getTranslation('countries.indonesia', 'Indonesia')}</option>
-                    <option value="Philippines">{getTranslation('countries.philippines', 'Philippines')}</option>
-                    <option value="Vietnam">{getTranslation('countries.vietnam', 'Vietnam')}</option>
-                    <option value="Cambodia">{getTranslation('countries.cambodia', 'Cambodia')}</option>
-                    <option value="Laos">{getTranslation('countries.laos', 'Laos')}</option>
-                    <option value="Myanmar">{getTranslation('countries.myanmar', 'Myanmar')}</option>
-                    <option value="Bangladesh">{getTranslation('countries.bangladesh', 'Bangladesh')}</option>
-                    <option value="Sri Lanka">{getTranslation('countries.sriLanka', 'Sri Lanka')}</option>
-                    <option value="Nepal">{getTranslation('countries.nepal', 'Nepal')}</option>
-                    <option value="Bhutan">{getTranslation('countries.bhutan', 'Bhutan')}</option>
-                    <option value="Maldives">{getTranslation('countries.maldives', 'Maldives')}</option>
-                    <option value="Pakistan">{getTranslation('countries.pakistan', 'Pakistan')}</option>
-                    <option value="Afghanistan">{getTranslation('countries.afghanistan', 'Afghanistan')}</option>
-                    <option value="United States">{getTranslation('countries.usa', 'United States')}</option>
-                    <option value="Russian Federation">{getTranslation('countries.russia', 'Russian Federation')}</option>
-                    <option value="China">{getTranslation('countries.china', 'China')}</option>
-                    <option value="Canada">{getTranslation('countries.canada', 'Canada')}</option>
-                    <option value="Japan">{getTranslation('countries.japan', 'Japan')}</option>
-                    <option value="Germany">{getTranslation('countries.germany', 'Germany')}</option>
-                    <option value="United Kingdom">{getTranslation('countries.unitedKingdom', 'United Kingdom')}</option>
-                    <option value="Netherlands">{getTranslation('countries.netherlands', 'Netherlands')}</option>
-                    <option value="Sweden">{getTranslation('countries.sweden', 'Sweden')}</option>
-                  </select>
-                </div>
-
-                {/* Specialties */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {getTranslation('clinicApplication.specialties', 'Specialties')} * ({getTranslation('clinicApplication.selectAll', 'Select all that apply')})
-                  </label>
-                  <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto border border-gray-300 rounded-xl p-4 bg-white/50">
-                    {specialtyOptions.map((specialty) => (
-                      <label key={specialty} className="flex items-center space-x-2 cursor-pointer hover:bg-purple-50 p-2 rounded-lg transition-colors duration-200">
+                  <div className="flex flex-wrap gap-2 mb-2">
+                    <button
+                      type="button"
+                      onClick={selectAllCountries}
+                      className="text-sm px-3 py-1.5 rounded-lg bg-purple-100 text-purple-700 hover:bg-purple-200 transition-colors"
+                    >
+                      {getTranslation('clinicApplication.selectAllCountries', 'Tümünü seç')}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={clearAllCountries}
+                      className="text-sm px-3 py-1.5 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors"
+                    >
+                      {getTranslation('clinicApplication.clearAll', 'Tümünü temizle')}
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2 max-h-40 overflow-y-auto border border-gray-300 rounded-xl p-4 bg-white/50">
+                    {COUNTRY_KEYS.map((key) => (
+                      <label key={key} className="flex items-center space-x-2 cursor-pointer hover:bg-purple-50 p-2 rounded-lg transition-colors">
                         <input
                           type="checkbox"
-                          checked={formData.specialties.includes(specialty)}
-                          onChange={() => handleSpecialtyToggle(specialty)}
+                          checked={formData.countries.includes(key)}
+                          onChange={() => toggleCountry(key)}
                           className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
                         />
-                        <span className="text-sm text-gray-700">{specialty}</span>
+                        <span className="text-sm text-gray-700">{t(`countries.${key}`) || key}</span>
                       </label>
                     ))}
                   </div>
                   <p className="text-xs text-gray-500 mt-1">
-                    {getTranslation('clinicApplication.selected', 'Selected')}: {formData.specialties.length} {getTranslation('clinicApplication.specialtyAreas', 'specialty areas')}
+                    {getTranslation('clinicApplication.selected', 'Seçilen')}: {formData.countries.length} {getTranslation('clinicApplication.country', 'ülke')}
+                  </p>
+                </div>
+
+                {/* Seçilen her ülke için şehirler — birden fazla şehir seçilebilir */}
+                {formData.countries.map((countryKey) => {
+                  const cityList = CITY_OPTIONS[countryKey];
+                  if (!cityList || cityList.length === 0) return null;
+                  const selectedCities = citiesByCountry[countryKey] || [];
+                  return (
+                    <div key={countryKey} className="border border-gray-200 rounded-xl p-4 bg-white/50">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {getTranslation('clinicApplication.citiesIn', 'Şehirler')} — {t(`countries.${countryKey}`) || countryKey}
+                      </label>
+                      <div className="flex flex-wrap gap-2 mb-2">
+                        <button
+                          type="button"
+                          onClick={() => selectAllCities(countryKey)}
+                          className="text-xs px-2 py-1 rounded bg-purple-100 text-purple-700 hover:bg-purple-200"
+                        >
+                          {getTranslation('clinicApplication.selectAll', 'Tümünü seç')}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => clearCities(countryKey)}
+                          className="text-xs px-2 py-1 rounded bg-gray-100 text-gray-700 hover:bg-gray-200"
+                        >
+                          {getTranslation('clinicApplication.clear', 'Temizle')}
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 max-h-36 overflow-y-auto">
+                        {cityList.map((city) => (
+                          <label key={city} className="flex items-center space-x-2 cursor-pointer hover:bg-purple-50 p-1.5 rounded">
+                            <input
+                              type="checkbox"
+                              checked={selectedCities.includes(city)}
+                              onChange={() => toggleCity(countryKey, city)}
+                              className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                            />
+                            <span className="text-sm text-gray-700">{city}</span>
+                          </label>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-1">
+                        {getTranslation('clinicApplication.selected', 'Seçilen')}: {selectedCities.length} {getTranslation('clinicApplication.city', 'şehir')}
+                      </p>
+                    </div>
+                  );
+                })}
+
+                {/* Specialties — talep formundaki işlem listesi ile birebir aynı (key ile eşleşir) */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {getTranslation('clinicApplication.specialties', 'Uzmanlık Alanları')} * ({getTranslation('clinicApplication.selectAll', 'Tümünü seçin')})
+                  </label>
+                  <div className="grid grid-cols-2 gap-3 max-h-40 overflow-y-auto border border-gray-300 rounded-xl p-4 bg-white/50">
+                    {specialtyOptions.map((item) => (
+                      <label key={item.key} className="flex items-center space-x-2 cursor-pointer hover:bg-purple-50 p-2 rounded-lg transition-colors duration-200">
+                        <input
+                          type="checkbox"
+                          checked={formData.specialties.includes(item.key)}
+                          onChange={() => handleSpecialtyToggle(item.key)}
+                          className="text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+                        />
+                        <span className="text-sm text-gray-700">{item.name}</span>
+                      </label>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {getTranslation('clinicApplication.selected', 'Seçilen')}: {formData.specialties.length} {getTranslation('clinicApplication.specialtyAreas', 'uzmanlık alanı')}
                   </p>
                 </div>
 
@@ -376,24 +460,6 @@ const ClinicApplication: React.FC = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
                     placeholder={getTranslation('clinicApplication.emailPlaceholder', 'clinic@example.com')}
                   />
-                </div>
-
-                {/* Password */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {getTranslation('clinicApplication.password', 'Password')} *
-                  </label>
-                  <input
-                    type="password"
-                    required
-                    value={formData.password}
-                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
-                    placeholder={getTranslation('clinicApplication.passwordPlaceholder', 'Choose a strong password')}
-                  />
-                  <p className="text-xs text-gray-500 mt-1">
-                    {getTranslation('clinicApplication.passwordHint', 'Minimum 8 karakter, kolay tahmin edilemeyen bir şifre seçin')}
-                  </p>
                 </div>
 
                 {/* Description */}
@@ -443,16 +509,32 @@ const ClinicApplication: React.FC = () => {
                   )}
                 </div>
 
+                {/* Legal — tek onay: Şartlar ve Politikalar (/legal) */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={acceptTerms}
+                      onChange={(e) => setAcceptTerms(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    />
+                    <span className="text-sm text-gray-700">
+                      {t('legal.clickwrapClinic.acceptAll')}{' '}
+                      <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline font-medium">{t('legal.clickwrap.legalPage')}</a>
+                    </span>
+                  </label>
+                </div>
+
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={submitting || !formData.clinicName || !formData.country || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email || !formData.password}
+                  disabled={submitting || !formData.clinicName || formData.countries.length === 0 || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email || !acceptTerms}
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
                   {submitting ? getTranslation('clinicApplication.submitting', 'Submitting...') : getTranslation('clinicApplication.submitApplication', 'Submit Application')}
                 </button>
                 <p className="text-xs text-gray-600 mt-3 italic text-center">
-                  {getTranslation('clinicApplication.loginNote', 'Onayınız geldiğinde formda belirttiğiniz e-posta ve şifreyle giriş sağlayacaksınız.')}
+                  {getTranslation('clinicApplication.loginNote', 'Başvurunuz onaylandığında e-posta adresinize bir aktivasyon linki gönderilecektir.')}
                 </p>
               </form>
             </div>

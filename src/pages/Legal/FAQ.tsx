@@ -36,10 +36,6 @@ const FAQ: React.FC = () => {
       answer: t('faq.questions.clinicSelection.answer')
     },
     {
-      question: t('faq.questions.postTreatmentSupport.question'),
-      answer: t('faq.questions.postTreatmentSupport.answer')
-    },
-    {
       question: t('faq.questions.payment.question'),
       answer: t('faq.questions.payment.answer')
     }

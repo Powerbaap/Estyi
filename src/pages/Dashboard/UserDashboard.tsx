@@ -6,7 +6,7 @@ import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal'
 import { useTranslation } from 'react-i18next';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
-import { requestService, appointmentService } from '../../services/api';
+import { requestService } from '../../services/api';
 import { signRequestPhotoUrls } from '../../services/storage';
 import { useLocation, useNavigate } from 'react-router-dom';
 
@@ -52,8 +52,6 @@ const UserDashboard: React.FC = () => {
   // Gerçek kullanıcı verileri - başlangıçta boş
   const [requests, setRequests] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [appointments, setAppointments] = useState<any[]>([]);
-  const [isAppointmentsLoading, setIsAppointmentsLoading] = useState(true);
 
   // Gerçek veri yükleme (Supabase API entegrasyonu)
   useEffect(() => {
@@ -184,23 +182,6 @@ const UserDashboard: React.FC = () => {
     signMissingPhotoUrls();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [requests.length]);
-
-  // Randevuları yükle
-  useEffect(() => {
-    const loadAppointments = async () => {
-      try {
-        setIsAppointmentsLoading(true);
-        if (!user?.id) { setAppointments([]); return; }
-        const appts = await appointmentService.getUserAppointments(user.id);
-        setAppointments(Array.isArray(appts) ? appts : []);
-      } catch (e) {
-        setAppointments([]);
-      } finally {
-        setIsAppointmentsLoading(false);
-      }
-    };
-    if (user) loadAppointments();
-  }, [user]);
 
   const handleRequestClick = (request: any) => {
     setSelectedRequest(request);
@@ -343,7 +324,8 @@ const UserDashboard: React.FC = () => {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+        <div className="flex justify-center mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl">
           {/* Removed total requests card per new design */}
 
           <div 
@@ -404,22 +386,7 @@ const UserDashboard: React.FC = () => {
                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-2xl"></div>
              )}
            </div>
-
-           {/* Appointments Card (same size, side-by-side) */}
-           <div className="group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
-             <div className="flex items-center justify-between">
-               <div className="flex-1">
-                 <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.myAppointments')}</p>
-                 <p className="text-3xl font-bold text-gray-900">{isAppointmentsLoading ? '—' : appointments.length}</p>
-                 <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.appointmentsSubtitle')}</p>
-               </div>
-               <div className="w-14 h-14 rounded-xl flex items-center justify-center bg-gradient-to-r from-blue-100 to-indigo-100">
-                 <Calendar className="w-7 h-7 text-blue-600" />
-               </div>
-             </div>
-             {/* optional background highlight on hover */}
-             <div className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-gradient-to-r from-blue-500/5 to-indigo-500/5 rounded-2xl"></div>
-           </div>
+          </div>
         </div>
 
 

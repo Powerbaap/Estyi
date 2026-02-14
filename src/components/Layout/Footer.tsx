@@ -1,20 +1,19 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Lock, Globe, Sparkles, Heart, Star } from 'lucide-react';
+import { Shield, Lock, Globe, Sparkles, Star } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from './Logo';
 import { useTranslation } from 'react-i18next';
-import LanguageSwitcher from './LanguageSwitcher';
 
 const Footer = () => {
   const { t, ready, i18n } = useTranslation();
-  
+
   // Dil bazlı fallback sistemi
   const fallbackTexts: Record<string, Record<string, string>> = {
     'footer.description': {
-      tr: 'Dünya çapında sertifikalı estetik kliniklerle hastaları buluşturuyoruz.',
-      en: 'We connect patients with certified aesthetic clinics worldwide.',
-      ar: 'نربط المرضى بعيادات التجميل المعتمدة في جميع أنحاء العالم.'
+      tr: 'Dünya çapında sertifikalı estetik kliniklerle değişim arayanları buluşturuyoruz.',
+      en: 'We bring together people seeking change with certified aesthetic clinics worldwide.',
+      ar: 'نوحد بين الراغبين في التغيير وعيادات التجميل المعتمدة في جميع أنحاء العالم.'
     },
     'footer.gdpr': {
       tr: 'GDPR Uyumlu',
@@ -82,9 +81,9 @@ const Footer = () => {
       ar: 'معلومات عنا'
     },
     'footer.copyright': {
-      tr: '© 2025 Estyi. Tüm hakları saklıdır.',
-      en: '© 2025 Estyi. All rights reserved.',
-      ar: '© 2025 Estyi. جميع الحقوق محفوظة.'
+      tr: '© 2026 Estyi. Tüm hakları saklıdır.',
+      en: '© 2026 Estyi. All rights reserved.',
+      ar: '© 2026 Estyi. جميع الحقوق محفوظة.'
     },
     'footer.trustMessage': {
       tr: '10,000+ güvenilir hasta tarafından tercih ediliyor',
@@ -92,7 +91,7 @@ const Footer = () => {
       ar: 'موثوق به من قبل أكثر من 10,000 مريض في جميع أنحاء العالم'
     }
   };
-  
+
   // Güvenli çeviri fonksiyonu - mevcut dile göre fallback kullan
   const safeTranslate = (key: string) => {
     if (ready) {
@@ -102,22 +101,22 @@ const Footer = () => {
         return translation;
       }
     }
-    
+
     // Fallback: mevcut dile göre uygun metni döndür
     const currentLang = i18n.language || 'tr';
     const fallback = fallbackTexts[key];
     if (fallback && fallback[currentLang]) {
       return fallback[currentLang];
     }
-    
+
     // Son çare: Türkçe fallback
     if (fallback && fallback.tr) {
       return fallback.tr;
     }
-    
+
     return key; // Hiçbir şey bulunamazsa anahtarı döndür
   };
-  
+
   return (
     <footer className="bg-gradient-to-br from-gray-900 via-purple-900 to-black text-white relative overflow-hidden">
       {/* Background Elements */}
@@ -229,13 +228,7 @@ const Footer = () => {
           <p className="text-gray-400 text-xs sm:text-sm text-center md:text-left">
             {safeTranslate('footer.copyright')}
           </p>
-          <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-            <LanguageSwitcher />
-            <div className="flex items-center space-x-2 text-gray-400 text-xs sm:text-sm">
-              <Heart className="w-4 h-4 text-pink-400 animate-pulse" />
-              <span>{safeTranslate('footer.trustMessage')}</span>
-            </div>
-          </div>
+
         </div>
       </div>
     </footer>

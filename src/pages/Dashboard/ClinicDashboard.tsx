@@ -6,28 +6,25 @@ import {
   FileText, 
   DollarSign, 
   User, 
+  Users,
   Crown,
   Bell,
   Menu,
   X,
   TrendingUp,
   CheckCircle,
-  Users,
   Activity,
   BarChart3,
   Calendar,
   ChevronRight,
-  Clock4,
-  DollarSign as DollarIcon,
-  MessageSquare
+  Clock,
+  DollarSign as DollarIcon
 } from 'lucide-react';
 import ClinicRequests from '../../components/Clinic/ClinicRequests';
 import ClinicOffers from '../../components/Clinic/ClinicOffers';
 import ClinicProfile from '../../components/Clinic/ClinicProfile';
 import ClinicMembership from '../../components/Clinic/ClinicMembership';
 import ClinicNotificationCenter from '../../components/Notifications/ClinicNotificationCenter';
-import ClinicMessages from '../../components/Clinic/ClinicMessages';
-import ClinicDoctors from '../../components/Clinic/ClinicDoctors';
 import ClinicProcedures from '../../components/Clinic/ClinicProcedures';
 
 const ClinicDashboard: React.FC = () => {
@@ -38,13 +35,12 @@ const ClinicDashboard: React.FC = () => {
   const [filterStatus, setFilterStatus] = useState('all');
   const [filterProcedure] = useState('all');
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
+  const notificationButtonRef = React.useRef<HTMLButtonElement>(null);
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('clinicDashboard.menu.dashboard'), count: null },
     { id: 'requests', icon: FileText, label: t('clinicDashboard.menu.requests'), count: 12 },
     { id: 'offers', icon: DollarSign, label: t('clinicDashboard.menu.offers'), count: 8 },
-    { id: 'messages', icon: MessageSquare, label: t('clinicDashboard.menu.messages'), count: null },
-    { id: 'doctors', icon: Users, label: t('clinicDashboard.menu.doctors'), count: null },
     { id: 'fixedPrices', icon: DollarIcon, label: t('clinicDashboard.menu.fixedPrices'), count: null },
     { id: 'profile', icon: User, label: t('clinicDashboard.menu.profile'), count: null },
     { id: 'membership', icon: Crown, label: t('clinicDashboard.menu.membership'), count: null }
@@ -127,10 +123,6 @@ const ClinicDashboard: React.FC = () => {
         />;
       case 'offers':
         return <ClinicOffers filterStatus={filterStatus} />;
-      case 'messages':
-        return <ClinicMessages />;
-      case 'doctors':
-        return <ClinicDoctors />;
       case 'fixedPrices':
         return <ClinicProcedures />;
       case 'profile':
@@ -369,7 +361,7 @@ const ClinicDashboard: React.FC = () => {
                         </div>
                         <p className="text-sm text-gray-600 truncate">{request.procedure}</p>
                         <p className="text-xs text-gray-500 mt-1 flex items-center">
-                          <Clock4 className="w-3 h-3 mr-1" />
+                          <Clock className="w-3 h-3 mr-1" />
                           {request.time}
                         </p>
                       </div>
@@ -422,7 +414,7 @@ const ClinicDashboard: React.FC = () => {
                         </div>
                         <p className="text-sm text-gray-600 truncate">{offer.user}</p>
                         <p className="text-xs text-gray-500 mt-1 flex items-center">
-                          <Clock4 className="w-3 h-3 mr-1" />
+                          <Clock className="w-3 h-3 mr-1" />
                           {offer.time}
                         </p>
                       </div>
@@ -540,6 +532,7 @@ const ClinicDashboard: React.FC = () => {
             {/* Enhanced User Menu */}
             <div className="flex items-center space-x-4">
               <button
+                ref={notificationButtonRef}
                 onClick={() => setNotificationCenterOpen(true)}
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors relative"
               >
@@ -584,6 +577,7 @@ const ClinicDashboard: React.FC = () => {
         <ClinicNotificationCenter
         isOpen={notificationCenterOpen}
         onClose={() => setNotificationCenterOpen(false)}
+        anchorRef={notificationButtonRef}
         clinicSpecialties={['Rhinoplasty', 'Hair Transplant', 'Breast Surgery']}
       />
     </div>

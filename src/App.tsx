@@ -41,6 +41,13 @@ const HelpCenter = lazy(() => import('./pages/Legal/HelpCenter'));
 const PrivacyPolicy = lazy(() => import('./pages/Legal/PrivacyPolicy'));
 const SafetyGuidelines = lazy(() => import('./pages/Legal/SafetyGuidelines'));
 const TermsOfUse = lazy(() => import('./pages/Legal/TermsOfUse'));
+const NoticeAtCollection = lazy(() => import('./pages/Legal/NoticeAtCollection'));
+const Consent = lazy(() => import('./pages/Legal/Consent'));
+const ClinicAgreement = lazy(() => import('./pages/Legal/ClinicAgreement'));
+const DataSecurityAddendum = lazy(() => import('./pages/Legal/DataSecurityAddendum'));
+const DMCA = lazy(() => import('./pages/Legal/DMCA'));
+const MedicalDisclaimer = lazy(() => import('./pages/Legal/MedicalDisclaimer'));
+const AllLegal = lazy(() => import('./pages/Legal/AllLegal'));
 
 // Loading component
 const LoadingSpinner = () => (
@@ -92,9 +99,18 @@ function AppContent() {
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/help" element={<HelpCenter />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/safety-guidelines" element={<SafetyGuidelines />} />
+            <Route path="/terms" element={<TermsOfUse />} />
             <Route path="/terms-of-use" element={<TermsOfUse />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+            <Route path="/notice-at-collection" element={<NoticeAtCollection />} />
+            <Route path="/consent" element={<Consent />} />
+            <Route path="/clinic-agreement" element={<ClinicAgreement />} />
+            <Route path="/data-security-addendum" element={<DataSecurityAddendum />} />
+            <Route path="/dmca" element={<DMCA />} />
+            <Route path="/medical-disclaimer" element={<MedicalDisclaimer />} />
+            <Route path="/legal" element={<AllLegal />} />
+            <Route path="/safety-guidelines" element={<SafetyGuidelines />} />
           </Routes>
         </Suspense>
       </main>

@@ -859,3 +859,107 @@ export interface Review {
   date: Date;
   verified: boolean;
 }
+
+// ----- ESTYI Spec: Procedure, Request, Offer, Clinic plan/quota -----
+export type PhotoPolicy = 'required' | 'optional' | 'not_allowed';
+export type EstyiRequestStatus =
+  | 'created'
+  | 'matched'
+  | 'offers_sent'
+  | 'accepted'
+  | 'rejected'
+  | 'chat_open'
+  | 'closed';
+export type EstyiOfferType = 'auto' | 'manual' | 'sla_default';
+
+export interface EstyiProcedureParam {
+  key: string;
+  label: string;
+  unit?: string; // e.g. 'ml'
+  options?: { value: string; label: string }[];
+}
+
+export interface EstyiProcedure {
+  procedure_id: string;
+  name: string;
+  photo_policy: PhotoPolicy;
+  required_params: EstyiProcedureParam[];
+  default_auto_offer_required: boolean;
+}
+
+export interface EstyiRequest {
+  request_id: string;
+  procedure_id: string;
+  country: string;
+  city: string;
+  photos: string[];
+  params: Record<string, string | number>;
+  status: EstyiRequestStatus;
+  created_at: string;
+  sla_deadline_at: string;
+  user_age?: number;
+  user_gender?: string;
+  user_countries?: string[];
+  user_citiesTR?: string[];
+}
+
+export interface EstyiClinicPricing {
+  enabled: boolean;
+  price_usd: number;
+}
+
+export interface EstyiDefaultOffer {
+  price_usd: number;
+  message_template: string;
+}
+
+export type SubscriptionPlan = 'basic' | 'pro' | 'unlimited';
+
+export interface EstyiClinicProfile {
+  clinic_id: string;
+  business_name: string;
+  verified_status: boolean;
+  country: string;
+  city: string;
+  enabled_procedures: string[];
+  auto_pricing: Record<string, EstyiClinicPricing>;
+  default_offer: Record<string, EstyiDefaultOffer>;
+  subscription_plan: SubscriptionPlan;
+  monthly_quota: number; // 100 | 200 | unlimited = -1
+  quota_used_this_cycle: number;
+  billing_cycle_start: string;
+  billing_cycle_end: string;
+}
+
+export interface EstyiOffer {
+  offer_id: string;
+  request_id: string;
+  clinic_id: string;
+  price_usd: number;
+  offer_type: EstyiOfferType;
+  created_at: string;
+  locked_price: boolean;
+  status: 'sent' | 'accepted' | 'declined' | 'expired';
+}
+
+// ----- Legal acceptance (clickwrap audit log) -----
+export type LegalDocType =
+  | 'tos'
+  | 'privacy'
+  | 'notice_at_collection'
+  | 'explicit_consent'
+  | 'clinic_agreement'
+  | 'data_security_addendum'
+  | 'age_gate';
+
+export interface LegalAcceptancePayload {
+  actor_type: 'user' | 'clinic';
+  actor_id: string;
+  doc_type: LegalDocType;
+  doc_version: string;
+  doc_hash?: string;
+  accepted_at: string; // ISO UTC
+  ip_address?: string;
+  country?: string;
+  user_agent?: string;
+}

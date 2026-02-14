@@ -34,23 +34,19 @@ const Header: React.FC = () => {
   // Click outside handler
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
       // User menu için click outside
-      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+      if (userMenuRef.current && !userMenuRef.current.contains(target)) {
         setIsUserMenuOpen(false);
       }
-      // Notification menu için click outside
-      if (notificationRef.current && !notificationRef.current.contains(event.target as Node)) {
+      // Notification menu için click outside (sadece header'daki buton alanı - dropdown kendi içinde dış tıklamayı dinliyor)
+      if (notificationRef.current && !notificationRef.current.contains(target)) {
         setIsNotificationOpen(false);
       }
     };
 
-    // Event listener ekle
     document.addEventListener('mousedown', handleClickOutside);
-    
-    // Cleanup
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
+    return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
   const handleLogout = () => {
@@ -149,8 +145,8 @@ const Header: React.FC = () => {
             <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent drop-shadow-lg">Estyi</span>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6" role="navigation" aria-label="Ana navigasyon">
+          {/* Desktop Navigation — sağa hizalı, dil seçeneği her zaman en sağda */}
+          <nav className="hidden md:flex items-center justify-end space-x-6 flex-1 min-w-0" role="navigation" aria-label="Ana navigasyon">
             {user ? (
               <>
                 {/* Messages Link */}
@@ -163,19 +159,6 @@ const Header: React.FC = () => {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
                   <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">{t('common.messages')}</span>
-                  <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full animate-pulse"></span>
-                </Link>
-
-                {/* Create Request Link */}
-                <Link
-                  to="/request"
-                  className="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 transition-all duration-300 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <svg className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-blue-700 transition-colors">{t('request.title')}</span>
                 </Link>
 
                 {/* Notifications Dropdown */}
@@ -196,7 +179,7 @@ const Header: React.FC = () => {
                     <Bell className="w-4 h-4 text-gray-600 group-hover:text-purple-600 transition-colors" />
                     <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">{t('common.notifications')}</span>
                     {unreadCount > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[18px] flex items-center justify-center animate-bounce">
+                      <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full px-1.5 py-0.5 min-w-[18px] flex items-center justify-center animate-pulse">
                         {unreadCount}
                       </span>
                     )}
@@ -354,9 +337,8 @@ const Header: React.FC = () => {
                 <LanguageSwitcher />
               </>
             ) : (
-              /* Auth Buttons */
+              /* Giriş yapılmamış: Giriş, Kayıt, Klinik Başvurusu — dil seçeneği her zaman en sağda */
               <div className="flex items-center space-x-4">
-                <LanguageSwitcher />
                 <Link
                   to="/login"
                   className="text-gray-700 hover:text-purple-600 font-medium transition-all duration-300 hover:scale-105"
@@ -378,6 +360,7 @@ const Header: React.FC = () => {
                 >
                   {t('common.clinicApplication')}
                 </Link>
+                <LanguageSwitcher />
               </div>
             )}
           </nav>
@@ -417,16 +400,6 @@ const Header: React.FC = () => {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                     </svg>
                     <span>{t('common.messages')}</span>
-                  </Link>
-                  <Link
-                    to="/request"
-                    className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gradient-to-r hover:from-blue-50 hover:to-purple-50 rounded-xl transition-all duration-300"
-                    onClick={() => setIsMenuOpen(false)}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                    <span>{t('request.title')}</span>
                   </Link>
                   <Link
                     to={getDashboardPath()}
@@ -484,11 +457,12 @@ const Header: React.FC = () => {
       </div>
     </header>
 
-    {/* Clinic Notification Center */}
+    {/* Clinic Notification Center - Bildirimler butonunun hemen altında açılır */}
     {getUserRole(user) === 'clinic' && (
       <ClinicNotificationCenter
         isOpen={isClinicNotificationOpen}
         onClose={() => setIsClinicNotificationOpen(false)}
+        anchorRef={notificationRef}
         clinicSpecialties={['Rhinoplasty', 'Hair Transplant', 'Breast Surgery']}
       />
     )}

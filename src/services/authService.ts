@@ -2,7 +2,7 @@ import { supabase } from '../lib/supabase';
 
 export const authService = {
   async sendVerificationCode(email: string) {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+    const baseUrl = (import.meta as any).env.VITE_API_BASE_URL || (import.meta as any).env.VITE_API_URL || 'http://localhost:3005';
     const response = await fetch(`${baseUrl}/api/send-verification`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -17,7 +17,7 @@ export const authService = {
   },
   
   async verifyCode(email: string, code: string) {
-    const baseUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
+    const baseUrl = (import.meta as any).env.VITE_API_BASE_URL || (import.meta as any).env.VITE_API_URL || 'http://localhost:3005';
     const response = await fetch(`${baseUrl}/api/verify-code`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },

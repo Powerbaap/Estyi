@@ -24,13 +24,15 @@ import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { requestService } from '../../services/api';
 
+type OfferTypeEstyi = 'auto' | 'manual' | 'sla_default';
+
 interface UserRequest {
   id: string;
   userId: string;
   procedure: string;
   photos: string[];
   countries: string[];
-  citiesTR?: string[]; // Kullanıcının seçtiği Türkiye şehirleri
+  citiesTR?: string[];
   age: number;
   gender: string;
   treatmentDate: string;
@@ -38,6 +40,12 @@ interface UserRequest {
   status: 'new' | 'offered' | 'expired';
   createdAt: Date;
   offersCount: number;
+  /** Estyi: 24h SLA bitiş zamanı */
+  sla_deadline_at?: string;
+  /** Estyi: Gönderilen teklif türü (otomatik / manuel / SLA varsayılan) */
+  offerType?: OfferTypeEstyi;
+  /** Teklif USD (kliniğin gönderdiği) */
+  offerPriceUsd?: number;
 }
 
 interface ClinicRequestsProps {
@@ -89,7 +97,8 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
       description: 'Doğal sonuçlar arıyorum, minimal kesi tercih ediyorum',
       createdAt: new Date('2025-01-20T10:30:00'),
       status: 'new',
-      offersCount: 0
+      offersCount: 0,
+      sla_deadline_at: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString()
     },
     {
       id: 'req2',
@@ -106,10 +115,34 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
       treatmentDate: '2025-03-01',
       description: 'FUE tekniği tercih ediyorum, doğal görünüm önemli',
       createdAt: new Date('2025-01-19T15:20:00'),
-      status: 'new',
-      offersCount: 0
+      status: 'offered',
+      offersCount: 1,
+      offerType: 'manual',
+      offerPriceUsd: 3500,
+      sla_deadline_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
     }
   ]);
+
+  const getSlaRemaining = (slaDeadline?: string) => {
+    if (!slaDeadline) return null;
+    const end = new Date(slaDeadline).getTime();
+    const now = Date.now();
+    if (now >= end) return { expired: true, text: t('clinicRequests.slaExpired') };
+    const ms = end - now;
+    const h = Math.floor(ms / (1000 * 60 * 60));
+    const m = Math.floor((ms % (1000 * 60 * 60)) / (1000 * 60));
+    return { expired: false, text: `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}` };
+  };
+
+  const getOfferTypeLabel = (type?: OfferTypeEstyi) => {
+    if (!type) return null;
+    switch (type) {
+      case 'auto': return t('clinicRequests.offerTypeAuto');
+      case 'manual': return t('clinicRequests.offerTypeManual');
+      case 'sla_default': return t('clinicRequests.offerTypeSlaDefault');
+      default: return null;
+    }
+  };
 
   const handleSubmitOffer = useCallback((request: UserRequest) => {
     setSelectedRequest(request);
@@ -351,6 +384,29 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                       {getStatusText(request.status)}
                     </span>
                   </div>
+
+                  {/* Estyi: SLA geri sayım (24h) */}
+                  {request.sla_deadline_at && request.status === 'new' && (
+                    <div className="flex items-center gap-2 mb-2 text-sm">
+                      <ClockIcon className="w-4 h-4 text-amber-500" />
+                      <span className="text-amber-700 font-medium">
+                        {t('clinicRequests.slaCountdown')}: {getSlaRemaining(request.sla_deadline_at)?.expired ? t('clinicRequests.slaExpired') : getSlaRemaining(request.sla_deadline_at)?.text}
+                      </span>
+                    </div>
+                  )}
+                  {/* Estyi: Teklif türü ve USD */}
+                  {request.status === 'offered' && (
+                    <div className="flex flex-wrap items-center gap-2 mb-2">
+                      {request.offerType && (
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                          {getOfferTypeLabel(request.offerType)}
+                        </span>
+                      )}
+                      {request.offerPriceUsd != null && (
+                        <span className="text-sm font-semibold text-gray-900">${request.offerPriceUsd.toLocaleString()} USD</span>
+                      )}
+                    </div>
+                  )}
 
                   <p className="text-gray-700 text-sm mb-4 line-clamp-2">{request.description}</p>
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Bell, X, Check, Trash2, Filter, DollarSign, MessageCircle, AlertCircle, Building, User, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -21,22 +21,70 @@ interface ClinicNotification {
 interface ClinicNotificationCenterProps {
   isOpen: boolean;
   onClose: () => void;
-  clinicSpecialties?: string[]; // Klinik uzmanlık alanları
+  /** Bildirimler butonunun bulunduğu element ref'i - dropdown bu öğenin hemen altında açılır */
+  anchorRef?: React.RefObject<HTMLElement | null>;
+  clinicSpecialties?: string[];
 }
 
 const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({ 
   isOpen, 
   onClose, 
+  anchorRef,
   clinicSpecialties = ['Rhinoplasty', 'Hair Transplant', 'Breast Surgery'] 
 }) => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [notifications, setNotifications] = useState<ClinicNotification[]>([]);
+  const [dropdownStyle, setDropdownStyle] = useState<React.CSSProperties>({
+    position: 'fixed',
+    top: '4.5rem',
+    right: '1rem',
+    width: '20rem',
+    maxHeight: 'min(24rem, 70vh)',
+  });
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Mock kaldırıldı: API entegrasyonu geldiğinde burada gerçek fetch yapılacak
   useEffect(() => {
     setNotifications([]);
   }, [clinicSpecialties]);
+
+  // Dışarı tıklanınca kapat (backdrop veya sayfanın herhangi bir yeri)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleMouseDown = (e: MouseEvent) => {
+      const target = e.target as Node;
+      const insideDropdown = dropdownRef.current?.contains(target);
+      const insideAnchor = anchorRef?.current?.contains(target);
+      if (!insideDropdown && !insideAnchor) {
+        onClose();
+      }
+    };
+    document.addEventListener('mousedown', handleMouseDown);
+    return () => document.removeEventListener('mousedown', handleMouseDown);
+  }, [isOpen, onClose, anchorRef]);
+
+  // Bildirimler butonunun hemen altında konumla
+  useEffect(() => {
+    if (!isOpen) return;
+    if (anchorRef?.current) {
+      const rect = anchorRef.current.getBoundingClientRect();
+      setDropdownStyle({
+        position: 'fixed',
+        top: rect.bottom + 6,
+        right: window.innerWidth - rect.right,
+        width: '20rem',
+        maxHeight: 'min(24rem, 70vh)',
+      });
+    } else {
+      setDropdownStyle({
+        position: 'fixed',
+        top: '4.5rem',
+        right: '1rem',
+        width: '20rem',
+        maxHeight: 'min(24rem, 70vh)',
+      });
+    }
+  }, [isOpen, anchorRef]);
 
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
@@ -139,147 +187,128 @@ const ClinicNotificationCenter: React.FC<ClinicNotificationCenterProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 overflow-hidden">
-      {/* Backdrop */}
+    <>
+      {/* Dışarı tıklanınca kapanan arka plan */}
       <div
-        className="absolute inset-0 bg-black bg-opacity-50"
+        className="fixed inset-0 z-[9998] bg-black/20"
         onClick={onClose}
-      ></div>
-      {/* Notification Panel */}
-      <div className="absolute right-0 top-0 h-full w-96 bg-white shadow-2xl transform transition-transform duration-300 ease-in-out">
-        <div className="flex flex-col h-full">
-          {/* Header */}
-          <div className="flex items-center justify-between p-6 border-b border-gray-100">
-            <div className="flex items-center">
-              <Bell className="w-6 h-6 text-gray-600 mr-3" />
-              <h2 className="text-xl font-bold text-gray-900">{t('common.notifications')}</h2>
-              {unreadCount > 0 && (
-                <span className="ml-2 bg-red-500 text-white text-xs font-bold rounded-full px-2 py-1">
-                  {unreadCount}
-                </span>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              {unreadCount > 0 && (
-                <button
-                  onClick={markAllAsRead}
-                  className="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                >
-                  {t('common.markAllRead')}
-                </button>
-              )}
-              <button
-                onClick={onClose}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
-            </div>
-          </div>
-
-          {/* Notifications List */}
-          <div className="flex-1 overflow-y-auto">
-            {notifications.length === 0 ? (
-              <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-                <Bell className="w-16 h-16 mb-4 opacity-50" />
-                <p className="text-lg font-medium">{t('common.noNotifications')}</p>
-                <p className="text-sm">{t('common.newNotificationsHere')}</p>
-              </div>
-            ) : (
-              <div className="p-4 space-y-3">
-                {notifications.map((notification) => (
-                  <div
-                    key={notification.id}
-                    onClick={() => handleNotificationClick(notification)}
-                    className={`p-4 rounded-xl border-l-4 ${getPriorityColor(notification.priority)} ${
-                      notification.isRead ? 'bg-gray-50' : 'bg-white shadow-sm'
-                    } transition-all duration-200 hover:shadow-md cursor-pointer`}
-                  >
-                    <div className="flex items-start space-x-3">
-                      <div className="mt-1">
-                        {getNotificationIcon(notification.type)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center justify-between mb-1">
-                          <h3 className={`text-sm font-semibold ${
-                            notification.isRead ? 'text-gray-700' : 'text-gray-900'
-                          }`}>
-                            {notification.title}
-                          </h3>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-xs text-gray-500">
-                              {formatTime(notification.timestamp)}
-                            </span>
-                            {!notification.isRead && (
-                              <button
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  markAsRead(notification.id);
-                                }}
-                                className="text-xs text-blue-600 hover:text-blue-800"
-                              >
-                                <Check className="w-3 h-3" />
-                              </button>
-                            )}
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteNotification(notification.id);
-                              }}
-                              className="text-xs text-red-600 hover:text-red-800"
-                            >
-                              <Trash2 className="w-3 h-3" />
-                            </button>
-                          </div>
-                        </div>
-                        <p className="text-sm text-gray-600 leading-relaxed">
-                          {notification.message}
-                        </p>
-                        
-                        {/* Bildirim detayları */}
-                        {notification.userId && (
-                          <div className="mt-2 p-2 bg-blue-50 rounded-lg">
-                            <div className="flex items-center space-x-2">
-                              <User className="w-3 h-3 text-blue-600" />
-                              <span className="text-xs font-medium text-blue-800">
-                                {notification.userId}
-                              </span>
-                            </div>
-                            {notification.procedure && (
-                              <div className="mt-1 text-xs text-blue-700">
-                                {notification.procedure}
-                              </div>
-                            )}
-                            {notification.offerAmount && (
-                              <div className="mt-1 text-xs text-blue-700">
-                                {t('common.offer')}: ${notification.offerAmount.toLocaleString()}
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+        aria-hidden="true"
+      />
+      {/* Bildirimler butonunun hemen altında açılan dropdown */}
+      <div
+        ref={dropdownRef}
+        style={dropdownStyle}
+        className="z-[9999] flex flex-col bg-white rounded-xl shadow-xl border border-gray-200 overflow-hidden"
+        role="dialog"
+        aria-label={t('common.notifications')}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 shrink-0">
+          <div className="flex items-center gap-2">
+            <Bell className="w-5 h-5 text-gray-600" />
+            <span className="font-semibold text-gray-900">{t('common.notifications')}</span>
+            {unreadCount > 0 && (
+              <span className="bg-red-500 text-white text-xs font-bold rounded-full min-w-[1.25rem] h-5 px-1.5 flex items-center justify-center">
+                {unreadCount}
+              </span>
             )}
           </div>
-
-          {/* Footer */}
-          <div className="p-4 border-t border-gray-100">
-            <div className="flex items-center justify-between text-xs text-gray-500">
-              <span>{notifications.length} {t('common.notifications')}</span>
+          <div className="flex items-center gap-1">
+            {unreadCount > 0 && (
               <button
                 onClick={markAllAsRead}
-                className="text-blue-600 hover:text-blue-800 font-medium"
+                className="text-xs text-blue-600 hover:text-blue-800 font-medium px-2 py-1 rounded hover:bg-blue-50"
               >
                 {t('common.markAllRead')}
               </button>
-            </div>
+            )}
+            <button
+              onClick={onClose}
+              className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+              aria-label={t('common.close')}
+            >
+              <X className="w-4 h-4 text-gray-500" />
+            </button>
           </div>
         </div>
+
+        {/* Liste */}
+        <div className="overflow-y-auto flex-1 min-h-0">
+          {notifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-10 px-4 text-gray-500 text-center">
+              <Bell className="w-12 h-12 mb-3 opacity-40" />
+              <p className="text-sm font-medium">{t('common.noNotifications')}</p>
+              <p className="text-xs mt-0.5">{t('common.newNotificationsHere')}</p>
+            </div>
+          ) : (
+            <div className="p-2 space-y-1">
+              {notifications.map((notification) => (
+                <div
+                  key={notification.id}
+                  onClick={() => handleNotificationClick(notification)}
+                  className={`p-3 rounded-lg border-l-2 ${getPriorityColor(notification.priority)} ${
+                    notification.isRead ? 'bg-gray-50' : 'bg-white'
+                  } hover:bg-gray-50 transition-colors cursor-pointer`}
+                >
+                  <div className="flex items-start gap-2">
+                    <div className="shrink-0 mt-0.5">
+                      {getNotificationIcon(notification.type)}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className={`text-sm font-medium truncate ${
+                          notification.isRead ? 'text-gray-600' : 'text-gray-900'
+                        }`}>
+                          {notification.title}
+                        </h3>
+                        <span className="text-xs text-gray-400 shrink-0">
+                          {formatTime(notification.timestamp)}
+                        </span>
+                      </div>
+                      <p className="text-xs text-gray-600 line-clamp-2 mt-0.5">
+                        {notification.message}
+                      </p>
+                      {notification.userId && (
+                        <div className="mt-1.5 p-1.5 bg-blue-50 rounded text-xs text-blue-800">
+                          {notification.userId}
+                          {notification.procedure && ` · ${notification.procedure}`}
+                          {notification.offerAmount != null && ` · $${notification.offerAmount.toLocaleString()}`}
+                        </div>
+                      )}
+                    </div>
+                    <div className="flex shrink-0 gap-0.5">
+                      {!notification.isRead && (
+                        <button
+                          onClick={(e) => { e.stopPropagation(); markAsRead(notification.id); }}
+                          className="p-1 rounded text-blue-600 hover:bg-blue-50"
+                        >
+                          <Check className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                      <button
+                        onClick={(e) => { e.stopPropagation(); deleteNotification(notification.id); }}
+                        className="p-1 rounded text-gray-400 hover:bg-red-50 hover:text-red-600"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {notifications.length > 0 && (
+          <div className="px-3 py-2 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500 shrink-0">
+            <span>{notifications.length} {t('common.notifications')}</span>
+            <button onClick={markAllAsRead} className="text-blue-600 hover:text-blue-800 font-medium">
+              {t('common.markAllRead')}
+            </button>
+          </div>
+        )}
       </div>
-    </div>
+    </>
   );
 };
 

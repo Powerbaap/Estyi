@@ -1,5 +1,5 @@
 import React from 'react';
-import { Shield, Globe, Users, Star, Award, Clock, Sparkles, Heart, Zap } from 'lucide-react';
+import { Shield, Globe, Award, Clock, Lock, MapPin, Sparkles, Heart, Zap } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import { useTranslation } from 'react-i18next';
@@ -43,18 +43,6 @@ const Features: React.FC = () => {
       color: 'from-pink-500 to-red-500'
     },
     {
-      icon: Users,
-      title: t('home.features.experts.title'),
-      description: t('home.features.experts.description'),
-      color: 'from-red-500 to-orange-500'
-    },
-    {
-      icon: Star,
-      title: t('home.features.proven.title'),
-      description: t('home.features.proven.description'),
-      color: 'from-orange-500 to-yellow-500'
-    },
-    {
       icon: Award,
       title: t('home.features.quality.title'),
       description: t('home.features.quality.description'),
@@ -65,6 +53,18 @@ const Features: React.FC = () => {
       title: t('home.features.support.title'),
       description: t('home.features.support.description'),
       color: 'from-green-500 to-blue-500'
+    },
+    {
+      icon: Lock,
+      title: t('home.features.fixedPrice.title'),
+      description: t('home.features.fixedPrice.description'),
+      color: 'from-blue-500 to-indigo-500'
+    },
+    {
+      icon: MapPin,
+      title: t('home.features.locationFilter.title'),
+      description: t('home.features.locationFilter.description'),
+      color: 'from-indigo-500 to-purple-500'
     }
   ];
 
@@ -92,22 +92,22 @@ const Features: React.FC = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-200/50 overflow-hidden"
+              className="group relative bg-white/90 backdrop-blur-xl rounded-3xl p-10 lg:p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-200/50 overflow-hidden"
             >
               {/* Background Gradient */}
               <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
               
               {/* Icon */}
-              <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${feature.color} rounded-2xl mb-6 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500 relative z-10`}>
-                <feature.icon className="w-8 h-8 text-white" />
+              <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br ${feature.color} rounded-2xl mb-8 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500 relative z-10`}>
+                <feature.icon className="w-10 h-10 text-white" />
               </div>
               
               {/* Content */}
               <div className="relative z-10">
-                <h3 className="text-xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors duration-300">
+                <h3 className="text-2xl lg:text-3xl font-bold text-gray-900 mb-4 group-hover:text-purple-600 transition-colors duration-300">
                   {feature.title}
                 </h3>
-                <p className="text-gray-600 leading-relaxed">
+                <p className="text-gray-600 leading-relaxed text-lg">
                   {feature.description}
                 </p>
               </div>
@@ -116,8 +116,8 @@ const Features: React.FC = () => {
               <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
               
               {/* Floating Elements */}
-              <div className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-                <Heart className="w-4 h-4 text-pink-400 animate-pulse" />
+              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                <Heart className="w-5 h-5 text-pink-400 animate-pulse" />
               </div>
             </div>
           ))}

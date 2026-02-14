@@ -109,3 +109,6 @@ railway.json
 *.zip
 # Local Netlify folder
 .netlify
+ 
+# Local cleanup backups (may contain sensitive snapshots)
+cleanup_backup_*/

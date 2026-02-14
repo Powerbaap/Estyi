@@ -42,7 +42,8 @@ export const sendVerificationEmail = async (email: string, code: string): Promis
     return;
   }
   try {
-    const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3005'}/api/send-verification`, {
+    const baseUrl = (import.meta as any).env.VITE_API_BASE_URL || (import.meta as any).env.VITE_API_URL || 'http://localhost:3005';
+    const response = await fetch(`${baseUrl}/api/send-verification`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

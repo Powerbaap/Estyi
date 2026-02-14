@@ -94,54 +94,30 @@ export const clinicApplicationService = {
   createApplication: async (payload: {
     clinic_name: string;
     country?: string;
+    countries?: string[];
+    cities_by_country?: Record<string, string[]>;
     specialties?: string[];
     website?: string;
     phone?: string;
     email: string;
-    password?: string;
     description?: string;
     certificate_urls?: string[];
     submitted_by?: string | null;
   }) => {
     // Anonim başvurular için RLS SELECT engeline takılmamak adına
     // sadece INSERT yap ve temsil isteme; oturum açıkken temsil döndür.
-    try {
-      const insertQuery = supabase
-        .from('clinic_applications')
-        .insert(payload);
+    const insertQuery = supabase
+      .from('clinic_applications')
+      .insert(payload);
 
-      if (payload.submitted_by) {
-        const { data, error } = await insertQuery.select('*');
-        if (error) throw error;
-        return Array.isArray(data) ? data[0] : data;
-      } else {
-        const { error } = await insertQuery; // return=minimal
-        if (error) throw error;
-        return { ok: true } as const;
-      }
-    } catch (e: any) {
-      const msg = (e?.message || '').toLowerCase();
-      const looksLikePasswordColumnMissing =
-        msg.includes("password") && (msg.includes("schema cache") || msg.includes("column"));
-
-      // Üretimde şema henüz güncellenmediyse, şifre alanını çıkarıp tekrar dene
-      if (looksLikePasswordColumnMissing) {
-        const safePayload = { ...payload } as any;
-        delete safePayload.password;
-        const retryInsert = supabase
-          .from('clinic_applications')
-          .insert(safePayload);
-        if (payload.submitted_by) {
-          const { data, error } = await retryInsert.select('*');
-          if (error) throw error;
-          return Array.isArray(data) ? data[0] : data;
-        } else {
-          const { error } = await retryInsert;
-          if (error) throw error;
-          return { ok: true, passwordStored: false } as const;
-        }
-      }
-      throw e;
+    if (payload.submitted_by) {
+      const { data, error } = await insertQuery.select('*');
+      if (error) throw error;
+      return Array.isArray(data) ? data[0] : data;
+    } else {
+      const { error } = await insertQuery; // return=minimal
+      if (error) throw error;
+      return { ok: true } as const;
     }
   },
 
@@ -194,6 +170,7 @@ export const clinicApplicationService = {
       .update({ status: 'approved' })
       .eq('id', application.id);
     if (appErr) throw appErr;
+
     return createdClinic;
   },
 

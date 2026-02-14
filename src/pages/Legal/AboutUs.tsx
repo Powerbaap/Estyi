@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Globe, Shield, Sparkles, Heart, Star, Award } from 'lucide-react';
+import { Users, Globe, Shield, Sparkles, Heart, Star } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
 const AboutUs: React.FC = () => {
@@ -65,53 +65,18 @@ const AboutUs: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 rounded-2xl p-6 border border-green-200 mb-8">
-              <div className="flex items-center space-x-3 mb-4">
-                <Award className="w-6 h-6 text-green-600" />
-                <h3 className="font-semibold text-gray-900">{t('aboutUs.quality.title')}</h3>
-              </div>
-              <p className="text-gray-700 leading-relaxed mb-4">
-                {t('aboutUs.quality.description')}
-              </p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                <div className="flex items-center space-x-2">
-                  <Heart className="w-4 h-4 text-green-600" />
-                  <span>{t('aboutUs.stats.patients')}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Star className="w-4 h-4 text-yellow-500" />
-                  <span>{t('aboutUs.stats.rating')}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Shield className="w-4 h-4 text-blue-600" />
-                  <span>{t('aboutUs.stats.clinics')}</span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <Globe className="w-4 h-4 text-purple-600" />
-                  <span>{t('aboutUs.stats.countries')}</span>
-                </div>
-              </div>
-            </div>
-
             <div className="text-center">
               <h3 className="text-2xl font-bold text-gray-900 mb-4">{t('aboutUs.cta.title')}</h3>
               <p className="text-gray-600 mb-6">
                 {t('aboutUs.cta.description')}
               </p>
-              <div className="flex flex-col sm:flex-row justify-center space-y-3 sm:space-y-0 sm:space-x-4">
+              <div className="flex flex-col sm:flex-row justify-center">
                 <a 
                   href="/contact" 
                   className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-xl font-medium hover:from-purple-700 hover:to-pink-700 transition-all duration-300 shadow-lg hover:shadow-xl"
                 >
                   <Heart className="w-4 h-4" />
                   <span>{t('aboutUs.cta.contactButton')}</span>
-                </a>
-                <a 
-                  href="mailto:info@estyi.com" 
-                  className="inline-flex items-center space-x-2 bg-white text-purple-600 px-6 py-3 rounded-xl font-medium border border-purple-200 hover:bg-purple-50 transition-all duration-300"
-                >
-                  <Star className="w-4 h-4" />
-                  <span>{t('aboutUs.cta.emailButton')}</span>
                 </a>
               </div>
             </div>

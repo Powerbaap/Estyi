@@ -14,8 +14,8 @@ app.use(cors());
 app.use(express.json());
 
 const supabase = createClient(
-  process.env.SUPABASE_URL || 'https://haiafkuaamkxudvvhucv.supabase.co',
-  process.env.SUPABASE_SERVICE_KEY || 'your-service-key'
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_SERVICE_KEY
 );
 
 // Dev fallback flags (decoupled):
@@ -493,7 +493,7 @@ app.get('/api/admin/clinic-applications', async (req, res) => {
 app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
   try {
     if (useSupabaseFallback) {
-      return res.json({ success: true, message: 'Dev fallback: approved', passwordSetRequired: true });
+      return res.json({ success: true, message: 'Dev fallback: approved' });
     }
     const id = req.params.id;
     // Fetch application
@@ -505,9 +505,13 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
     if (appErr) return res.status(400).json({ error: appErr.message });
     if (!app) return res.status(404).json({ error: 'Application not found' });
 
+    // Idempotency check
+    if (app.status === 'approved') {
+      return res.json({ success: true, message: 'Application already approved' });
+    }
+
     // Create or update clinic auth user
     let clinicAuthId = null;
-    let tempPasswordUsed = false;
     try {
       // Try finding existing auth user by email
       const { data: list, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
@@ -517,23 +521,13 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
       }
 
       if (!clinicAuthId) {
-        const tempPassword = app.password || `Estyi${Math.random().toString(36).slice(2, 8)}!${Math.floor(Math.random() * 10)}`;
-        const { data: authData, error: authError } = await supabase.auth.admin.createUser({
-          email: app.email,
-          password: tempPassword,
-          email_confirm: true,
-          user_metadata: { role: 'clinic', name: app.clinic_name }
+        // Invite user via email (no temp password needed)
+        const { data: authData, error: authError } = await supabase.auth.admin.inviteUserByEmail(app.email, {
+          data: { role: 'clinic', name: app.clinic_name },
+          redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/auth/callback` : 'http://localhost:5173/auth/callback')
         });
         if (authError) return res.status(400).json({ error: authError.message });
         clinicAuthId = authData.user.id;
-        if (!app.password) tempPasswordUsed = true;
-      } else if (app.password) {
-        // Update existing user password and metadata
-        const { error: updUserErr } = await supabase.auth.admin.updateUserById(clinicAuthId, {
-          password: app.password,
-          user_metadata: { role: 'clinic', name: app.clinic_name }
-        });
-        if (updUserErr) return res.status(400).json({ error: updUserErr.message });
       }
 
       // Upsert profile in users table
@@ -555,56 +549,58 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
       return res.status(500).json({ error: 'Failed to provision clinic user' });
     }
 
-    // If no password provided in application, generate a recovery link and email it
+    // Generate a recovery link and email it (using generateLink for consistency)
     let recoveryLinkSent = false;
-    if (!app.password) {
-      try {
-        const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-          type: 'recovery',
-          email: app.email,
-          options: { redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/reset-password` : undefined) }
-        });
-        if (!linkErr && linkData?.action_link) {
-          if (!useEmailFallback) {
-            const html = `
-              <div style="font-family: Arial, sans-serif;">
-                <h2>Estyi Klinik Erişimi</h2>
-                <p>Başvurunuz onaylandı. Şifrenizi belirlemek için aşağıdaki bağlantıyı kullanın:</p>
-                <p><a href="${linkData.action_link}" target="_blank">Şifre Belirleme Linki</a></p>
-                <p>Bağlantı bir süre sonra geçersiz olur. Sorunuz olursa bu e-postayı yanıtlayabilirsiniz.</p>
+    try {
+      const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+        type: 'recovery',
+        email: app.email,
+        options: { redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/auth/callback` : 'http://localhost:5173/auth/callback') }
+      });
+      if (!linkErr && linkData?.action_link) {
+        if (!useEmailFallback) {
+          const html = `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; rounded-lg;">
+              <h2 style="color: #4F46E5;">Estyi Klinik Erişimi</h2>
+              <p>Merhaba <strong>${app.clinic_name}</strong>,</p>
+              <p>Başvurunuz onaylandı! Hesabınızı aktifleştirmek ve şifrenizi belirlemek için aşağıdaki butona tıklayın:</p>
+              <div style="text-align: center; margin: 30px 0;">
+                <a href="${linkData.action_link}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Şifremi Belirle</a>
               </div>
-            `;
-            await transporter.sendMail({
-              from: process.env.SMTP_USER,
-              to: app.email,
-              subject: 'Estyi Klinik Giriş – Şifre Belirleme',
-              html,
-            });
-            recoveryLinkSent = true;
-          } else {
-            console.log(`🔗 DEV: Recovery link for ${app.email}: ${linkData.action_link}`);
-            recoveryLinkSent = true;
-          }
-        }
-      } catch (e) {
--        console.warn('Recovery link email failed:', (e && (e as any).message) || e);
-+        console.warn('Recovery link email failed:', (e && e.message) || e);
+              <p style="color: #666; font-size: 14px;">Bu bağlantı bir süre sonra geçersiz olacaktır.</p>
+              <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+              <p style="color: #999; font-size: 12px;">Sorunuz olursa bu e-postayı yanıtlayabilirsiniz.</p>
+            </div>
+          `;
+          await transporter.sendMail({
+            from: process.env.SMTP_USER,
+            to: app.email,
+            subject: 'Estyi Klinik Onayı – Şifre Belirleme',
+            html,
+          });
+          recoveryLinkSent = true;
+        } else {
+          console.log(`🔗 DEV: Recovery link for ${app.email}: ${linkData.action_link}`);
+          recoveryLinkSent = true;
         }
       }
+    } catch (e) {
+      console.warn('Recovery link email failed:', (e && e.message) || e);
+    }
 
-      // Create clinic (link to auth user id)
-      const clinicInsert = {
-        id: clinicAuthId, // align with RLS policies (auth.uid() = id)
-        name: app.clinic_name,
-        email: app.email,
-        phone: app.phone || '',
-        website: app.website || '',
-        location: app.country || '',
-        status: 'active',
-        rating: 0,
-        reviews: 0,
-        specialties: app.specialties || []
-      };
+    // Create clinic (link to auth user id)
+    const clinicInsert = {
+      id: clinicAuthId, // align with RLS policies (auth.uid() = id)
+      name: app.clinic_name,
+      email: app.email,
+      phone: app.phone || '',
+      website: app.website || '',
+      location: app.country || '',
+      status: 'active',
+      rating: 0,
+      reviews: 0,
+      specialties: app.specialties || []
+    };
     const { data: clinicRow, error: clinicErr } = await supabase
       .from('clinics')
       .upsert(clinicInsert)
@@ -616,14 +612,63 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
     // Update application status
     const { error: updErr } = await supabase
       .from('clinic_applications')
-      .update({ status: 'approved' })
+      .update({ status: 'approved', approved_at: new Date().toISOString() })
       .eq('id', id);
     if (updErr) return res.status(400).json({ error: updErr.message });
 
-    res.json({ success: true, clinic: createdClinic, passwordSetRequired: !app.password, recoveryLinkSent, tempPasswordUsed });
+    res.json({ success: true, clinic: createdClinic, recoveryLinkSent });
   } catch (error) {
     console.error('Approve clinic application error:', error);
     res.status(500).json({ error: 'Failed to approve application' });
+  }
+});
+
+app.post('/api/admin/clinic-applications/:id/resend-invite', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { data: app, error: appErr } = await supabase
+      .from('clinic_applications')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (appErr || !app) return res.status(404).json({ error: 'Application not found' });
+    if (app.status !== 'approved') return res.status(400).json({ error: 'Application must be approved first' });
+
+    const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
+      type: 'recovery',
+      email: app.email,
+      options: { redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/auth/callback` : 'http://localhost:5173/auth/callback') }
+    });
+
+    if (linkErr) throw linkErr;
+
+    if (!useEmailFallback) {
+      const html = `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; rounded-lg;">
+          <h2 style="color: #4F46E5;">Estyi Klinik Erişimi</h2>
+          <p>Merhaba <strong>${app.clinic_name}</strong>,</p>
+          <p>Şifre belirleme talebiniz üzerine yeni bir link oluşturuldu:</p>
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="${linkData.action_link}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Şifremi Belirle</a>
+          </div>
+          <p style="color: #666; font-size: 14px;">Bu bağlantı bir süre sonra geçersiz olacaktır.</p>
+        </div>
+      `;
+      await transporter.sendMail({
+        from: process.env.SMTP_USER,
+        to: app.email,
+        subject: 'Estyi Klinik – Şifre Belirleme (Yeni Link)',
+        html,
+      });
+    } else {
+      console.log(`🔗 DEV: Resend recovery link for ${app.email}: ${linkData.action_link}`);
+    }
+
+    res.json({ success: true, message: 'Invite link resent' });
+  } catch (error) {
+    console.error('Resend invite error:', error);
+    res.status(500).json({ error: 'Failed to resend invite' });
   }
 });
 
@@ -645,6 +690,30 @@ app.post('/api/admin/clinic-applications/:id/reject', async (req, res) => {
   } catch (error) {
     console.error('Reject clinic application error:', error);
     res.status(500).json({ error: 'Failed to reject application' });
+  }
+});
+
+app.post('/api/requests/:id/accept', async (req, res) => {
+  try {
+    const requestId = req.params.id;
+    const { clinic_id } = req.body || {};
+    if (!requestId || !clinic_id) {
+      return res.status(400).json({ error: 'request_id and clinic_id required' });
+    }
+    if (useSupabaseFallback) {
+      return res.json({ success: true, idempotent: true, snapshot_id: 'DEV_SNAPSHOT', conversation_id: 'DEV_CONV' });
+    }
+    const { data, error } = await supabase.rpc('accept_request', {
+      p_request_id: requestId,
+      p_clinic_id: clinic_id
+    });
+    if (error) {
+      return res.status(400).json({ error: error.message || 'Accept failed' });
+    }
+    res.json({ success: true, ...data });
+  } catch (error) {
+    console.error('Accept request error:', error);
+    res.status(500).json({ error: 'Accept failed' });
   }
 });
 
