@@ -1,21 +1,23 @@
 import { supabase } from '../lib/supabaseClient';
+import { STORAGE_BUCKETS } from '../config/storageBuckets';
 
 export const uploadRequestPhotos = async (userId: string, files: File[]): Promise<string[]> => {
   if (!files || files.length === 0) return [];
 
-  const bucket = 'images';
+  const bucket = STORAGE_BUCKETS.CERTIFICATES;
   const uploadedUrls: string[] = [];
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const path = `requests/${userId}/${Date.now()}-${i}-${safeName}`;
+    const path = `requests/${userId}/${Date.now()}_${safeName}`;
 
     const { error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
+      console.error('upload error', uploadError);
       throw uploadError;
     }
 
@@ -68,7 +70,7 @@ const extractBucketPath = (url: string, bucket: string): string | null => {
 // Fotoğraf URL'lerini imzala: bucket private olsa bile görüntülenebilir link üretir
 export const signRequestPhotoUrls = async (urls: string[], expiresInSeconds: number = 3600): Promise<string[]> => {
   if (!urls || urls.length === 0) return [];
-  const bucket = 'images';
+  const bucket = STORAGE_BUCKETS.CERTIFICATES;
   const out: string[] = [];
   for (const u of urls) {
     const path = extractBucketPath(u, bucket);
@@ -100,22 +102,32 @@ export const signRequestPhotoUrls = async (urls: string[], expiresInSeconds: num
   return out;
 };
 
-export const uploadClinicCertificates = async (applicationId: string, files: File[]): Promise<string[]> => {
+export const uploadClinicCertificates = async (applicationId: string, files: File[], userId?: string): Promise<string[]> => {
   if (!files || files.length === 0) return [];
 
-  const bucket = 'images';
+  const bucket = STORAGE_BUCKETS.CERTIFICATES;
   const uploadedUrls: string[] = [];
+  let uid = userId;
+  try {
+    if (!uid) {
+      const { data } = await supabase.auth.getSession();
+      uid = data?.session?.user?.id || 'anonymous';
+    }
+  } catch {
+    uid = 'anonymous';
+  }
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-    const path = `applications/${applicationId}/${Date.now()}-${i}-${safeName}`;
+    const path = `clinic-applications/${uid}/${Date.now()}_${safeName}`;
 
     const { error: uploadError } = await supabase.storage
       .from(bucket)
       .upload(path, file, { upsert: true });
 
     if (uploadError) {
+      console.error('upload error', uploadError);
       throw uploadError;
     }
 
@@ -131,7 +143,7 @@ export const uploadClinicCertificates = async (applicationId: string, files: Fil
 // Genel imzalama: images bucket’taki herhangi bir dosya URL listesini imzalar
 export const signImageUrls = async (urls: string[], expiresInSeconds: number = 3600): Promise<string[]> => {
   if (!urls || urls.length === 0) return [];
-  const bucket = 'images';
+  const bucket = STORAGE_BUCKETS.CERTIFICATES;
   const out: string[] = [];
   for (const u of urls) {
     const path = extractBucketPath(u, bucket);

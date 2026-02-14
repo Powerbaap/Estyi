@@ -123,7 +123,12 @@ export const clinicApplicationService = {
 
   // Sertifikaları yükle ve başvuruya ekle
   attachCertificates: async (applicationId: string, files: File[]) => {
-    const urls = await uploadClinicCertificates(applicationId, files);
+    let uid: string | undefined = undefined;
+    try {
+      const { data } = await supabase.auth.getSession();
+      uid = data?.session?.user?.id;
+    } catch { /* ignore */ }
+    const urls = await uploadClinicCertificates(applicationId, files, uid);
     const { data, error } = await supabase
       .from('clinic_applications')
       .update({ certificate_urls: urls })
