@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { getProcedure } from '../../data/procedureCategories';
 import { Save, Upload, MapPin, Phone, Mail, Globe, Award, Users, FileText, Camera, X } from 'lucide-react';
 

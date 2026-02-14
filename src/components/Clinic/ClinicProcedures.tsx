@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { PROCEDURE_CATEGORIES } from '../../data/procedureCategories';
 import { Plus, Edit2, Trash2, FileText } from 'lucide-react';
 

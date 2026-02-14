@@ -22,7 +22,7 @@ import {
 } from 'lucide-react';
 import { signImageUrls } from '../../services/storage';
 import { adminService } from '../../services/adminService';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { PROCEDURE_CATEGORIES } from '../../data/procedureCategories';
 import { useTranslation } from 'react-i18next';
 
