@@ -35,30 +35,13 @@ export const saveVerificationCode = async (userId: string, code: string): Promis
   }
 };
 
-// Email gönderme fonksiyonu (backend API'sini kullan)
+// Email gönderme fonksiyonu — kaldırıldı (Supabase email doğrulama linki kullanılıyor)
 export const sendVerificationEmail = async (email: string, code: string): Promise<void> => {
   if (offline) {
     console.warn(`OFFLINE: Doğrulama kodu ${code} ${email} adresine gönderilmiş varsayılıyor.`);
     return;
   }
-  try {
-    const baseUrl = (import.meta as any).env.VITE_API_BASE_URL || (import.meta as any).env.VITE_API_URL || 'http://localhost:3005';
-    const response = await fetch(`${baseUrl}/api/send-verification`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, code })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || 'Email gönderilemedi');
-    }
-
-  } catch (error) {
-    throw new Error('Email gönderilemedi');
-  }
+  console.warn('Email gönderimi client üzerinden devre dışı.');
 };
 
 // Doğrulama kodunu kontrol et

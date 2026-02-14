@@ -11,6 +11,7 @@ import AdminRoute from './components/AdminRoute';
 const Home = lazy(() => import('./pages/Home'));
 const Login = lazy(() => import('./pages/Auth/Login'));
 const Signup = lazy(() => import('./pages/Auth/Signup'));
+const AuthCallback = lazy(() => import('./pages/Auth/Callback'));
 const UserDashboard = lazy(() => import('./pages/Dashboard/UserDashboard'));
 const ClinicDashboard = lazy(() => import('./pages/Dashboard/ClinicDashboard'));
 const Profile = lazy(() => import('./pages/Profile'));
@@ -70,6 +71,7 @@ function AppContent() {
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             
             {/* User Routes */}
             <Route path="/dashboard" element={<UserDashboard />} />

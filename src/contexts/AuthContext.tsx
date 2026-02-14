@@ -1,7 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
-import { generateUserId, generateVerificationCode, saveVerificationCode, sendVerificationEmail, verifyCode } from '../lib/emailService';
 
 const offline = import.meta.env.VITE_OFFLINE_MODE === 'true';
 
@@ -11,9 +10,6 @@ interface AuthContextType {
   login: (email: string, password: string, role?: 'user' | 'clinic' | 'admin') => Promise<{ success: boolean; error?: string }>;
   signup: (email: string, password: string, role?: 'user' | 'clinic' | 'admin') => Promise<{ success: boolean; error?: string; userId?: string }>;
   signInWithGoogle: () => Promise<{ success: boolean; error?: string }>;
-  verifyEmail: (userId: string, code: string) => Promise<{ success: boolean; error?: string }>;
-  // Yeni: email ile doğrulama
-  verifyEmailByEmail: (email: string, code: string) => Promise<{ success: boolean; error?: string; message?: string }>;
   logout: () => Promise<void>;
   resetPassword: (email: string) => Promise<{ success: boolean; error?: string }>;
   isLoading: boolean;
@@ -114,6 +110,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
       if (!error) {
+        // İlk giriş/ doğrulama sonrası users upsert
+        const uid = data?.user?.id;
+        if (uid) {
+          try {
+            await supabase.from('users').upsert(
+              { id: uid, email, role: requestedRole || 'user', is_verified: true },
+              { onConflict: 'id' }
+            );
+          } catch {}
+        }
         return { success: true };
       }
 
@@ -164,7 +170,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
       if (offline) {
-        const devId = generateUserId();
+        const devId = 'DEV_' + Math.random().toString(36).substring(2, 10);
         setUser({ id: devId, email, user_metadata: { role, name: email.split('@')[0] } } as any);
         return { success: true, userId: devId };
       }
@@ -196,52 +202,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, error: 'Beklenmeyen hata: kullanıcı oluşturulamadı' };
     } catch (error) {
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const verifyEmail = async (userId: string, code: string) => {
-    try {
-      setIsLoading(true);
-      if (offline) {
-        return { success: true };
-      }
-      const configured = (import.meta as any).env.VITE_API_BASE_URL || (import.meta as any).env.VITE_API_URL;
-      const local = 'http://localhost:3005';
-      const primaryUrl = `${(configured || local)}/api/verify-code`;
-      let response: Response | null = null;
-      try {
-        response = await fetch(primaryUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId, code })
-        });
-      } catch (_) {
-        response = null;
-      }
-      if (!response || !response.ok) {
-        if (configured && configured !== local) {
-          const fallbackResp = await fetch(`${local}/api/verify-code`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId, code })
-          });
-          if (!fallbackResp.ok) {
-            const errorData = await fallbackResp.json().catch(() => ({} as any));
-            return { success: false, error: errorData.error || 'Doğrulama başarısız' };
-          }
-          response = fallbackResp;
-        } else {
-          const errorData = await (response ? response.json() : Promise.resolve({} as any)).catch(() => ({} as any));
-          return { success: false, error: errorData.error || 'Doğrulama başarısız' };
-        }
-      }
-
-      await response.json().catch(() => ({} as any));
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: 'Doğrulama sırasında hata oluştu' };
     } finally {
       setIsLoading(false);
     }
@@ -298,30 +258,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setMessageNotifications([]);
   };
 
-  const verifyEmailByEmail = async (email: string, code: string) => {
-    try {
-      setIsLoading(true);
-      if (offline) {
-        return { success: true, message: 'OFFLINE: Doğrulama varsayılan olarak başarılı.' };
-      }
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
-      const resp = await fetch(`${apiUrl}/api/verify-code`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code })
-      });
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => null);
-        return { success: false, error: err?.error || 'Doğrulama başarısız' };
-      }
-      const result = await resp.json();
-      return { success: true, message: result?.message || 'Doğrulama başarılı' };
-    } catch (error) {
-      return { success: false, error: 'Doğrulama sırasında hata oluştu' };
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  
 
   const value: AuthContextType = {
     user,
@@ -329,8 +266,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     login,
     signup,
     signInWithGoogle,
-    verifyEmail,
-    verifyEmailByEmail,
     logout,
     resetPassword,
     isLoading,

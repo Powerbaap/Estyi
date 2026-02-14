@@ -1,4 +1,4 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabaseClient';
 
 export const uploadRequestPhotos = async (userId: string, files: File[]): Promise<string[]> => {
   if (!files || files.length === 0) return [];

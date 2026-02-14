@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, User, Building, Mail, X } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import { getUserRole } from '../../utils/auth';
 
 const Login: React.FC = () => {

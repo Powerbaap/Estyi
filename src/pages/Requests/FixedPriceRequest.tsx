@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { supabase } from '../../lib/supabase';
+import { supabase } from '../../lib/supabaseClient';
 import MarketCard from '../../components/Market/MarketCard';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 
@@ -40,22 +40,37 @@ const FixedPriceRequest: React.FC = () => {
   const countries = useMemo(() => {
     const set = new Set<string>();
     (clinics || []).forEach((c: any) => {
-      const [country] = (c.location || '').split('/').map((s: string) => s.trim());
-      if (country) set.add(country);
+      const code = c.country_code || '';
+      if (code) set.add(code);
     });
     return Array.from(set);
   }, [clinics]);
 
   const cities = useMemo(() => {
     return (clinics || [])
-      .filter((c: any) => (c.location || '').startsWith(country))
-      .map((c: any) => (c.location || '').split('/')[1])
+      .filter((c: any) => (c.country_code || '') === country)
+      .map((c: any) => c.city)
       .filter(Boolean)
       .reduce((acc: string[], cur: string) => acc.includes(cur) ? acc : acc.concat(cur), []);
   }, [clinics, country]);
 
   const filteredCards = useMemo(() => {
-    return (cards || []).filter((c: any) => {
+    const mapped = (cards || []).map((c: any) => ({
+      clinic_id: c.clinic_id,
+      clinic_name: c.clinic_name,
+      doctor_name: c.doctor_name || '',
+      procedure_id: c.procedure_id,
+      procedure_name: c.procedure_name || '',
+      price_amount: c.price,
+      price_currency: c.currency,
+      clinic_rating: Number(c.clinic_rating ?? 0),
+      reviews_count: Number(c.reviews_count ?? c.reviews ?? 0),
+      instagram_url: c.instagram_url,
+      website: c.website,
+      country: c.country_code,
+      city: c.city
+    }));
+    return mapped.filter((c: any) => {
       const okProc = procedureId ? c.procedure_id === procedureId : true;
       const okCountry = country ? c.country === country : true;
       const okCity = city ? (c.city || '') === city : true;
@@ -71,36 +86,13 @@ const FixedPriceRequest: React.FC = () => {
   const handleBook = async (card: any) => {
     try {
       setBusy(true);
-      const price = Number(card.price_amount || 0);
-      const deposit = Math.round(price * 0.15 * 100) / 100; // 15% depozit
-      if (offline) {
-        await supabase.from('appointments').insert({
-          user_id: 'DEV_USER',
-          clinic_id: card.clinic_id,
-          procedure_id: card.procedure_id,
-          status: 'confirmed',
-          deposit_amount: deposit
-        });
-        alert(getTranslation('request.appointmentConfirmed', 'Randevu onaylandı'));
-        return;
-      }
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3005';
-      const resp = await fetch(`${apiUrl}/api/create-payment-intent`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ amount: Math.round(deposit * 100), currency: card.price_currency || 'USD' })
-      });
-      if (!resp.ok) {
-        throw new Error('Ödeme başlatılamadı');
-      }
-      const data = await resp.json();
-      // Normalde Stripe ile confirm yapılır; demo için doğrudan randevu onaylıyoruz
+      // Demo: ödeme entegrasyonu kaldırıldı; doğrudan randevu kaydı oluştur
       await supabase.from('appointments').insert({
         user_id: 'DEV_USER',
         clinic_id: card.clinic_id,
         procedure_id: card.procedure_id,
         status: 'confirmed',
-        deposit_amount: deposit
+        deposit_amount: null
       });
       alert(getTranslation('request.appointmentConfirmed', 'Randevu onaylandı'));
     } catch (e: any) {

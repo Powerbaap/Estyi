@@ -1,22 +1,5 @@
 import { clinicApplicationService } from './api';
-import { supabase } from '../lib/supabase';
-
-const BASE_URL =
-  (import.meta as any).env.VITE_API_BASE_URL ||
-  (import.meta as any).env.VITE_API_URL ||
-  'http://localhost:3005';
-
-async function fetchJSON(path: string, options?: RequestInit) {
-  const res = await fetch(`${BASE_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json' },
-    ...options,
-  });
-  if (!res.ok) {
-    const body = await res.text();
-    throw new Error(`API ${path} failed: ${res.status} ${body}`);
-  }
-  return res.json();
-}
+import { supabase } from '../lib/supabaseClient';
 
 export type AdminUser = {
   id: string;
@@ -71,12 +54,6 @@ export type AdminStats = {
 export const adminService = {
   async getUsers(): Promise<AdminUser[]> {
     try {
-      const data = await fetchJSON('/api/admin/users');
-      if (Array.isArray(data) && data.length > 0) return data;
-    } catch (err) {
-      // backend erişilemezse supabase fallback dene
-    }
-    try {
       const { data, error } = await supabase
         .from('users')
         .select('*')
@@ -88,12 +65,6 @@ export const adminService = {
     }
   },
   async getClinics(): Promise<AdminClinic[]> {
-    try {
-      const data = await fetchJSON('/api/admin/clinics');
-      if (Array.isArray(data) && data.length > 0) return data;
-    } catch (err) {
-      // backend erişilemezse supabase fallback dene
-    }
     try {
       const { data, error } = await supabase
         .from('clinics')
@@ -107,12 +78,6 @@ export const adminService = {
   },
   async getRequests(): Promise<AdminRequest[]> {
     try {
-      const data = await fetchJSON('/api/admin/requests');
-      if (Array.isArray(data) && data.length > 0) return data;
-    } catch (err) {
-      // backend erişilemezse supabase fallback dene
-    }
-    try {
       const { data, error } = await supabase
         .from('requests')
         .select('*')
@@ -125,12 +90,6 @@ export const adminService = {
   },
   async getClinicApplications(): Promise<AdminClinicApplication[]> {
     try {
-      const data = await fetchJSON('/api/admin/clinic-applications');
-      if (Array.isArray(data) && data.length > 0) return data;
-    } catch (err) {
-      // Backend erişilemezse supabase fallback dene
-    }
-    try {
       const supaData = await clinicApplicationService.getApplications();
       return Array.isArray(supaData) ? supaData : [];
     } catch {
@@ -138,27 +97,14 @@ export const adminService = {
     }
   },
   async approveClinicApplication(id: string) {
-    try {
-      return await fetchJSON(`/api/admin/clinic-applications/${id}/approve`, { method: 'POST' });
-    } catch (err) {
-      // Backend başarısızsa hata fırlat (artık client-side approve riskli)
-      throw err;
-    }
+    throw new Error('Klinik onayı için sunucu tarafı yetki gerekir (service key).');
   },
   async resendInviteLink(id: string) {
-    return await fetchJSON(`/api/admin/clinic-applications/${id}/resend-invite`, { method: 'POST' });
+    throw new Error('Davet linki gönderimi için sunucu tarafı yetki gerekir (service key).');
   },
   async rejectClinicApplication(id: string, reason?: string) {
-    try {
-      return await fetchJSON(`/api/admin/clinic-applications/${id}/reject`, {
-        method: 'POST',
-        body: JSON.stringify({ reason }),
-      });
-    } catch (err) {
-      // Backend başarısızsa Supabase üzerinden reddetme fallback
-      const updated = await clinicApplicationService.rejectApplication(id, reason);
-      return { success: true, application: updated } as const;
-    }
+    const updated = await clinicApplicationService.rejectApplication(id, reason);
+    return { success: true, application: updated } as const;
   },
   async getAdminStats(): Promise<AdminStats> {
     const [users, clinics, requests] = await Promise.all([
