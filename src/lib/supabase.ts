@@ -67,10 +67,18 @@ function createDevSupabaseMock() {
       return {
         ...base,
         user_id: values.user_id,
-        procedure: values.procedure || 'Unknown',
+        procedure_key: values.procedure_key || values.procedureKey || values.procedure || 'unknown',
         description: values.description || '',
         photos: Array.isArray(values.photos) ? values.photos : [],
-        status: values.status || 'active'
+        status: values.status || 'active',
+        gender: values.gender || null,
+        country: values.country || null,
+        city: values.city || null,
+        countries: Array.isArray(values.countries) ? values.countries : [],
+        cities_tr: Array.isArray(values.cities_tr) ? values.cities_tr : (Array.isArray(values.citiesTR) ? values.citiesTR : []),
+        cities_by_country: values.cities_by_country || {},
+        params: values.params || {},
+        expires_at: values.expires_at || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
       };
     }
     if (table === 'clinic_applications') {
@@ -333,6 +341,8 @@ export interface Database {
           email: string;
           password: string | null;
           description: string | null;
+          clinic_id: string | null;
+          approved_at: string | null;
           certificate_files: {
             path: string;
             bucket: string;
@@ -357,6 +367,8 @@ export interface Database {
           email: string;
           password?: string;
           description?: string;
+          clinic_id?: string | null;
+          approved_at?: string | null;
           certificate_files?: {
             path: string;
             bucket: string;
@@ -381,6 +393,8 @@ export interface Database {
           email?: string;
           password?: string;
           description?: string;
+          clinic_id?: string | null;
+          approved_at?: string | null;
           certificate_files?: {
             path: string;
             bucket: string;
@@ -406,6 +420,8 @@ export interface Database {
           rating: number;
           reviews: number;
           specialties: string[];
+          countries?: string[];
+          cities_by_country?: Record<string, string[]>;
           created_at: string;
           updated_at: string;
         };
@@ -420,6 +436,8 @@ export interface Database {
           rating?: number;
           reviews?: number;
           specialties: string[];
+          countries?: string[];
+          cities_by_country?: Record<string, string[]>;
           created_at?: string;
           updated_at?: string;
         };
@@ -434,6 +452,8 @@ export interface Database {
           rating?: number;
           reviews?: number;
           specialties?: string[];
+          countries?: string[];
+          cities_by_country?: Record<string, string[]>;
           created_at?: string;
           updated_at?: string;
         };
@@ -442,30 +462,54 @@ export interface Database {
         Row: {
           id: string;
           user_id: string;
-          procedure: string;
-          description: string;
+          procedure_key: string;
+          description: string | null;
           photos: string[];
-          status: 'active' | 'closed' | 'completed';
+          status: 'active' | 'expired' | 'completed' | 'cancelled';
+          gender?: string | null;
+          country?: string | null;
+          city?: string | null;
+          countries?: string[];
+          cities_tr?: string[];
+          cities_by_country?: Record<string, string[]>;
+          params?: Record<string, string | number>;
+          expires_at?: string;
           created_at: string;
           updated_at: string;
         };
         Insert: {
           id?: string;
           user_id: string;
-          procedure: string;
-          description: string;
-          photos: string[];
-          status?: 'active' | 'closed' | 'completed';
+          procedure_key: string;
+          description?: string | null;
+          photos?: string[];
+          status?: 'active' | 'expired' | 'completed' | 'cancelled';
+          gender?: string | null;
+          country?: string | null;
+          city?: string | null;
+          countries?: string[];
+          cities_tr?: string[];
+          cities_by_country?: Record<string, string[]>;
+          params?: Record<string, string | number>;
+          expires_at?: string;
           created_at?: string;
           updated_at?: string;
         };
         Update: {
           id?: string;
           user_id?: string;
-          procedure?: string;
-          description?: string;
+          procedure_key?: string;
+          description?: string | null;
           photos?: string[];
-          status?: 'active' | 'closed' | 'completed';
+          status?: 'active' | 'expired' | 'completed' | 'cancelled';
+          gender?: string | null;
+          country?: string | null;
+          city?: string | null;
+          countries?: string[];
+          cities_tr?: string[];
+          cities_by_country?: Record<string, string[]>;
+          params?: Record<string, string | number>;
+          expires_at?: string;
           created_at?: string;
           updated_at?: string;
         };

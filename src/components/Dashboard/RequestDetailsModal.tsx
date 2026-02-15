@@ -43,6 +43,16 @@ interface RequestDetailsModalProps {
 const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClose, request }) => {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const getCountryDisplayName = (countryKey?: string) => {
+    if (!countryKey) return '';
+    const key = `countries.${countryKey}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : countryKey;
+  };
+  const formatCountries = (countries?: string[]) => {
+    if (!Array.isArray(countries)) return '';
+    return countries.map(getCountryDisplayName).filter(Boolean).join(', ');
+  };
   const [offerStatuses, setOfferStatuses] = React.useState<{[key: string]: 'pending' | 'accepted' | 'rejected'}>({});
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
@@ -213,7 +223,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 </span>
                 <span className="flex items-center space-x-2 flex-shrink-0">
                   <MapPin className="w-4 h-4 text-green-500" />
-                  <span>{Array.isArray(request.countries) ? request.countries.join(', ') : (request.countries ? String(request.countries) : '')}</span>
+                  <span>{formatCountries(Array.isArray(request.countries) ? request.countries : (request.countries ? [String(request.countries)] : []))}</span>
                 </span>
                 <span className={`px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(request.status)}`}>
                   {getStatusText(request.status)}

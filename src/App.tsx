@@ -6,7 +6,7 @@ import Footer from './components/Layout/Footer';
 import ScrollToTop from './components/Layout/ScrollToTop';
 import ErrorBoundary from './components/Layout/ErrorBoundary';
 import AdminRoute from './components/AdminRoute';
-import { getCurrentUserRole, type UserRole } from './utils/auth';
+import { getCurrentUserAccess, type UserRole } from './utils/auth';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -61,6 +61,7 @@ const LoadingSpinner = () => (
 const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({ allow, children }) => {
   const { user, isLoading } = useAuth();
   const [role, setRole] = useState<UserRole>('user');
+  const [clinicApproved, setClinicApproved] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
 
   useEffect(() => {
@@ -74,9 +75,10 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
         return;
       }
       setRoleLoading(true);
-      const resolved = await getCurrentUserRole(user);
+      const access = await getCurrentUserAccess(user);
       if (active) {
-        setRole(resolved);
+        setRole(access.role);
+        setClinicApproved(access.isClinicApproved);
         setRoleLoading(false);
       }
     };
@@ -91,6 +93,10 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
   }
 
   if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (role === 'clinic' && !clinicApproved) {
     return <Navigate to="/login" replace />;
   }
 

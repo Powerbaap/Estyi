@@ -23,6 +23,7 @@ import OfferSubmissionModal from './OfferSubmissionModal';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
 import 'react-lazy-load-image-component/src/effects/blur.css';
 import { requestService } from '../../services/api';
+import { getProcedure } from '../../data/procedureCategories';
 
 type OfferTypeEstyi = 'auto' | 'manual' | 'sla_default';
 
@@ -30,12 +31,14 @@ interface UserRequest {
   id: string;
   userId: string;
   procedure: string;
+  procedureKey?: string;
   photos: string[];
   countries: string[];
   citiesTR?: string[];
-  age: number;
-  gender: string;
-  treatmentDate: string;
+  cities_tr?: string[];
+  age?: number;
+  gender?: string;
+  treatmentDate?: string;
   description: string;
   status: 'new' | 'offered' | 'expired';
   createdAt: Date;
@@ -59,17 +62,34 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
   filterStatus = 'all', 
   filterProcedure = 'all',
   clinicSpecialties = [
-    'Rhinoplasty', 
-    'Hair Transplant', 
-    'Breast Surgery',
-    'El Tırnak İşlemleri',
-    'Saç Boyama',
-    'Protez Saç',
-    'Diğer Saç İşlemleri'
+    'burun_estetigi_rinoplasti',
+    'sac_ekimi_fue',
+    'gogus_buyutme',
+    'protez_sac',
+    'sac_boyama'
   ],
   clinicBranchCity = 'İstanbul'
 }) => {
   const { t } = useTranslation();
+  const getProcedureDisplayName = useCallback((procedureKey?: string, procedureName?: string) => {
+    if (procedureName) return procedureName;
+    if (!procedureKey) return '';
+    const proc = getProcedure(procedureKey);
+    if (!proc) return procedureKey;
+    const key = `procedureCategories.procedures.${proc.key}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : proc.name;
+  }, [t]);
+  const getCountryDisplayName = useCallback((countryKey?: string) => {
+    if (!countryKey) return '';
+    const key = `countries.${countryKey}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : countryKey;
+  }, [t]);
+  const formatCountries = useCallback((countries?: string[]) => {
+    if (!Array.isArray(countries)) return '';
+    return countries.map(getCountryDisplayName).filter(Boolean).join(', ');
+  }, [getCountryDisplayName]);
   const [selectedRequest, setSelectedRequest] = useState<UserRequest | null>(null);
   const [isOfferModalOpen, setIsOfferModalOpen] = useState(false);
   const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
@@ -83,13 +103,14 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
     {
       id: 'req1',
       userId: 'Kullanıcı1234',
-      procedure: t('procedures.breastSurgery'),
+      procedure: getProcedureDisplayName('gogus_buyutme'),
+      procedureKey: 'gogus_buyutme',
       photos: [
         'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/5069438/pexels-photo-5069438.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/5069439/pexels-photo-5069439.jpeg?auto=compress&cs=tinysrgb&w=400'
       ],
-      countries: ['Türkiye', 'Almanya'],
+      countries: ['turkey', 'germany'],
       citiesTR: ['İstanbul'],
       age: 26,
       gender: t('genders.female'),
@@ -103,12 +124,13 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
     {
       id: 'req2',
       userId: 'Kullanıcı2234',
-      procedure: t('procedures.hairTransplant'),
+      procedure: getProcedureDisplayName('sac_ekimi_fue'),
+      procedureKey: 'sac_ekimi_fue',
       photos: [
         'https://images.pexels.com/photos/5069440/pexels-photo-5069440.jpeg?auto=compress&cs=tinysrgb&w=400',
         'https://images.pexels.com/photos/5069441/pexels-photo-5069441.jpeg?auto=compress&cs=tinysrgb&w=400'
       ],
-      countries: [t('countries.turkey'), t('countries.germany')],
+      countries: ['turkey', 'germany'],
       citiesTR: [t('cities.istanbul')],
       age: 27,
       gender: t('genders.male'),
@@ -172,23 +194,24 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
       }
       
       // Prosedür filtresi
-      if (currentFilterProcedure !== 'all' && !request.procedure.toLowerCase().includes(currentFilterProcedure.toLowerCase())) {
+      if (currentFilterProcedure !== 'all' && request.procedureKey !== currentFilterProcedure) {
         return false;
       }
       
       // Klinik uzmanlık alanı filtresi
-      if (clinicSpecialties.length > 0 && !clinicSpecialties.includes(request.procedure)) {
+      if (clinicSpecialties.length > 0 && !clinicSpecialties.includes(request.procedureKey || '')) {
         return false;
       }
       
       // Şehir filtresi - Klinik şubesi ile aynı şehirdeki talepler
-      if (clinicBranchCity && request.citiesTR && !request.citiesTR.includes(clinicBranchCity)) {
+      const requestCities = request.citiesTR || request.cities_tr || [];
+      if (clinicBranchCity && requestCities.length > 0 && !requestCities.includes(clinicBranchCity)) {
         return false;
       }
       
       // Arama filtresi
       if (searchTerm && !(
-        request.procedure.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        getProcedureDisplayName(request.procedureKey, request.procedure).toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
         request.userId.toLowerCase().includes(searchTerm.toLowerCase())
       )) {
@@ -334,7 +357,9 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
               >
                 <option value="all">{t('clinicRequests.filter.allProcedures')}</option>
                 {clinicSpecialties.map(specialty => (
-                  <option key={specialty} value={specialty}>{specialty}</option>
+                  <option key={specialty} value={specialty}>
+                    {getProcedureDisplayName(specialty)}
+                  </option>
                 ))}
               </select>
             </div>
@@ -367,18 +392,28 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                 <div className="p-6">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
-                      <h3 className="text-lg font-semibold text-gray-900 mb-1">{request.procedure}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                        {getProcedureDisplayName(request.procedureKey, request.procedure)}
+                      </h3>
                       <p className="text-sm text-gray-600 mb-2">{t('clinicRequests.user')}: {request.userId}</p>
-                      <div className="flex items-center space-x-4 text-sm text-gray-500">
-                        <span className="flex items-center space-x-1">
-                          <User className="w-4 h-4" />
-                          <span>{request.age} {t('clinicRequests.age')}, {request.gender}</span>
-                        </span>
-                        <span className="flex items-center space-x-1">
-                          <Calendar className="w-4 h-4" />
-                          <span>{new Date(request.treatmentDate).toLocaleDateString('tr-TR')}</span>
-                        </span>
-                      </div>
+                      {(request.age || request.gender || request.treatmentDate) && (
+                        <div className="flex items-center space-x-4 text-sm text-gray-500">
+                          {(request.age || request.gender) && (
+                            <span className="flex items-center space-x-1">
+                              <User className="w-4 h-4" />
+                              <span>
+                                {[request.age ? `${request.age} ${t('clinicRequests.age')}` : null, request.gender].filter(Boolean).join(', ')}
+                              </span>
+                            </span>
+                          )}
+                          {request.treatmentDate && (
+                            <span className="flex items-center space-x-1">
+                              <Calendar className="w-4 h-4" />
+                              <span>{new Date(request.treatmentDate).toLocaleDateString('tr-TR')}</span>
+                            </span>
+                          )}
+                        </div>
+                      )}
                     </div>
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(request.status)}`}>
                       {getStatusText(request.status)}
@@ -414,7 +449,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <span className="flex items-center space-x-1">
                         <MapPin className="w-4 h-4" />
-                        <span>{request.countries.join(', ')}</span>
+                        <span>{formatCountries(request.countries)}</span>
                       </span>
                       <span className="flex items-center space-x-1">
                         <Camera className="w-4 h-4" />

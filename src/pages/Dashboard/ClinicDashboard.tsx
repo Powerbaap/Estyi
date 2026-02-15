@@ -118,7 +118,7 @@ const ClinicDashboard: React.FC = () => {
         return <ClinicRequests 
           filterStatus={filterStatus} 
           filterProcedure={filterProcedure}
-          clinicSpecialties={['Rhinoplasty', 'Hair Transplant', 'Breast Surgery']}
+          clinicSpecialties={['burun_estetigi_rinoplasti', 'sac_ekimi_fue', 'gogus_buyutme']}
           clinicBranchCity={'İstanbul'}
         />;
       case 'offers':

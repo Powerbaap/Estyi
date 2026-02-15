@@ -323,6 +323,70 @@ app.post('/api/send-password-reset', async (req, res) => {
   }
 });
 
+app.post('/api/requests', async (req, res) => {
+  try {
+    if (useSupabaseFallback) {
+      return res.status(503).json({ error: 'Supabase service unavailable' });
+    }
+    const authHeader = req.headers.authorization || '';
+    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+    if (!token) {
+      return res.status(401).json({ error: 'Missing auth token' });
+    }
+    const { data: authData, error: authError } = await supabase.auth.getUser(token);
+    if (authError || !authData?.user) {
+      return res.status(401).json({ error: 'Invalid auth token' });
+    }
+
+    const body = req.body || {};
+    const allowedKeys = [
+      'procedure_key',
+      'description',
+      'photos',
+      'params',
+      'status',
+      'created_at',
+      'updated_at',
+      'gender',
+      'country',
+      'city',
+      'countries',
+      'cities_tr',
+      'cities_by_country'
+    ];
+    const payload = { user_id: authData.user.id };
+    allowedKeys.forEach((key) => {
+      if (body[key] !== undefined) {
+        payload[key] = body[key];
+      }
+    });
+    if (payload.cities_tr === undefined && body.citiesTR !== undefined) {
+      payload.cities_tr = body.citiesTR;
+    }
+
+    if (!payload.procedure_key) {
+      return res.status(400).json({ error: 'procedure_key is required' });
+    }
+    const now = new Date().toISOString();
+    payload.status = payload.status || 'active';
+    payload.created_at = payload.created_at || now;
+    payload.updated_at = payload.updated_at || now;
+
+    const { data, error } = await supabase
+      .from('requests')
+      .insert(payload)
+      .select('*');
+    if (error) {
+      return res.status(400).json({ error: error.message });
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    res.json(row || null);
+  } catch (error) {
+    console.error('Request create error:', error);
+    res.status(500).json({ error: 'Failed to create request' });
+  }
+});
+
 // Admin user provision (create or promote to admin)
 app.post('/api/admin/provision', async (req, res) => {
   try {

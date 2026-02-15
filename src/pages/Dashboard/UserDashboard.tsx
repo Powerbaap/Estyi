@@ -9,12 +9,32 @@ import 'react-lazy-load-image-component/src/effects/blur.css';
 import { requestService } from '../../services/api';
 import { signRequestPhotoUrls } from '../../services/storage';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { getProcedure } from '../../data/procedureCategories';
 
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
   const { t } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
+  const getProcedureDisplayName = (procedureKey?: string, procedureName?: string) => {
+    if (procedureName) return procedureName;
+    if (!procedureKey) return '';
+    const proc = getProcedure(procedureKey);
+    if (!proc) return procedureKey;
+    const key = `procedureCategories.procedures.${proc.key}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : proc.name;
+  };
+  const getCountryDisplayName = (countryKey?: string) => {
+    if (!countryKey) return '';
+    const key = `countries.${countryKey}`;
+    const translated = t(key);
+    return translated && translated !== key ? translated : countryKey;
+  };
+  const formatCountries = (countries?: string[]) => {
+    if (!Array.isArray(countries)) return '';
+    return countries.map(getCountryDisplayName).filter(Boolean).join(', ');
+  };
   const safeFormatDateTR = (value: any): string => {
     try {
       if (!value) return '';
@@ -102,11 +122,14 @@ const UserDashboard: React.FC = () => {
 
           return {
             id: r.id,
-            procedure: r.procedure,
+            procedure: getProcedureDisplayName(r.procedure_key ?? r.procedureKey, r.procedure),
+            procedureKey: r.procedure_key ?? r.procedureKey,
             status: r.status ?? 'active',
             createdAt: r.created_at ? new Date(r.created_at) : new Date(),
             offersCount: r.offersCount ?? 0,
-            countries: r.countries ?? [],
+            countries: Array.isArray(r.countries)
+              ? r.countries
+              : (r.country ? [r.country] : []),
             photos: Array.isArray(photoUrlsResolved)
               ? photoUrlsResolved.length
               : typeof rawPhotos === 'number'
@@ -499,7 +522,7 @@ const UserDashboard: React.FC = () => {
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <MapPin className="w-4 h-4 text-gray-400" />
-                          <span>{Array.isArray(request.countries) ? request.countries.join(', ') : (request.countries ? String(request.countries) : '')}</span>
+                          <span>{formatCountries(Array.isArray(request.countries) ? request.countries : (request.countries ? [String(request.countries)] : []))}</span>
                         </div>
                       </div>
 

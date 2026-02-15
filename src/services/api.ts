@@ -156,16 +156,27 @@ export const clinicApplicationService = {
   // Başvuruyu onayla: clinics tablosuna ekle ve status=approved yap
   approveApplication: async (application: any) => {
     // 1) clinics tablosuna ekle
+    const countries = Array.isArray(application.countries) ? application.countries : [];
+    const citiesByCountry = application.cities_by_country && typeof application.cities_by_country === 'object'
+      ? application.cities_by_country
+      : {};
+    const firstCountry = countries[0];
+    const firstCity = firstCountry && Array.isArray(citiesByCountry[firstCountry])
+      ? citiesByCountry[firstCountry][0]
+      : undefined;
+    const location = firstCountry ? (firstCity ? `${firstCountry}/${firstCity}` : firstCountry) : '';
     const clinicInsert = {
       name: application.clinic_name,
       email: application.email,
       phone: application.phone || '',
       website: application.website || '',
-      location: application.country || '',
+      location,
       status: 'active',
       rating: 0,
       reviews: 0,
-      specialties: application.specialties || []
+      specialties: application.specialties || [],
+      countries,
+      cities_by_country: citiesByCountry
     };
     const { data: clinicRow, error: clinicErr } = await supabase
       .from('clinics')
@@ -228,8 +239,39 @@ export const requestService = {
       .insert(requestData)
       .select('*');
     
-    if (error) throw error;
-    return data;
+    if (!error) return data;
+    const message = (error?.message || '').toLowerCase();
+    const isPermissionError =
+      message.includes('permission') ||
+      message.includes('not authorized') ||
+      message.includes('rls') ||
+      message.includes('denied');
+    if (!isPermissionError) {
+      throw error;
+    }
+    const { data: sessionData } = await supabase.auth.getSession();
+    const token = sessionData?.session?.access_token;
+    if (!token) {
+      throw error;
+    }
+    const baseUrl =
+      import.meta.env.VITE_BACKEND_URL ||
+      import.meta.env.VITE_API_BASE_URL ||
+      'http://localhost:3005';
+    const response = await fetch(`${baseUrl}/api/requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`
+      },
+      body: JSON.stringify(requestData)
+    });
+    if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || 'Talep oluşturma başarısız');
+    }
+    const payload = await response.json();
+    return payload;
   }
 };
 

@@ -34,6 +34,8 @@ CREATE TABLE clinics (
   rating DECIMAL(3,2) DEFAULT 0,
   reviews INTEGER DEFAULT 0,
   specialties TEXT[] DEFAULT '{}',
+  countries TEXT[] DEFAULT '{}',
+  cities_by_country JSONB DEFAULT '{}'::jsonb,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
@@ -47,9 +49,12 @@ CREATE TABLE clinic_applications (
   website TEXT,
   country TEXT,
   city TEXT,
+  countries TEXT[] DEFAULT '{}',
+  cities_by_country JSONB DEFAULT '{}'::jsonb,
   specialties TEXT[] DEFAULT '{}',
   description TEXT,
   certificate_urls TEXT[] DEFAULT '{}',
+  certificate_files JSONB DEFAULT '[]'::jsonb,
   status TEXT CHECK (status IN ('pending','approved','rejected')) DEFAULT 'pending',
   submitted_by UUID REFERENCES users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
@@ -81,6 +86,10 @@ CREATE TABLE requests (
   status TEXT CHECK (status IN ('active', 'expired', 'completed', 'cancelled')) DEFAULT 'active',
   country TEXT,
   city TEXT,
+  countries TEXT[] DEFAULT '{}',
+  cities_tr TEXT[] DEFAULT '{}',
+  cities_by_country JSONB DEFAULT '{}'::jsonb,
+  params JSONB DEFAULT '{}'::jsonb,
   age INTEGER,
   gender TEXT,
   expires_at TIMESTAMP WITH TIME ZONE DEFAULT (NOW() + INTERVAL '7 days'),
@@ -151,7 +160,39 @@ CREATE POLICY "Clinics can view matching requests" ON requests FOR SELECT USING 
     SELECT 1 FROM clinics c
     WHERE c.id = auth.uid()
     AND c.status = 'active'
-    -- Lokasyon ve uzmanlık eşleşmesi mantığı buraya da eklenebilir veya uygulama katmanında çözülür
+    AND (
+      c.specialties IS NULL
+      OR array_length(c.specialties, 1) IS NULL
+      OR requests.procedure_key = ANY(c.specialties)
+    )
+    AND (
+      (
+        requests.countries IS NOT NULL
+        AND array_length(requests.countries, 1) > 0
+        AND split_part(c.location, '/', 1) = ANY(requests.countries)
+      )
+      OR (
+        requests.country IS NOT NULL
+        AND split_part(c.location, '/', 1) = requests.country
+      )
+    )
+    AND (
+      requests.cities_tr IS NULL
+      OR array_length(requests.cities_tr, 1) = 0
+      OR (
+        split_part(c.location, '/', 1) = 'turkey'
+        AND split_part(c.location, '/', 2) <> ''
+        AND requests.cities_tr @> ARRAY[split_part(c.location, '/', 2)]
+      )
+    )
+    AND (
+      requests.cities_by_country IS NULL
+      OR NOT (requests.cities_by_country ? split_part(c.location, '/', 1))
+      OR (
+        split_part(c.location, '/', 2) <> ''
+        AND (requests.cities_by_country -> split_part(c.location, '/', 1)) ? split_part(c.location, '/', 2)
+      )
+    )
   )
 );
 

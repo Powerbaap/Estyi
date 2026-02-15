@@ -34,7 +34,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     procedureParams: {} as Record<string, string>,
     countries: [] as string[],
     citiesTR: [] as string[],
-    age: '',
     gender: '',
     description: '',
   });
@@ -168,17 +167,13 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
   const isSubmitDisabled = () => {
     const isMissingCities = formData.countries.includes('turkey') && formData.citiesTR.length === 0;
-    const ageValue = formData.age ? parseInt(formData.age, 10) : 0;
-    const isUnder18 = ageValue < 18;
     return (
       !user?.id ||
       !formData.procedure ||
       formData.countries.length === 0 ||
-      !formData.age ||
       !formData.gender ||
       isMissingCities ||
-      !paramsFilled ||
-      isUnder18
+      !paramsFilled
     );
   };
 
@@ -189,9 +184,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       hints.push(getTranslation('priceRequest.hintProcedureParams', 'Seçtiğiniz işlem için bölge/seans vb. alanları doldurun'));
     if (formData.countries.length === 0) hints.push(getTranslation('priceRequest.hintCountries', 'En az bir ülke seçin'));
     if (formData.countries.includes('turkey') && formData.citiesTR.length === 0) hints.push(getTranslation('priceRequest.hintCitiesTR', 'Türkiye için şehir seçin'));
-    if (!formData.age) hints.push(getTranslation('priceRequest.hintAge', 'Yaşınızı girin'));
-    const ageValue = formData.age ? parseInt(formData.age, 10) : 0;
-    if (formData.age && ageValue < 18) hints.push(getTranslation('priceRequest.hintAgeUnder18', '18 yaşından küçükler talep oluşturamaz'));
     if (!formData.gender) hints.push(getTranslation('priceRequest.hintGender', 'Cinsiyet seçin'));
     return hints;
   };
@@ -206,20 +198,17 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       return;
     }
     
-    // Yaş kontrolü: 18'den küçükse talep oluşturamaz
-    const ageValue = formData.age ? parseInt(formData.age, 10) : 0;
-    if (ageValue < 18) {
-      setSubmitError(getTranslation('priceRequest.ageUnder18Error', '18 yaşından küçükler talep oluşturamaz.'));
-      setIsSubmitting(false);
-      return;
-    }
-    
     const photoUrls: string[] = [];
-    const countriesSelected = formData.countries.map(key => countries.find(c => c.key === key)?.name || key);
+    const countriesSelected = [...formData.countries];
     const params: Record<string, string | number> = { ...formData.procedureParams };
+    const primaryCountry = countriesSelected[0];
+    const primaryCity = primaryCountry
+      ? (primaryCountry === 'turkey'
+        ? formData.citiesTR[0]
+        : (citiesByCountry?.[primaryCountry]?.[0]))
+      : undefined;
     const payload = {
       user_id: user?.id,
-      procedure: formData.procedure,
       procedure_key: formData.procedureKey,
       description: formData.description,
       photos: photoUrls,
@@ -227,10 +216,11 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       status: 'active',
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
-      age: formData.age ? parseInt(formData.age, 10) : null,
       gender: formData.gender || null,
+      country: primaryCountry || null,
+      city: primaryCity || null,
       countries: countriesSelected,
-      citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
+      cities_tr: formData.countries.includes('turkey') ? formData.citiesTR : [],
       cities_by_country: citiesByCountry,
     } as any;
 
@@ -239,7 +229,8 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       const row = Array.isArray(inserted) ? inserted[0] : inserted;
       const newRequest = {
         id: row.id,
-        procedure: row.procedure,
+        procedure: formData.procedure,
+        procedureKey: formData.procedureKey,
         status: row.status ?? 'active',
         createdAt: row.created_at ? new Date(row.created_at) : new Date(),
         offersCount: 0,
@@ -257,7 +248,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         procedureParams: {},
         countries: [],
         citiesTR: [],
-        age: '',
         gender: '',
         description: '',
       });
@@ -301,9 +291,11 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          {/* Medical disclaimer (reinforce before submit) */}
           <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">
             {t('legal.medicalDisclaimer')}
+          </div>
+          <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-900">
+            {t('legal.clickwrap.ageGate')}
           </div>
 
           {/* Procedure Selection: Arama + Kategorilere göre işlemler */}
@@ -560,36 +552,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               </div>
             );
           })}
-          {/* Age */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.age', 'Age')} * <span className="text-xs text-gray-500">(18 yaş ve üzeri)</span>
-            </label>
-            <input
-              type="number"
-              required
-              min="18"
-              max="100"
-              value={formData.age}
-              onChange={(e) => {
-                const value = e.target.value;
-                const numValue = parseInt(value, 10);
-                if (value === '' || (!isNaN(numValue) && numValue >= 18)) {
-                  setFormData(prev => ({ ...prev, age: value }));
-                }
-              }}
-              className={`w-full px-3 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-                formData.age && parseInt(formData.age, 10) < 18 ? 'border-red-500 bg-red-50' : 'border-gray-300'
-              }`}
-              placeholder={getTranslation('priceRequest.agePlaceholder', 'Enter your age (minimum 18)')}
-            />
-            {formData.age && parseInt(formData.age, 10) < 18 && (
-              <p className="mt-1 text-sm text-red-600">
-                {getTranslation('priceRequest.ageUnder18Error', '18 yaşından küçükler talep oluşturamaz.')}
-              </p>
-            )}
-          </div>
-
           {/* Gender */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
