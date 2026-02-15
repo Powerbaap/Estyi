@@ -93,7 +93,6 @@ export const clinicApplicationService = {
   // Başvuru oluştur (sertifikalar olmadan)
   createApplication: async (payload: {
     clinic_name: string;
-    country?: string;
     countries?: string[];
     cities_by_country?: Record<string, string[]>;
     specialties?: string[];
@@ -101,7 +100,13 @@ export const clinicApplicationService = {
     phone?: string;
     email: string;
     description?: string;
-    certificate_urls?: string[];
+    certificate_files?: {
+      path: string;
+      bucket: string;
+      mime: string;
+      size: number;
+      url?: string;
+    }[];
     submitted_by?: string | null;
   }) => {
     // Anonim başvurular için RLS SELECT engeline takılmamak adına
@@ -128,10 +133,10 @@ export const clinicApplicationService = {
       const { data } = await supabase.auth.getSession();
       uid = data?.session?.user?.id;
     } catch { /* ignore */ }
-    const urls = await uploadClinicCertificates(applicationId, files, uid);
+    const filesPayload = await uploadClinicCertificates(applicationId, files, uid);
     const { data, error } = await supabase
       .from('clinic_applications')
-      .update({ certificate_urls: urls })
+      .update({ certificate_files: filesPayload })
       .eq('id', applicationId)
       .select('*');
     if (error) throw error;

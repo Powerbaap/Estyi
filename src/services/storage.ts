@@ -1,6 +1,14 @@
 import { supabase } from '../lib/supabaseClient';
 import { STORAGE_BUCKETS } from '../config/storageBuckets';
 
+export type CertificateFileEntry = {
+  path: string;
+  bucket: string;
+  mime: string;
+  size: number;
+  url?: string;
+};
+
 export const uploadRequestPhotos = async (userId: string, files: File[]): Promise<string[]> => {
   if (!files || files.length === 0) return [];
 
@@ -102,11 +110,11 @@ export const signRequestPhotoUrls = async (urls: string[], expiresInSeconds: num
   return out;
 };
 
-export const uploadClinicCertificates = async (applicationId: string, files: File[], userId?: string): Promise<string[]> => {
+export const uploadClinicCertificates = async (applicationId: string, files: File[], userId?: string): Promise<CertificateFileEntry[]> => {
   if (!files || files.length === 0) return [];
 
   const bucket = STORAGE_BUCKETS.CERTIFICATES;
-  const uploadedUrls: string[] = [];
+  const uploadedFiles: CertificateFileEntry[] = [];
   let uid = userId;
   try {
     if (!uid) {
@@ -132,12 +140,16 @@ export const uploadClinicCertificates = async (applicationId: string, files: Fil
     }
 
     const { data } = supabase.storage.from(bucket).getPublicUrl(path);
-    if (data?.publicUrl) {
-      uploadedUrls.push(data.publicUrl);
-    }
+    uploadedFiles.push({
+      path,
+      bucket,
+      mime: file.type || 'application/octet-stream',
+      size: file.size,
+      url: data?.publicUrl
+    });
   }
 
-  return uploadedUrls;
+  return uploadedFiles;
 };
 
 // Genel imzalama: images bucket’taki herhangi bir dosya URL listesini imzalar
@@ -169,4 +181,27 @@ export const signImageUrls = async (urls: string[], expiresInSeconds: number = 3
     }
   }
   return out;
+};
+
+export const signCertificateFiles = async (
+  files: CertificateFileEntry[],
+  expiresInSeconds: number = 3600
+): Promise<CertificateFileEntry[]> => {
+  if (!files || files.length === 0) return [];
+  const bucket = STORAGE_BUCKETS.CERTIFICATES;
+  const anyStorage: any = supabase.storage;
+  const fromBucket = anyStorage.from(bucket);
+  const signed = await Promise.all(files.map(async (file) => {
+    const path = file.path || (file.url ? extractBucketPath(file.url, bucket) : null);
+    if (!path) return file;
+    if (typeof fromBucket.createSignedUrl === 'function') {
+      const { data, error } = await fromBucket.createSignedUrl(path, expiresInSeconds);
+      if (!error && data?.signedUrl) {
+        return { ...file, path, bucket, url: data.signedUrl };
+      }
+    }
+    const { data } = supabase.storage.from(bucket).getPublicUrl(path);
+    return data?.publicUrl ? { ...file, path, bucket, url: data.publicUrl } : file;
+  }));
+  return signed;
 };

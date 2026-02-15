@@ -5,8 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, User, Building, Mail, X } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
-import { supabase } from '../../lib/supabaseClient';
-import { getUserRole } from '../../utils/auth';
+import { getCurrentUserRole } from '../../utils/auth';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -33,20 +32,15 @@ const Login: React.FC = () => {
       return;
     }
 
-    const result = await login(formData.email, formData.password, formData.role);
+    const normalizedEmail = formData.email.trim().toLowerCase();
+    const requestedRole = normalizedEmail === 'admin@estyi.com' ? 'admin' : formData.role;
+    const result = await login(formData.email, formData.password, requestedRole);
     
     if (result.success) {
-      // Admin kontrolü - environment variable'dan 
-      const adminEmails = (import.meta.env.VITE_ADMIN_EMAILS || '')
-        .split(',')
-        .map(e => e.trim().toLowerCase())
-        .filter(Boolean);
-      
-      const isAdmin = adminEmails.includes(formData.email.toLowerCase());
-      
-      if (isAdmin) {
+      const role = await getCurrentUserRole();
+      if (role === 'admin') {
         navigate('/admin/dashboard');
-      } else if (formData.role === 'clinic') {
+      } else if (role === 'clinic') {
         navigate('/clinic-dashboard');
       } else {
         navigate('/dashboard');

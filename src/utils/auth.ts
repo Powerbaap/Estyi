@@ -1,7 +1,10 @@
 import { User } from '@supabase/supabase-js';
+import { supabase } from '../lib/supabaseClient';
 
 // Uygulama genelinde rol tespitini standartlaştırır
-export function getUserRole(user: User | null | undefined): 'user' | 'clinic' | 'admin' {
+export type UserRole = 'user' | 'clinic' | 'admin';
+
+export function getUserRole(user: User | null | undefined): UserRole {
   if (!user) return 'user';
   const fallbackAdminIds = (import.meta.env.VITE_ADMIN_IDS || '')
     .split(',')
@@ -20,4 +23,43 @@ export function getUserRole(user: User | null | undefined): 'user' | 'clinic' | 
     return role;
   }
   return 'user';
+}
+
+export async function getCurrentUserRole(user?: User | null): Promise<UserRole> {
+  try {
+    let currentUser = user ?? null;
+    if (!currentUser) {
+      const { data } = await supabase.auth.getUser();
+      currentUser = data?.user ?? null;
+    }
+    if (!currentUser) return 'user';
+
+    const { data, error } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', currentUser.id)
+      .maybeSingle();
+
+    if (!error && data?.role && (data.role === 'admin' || data.role === 'clinic' || data.role === 'user')) {
+      return data.role;
+    }
+
+    const email = (currentUser.email || '').toLowerCase();
+    if (email === 'admin@estyi.com') {
+      try {
+        await supabase.from('users').upsert(
+          { id: currentUser.id, email: currentUser.email, role: 'admin', is_verified: true },
+          { onConflict: 'id' }
+        );
+      } catch {}
+      return 'admin';
+    }
+
+    return getUserRole(currentUser);
+  } catch {
+    if (user?.email?.toLowerCase() === 'admin@estyi.com') {
+      return 'admin';
+    }
+    return 'user';
+  }
 }

@@ -1,11 +1,12 @@
-import React, { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import ScrollToTop from './components/Layout/ScrollToTop';
 import ErrorBoundary from './components/Layout/ErrorBoundary';
 import AdminRoute from './components/AdminRoute';
+import { getCurrentUserRole, type UserRole } from './utils/auth';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -57,6 +58,50 @@ const LoadingSpinner = () => (
   </div>
 );
 
+const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({ allow, children }) => {
+  const { user, isLoading } = useAuth();
+  const [role, setRole] = useState<UserRole>('user');
+  const [roleLoading, setRoleLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const resolveRole = async () => {
+      if (!user) {
+        if (active) {
+          setRole('user');
+          setRoleLoading(false);
+        }
+        return;
+      }
+      setRoleLoading(true);
+      const resolved = await getCurrentUserRole(user);
+      if (active) {
+        setRole(resolved);
+        setRoleLoading(false);
+      }
+    };
+    resolveRole();
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  if (isLoading || roleLoading) {
+    return null;
+  }
+
+  if (!user) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (!allow.includes(role)) {
+    const fallback = role === 'admin' ? '/admin/dashboard' : role === 'clinic' ? '/clinic-dashboard' : '/dashboard';
+    return <Navigate to={fallback} replace />;
+  }
+
+  return <>{children}</>;
+};
+
 function AppContent() {
   const location = useLocation();
   const isAdminRoute = location.pathname.startsWith('/admin');
@@ -74,8 +119,8 @@ function AppContent() {
             <Route path="/auth/callback" element={<AuthCallback />} />
             
             {/* User Routes */}
-            <Route path="/dashboard" element={<UserDashboard />} />
-            <Route path="/clinic-dashboard" element={<ClinicDashboard />} />
+            <Route path="/dashboard" element={<RoleRoute allow={['user']}><UserDashboard /></RoleRoute>} />
+            <Route path="/clinic-dashboard" element={<RoleRoute allow={['clinic']}><ClinicDashboard /></RoleRoute>} />
             <Route path="/profile" element={<Profile />} />
             <Route path="/messages" element={<Messages />} />
             <Route path="/search" element={<Search />} />

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import { getCurrentUserRole } from '../../utils/auth';
 
 const AuthCallback: React.FC = () => {
   const [message, setMessage] = useState('Doğrulama yapılıyor...');
@@ -41,18 +42,26 @@ const AuthCallback: React.FC = () => {
     const finalize = async (s: any) => {
       try {
         const user = s?.user;
+        let resolvedRole: 'user' | 'clinic' | 'admin' = 'user';
         if (user?.id && user?.email) {
-          // İlk doğrulama/giriş sonrası users upsert
+          resolvedRole = await getCurrentUserRole(user);
           await supabase.from('users').upsert(
-            { id: user.id, email: user.email, role: 'user', is_verified: true },
+            { id: user.id, email: user.email, role: resolvedRole, is_verified: true },
             { onConflict: 'id' }
           );
         }
         setMessage('Başarılı! Yönlendiriliyorsunuz…');
-        window.location.replace('/dashboard');
+        if (resolvedRole === 'admin') {
+          window.location.replace('/admin/dashboard');
+        } else if (resolvedRole === 'clinic') {
+          window.location.replace('/clinic-dashboard');
+        } else {
+          window.location.replace('/dashboard');
+        }
       } catch {
         setMessage('Doğrulama tamamlandı, ancak profil güncellemesi yapılamadı. Yine de yönlendiriliyorsunuz…');
-        window.location.replace('/dashboard');
+        const email = (s?.user?.email || '').toLowerCase();
+        window.location.replace(email === 'admin@estyi.com' ? '/admin/dashboard' : '/dashboard');
       }
     };
 

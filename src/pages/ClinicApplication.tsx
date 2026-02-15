@@ -145,13 +145,19 @@ const ClinicApplication: React.FC = () => {
     try {
       setSubmitting(true);
       // 1) Sertifikalar varsa önce depoya yükle (anon kullanıcılar için güncelleme RLS'inden kaçınmak amacıyla)
-      let certificateUrls: string[] = [];
+      let certificateFiles: {
+        path: string;
+        bucket: string;
+        mime: string;
+        size: number;
+        url?: string;
+      }[] = [];
       if (formData.certificates.length > 0) {
         const tmpId = (typeof crypto !== 'undefined' && 'randomUUID' in crypto)
           ? crypto.randomUUID()
           : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
         const { uploadClinicCertificates } = await import('../services/storage');
-        certificateUrls = await uploadClinicCertificates(tmpId, formData.certificates);
+        certificateFiles = await uploadClinicCertificates(tmpId, formData.certificates);
       }
 
       // 2) Başvuru kaydı oluştur (sertifika URL'leri dahil)
@@ -159,13 +165,12 @@ const ClinicApplication: React.FC = () => {
         clinic_name: formData.clinicName,
         countries: formData.countries,
         cities_by_country: Object.keys(citiesByCountry).length ? citiesByCountry : undefined,
-        country: formData.countries[0] || undefined,
         specialties: formData.specialties,
         website: formData.website,
         phone: formData.phone,
         email: formData.email,
         description: formData.description,
-        certificate_urls: certificateUrls,
+        certificate_files: certificateFiles,
         submitted_by: user?.id || null
       });
       const actorId = user?.id || formData.email;
@@ -211,7 +216,6 @@ const ClinicApplication: React.FC = () => {
             clinic_name: formData.clinicName || 'Test Klinik',
             countries: formData.countries.length ? formData.countries : ['turkey'],
             cities_by_country: Object.keys(citiesByCountry).length ? citiesByCountry : undefined,
-            country: formData.countries[0] || 'turkey',
             specialties: formData.specialties.length ? formData.specialties : ['sac_ekimi_fue'],
             website: formData.website || 'https://example.com',
             phone: formData.phone || '+90 212 555 0000',

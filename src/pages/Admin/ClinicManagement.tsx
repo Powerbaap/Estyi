@@ -20,11 +20,12 @@ import {
   Copy,
   RefreshCw
 } from 'lucide-react';
-import { signImageUrls } from '../../services/storage';
+import { signCertificateFiles } from '../../services/storage';
 import { adminService } from '../../services/adminService';
 import { supabase } from '../../lib/supabaseClient';
 import { PROCEDURE_CATEGORIES } from '../../data/procedureCategories';
 import { useTranslation } from 'react-i18next';
+import { STORAGE_BUCKETS } from '../../config/storageBuckets';
 
 const ClinicManagement: React.FC = () => {
   const { t } = useTranslation();
@@ -63,6 +64,10 @@ const ClinicManagement: React.FC = () => {
   // Belge türü algılama yardımcıları
   const isImageUrl = (url: string) => /\.(png|jpe?g|gif|webp|bmp|svg)(\?.*)?$/i.test(url);
   const isPdfUrl = (url: string) => /\.pdf(\?.*)?$/i.test(url);
+  const getCertificateUrls = (app: any) => {
+    const files = Array.isArray(app?.certificate_files) ? app.certificate_files : [];
+    return files.map((f: any) => f?.url).filter(Boolean);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -78,9 +83,19 @@ const ClinicManagement: React.FC = () => {
         const apps = Array.isArray(data) ? data : [];
         // Sertifika URL'lerini imzala
         const signedApps = await Promise.all(apps.map(async (app: any) => {
-          const urls = Array.isArray(app.certificate_urls) ? app.certificate_urls : [];
-          const signed = await signImageUrls(urls, 3600);
-          return { ...app, certificate_urls: signed };
+          const files = Array.isArray(app.certificate_files) ? app.certificate_files : [];
+          const legacyUrls = Array.isArray(app.certificate_urls) ? app.certificate_urls : [];
+          const normalized = files.length
+            ? files
+            : legacyUrls.map((url: string) => ({
+                path: '',
+                bucket: STORAGE_BUCKETS.CERTIFICATES,
+                mime: 'application/octet-stream',
+                size: 0,
+                url
+              }));
+          const signed = await signCertificateFiles(normalized, 3600);
+          return { ...app, certificate_files: signed };
         }));
         setApplications(signedApps);
       } catch (err) {
@@ -477,15 +492,15 @@ const ClinicManagement: React.FC = () => {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex flex-col gap-1">
-                          {(app.certificate_urls || []).slice(0, 2).map((url: string, idx: number) => (
+                          {getCertificateUrls(app).slice(0, 2).map((url: string, idx: number) => (
                             <a key={idx} href={url} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline text-xs">
                               Belge {idx + 1}
                             </a>
                           ))}
-                          {(app.certificate_urls || []).length > 2 && (
-                            <span className="text-xs text-gray-500">+{(app.certificate_urls || []).length - 2} daha</span>
+                          {getCertificateUrls(app).length > 2 && (
+                            <span className="text-xs text-gray-500">+{getCertificateUrls(app).length - 2} daha</span>
                           )}
-                          {(!app.certificate_urls || app.certificate_urls.length === 0) && (
+                          {getCertificateUrls(app).length === 0 && (
                             <span className="text-gray-500 text-xs">Belge yok</span>
                           )}
                         </div>
@@ -742,7 +757,7 @@ const ClinicManagement: React.FC = () => {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Yüklenen Sertifikalar/Belgeler</label>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {(selectedApplication.certificate_urls || []).map((url: string, idx: number) => (
+                  {getCertificateUrls(selectedApplication).map((url: string, idx: number) => (
                     <div key={idx} className="border border-gray-200 rounded-lg overflow-hidden bg-gray-50 group">
                       {isImageUrl(url) ? (
                         <div className="relative">
@@ -777,7 +792,7 @@ const ClinicManagement: React.FC = () => {
                       </div>
                     </div>
                   ))}
-                  {(!selectedApplication.certificate_urls || selectedApplication.certificate_urls.length === 0) && (
+                  {getCertificateUrls(selectedApplication).length === 0 && (
                     <span className="text-gray-500 text-sm col-span-full">Belge yüklenmemiş</span>
                   )}
                 </div>

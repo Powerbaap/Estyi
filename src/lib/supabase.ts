@@ -78,13 +78,15 @@ function createDevSupabaseMock() {
         ...base,
         clinic_name: values.clinic_name,
         country: values.country || '',
+        countries: Array.isArray(values.countries) ? values.countries : [],
+        cities_by_country: values.cities_by_country || {},
         specialties: Array.isArray(values.specialties) ? values.specialties : [],
         website: values.website || '',
         phone: values.phone || '',
         email: values.email,
         password: values.password || '',
         description: values.description || '',
-        certificate_urls: Array.isArray(values.certificate_urls) ? values.certificate_urls : [],
+        certificate_files: Array.isArray(values.certificate_files) ? values.certificate_files : [],
         status: values.status || 'pending',
         submitted_by: values.submitted_by || null
       };
@@ -323,13 +325,21 @@ export interface Database {
           id: string;
           clinic_name: string;
           country: string | null;
+          countries: string[] | null;
+          cities_by_country: Record<string, string[]> | null;
           specialties: string[];
           website: string | null;
           phone: string | null;
           email: string;
           password: string | null;
           description: string | null;
-          certificate_urls: string[];
+          certificate_files: {
+            path: string;
+            bucket: string;
+            mime: string;
+            size: number;
+            url?: string;
+          }[];
           status: 'pending' | 'approved' | 'rejected';
           submitted_by: string | null;
           created_at: string;
@@ -339,13 +349,21 @@ export interface Database {
           id?: string;
           clinic_name: string;
           country?: string;
+          countries?: string[];
+          cities_by_country?: Record<string, string[]>;
           specialties?: string[];
           website?: string;
           phone?: string;
           email: string;
           password?: string;
           description?: string;
-          certificate_urls?: string[];
+          certificate_files?: {
+            path: string;
+            bucket: string;
+            mime: string;
+            size: number;
+            url?: string;
+          }[];
           status?: 'pending' | 'approved' | 'rejected';
           submitted_by?: string | null;
           created_at?: string;
@@ -355,13 +373,21 @@ export interface Database {
           id?: string;
           clinic_name?: string;
           country?: string;
+          countries?: string[];
+          cities_by_country?: Record<string, string[]>;
           specialties?: string[];
           website?: string;
           phone?: string;
           email?: string;
           password?: string;
           description?: string;
-          certificate_urls?: string[];
+          certificate_files?: {
+            path: string;
+            bucket: string;
+            mime: string;
+            size: number;
+            url?: string;
+          }[];
           status?: 'pending' | 'approved' | 'rejected';
           submitted_by?: string | null;
           created_at?: string;
