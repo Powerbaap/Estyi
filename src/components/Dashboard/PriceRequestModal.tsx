@@ -234,21 +234,73 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       console.log('[PRICE_REQUEST] invoking edge function create_request_and_offer');
       console.log('[PRICE_REQUEST] payload', payload);
 
-      const { data, error } = await supabase.functions.invoke('create_request_and_offer', {
-        body: payload,
-      } as any);
+      const {
+        data: sessionData,
+        error: sessionError,
+      } = await supabase.auth.getSession();
+      const session = sessionData?.session;
 
-      if (error) {
-        console.log('[PRICE_REQUEST] edge error', {
-          name: error?.name,
-          message: error?.message,
-          status: (error as any)?.status,
-          details: (error as any)?.details,
+      if (!session?.access_token) {
+        console.log('[PRICE_REQUEST] missing access token', {
+          sessionError,
+          session,
         });
-        throw error;
+        setSubmitError(
+          getTranslation(
+            'priceRequest.authRequired',
+            'Giriş yapılmadı, lütfen tekrar giriş yap.'
+          )
+        );
+        return;
       }
 
-      const response = (data || {}) as {
+      const fnUrl = `${(import.meta as any).env.VITE_SUPABASE_URL}/functions/v1/create_request_and_offer`;
+      const anonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+
+      const res = await fetch(fnUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${session.access_token}`,
+          apikey: anonKey,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const text = await res.text();
+      console.log('FN status', res.status, text);
+
+      if (!res.ok) {
+        if (res.status === 401 && text) {
+          setSubmitError(text);
+        } else {
+          let parsed: any = null;
+          try {
+            parsed = text ? JSON.parse(text) : null;
+          } catch {
+            parsed = null;
+          }
+          const msg =
+            parsed?.error ||
+            parsed?.message ||
+            text ||
+            getTranslation(
+              'priceRequest.submitError',
+              'Talep gönderilirken sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.'
+            );
+          setSubmitError(msg);
+        }
+        return;
+      }
+
+      let parsed: any = null;
+      try {
+        parsed = text ? JSON.parse(text) : null;
+      } catch {
+        parsed = null;
+      }
+
+      const response = (parsed || {}) as {
         request?: any;
         offers?: any[];
         error?: string;
