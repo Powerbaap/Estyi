@@ -265,10 +265,38 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       setProcedureSearch('');
       setIsSubmitting(false);
       onClose();
-    } catch (err) {
-      console.error('Talep oluşturulamadı:', err);
-      // Supabase hatasında kullanıcıya görünür geri bildirim ver
-      setSubmitError(getTranslation('priceRequest.submitError', 'Talep gönderilirken sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.'));
+    } catch (err: any) {
+      console.error('Talep oluşturulamadı:', {
+        error: err,
+        message: err?.message,
+        details: err?.details,
+        hint: err?.hint,
+        status: err?.status,
+        stack: err instanceof Error ? err.stack : undefined,
+      });
+      let uiMessage =
+        (typeof err?.message === 'string' && err.message.trim()) ||
+        getTranslation('priceRequest.submitError', 'Talep gönderilirken sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+
+      const lower = (uiMessage || '').toLowerCase();
+      if (
+        lower.includes('permission') ||
+        lower.includes('not authorized') ||
+        lower.includes('rls') ||
+        lower.includes('denied')
+      ) {
+        uiMessage = getTranslation(
+          'priceRequest.submitErrorPermission',
+          'Yetki hatası: Lütfen hesabınızla yeniden giriş yapın veya daha sonra tekrar deneyin.'
+        );
+      } else if (lower.includes('network') || lower.includes('fetch') || lower.includes('failed')) {
+        uiMessage = getTranslation(
+          'priceRequest.submitErrorNetwork',
+          'Ağ hatası: İnternet bağlantınızı kontrol ederek tekrar deneyin.'
+        );
+      }
+
+      setSubmitError(uiMessage);
       setIsSubmitting(false);
     }
   };
@@ -303,15 +331,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
         <div className="flex-1 overflow-y-auto">
           <form onSubmit={handleSubmit} className="p-6 space-y-6">
-            <div className="sticky top-0 z-10 bg-white pt-0 pb-4">
-              <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-900">
-                {t('legal.medicalDisclaimer')}
-              </div>
-              <div className="rounded-xl bg-blue-50 border border-blue-200 p-4 text-sm text-blue-900 mt-3">
-                {t('legal.clickwrap.ageGate')}
-              </div>
-            </div>
-
           {/* Procedure Selection: Arama + Kategorilere göre işlemler */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -631,6 +650,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-900 mb-2">{getTranslation('priceRequest.importantInfo', 'Important Information')}</h4>
             <ul className="text-sm text-blue-800 space-y-1">
+              <li>{t('legal.medicalDisclaimer')}</li>
               <li>{getTranslation('priceRequest.requestActive', 'Clinics can send offers as long as your request is active.')}</li>
               <li>{getTranslation('priceRequest.notifications', 'You will be notified when new offers arrive.')}</li>
               {isAllSelected && (
