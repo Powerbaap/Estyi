@@ -1,7 +1,6 @@
 import { User } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabaseClient';
 
-// Uygulama genelinde rol tespitini standartlaştırır
 export type UserRole = 'user' | 'clinic' | 'admin';
 
 export function getUserRole(user: User | null | undefined): UserRole {
@@ -62,4 +61,52 @@ export async function getCurrentUserRole(user?: User | null): Promise<UserRole> 
     }
     return 'user';
   }
+}
+
+export interface UserAccess {
+  role: UserRole;
+  isAdmin: boolean;
+  isClinicApproved: boolean;
+}
+
+export async function getCurrentUserAccess(user?: User | null): Promise<UserAccess> {
+  const role = await getCurrentUserRole(user);
+  let isAdmin = role === 'admin';
+  let isClinicApproved = true;
+
+  let currentUser = user ?? null;
+  if (!currentUser) {
+    const { data } = await supabase.auth.getUser();
+    currentUser = data?.user ?? null;
+  }
+
+  if (role === 'clinic') {
+    isClinicApproved = false;
+    if (currentUser?.id) {
+      try {
+        const { data, error } = await supabase
+          .from('clinics')
+          .select('status')
+          .eq('id', currentUser.id)
+          .maybeSingle();
+
+        if (!error && data?.status) {
+          isClinicApproved = data.status === 'active';
+        }
+      } catch {
+        isClinicApproved = false;
+      }
+    }
+  }
+
+  if (!isAdmin && currentUser) {
+    const meta = (currentUser as any).user_metadata || {};
+    const appMeta = (currentUser as any).app_metadata || {};
+    const explicitRole = meta.role || appMeta.role || meta.roleType || appMeta.roleType;
+    if (explicitRole === 'admin') {
+      isAdmin = true;
+    }
+  }
+
+  return { role, isAdmin, isClinicApproved };
 }
