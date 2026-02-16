@@ -234,44 +234,52 @@ export const requestService = {
   
   // Yeni talep oluştur
   createRequest: async (requestData: any) => {
-    const { data, error } = await supabase
-      .from('requests')
-      .insert(requestData)
-      .select('*');
-    
-    if (!error) return data;
-    const message = (error?.message || '').toLowerCase();
-    const isPermissionError =
-      message.includes('permission') ||
-      message.includes('not authorized') ||
-      message.includes('rls') ||
-      message.includes('denied');
-    if (!isPermissionError) {
+    const sessionsRaw =
+      typeof requestData.sessions === 'number'
+        ? String(requestData.sessions)
+        : requestData.sessions;
+
+    const sessionsValue =
+      typeof requestData.sessions === 'number'
+        ? requestData.sessions
+        : sessionsRaw && !Number.isNaN(Number(sessionsRaw))
+        ? Number(sessionsRaw)
+        : null;
+
+    const payload = {
+      procedure_name:
+        requestData.procedure_name ||
+        requestData.procedure ||
+        requestData.procedureName ||
+        '',
+      procedure_category: requestData.procedure_category ?? null,
+      region: requestData.region ?? null,
+      sessions: sessionsValue,
+      selected_countries: Array.isArray(requestData.selected_countries)
+        ? requestData.selected_countries
+        : Array.isArray(requestData.countries)
+        ? requestData.countries
+        : [],
+      cities_by_country:
+        requestData.cities_by_country ||
+        requestData.citiesByCountry ||
+        {},
+      gender: requestData.gender ?? null,
+      notes: requestData.notes ?? requestData.description ?? null,
+    };
+
+    const { data, error } = await supabase.functions.invoke(
+      'create_request_and_offers',
+      {
+        body: payload,
+      } as any
+    );
+
+    if (error) {
       throw error;
     }
-    const { data: sessionData } = await supabase.auth.getSession();
-    const token = sessionData?.session?.access_token;
-    if (!token) {
-      throw error;
-    }
-    const baseUrl =
-      import.meta.env.VITE_BACKEND_URL ||
-      import.meta.env.VITE_API_BASE_URL ||
-      'http://localhost:3005';
-    const response = await fetch(`${baseUrl}/api/requests`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`
-      },
-      body: JSON.stringify(requestData)
-    });
-    if (!response.ok) {
-      const text = await response.text();
-      throw new Error(text || 'Talep oluşturma başarısız');
-    }
-    const payload = await response.json();
-    return payload;
+
+    return data;
   }
 };
 

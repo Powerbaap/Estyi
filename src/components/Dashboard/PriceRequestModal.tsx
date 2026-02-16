@@ -9,7 +9,7 @@ interface PriceRequestModalProps {
 }
 
 import { useAuth } from '../../contexts/AuthContext';
-import { requestService } from '../../services/api';
+import { supabase } from '../../lib/supabaseClient';
 import { COUNTRY_KEYS, CITY_OPTIONS, TURKISH_CITIES } from '../../data/countriesAndCities';
 import {
   PROCEDURE_CATEGORIES,
@@ -188,58 +188,98 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     return hints;
   };
 
+  const FN_NAME = 'create_request_and_offers';
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
-    setIsSubmitting(true);
     if (!user?.id) {
       setSubmitError(getTranslation('priceRequest.loginRequired', 'Talep oluşturmak için lütfen giriş yapın.'));
-      setIsSubmitting(false);
       return;
     }
-    
-    const photoUrls: string[] = [];
+
+    setIsSubmitting(true);
+
     const countriesSelected = [...formData.countries];
-    const params: Record<string, string | number> = { ...formData.procedureParams };
-    const primaryCountry = countriesSelected[0];
-    const primaryCity = primaryCountry
-      ? (primaryCountry === 'turkey'
-        ? formData.citiesTR[0]
-        : (citiesByCountry?.[primaryCountry]?.[0]))
-      : undefined;
+    const citiesMap: Record<string, string[]> = { ...citiesByCountry };
+    if (countriesSelected.includes('turkey')) {
+      citiesMap['turkey'] = [...formData.citiesTR];
+    }
+
+    const procedureCategory =
+      formData.procedureKey &&
+      PROCEDURE_CATEGORIES.find((cat) => cat.procedures.some((p) => p.key === formData.procedureKey));
+
+    const region =
+      (formData.procedureParams['bolge'] as string | undefined) ||
+      (formData.procedureParams['region'] as string | undefined) ||
+      null;
+
+    const sessionsRaw =
+      (formData.procedureParams['seans'] as string | undefined) ||
+      (formData.procedureParams['sessions'] as string | undefined);
+    const sessions =
+      sessionsRaw && !Number.isNaN(Number(sessionsRaw)) ? Number(sessionsRaw) : null;
+
     const payload = {
-      user_id: user?.id,
-      procedure_key: formData.procedureKey,
-      description: formData.description,
-      photos: photoUrls,
-      params,
-      status: 'active',
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
+      procedure_name: selectedProcedure ? getProcedureDisplayName(selectedProcedure) : formData.procedure,
+      procedure_category: procedureCategory ? procedureCategory.name : null,
+      region,
+      sessions,
+      selected_countries: countriesSelected,
+      cities_by_country: citiesMap,
       gender: formData.gender || null,
-      country: primaryCountry || null,
-      city: primaryCity || null,
-      countries: countriesSelected,
-      cities_tr: formData.countries.includes('turkey') ? formData.citiesTR : [],
-      cities_by_country: citiesByCountry,
-    } as any;
+      notes: formData.description || null,
+    };
 
     try {
-      const inserted = await requestService.createRequest(payload);
-      const row = Array.isArray(inserted) ? inserted[0] : inserted;
+      console.log('[PRICE_REQUEST] invoking edge function', FN_NAME);
+      console.log('[PRICE_REQUEST] payload', payload);
+
+      const { data, error } = await supabase.functions.invoke(FN_NAME, {
+        body: payload,
+      } as any);
+
+      if (error) {
+        throw error;
+      }
+
+      const response = (data || {}) as {
+        request?: any;
+        offers?: any[];
+        error?: string;
+      };
+
+      if (response.error) {
+        throw new Error(response.error);
+      }
+
+      const row = response.request;
+
+      if (!row) {
+        throw new Error('Talep oluşturma yanıtı alınamadı.');
+      }
+
       const newRequest = {
         id: row.id,
         procedure: formData.procedure,
         procedureKey: formData.procedureKey,
-        status: row.status ?? 'active',
+        status: row.status ?? 'open',
         createdAt: row.created_at ? new Date(row.created_at) : new Date(),
-        offersCount: 0,
+        offersCount: Array.isArray(response.offers) ? response.offers.length : 0,
         countries: countriesSelected,
         citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-        photos: Array.isArray(row?.photos) ? row.photos.length : photoUrls.length,
-        photoUrls: Array.isArray(row?.photos) ? row.photos : photoUrls,
-        offers: []
+        photos: Array.isArray(row?.photos) ? row.photos.length : 0,
+        photoUrls: Array.isArray(row?.photos) ? row.photos : [],
+        offers: Array.isArray(response.offers) ? response.offers : [],
       };
+
+      console.log('[PRICE_REQUEST] response', {
+        fn: FN_NAME,
+        requestId: newRequest.id,
+        offersCount: newRequest.offersCount,
+      });
+
       onRequestSubmitted(newRequest);
 
       setFormData({
@@ -252,7 +292,13 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         description: '',
       });
       setProcedureSearch('');
-      setIsSubmitting(false);
+      setSubmitError(null);
+      alert(
+        getTranslation(
+          'priceRequest.submitSuccess',
+          'Talebiniz oluşturuldu, teklifler geldikçe bilgilendirileceksiniz.'
+        )
+      );
       onClose();
     } catch (err: any) {
       console.error('Talep oluşturulamadı:', {
@@ -286,6 +332,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       }
 
       setSubmitError(uiMessage);
+    } finally {
       setIsSubmitting(false);
     }
   };
