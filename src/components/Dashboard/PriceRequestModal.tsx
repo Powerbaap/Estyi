@@ -188,8 +188,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     return hints;
   };
 
-  const FN_NAME = 'create_request_and_offer';
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitError(null);
@@ -233,14 +231,20 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     };
 
     try {
-      console.log('[PRICE_REQUEST] invoking edge function', FN_NAME);
+      console.log('[PRICE_REQUEST] invoking edge function create_request_and_offer');
       console.log('[PRICE_REQUEST] payload', payload);
 
-      const { data, error } = await supabase.functions.invoke(FN_NAME, {
+      const { data, error } = await supabase.functions.invoke('create_request_and_offer', {
         body: payload,
       } as any);
 
       if (error) {
+        console.log('[PRICE_REQUEST] edge error', {
+          name: error?.name,
+          message: error?.message,
+          status: (error as any)?.status,
+          details: (error as any)?.details,
+        });
         throw error;
       }
 
