@@ -34,7 +34,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     procedureParams: {} as Record<string, string>,
     countries: [] as string[],
     citiesTR: [] as string[],
-    age: '',
     gender: '',
     description: '',
   });
@@ -168,13 +167,10 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
   const isSubmitDisabled = () => {
     const isMissingCities = formData.countries.includes('turkey') && formData.citiesTR.length === 0;
-    const ageNumber = formData.age ? Number(formData.age) : undefined;
     return (
       !user?.id ||
       !formData.procedure ||
       formData.countries.length === 0 ||
-      !formData.age ||
-      (ageNumber !== undefined && ageNumber < 18) ||
       !formData.gender ||
       isMissingCities ||
       !paramsFilled
@@ -187,10 +183,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     if (hasParams && !paramsFilled)
       hints.push(getTranslation('priceRequest.hintProcedureParams', 'Seçtiğiniz işlem için bölge/seans vb. alanları doldurun'));
     if (formData.countries.length === 0) hints.push(getTranslation('priceRequest.hintCountries', 'En az bir ülke seçin'));
-    const ageNumber = formData.age ? Number(formData.age) : undefined;
-    if (!formData.age || (ageNumber !== undefined && ageNumber < 18)) {
-      hints.push(getTranslation('priceRequest.hintAge', '18 yaş ve üzeri olmalısınız'));
-    }
     if (formData.countries.includes('turkey') && formData.citiesTR.length === 0) hints.push(getTranslation('priceRequest.hintCitiesTR', 'Türkiye için şehir seçin'));
     if (!formData.gender) hints.push(getTranslation('priceRequest.hintGender', 'Cinsiyet seçin'));
     return hints;
@@ -215,7 +207,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         ? formData.citiesTR[0]
         : (citiesByCountry?.[primaryCountry]?.[0]))
       : undefined;
-    const ageNumber = formData.age ? Number(formData.age) : undefined;
     const payload = {
       user_id: user?.id,
       procedure_key: formData.procedureKey,
@@ -226,7 +217,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
       gender: formData.gender || null,
-      age: ageNumber && ageNumber >= 18 ? ageNumber : null,
       country: primaryCountry || null,
       city: primaryCity || null,
       countries: countriesSelected,
@@ -258,7 +248,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         procedureParams: {},
         countries: [],
         citiesTR: [],
-        age: '',
         gender: '',
         description: '',
       });
@@ -585,32 +574,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               </div>
             );
           })}
-          {/* Age */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.age', 'Yaş')} *
-            </label>
-            <input
-              type="number"
-              inputMode="numeric"
-              min={18}
-              value={formData.age}
-              onChange={(e) => {
-                const value = e.target.value;
-                if (value === '') {
-                  setFormData(prev => ({ ...prev, age: '' }));
-                  return;
-                }
-                const n = Number(value);
-                if (!Number.isNaN(n)) {
-                  setFormData(prev => ({ ...prev, age: value }));
-                }
-              }}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder={getTranslation('priceRequest.agePlaceholder', 'Yaşınızı girin (18+)')}
-            />
-          </div>
-
           {/* Gender */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
