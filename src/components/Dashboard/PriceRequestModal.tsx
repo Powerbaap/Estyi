@@ -188,7 +188,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     return hints;
   };
 
-  const FN_NAME = 'create_request_and_offers';
+  const FN_NAME = 'create_request_and_offer';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,13 +301,11 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       );
       onClose();
     } catch (err: any) {
-      console.error('Talep oluşturulamadı:', {
-        error: err,
+      console.log('[PRICE_REQUEST] error', {
+        name: err?.name,
         message: err?.message,
-        details: err?.details,
-        hint: err?.hint,
         status: err?.status,
-        stack: err instanceof Error ? err.stack : undefined,
+        details: err?.details,
       });
       let uiMessage =
         (typeof err?.message === 'string' && err.message.trim()) ||

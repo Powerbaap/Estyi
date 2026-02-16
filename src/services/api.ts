@@ -269,13 +269,19 @@ export const requestService = {
     };
 
     const { data, error } = await supabase.functions.invoke(
-      'create_request_and_offers',
+      'create_request_and_offer',
       {
         body: payload,
       } as any
     );
 
     if (error) {
+      console.log('[REQUEST_SERVICE] error', {
+        name: error?.name,
+        message: error?.message,
+        status: (error as any)?.status,
+        details: (error as any)?.details,
+      });
       throw error;
     }
 
