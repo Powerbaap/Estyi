@@ -9,7 +9,7 @@ import { getCurrentUserRole } from '../../utils/auth';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
-  const { login, resetPassword, isLoading } = useAuth();
+  const { login, resetPassword } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -22,9 +22,11 @@ const Login: React.FC = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [forgotEmail, setForgotEmail] = useState('');
   const [forgotMessage, setForgotMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
     setError('');
 
     if (!formData.email || !formData.password) {
@@ -32,21 +34,26 @@ const Login: React.FC = () => {
       return;
     }
 
-    const normalizedEmail = formData.email.trim().toLowerCase();
-    const requestedRole = normalizedEmail === 'admin@estyi.com' ? 'admin' : formData.role;
-    const result = await login(formData.email, formData.password, requestedRole);
-    
-    if (result.success) {
-      const role = await getCurrentUserRole();
-      if (role === 'admin') {
-        navigate('/admin/dashboard');
-      } else if (role === 'clinic') {
-        navigate('/clinic-dashboard');
+    setIsSubmitting(true);
+    try {
+      const normalizedEmail = formData.email.trim().toLowerCase();
+      const requestedRole = normalizedEmail === 'admin@estyi.com' ? 'admin' : formData.role;
+      const result = await login(formData.email, formData.password, requestedRole);
+      
+      if (result.success) {
+        const role = await getCurrentUserRole();
+        if (role === 'admin') {
+          navigate('/admin/dashboard');
+        } else if (role === 'clinic') {
+          navigate('/clinic-dashboard');
+        } else {
+          navigate('/dashboard');
+        }
       } else {
-        navigate('/dashboard');
+        setError(result.error || t('login.loginError'));
       }
-    } else {
-      setError(result.error || t('login.loginError'));
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -230,10 +237,10 @@ const Login: React.FC = () => {
             <div>
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isSubmitting || !formData.email || !formData.password}
                 className="group relative w-full flex justify-center py-3 px-4 border border-transparent text-sm font-medium rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
               >
-                {isLoading ? t('login.loggingIn') : t('login.loginButton')}
+                {isSubmitting ? t('login.loggingIn') : t('login.loginButton')}
               </button>
             </div>
 
