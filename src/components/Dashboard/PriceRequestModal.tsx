@@ -248,20 +248,28 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         setSubmitError(
           getTranslation(
             'priceRequest.authRequired',
-            'Giriş yapılmadı, lütfen tekrar giriş yap.'
+            'Giriş yapılmadı, lütfen çıkış yapıp tekrar giriş yap.'
           )
         );
         return;
       }
 
-      const fnUrl = `${(import.meta as any).env.VITE_SUPABASE_URL}/functions/v1/create_request_and_offer`;
-      const anonKey = (import.meta as any).env.VITE_SUPABASE_ANON_KEY;
+      const fnUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create_request_and_offer`;
+      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+      const token = session.access_token;
+      const tokenPrefix = token.slice(0, 25);
+      const tokenParts = token.split('.').length;
+
+      console.log('[PRICE_REQUEST] VITE_SUPABASE_URL', import.meta.env.VITE_SUPABASE_URL);
+      console.log('[PRICE_REQUEST] tokenPrefix', tokenPrefix);
+      console.log('[PRICE_REQUEST] tokenParts', tokenParts);
 
       const res = await fetch(fnUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer ${session.access_token}`,
+          Authorization: 'Bearer ' + token,
           apikey: anonKey,
         },
         body: JSON.stringify(payload),
