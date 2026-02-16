@@ -254,61 +254,35 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         return;
       }
 
-      const fnUrl = `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/create_request_and_offer`;
-      const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
       const token = session.access_token;
       const tokenPrefix = token.slice(0, 25);
       const tokenParts = token.split('.').length;
 
-      console.log('[PRICE_REQUEST] VITE_SUPABASE_URL', import.meta.env.VITE_SUPABASE_URL);
+      console.log(
+        '[PRICE_REQUEST] VITE_SUPABASE_URL',
+        import.meta.env.VITE_SUPABASE_URL
+      );
       console.log('[PRICE_REQUEST] tokenPrefix', tokenPrefix);
       console.log('[PRICE_REQUEST] tokenParts', tokenParts);
 
-      const res = await fetch(fnUrl, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: 'Bearer ' + token,
-          apikey: anonKey,
-        },
-        body: JSON.stringify(payload),
-      });
+      const { data, error } = await supabase.functions.invoke(
+        'create_request_and_offer',
+        {
+          body: payload,
+        } as any
+      );
 
-      const text = await res.text();
-      console.log('FN status', res.status, text);
-
-      if (!res.ok) {
-        if (res.status === 401 && text) {
-          setSubmitError(text);
-        } else {
-          let parsed: any = null;
-          try {
-            parsed = text ? JSON.parse(text) : null;
-          } catch {
-            parsed = null;
-          }
-          const msg =
-            parsed?.error ||
-            parsed?.message ||
-            text ||
-            getTranslation(
-              'priceRequest.submitError',
-              'Talep gönderilirken sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.'
-            );
-          setSubmitError(msg);
-        }
-        return;
+      if (error) {
+        console.log('[PRICE_REQUEST] edge error', {
+          name: error?.name,
+          message: error?.message,
+          status: (error as any)?.status,
+          details: (error as any)?.details,
+        });
+        throw error;
       }
 
-      let parsed: any = null;
-      try {
-        parsed = text ? JSON.parse(text) : null;
-      } catch {
-        parsed = null;
-      }
-
-      const response = (parsed || {}) as {
+      const response = (data || {}) as {
         request?: any;
         offers?: any[];
         error?: string;
