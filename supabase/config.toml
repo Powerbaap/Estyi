@@ -1,0 +1,4 @@
+# Bu ayar Supabase gateway JWT doğrulamasını kapatır. Auth kontrolü fonksiyon içinde Authorization header + supabase auth.getUser() ile yapılmaya devam ediyor.
+
+[functions.create_request_and_offer]
+verify_jwt = false
