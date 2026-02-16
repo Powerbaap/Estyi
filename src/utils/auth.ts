@@ -24,24 +24,20 @@ export function getUserRole(user: User | null | undefined): UserRole {
   return 'user';
 }
 
+const withTimeout = <T,>(promise: Promise<T>, ms = 8000) =>
+  Promise.race<T>([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error('ROLE_TIMEOUT')), ms)),
+  ]);
+
 export async function getCurrentUserRole(user?: User | null): Promise<UserRole> {
   try {
     let currentUser = user ?? null;
     if (!currentUser) {
-      const { data } = await supabase.auth.getUser();
+      const { data } = await withTimeout(supabase.auth.getUser(), 8000);
       currentUser = data?.user ?? null;
     }
     if (!currentUser) return 'user';
-
-    const { data, error } = await supabase
-      .from('users')
-      .select('role')
-      .eq('id', currentUser.id)
-      .maybeSingle();
-
-    if (!error && data?.role && (data.role === 'admin' || data.role === 'clinic' || data.role === 'user')) {
-      return data.role;
-    }
 
     const email = (currentUser.email || '').toLowerCase();
     if (email === 'admin@estyi.com') {
@@ -54,12 +50,29 @@ export async function getCurrentUserRole(user?: User | null): Promise<UserRole> 
       return 'admin';
     }
 
-    return getUserRole(currentUser);
+    const metaRole = getUserRole(currentUser);
+
+    try {
+      const { data, error } = await withTimeout(
+        supabase
+          .from('users')
+          .select('role')
+          .eq('id', currentUser.id)
+          .maybeSingle(),
+        8000
+      );
+
+      if (!error && data?.role && (data.role === 'admin' || data.role === 'clinic' || data.role === 'user')) {
+        return data.role;
+      }
+    } catch {}
+
+    return metaRole;
   } catch {
     if (user?.email?.toLowerCase() === 'admin@estyi.com') {
       return 'admin';
     }
-    return 'user';
+    return getUserRole(user ?? null);
   }
 }
 

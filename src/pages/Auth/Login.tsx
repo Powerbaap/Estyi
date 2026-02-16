@@ -7,6 +7,12 @@ import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
 import { getCurrentUserRole } from '../../utils/auth';
 
+const withTimeout = <T,>(promise: Promise<T>, ms = 12000) =>
+  Promise.race<T>([
+    promise,
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error('LOGIN_TIMEOUT')), ms)),
+  ]);
+
 const Login: React.FC = () => {
   const { t } = useTranslation();
   const { login, resetPassword } = useAuth();
@@ -27,6 +33,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return;
+    console.log('[LOGIN] submit start', Date.now());
     setError('');
 
     if (!formData.email || !formData.password) {
@@ -38,20 +45,37 @@ const Login: React.FC = () => {
     try {
       const normalizedEmail = formData.email.trim().toLowerCase();
       const requestedRole = normalizedEmail === 'admin@estyi.com' ? 'admin' : formData.role;
-      const result = await login(formData.email, formData.password, requestedRole);
-      
-      if (result.success) {
-        const role = await getCurrentUserRole();
-        if (role === 'admin') {
-          navigate('/admin/dashboard');
-        } else if (role === 'clinic') {
-          navigate('/clinic-dashboard');
-        } else {
-          navigate('/dashboard');
-        }
-      } else {
+      console.log('[LOGIN] calling login()');
+      const result = await withTimeout(login(formData.email, formData.password, requestedRole), 12000);
+
+      if (!result?.success) {
         setError(result.error || t('login.loginError'));
+        return;
       }
+
+      console.log('[LOGIN] login ok, fetching role');
+      let role: string | null = null;
+      try {
+        role = await withTimeout(getCurrentUserRole(), 8000);
+      } catch {
+        role = requestedRole;
+      }
+
+      console.log('[LOGIN] navigating', role);
+      if (role === 'admin') {
+        navigate('/admin/dashboard');
+      } else if (role === 'clinic') {
+        navigate('/clinic-dashboard');
+      } else {
+        navigate('/dashboard');
+      }
+    } catch (e) {
+      const err = e as { message?: string };
+      const msg =
+        err?.message === 'LOGIN_TIMEOUT'
+          ? 'Giriş zaman aşımına uğradı. İnternetinizi kontrol edip tekrar deneyin.'
+          : (err?.message || t('login.loginError'));
+      setError(msg);
     } finally {
       setIsSubmitting(false);
     }

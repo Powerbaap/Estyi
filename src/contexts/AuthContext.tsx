@@ -151,8 +151,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return { success: true };
       }
 
+      console.error('[AUTH] signInWithPassword error', {
+        message: error.message,
+        details: (error as { details?: string }).details,
+        hint: (error as { hint?: string }).hint,
+        status: (error as { status?: number }).status,
+      });
       return { success: false, error: 'Hesabınız yok veya şifre hatalı. Eğer klinik başvurusu yaptıysanız onay bekleyin.' };
     } catch (error) {
+      const err = error as { message?: string; details?: string; hint?: string; status?: number };
+      console.error('[AUTH] login exception', {
+        message: err?.message,
+        details: err?.details,
+        hint: err?.hint,
+        status: err?.status,
+      });
       return { success: false, error: 'Giriş yapılırken bir hata oluştu' };
     } finally {
       setIsLoading(false);
