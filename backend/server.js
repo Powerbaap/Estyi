@@ -788,6 +788,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
       phone: app.phone || '',
       website: app.website || '',
       location,
+      description: app.description || '',
       status: 'active',
       rating: 0,
       reviews: 0,
