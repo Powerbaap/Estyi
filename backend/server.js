@@ -33,7 +33,7 @@ const isStrongPassword = (password) => {
 // - Supabase fallback: when service key is missing, don't touch Supabase; keep codes in memory
 const useEmailFallback = !process.env.SMTP_USER || !process.env.SMTP_PASS;
 const useSupabaseFallback = !process.env.SUPABASE_SERVICE_KEY;
-const verificationStore = new Map(); // key: email or userId, value: { code, expiresAt }
+const verificationStore = new Map();
 
 // Email transporter
 const transporter = nodemailer.createTransport({
@@ -45,6 +45,53 @@ const transporter = nodemailer.createTransport({
     pass: process.env.SMTP_PASS
   }
 });
+
+const getAdminContext = async (req, res) => {
+  if (useSupabaseFallback) {
+    return { userId: 'DEV_ADMIN' };
+  }
+
+  const authHeader = req.headers.authorization || '';
+  const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  if (!token) {
+    res.status(401).json({ error: 'Missing auth token' });
+    return null;
+  }
+
+  const { data: authData, error: authError } = await supabase.auth.getUser(token);
+
+  if (authError || !authData?.user) {
+    res.status(401).json({ error: 'Invalid auth token' });
+    return null;
+  }
+
+  const user = authData.user;
+  let role =
+    (user.user_metadata && user.user_metadata.role) ||
+    (user.app_metadata && user.app_metadata.role) ||
+    null;
+
+  if (!role) {
+    try {
+      const { data: profile } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (profile?.role) {
+        role = profile.role;
+      }
+    } catch {}
+  }
+
+  if (role !== 'admin') {
+    res.status(403).json({ error: 'Admin access required' });
+    return null;
+  }
+
+  return { userId: user.id };
+};
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -664,6 +711,8 @@ app.get('/api/admin/requests', async (req, res) => {
 
 app.get('/api/admin/clinic-applications', async (req, res) => {
   try {
+    const admin = await getAdminContext(req, res);
+    if (!admin) return;
     if (useSupabaseFallback) return res.json([]);
     const { data, error } = await supabase
       .from('clinic_applications')
@@ -679,11 +728,13 @@ app.get('/api/admin/clinic-applications', async (req, res) => {
 
 app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
   try {
+    const admin = await getAdminContext(req, res);
+    if (!admin) return;
     if (useSupabaseFallback) {
       return res.json({ success: true, message: 'Dev fallback: approved' });
     }
     const id = req.params.id;
-    // Fetch application
+    const { approved_specialties } = req.body || {};
     const { data: app, error: appErr } = await supabase
       .from('clinic_applications')
       .select('*')
@@ -692,101 +743,57 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
     if (appErr) return res.status(400).json({ error: appErr.message });
     if (!app) return res.status(404).json({ error: 'Application not found' });
 
-    // Idempotency check
     if (app.status === 'approved') {
       return res.json({ success: true, message: 'Application already approved' });
     }
 
-    // Create or update clinic auth user
-    let clinicAuthId = null;
-    try {
-      // Try finding existing auth user by email
-      const { data: list, error: listError } = await supabase.auth.admin.listUsers({ page: 1, perPage: 1000 });
-      if (!listError) {
-        const found = list?.users?.find((u) => u.email?.toLowerCase() === String(app.email).toLowerCase());
-        if (found) clinicAuthId = found.id;
-      }
-
-      if (!clinicAuthId) {
-        // Invite user via email (no temp password needed)
-        const { data: authData, error: authError } = await supabase.auth.admin.inviteUserByEmail(app.email, {
-          data: { role: 'clinic', name: app.clinic_name },
-          redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/auth/callback` : 'http://localhost:5173/auth/callback')
-        });
-        if (authError) return res.status(400).json({ error: authError.message });
-        clinicAuthId = authData.user.id;
-      }
-
-      // Upsert profile in users table
-      const randomUserId = Math.random().toString(36).substring(2, 10).toUpperCase();
-      const { data: profileRow, error: profileErr } = await supabase
-        .from('users')
-        .upsert({
-          id: clinicAuthId,
-          user_id: randomUserId,
-          email: app.email,
-          name: app.clinic_name,
-          role: 'clinic',
-          is_verified: true
-        })
-        .select('*');
-      if (profileErr) return res.status(400).json({ error: profileErr.message });
-    } catch (userErr) {
-      console.error('Clinic user provision error:', userErr);
-      return res.status(500).json({ error: 'Failed to provision clinic user' });
+    if (!app.submitted_by) {
+      return res.status(400).json({ error: 'Application is missing submitted_by' });
     }
 
-    // Generate a recovery link and email it (using generateLink for consistency)
-    let recoveryLinkSent = false;
-    try {
-      const { data: linkData, error: linkErr } = await supabase.auth.admin.generateLink({
-        type: 'recovery',
-        email: app.email,
-        options: { redirectTo: (process.env.FRONTEND_URL ? `${process.env.FRONTEND_URL}/auth/callback` : 'http://localhost:5173/auth/callback') }
-      });
-      if (!linkErr && linkData?.action_link) {
-        if (!useEmailFallback) {
-          const html = `
-            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; rounded-lg;">
-              <h2 style="color: #4F46E5;">Estyi Klinik Erişimi</h2>
-              <p>Merhaba <strong>${app.clinic_name}</strong>,</p>
-              <p>Başvurunuz onaylandı! Hesabınızı aktifleştirmek ve şifrenizi belirlemek için aşağıdaki butona tıklayın:</p>
-              <div style="text-align: center; margin: 30px 0;">
-                <a href="${linkData.action_link}" style="background-color: #4F46E5; color: white; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">Şifremi Belirle</a>
-              </div>
-              <p style="color: #666; font-size: 14px;">Bu bağlantı bir süre sonra geçersiz olacaktır.</p>
-              <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-              <p style="color: #999; font-size: 12px;">Sorunuz olursa bu e-postayı yanıtlayabilirsiniz.</p>
-            </div>
-          `;
-          await transporter.sendMail({
-            from: process.env.SMTP_USER,
-            to: app.email,
-            subject: 'Estyi Klinik Onayı – Şifre Belirleme',
-            html,
-          });
-          recoveryLinkSent = true;
-        } else {
-          console.log(`🔗 DEV: Recovery link for ${app.email}: ${linkData.action_link}`);
-          recoveryLinkSent = true;
-        }
-      }
-    } catch (e) {
-      console.warn('Recovery link email failed:', (e && e.message) || e);
+    const authUserId = app.submitted_by;
+
+    const applicationSpecialties = Array.isArray(app.specialties) ? app.specialties : [];
+    const approved =
+      Array.isArray(approved_specialties) && approved_specialties.length > 0
+        ? approved_specialties
+        : applicationSpecialties;
+
+    if (approved.length === 0 && applicationSpecialties.length > 0) {
+      return res.status(400).json({ error: 'At least one specialty must be approved' });
     }
 
-    // Create clinic (link to auth user id)
+    const countries = Array.isArray(app.countries) ? app.countries : [];
+    const citiesByCountry = app.cities_by_country && typeof app.cities_by_country === 'object'
+      ? app.cities_by_country
+      : {};
+
+    let location = '';
+    if (countries.length > 0) {
+      const firstCountry = countries[0];
+      const cities = citiesByCountry && citiesByCountry[firstCountry];
+      if (Array.isArray(cities) && cities.length > 0) {
+        location = `${firstCountry} / ${cities[0]}`;
+      } else {
+        location = firstCountry;
+      }
+    } else if (app.country) {
+      location = app.country;
+    }
+
     const clinicInsert = {
-      id: clinicAuthId, // align with RLS policies (auth.uid() = id)
+      id: authUserId,
       name: app.clinic_name,
       email: app.email,
       phone: app.phone || '',
       website: app.website || '',
-      location: app.country || '',
+      location,
       status: 'active',
       rating: 0,
       reviews: 0,
-      specialties: app.specialties || []
+      specialties: approved,
+      countries,
+      cities_by_country: citiesByCountry
     };
     const { data: clinicRow, error: clinicErr } = await supabase
       .from('clinics')
@@ -796,14 +803,20 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
 
     const createdClinic = Array.isArray(clinicRow) ? clinicRow[0] : clinicRow;
 
-    // Update application status
     const { error: updErr } = await supabase
       .from('clinic_applications')
       .update({ status: 'approved', approved_at: new Date().toISOString() })
       .eq('id', id);
     if (updErr) return res.status(400).json({ error: updErr.message });
 
-    res.json({ success: true, clinic: createdClinic, recoveryLinkSent });
+    try {
+      await supabase
+        .from('users')
+        .update({ role: 'clinic', is_verified: true })
+        .eq('id', authUserId);
+    } catch {}
+
+    res.json({ success: true, clinic: createdClinic });
   } catch (error) {
     console.error('Approve clinic application error:', error);
     res.status(500).json({ error: 'Failed to approve application' });
@@ -812,6 +825,11 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
 
 app.post('/api/admin/clinic-applications/:id/resend-invite', async (req, res) => {
   try {
+    const admin = await getAdminContext(req, res);
+    if (!admin) return;
+    if (useSupabaseFallback) {
+      return res.json({ success: true, message: 'Dev fallback: invite link (dev only)' });
+    }
     const id = req.params.id;
     const { data: app, error: appErr } = await supabase
       .from('clinic_applications')
@@ -861,6 +879,8 @@ app.post('/api/admin/clinic-applications/:id/resend-invite', async (req, res) =>
 
 app.post('/api/admin/clinic-applications/:id/reject', async (req, res) => {
   try {
+    const admin = await getAdminContext(req, res);
+    if (!admin) return;
     if (useSupabaseFallback) {
       return res.json({ success: true, message: 'Dev fallback: rejected' });
     }

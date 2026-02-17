@@ -44,6 +44,7 @@ const ClinicManagement: React.FC = () => {
   const [showApplicationModal, setShowApplicationModal] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [approving, setApproving] = useState(false);
+  const [approvedSpecialties, setApprovedSpecialties] = useState<string[]>([]);
   
   const [newClinic, setNewClinic] = useState({
     name: '',
@@ -295,31 +296,47 @@ const ClinicManagement: React.FC = () => {
     }
   };
 
-  // Başvuru detayını görüntüle
   const handleViewApplication = (application: any) => {
     setSelectedApplication(application);
+    const initialSpecialties = Array.isArray(application?.specialties) ? application.specialties : [];
+    setApprovedSpecialties(initialSpecialties);
     setShowApplicationModal(true);
     setShowPassword(false);
   };
 
   const handleApproveApplication = async (application: any) => {
-    if (!confirm(`"${application.clinic_name}" başvurusunu onaylamak istediğinizden emin misiniz?`)) return;
+    const app = application || selectedApplication;
+    if (!app) return;
+
+    const specialtiesToApprove = approvedSpecialties.length
+      ? approvedSpecialties
+      : Array.isArray(app.specialties)
+        ? app.specialties
+        : [];
+
+    if (!specialtiesToApprove.length) {
+      alert('En az bir uzmanlık alanı seçmelisiniz.');
+      return;
+    }
+
+    if (!confirm(`"${app.clinic_name}" başvurusunu onaylamak istediğinizden emin misiniz?`)) return;
 
     try {
       setApproving(true);
-      const result = await adminService.approveClinicApplication(application.id);
+      const result = await adminService.approveClinicApplication(app.id, specialtiesToApprove);
       
-      setApplications(prev => prev.map(a => a.id === application.id ? { ...a, status: 'approved' } : a));
+      setApplications(prev =>
+        prev.map(a =>
+          a.id === app.id ? { ...a, status: 'approved', specialties: specialtiesToApprove } : a
+        )
+      );
       
       // Klinik listesi yenile
       const refreshed = await adminService.getClinics();
       setClinics(Array.isArray(refreshed) ? refreshed : []);
       
       setShowApplicationModal(false);
-      
-      const passwordInfo = '\n\nKlinik e-postasına şifre belirleme linki gönderildi.';
-      
-      alert(`Başvuru onaylandı!${passwordInfo}`);
+      alert('Başvuru onaylandı ve klinik aktifleştirildi.');
     } catch (err: any) {
       console.error('Başvuru onaylama hatası:', err);
       alert('Başvuru onaylanamadı: ' + (err.message || 'Bilinmeyen hata'));
@@ -534,7 +551,7 @@ const ClinicManagement: React.FC = () => {
                           )}
                           {app.status !== 'approved' && (
                             <button
-                              onClick={() => handleApproveApplication(app)}
+                              onClick={() => handleViewApplication(app)}
                               className="text-green-600 hover:text-green-900 p-1 rounded hover:bg-green-50"
                               title="Onayla"
                             >
@@ -738,16 +755,30 @@ const ClinicManagement: React.FC = () => {
                 </div>
               )}
 
-              {/* Uzmanlık Alanları */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Uzmanlık Alanları</label>
-                <div className="flex flex-wrap gap-2">
-                  {(selectedApplication.specialties || []).map((s: string, index: number) => (
-                    <span key={index} className="inline-flex px-3 py-1 text-sm font-semibold rounded-full bg-blue-100 text-blue-800">
-                      {s}
-                    </span>
-                  ))}
-                  {(!selectedApplication.specialties || selectedApplication.specialties.length === 0) && (
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Uzmanlık Alanları (Onaylanacak)
+                </label>
+                <div className="space-y-2">
+                  {(selectedApplication.specialties || []).length > 0 ? (
+                    (selectedApplication.specialties || []).map((s: string) => (
+                      <label key={s} className="flex items-center gap-2 text-sm text-gray-900">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 text-blue-600 border-gray-300 rounded"
+                          checked={approvedSpecialties.includes(s)}
+                          onChange={() => {
+                            setApprovedSpecialties(prev =>
+                              prev.includes(s)
+                                ? prev.filter(x => x !== s)
+                                : [...prev, s]
+                            );
+                          }}
+                        />
+                        <span>{s}</span>
+                      </label>
+                    ))
+                  ) : (
                     <span className="text-sm text-gray-500">Uzmanlık alanı belirtilmemiş</span>
                   )}
                 </div>

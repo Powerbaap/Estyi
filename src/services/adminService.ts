@@ -39,9 +39,14 @@ export type AdminClinicApplication = {
   phone?: string | null;
   website?: string | null;
   country?: string | null;
+  countries?: string[] | null;
+  cities_by_country?: Record<string, string[]> | null;
   status?: string | null;
   created_at?: string | null;
   specialties?: string[] | null;
+  description?: string | null;
+  certificate_files?: string[] | null;
+  certificate_urls?: string[] | null;
 };
 
 export type AdminStats = {
@@ -50,6 +55,19 @@ export type AdminStats = {
   pendingRequests: number;
   monthlyRevenue: number;
 };
+
+const backendBase = import.meta.env.VITE_BACKEND_URL;
+const isOffline = import.meta.env.VITE_OFFLINE_MODE === 'true';
+
+async function getAccessToken() {
+  const { data } = await supabase.auth.getSession();
+  const session = data?.session ?? null;
+  const token = session?.access_token;
+  if (!token) {
+    throw new Error('Admin işlemleri için oturum bulunamadı');
+  }
+  return token;
+}
 
 export const adminService = {
   async getUsers(): Promise<AdminUser[]> {
@@ -90,21 +108,104 @@ export const adminService = {
   },
   async getClinicApplications(): Promise<AdminClinicApplication[]> {
     try {
-      const supaData = await clinicApplicationService.getApplications();
-      return Array.isArray(supaData) ? supaData : [];
+      if (!backendBase || isOffline) {
+        const supaData = await clinicApplicationService.getApplications();
+        return Array.isArray(supaData) ? supaData : [];
+      }
+
+      const token = await getAccessToken();
+      const url = `${backendBase.replace(/\/$/, '')}/api/admin/clinic-applications`;
+      const res = await fetch(url, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!res.ok) {
+        throw new Error('Klinik başvuruları getirilemedi');
+      }
+
+      const json = await res.json();
+      return Array.isArray(json) ? json : [];
     } catch {
       return [];
     }
   },
-  async approveClinicApplication(id: string) {
-    throw new Error('Klinik onayı için sunucu tarafı yetki gerekir (service key).');
+  async approveClinicApplication(id: string, approvedSpecialties?: string[]) {
+    if (!backendBase || isOffline) {
+      throw new Error('Klinik onayı sadece backend API üzerinden yapılabilir.');
+    }
+
+    const token = await getAccessToken();
+    const url = `${backendBase.replace(/\/$/, '')}/api/admin/clinic-applications/${id}/approve`;
+
+    const body: any = {};
+    if (Array.isArray(approvedSpecialties) && approvedSpecialties.length > 0) {
+      body.approved_specialties = approvedSpecialties;
+    }
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json?.error || 'Klinik başvurusu onaylanamadı');
+    }
+
+    return json;
   },
   async resendInviteLink(id: string) {
-    throw new Error('Davet linki gönderimi için sunucu tarafı yetki gerekir (service key).');
+    if (!backendBase || isOffline) {
+      throw new Error('Davet linki gönderimi sadece backend API üzerinden yapılabilir.');
+    }
+
+    const token = await getAccessToken();
+    const url = `${backendBase.replace(/\/$/, '')}/api/admin/clinic-applications/${id}/resend-invite`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json?.error || 'Davet linki gönderilemedi');
+    }
+
+    return json;
   },
   async rejectClinicApplication(id: string, reason?: string) {
-    const updated = await clinicApplicationService.rejectApplication(id, reason);
-    return { success: true, application: updated } as const;
+    if (!backendBase || isOffline) {
+      const updated = await clinicApplicationService.rejectApplication(id, reason);
+      return { success: true, application: updated } as const;
+    }
+
+    const token = await getAccessToken();
+    const url = `${backendBase.replace(/\/$/, '')}/api/admin/clinic-applications/${id}/reject`;
+
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ reason }),
+    });
+
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json?.error || 'Klinik başvurusu reddedilemedi');
+    }
+
+    return json;
   },
   async getAdminStats(): Promise<AdminStats> {
     const [users, clinics, requests] = await Promise.all([
