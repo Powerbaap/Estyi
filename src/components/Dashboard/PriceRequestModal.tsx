@@ -275,7 +275,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         cities_by_country: payload.cities_by_country,
         gender: payload.gender,
         notes: payload.notes,
-        status: 'open',
+        status: 'active',
       };
 
       console.log('[PRICE_REQUEST] requestInsert', requestInsert);
