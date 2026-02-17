@@ -231,7 +231,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     };
 
     try {
-      console.log('[PRICE_REQUEST] invoking edge function create_request_and_offer');
+      console.log('[PRICE_REQUEST] creating request, offers via DB trigger');
       console.log('[PRICE_REQUEST] payload', payload);
 
       const {
@@ -265,55 +265,85 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       console.log('[PRICE_REQUEST] tokenPrefix', tokenPrefix);
       console.log('[PRICE_REQUEST] tokenParts', tokenParts);
 
-      const { data, error } = await supabase.functions.invoke(
-        'create_request_and_offer',
-        {
-          body: payload,
-        } as any
-      );
-
-      if (error) {
-        console.log('[PRICE_REQUEST] edge error', {
-          name: error?.name,
-          message: error?.message,
-          status: (error as any)?.status,
-          details: (error as any)?.details,
-        });
-        throw error;
-      }
-
-      const response = (data || {}) as {
-        request?: any;
-        offers?: any[];
-        error?: string;
+      const requestInsert = {
+        user_id: user.id,
+        procedure_name: payload.procedure_name,
+        procedure_category: payload.procedure_category,
+        region: payload.region,
+        sessions: payload.sessions,
+        selected_countries: payload.selected_countries,
+        cities_by_country: payload.cities_by_country,
+        gender: payload.gender,
+        notes: payload.notes,
+        status: 'open',
       };
 
-      if (response.error) {
-        throw new Error(response.error);
+      console.log('[PRICE_REQUEST] requestInsert', requestInsert);
+
+      const {
+        data: requestRow,
+        error: requestError,
+      } = await supabase
+        .from('requests')
+        .insert(requestInsert as any)
+        .select('*')
+        .single();
+
+      if (requestError || !requestRow) {
+        console.log('[PRICE_REQUEST] request insert error', {
+          error: requestError,
+          row: requestRow,
+        });
+        throw requestError || new Error('Talep oluşturma sırasında hata oluştu.');
       }
 
-      const row = response.request;
+      let offers: any[] = [];
+      const delays = [200, 400, 600, 800, 1000];
 
-      if (!row) {
-        throw new Error('Talep oluşturma yanıtı alınamadı.');
+      for (let i = 0; i < delays.length; i++) {
+        const {
+          data: offersData,
+          error: offersError,
+        } = await supabase
+          .from('offers')
+          .select('*')
+          .eq('request_id', requestRow.id);
+
+        if (offersError) {
+          console.log('[PRICE_REQUEST] offers fetch error', {
+            error: offersError,
+            attempt: i + 1,
+          });
+          break;
+        }
+
+        if (Array.isArray(offersData) && offersData.length > 0) {
+          offers = offersData;
+          break;
+        }
+
+        if (i < delays.length - 1) {
+          await new Promise((resolve) => setTimeout(resolve, delays[i]));
+        }
       }
+
+      const offersCount = Array.isArray(offers) ? offers.length : 0;
 
       const newRequest = {
-        id: row.id,
+        id: requestRow.id,
         procedure: formData.procedure,
         procedureKey: formData.procedureKey,
-        status: row.status ?? 'open',
-        createdAt: row.created_at ? new Date(row.created_at) : new Date(),
-        offersCount: Array.isArray(response.offers) ? response.offers.length : 0,
+        status: requestRow.status ?? 'open',
+        createdAt: requestRow.created_at ? new Date(requestRow.created_at) : new Date(),
+        offersCount,
         countries: countriesSelected,
         citiesTR: formData.countries.includes('turkey') ? formData.citiesTR : [],
-        photos: Array.isArray(row?.photos) ? row.photos.length : 0,
-        photoUrls: Array.isArray(row?.photos) ? row.photos : [],
-        offers: Array.isArray(response.offers) ? response.offers : [],
+        photos: Array.isArray(requestRow?.photos) ? requestRow.photos.length : 0,
+        photoUrls: Array.isArray(requestRow?.photos) ? requestRow.photos : [],
+        offers: Array.isArray(offers) ? offers : [],
       };
 
       console.log('[PRICE_REQUEST] response', {
-        fn: FN_NAME,
         requestId: newRequest.id,
         offersCount: newRequest.offersCount,
       });
@@ -331,12 +361,20 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       });
       setProcedureSearch('');
       setSubmitError(null);
-      alert(
-        getTranslation(
-          'priceRequest.submitSuccess',
-          'Talebiniz oluşturuldu, teklifler geldikçe bilgilendirileceksiniz.'
-        )
+
+      let successMessage = getTranslation(
+        'priceRequest.submitSuccess',
+        'Talebiniz oluşturuldu, teklifler geldikçe bilgilendirileceksiniz.'
       );
+
+      if (offersCount === 0) {
+        successMessage = getTranslation(
+          'priceRequest.submitSuccessNoOffersYet',
+          'Talebin alındı, teklifler birazdan gelecek.'
+        );
+      }
+
+      alert(successMessage);
       onClose();
     } catch (err: any) {
       console.log('[PRICE_REQUEST] error', {

@@ -268,18 +268,47 @@ export const requestService = {
       notes: requestData.notes ?? requestData.description ?? null,
     };
 
-    const { data, error } = await supabase.functions.invoke(
-      'create_request_and_offer',
-      {
-        body: payload,
-      } as any
-    );
+    const {
+      data: sessionData,
+      error: sessionError,
+    } = await supabase.auth.getSession();
+    const session = (sessionData as any)?.session;
+
+    if (!session?.user?.id) {
+      console.log('[REQUEST_SERVICE] missing session for createRequest', {
+        sessionError,
+        session,
+      });
+      throw new Error('Kullanıcı oturumu bulunamadı.');
+    }
+
+    const requestInsert = {
+      user_id: session.user.id,
+      procedure_name: payload.procedure_name,
+      procedure_category: payload.procedure_category,
+      region: payload.region,
+      sessions: payload.sessions,
+      selected_countries: payload.selected_countries,
+      cities_by_country: payload.cities_by_country,
+      gender: payload.gender,
+      notes: payload.notes,
+      status: 'active',
+    };
+
+    const {
+      data,
+      error,
+    } = await supabase
+      .from('requests')
+      .insert(requestInsert as any)
+      .select('*')
+      .single();
 
     if (error) {
       console.log('[REQUEST_SERVICE] error', {
         name: error?.name,
         message: error?.message,
-        status: (error as any)?.status,
+        status: (error as any)?.code,
         details: (error as any)?.details,
       });
       throw error;
