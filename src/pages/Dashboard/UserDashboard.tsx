@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, X, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search, AlertCircle, FileText } from 'lucide-react';
+import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search, AlertCircle, FileText } from 'lucide-react';
 import PriceRequestModal from '../../components/Dashboard/PriceRequestModal';
 import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal';
 import { useTranslation } from 'react-i18next';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 import { requestService } from '../../services/api';
 import { signRequestPhotoUrls } from '../../services/storage';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -67,7 +65,6 @@ const UserDashboard: React.FC = () => {
   const [selectedRequest, setSelectedRequest] = useState<any>(null);
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [activeFilter, setActiveFilter] = useState<string>('all');
-  const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
 
   // Gerçek kullanıcı verileri - başlangıçta boş
   const [requests, setRequests] = useState<any[]>([]);
@@ -122,7 +119,7 @@ const UserDashboard: React.FC = () => {
 
           return {
             id: r.id,
-            procedure: getProcedureDisplayName(r.procedure_key ?? r.procedureKey, r.procedure),
+            procedure: r.procedure_name ?? r.procedure ?? getProcedureDisplayName(r.procedure_key ?? r.procedureKey, r.procedure_name),
             procedureKey: r.procedure_key ?? r.procedureKey,
             status: r.status ?? 'active',
             createdAt: r.created_at ? new Date(r.created_at) : new Date(),
@@ -508,55 +505,25 @@ const UserDashboard: React.FC = () => {
                       </div>
                       
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <Calendar className="w-4 h-4 text-gray-400" />
-                          <span>{safeFormatDateTR(request.createdAt)}</span>
+                        <div className="flex flex-col text-sm">
+                          <div className="flex items-center space-x-2 text-gray-600">
+                            <Calendar className="w-4 h-4 text-gray-400" />
+                            <span>{safeFormatDateTR(request.createdAt)}</span>
+                          </div>
+                          {request.procedure && (
+                            <span className="text-sm text-gray-600 font-medium">{request.procedure}</span>
+                          )}
+                          {request.countries?.length > 0 && (
+                            <span className="text-sm text-gray-500">{request.countries.join(', ')}</span>
+                          )}
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <DollarSign className="w-4 h-4 text-gray-400" />
                           <span>{request.offersCount} {t('userDashboard.offer')}</span>
                         </div>
                         <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <Camera className="w-4 h-4 text-gray-400" />
-                          <span>{request.photos} {t('userDashboard.photo')}</span>
-                        </div>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
                           <MapPin className="w-4 h-4 text-gray-400" />
                           <span>{formatCountries(Array.isArray(request.countries) ? request.countries : (request.countries ? [String(request.countries)] : []))}</span>
-                        </div>
-                      </div>
-
-                      {/* Photo Preview */}
-                      <div className="mb-4">
-                        <h4 className="text-sm font-medium text-gray-700 mb-3">{t('userDashboard.photos')}</h4>
-                        <div className="flex space-x-3">
-                          {(Array.isArray(request.photoUrls) ? request.photoUrls : []).slice(0, 4).map((url, index) => (
-                            <div
-                              key={index}
-                              className="relative group/photo overflow-hidden"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handlePhotoClick(url);
-                              }}
-                            >
-                              <LazyLoadImage
-                                src={url}
-                                alt=""
-                                effect="blur"
-                                threshold={200}
-                                wrapperClassName="w-20 h-20"
-                                className="w-20 h-20 rounded-xl object-cover border-2 border-gray-200 cursor-pointer hover:border-blue-300 transition-all duration-200 group-hover/photo:scale-105 bg-gray-100"
-                              />
-                              <div className="absolute inset-0 bg-black bg-opacity-0 group-hover/photo:bg-opacity-20 rounded-xl transition-all duration-200 flex items-center justify-center pointer-events-none">
-                                <Eye className="w-5 h-5 text-white opacity-0 group-hover/photo:opacity-100 transition-opacity" />
-                              </div>
-                            </div>
-                          ))}
-                          {request.photos > 4 && (
-                            <div className="w-20 h-20 rounded-xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center border-2 border-gray-200">
-                              <span className="text-sm font-bold text-gray-600">+{request.photos - 4}</span>
-                            </div>
-                          )}
                         </div>
                       </div>
 
@@ -632,28 +599,6 @@ const UserDashboard: React.FC = () => {
         request={selectedRequest}
       />
 
-      {/* Photo Enlargement Modal */}
-      {enlargedPhoto && (
-        <div 
-          className="fixed inset-0 bg-black/90 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={handleModalBackdropClick}
-        >
-          <div className="relative max-w-5xl max-h-[90vh] w-full h-full flex items-center justify-center">
-            <button
-              onClick={handleClosePhotoModal}
-              className="absolute top-4 right-4 z-10 bg-white/90 hover:bg-white rounded-full p-3 shadow-2xl transition-all duration-200 hover:scale-110 backdrop-blur-sm"
-            >
-              <X className="w-6 h-6 text-gray-700" />
-            </button>
-            <img
-              src={enlargedPhoto}
-              alt={t('userDashboard.enlargedPhoto')}
-              className="max-w-full max-h-full object-contain rounded-2xl shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-        </div>
-      )}
     </div>
   );
 };
