@@ -5,6 +5,7 @@ import PriceRequestModal from '../../components/Dashboard/PriceRequestModal';
 import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { requestService } from '../../services/api';
+import { supabase } from '../../lib/supabaseClient';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getProcedure } from '../../data/procedureCategories';
 
@@ -92,6 +93,10 @@ const UserDashboard: React.FC = () => {
               : Array.isArray(r.countries)
               ? r.countries
               : (r.country ? [r.country] : []),
+            tsregion: r.region ?? null,
+            sessions: r.sessions ?? null,
+            gender: r.gender ?? null,
+            notes: r.notes ?? null,
             photos: 0,
             photoUrls: [],
             // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
@@ -139,8 +144,17 @@ const UserDashboard: React.FC = () => {
     setRequests(prev => [newRequest, ...prev]);
   };
 
-  const handleDeleteRequest = (requestId: string) => {
-    setRequests(prev => prev.filter(req => req.id !== requestId));
+  const handleDeleteRequest = async (requestId: string) => {
+    const { error } = await supabase
+      .from('requests')
+      .update({ status: 'cancelled' })
+      .eq('id', requestId);
+
+    if (!error) {
+      setRequests(prev => prev.filter(req => req.id !== requestId));
+    } else {
+      alert('Talep silinirken hata oluştu.');
+    }
   };
 
   const handleFilterClick = (filter: string) => {
@@ -416,6 +430,26 @@ const UserDashboard: React.FC = () => {
                           <span className="ml-2">{getStatusText(request.status)}</span>
                         </span>
                       </div>
+
+                      {(request.region || request.sessions || request.gender) && (
+                        <div className="flex flex-wrap gap-2 mb-2">
+                          {request.region && (
+                            <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full border border-indigo-100">
+                              📍 {request.region}
+                            </span>
+                          )}
+                          {request.sessions && (
+                            <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full border border-purple-100">
+                              🔁 {request.sessions} seans
+                            </span>
+                          )}
+                          {request.gender && (
+                            <span className="text-xs bg-pink-50 text-pink-700 px-2 py-1 rounded-full border border-pink-100">
+                              👤 {request.gender === 'female' ? 'Kadın' : request.gender === 'male' ? 'Erkek' : request.gender}
+                            </span>
+                          )}
+                        </div>
+                      )}
 
                       <div className="flex flex-wrap items-center gap-3 mb-4">
                         <div className="flex items-center space-x-1.5 text-sm text-gray-500">
