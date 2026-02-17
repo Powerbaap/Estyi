@@ -93,13 +93,12 @@ const UserDashboard: React.FC = () => {
               : Array.isArray(r.countries)
               ? r.countries
               : (r.country ? [r.country] : []),
-            tsregion: r.region ?? null,
+            region: r.region ?? null,
             sessions: r.sessions ?? null,
             gender: r.gender ?? null,
             notes: r.notes ?? null,
             photos: 0,
             photoUrls: [],
-            // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
             offers: Array.isArray(r.offers) ? r.offers : []
           };
         });
@@ -172,16 +171,16 @@ const UserDashboard: React.FC = () => {
   }, [location.state, navigate]);
 
   const getFilteredRequests = () => {
-    const isOlderThanDays = (date: any, days: number) => {
-      const d = date instanceof Date ? date : new Date(date);
-      const diffMs = Date.now() - d.getTime();
-      return diffMs >= days * 24 * 60 * 60 * 1000;
-    };
     switch (activeFilter) {
       case 'active':
-        return requests.filter(req => req.status === 'active' && !isOlderThanDays(req.createdAt, 5));
+        return requests.filter(req => req.status === 'active' || req.status === 'open');
       case 'closed':
-        return requests.filter(req => req.status === 'closed' || (req.status === 'active' && isOlderThanDays(req.createdAt, 5)));
+        return requests.filter(req =>
+          req.status === 'closed' ||
+          req.status === 'cancelled' ||
+          req.status === 'completed' ||
+          req.status === 'expired'
+        );
       case 'offers':
         return requests.filter(req => req.offersCount > 0);
       case 'all':
@@ -285,10 +284,7 @@ const UserDashboard: React.FC = () => {
               <div className="flex-1">
                 <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.activeRequests')}</p>
                 <p className="text-3xl font-bold text-gray-900">
-                  {requests.filter(req => {
-                    const d = req.createdAt instanceof Date ? req.createdAt : new Date(req.createdAt);
-                    return req.status === 'active' && (Date.now() - d.getTime() < 5 * 24 * 60 * 60 * 1000);
-                  }).length}
+                  {requests.filter(req => req.status === 'active' || req.status === 'open').length}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.ongoing')}</p>
               </div>
@@ -316,10 +312,12 @@ const UserDashboard: React.FC = () => {
                <div className="flex-1">
                  <p className="text-sm font-medium text-gray-600 mb-2">{t('userDashboard.stats.completed')}</p>
                  <p className="text-3xl font-bold text-gray-900">
-                   {requests.filter(req => {
-                     const d = req.createdAt instanceof Date ? req.createdAt : new Date(req.createdAt);
-                     return req.status === 'closed' || (req.status === 'active' && (Date.now() - d.getTime() >= 5 * 24 * 60 * 60 * 1000));
-                   }).length}
+                   {requests.filter(req =>
+                     req.status === 'closed' ||
+                     req.status === 'cancelled' ||
+                     req.status === 'completed' ||
+                     req.status === 'expired'
+                   ).length}
                  </p>
                  <p className="text-xs text-gray-500 mt-1">{t('userDashboard.stats.finished')}</p>
                </div>
@@ -518,7 +516,7 @@ const UserDashboard: React.FC = () => {
                       <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                         <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors" />
                       </div>
-                      {request.status === 'active' && (
+                      {(request.status === 'active' || request.status === 'open') && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
