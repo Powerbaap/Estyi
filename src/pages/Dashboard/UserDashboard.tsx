@@ -5,7 +5,6 @@ import PriceRequestModal from '../../components/Dashboard/PriceRequestModal';
 import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal';
 import { useTranslation } from 'react-i18next';
 import { requestService } from '../../services/api';
-import { signRequestPhotoUrls } from '../../services/storage';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { getProcedure } from '../../data/procedureCategories';
 
@@ -81,42 +80,6 @@ const UserDashboard: React.FC = () => {
         }
         const userRequests = await requestService.getUserRequests(user.id);
         const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => {
-          // photos alanı dizi, sayı veya string olabilir; güvenli şekilde çözümle
-          let photoUrlsResolved: string[] | undefined = undefined;
-          const rawPhotos = r?.photos as unknown;
-          if (Array.isArray(rawPhotos)) {
-            photoUrlsResolved = rawPhotos as string[];
-          } else if (typeof rawPhotos === 'string') {
-            const s = rawPhotos.trim();
-            // JSON array string
-            if (s.startsWith('[') && s.endsWith(']')) {
-              try {
-                const parsed = JSON.parse(s);
-                if (Array.isArray(parsed)) photoUrlsResolved = parsed as string[];
-              } catch (_) {
-                // JSON parse hatası
-              }
-            } else if (s.startsWith('{') && s.endsWith('}')) {
-              // Postgres array literal e.g. {"url1","url2"}
-              const content = s.slice(1, -1);
-              const parts = content
-                .split(',')
-                .map((p) => p.trim().replace(/^"|"$/g, ''))
-                .filter((p) => p.length > 0);
-              if (parts.length > 0) photoUrlsResolved = parts;
-            } else if (s.includes(',')) {
-              // Virgülle ayrılmış liste
-              const parts = s
-                .split(',')
-                .map((p) => p.trim())
-                .filter((p) => p.length > 0);
-              if (parts.length > 0) photoUrlsResolved = parts;
-            } else if (/^https?:\/\//.test(s)) {
-              // Tek URL
-              photoUrlsResolved = [s];
-            }
-          }
-
           return {
             id: r.id,
             procedure: r.procedure_name ?? r.procedure ?? getProcedureDisplayName(r.procedure_key ?? r.procedureKey, r.procedure_name),
@@ -124,15 +87,13 @@ const UserDashboard: React.FC = () => {
             status: r.status ?? 'active',
             createdAt: r.created_at ? new Date(r.created_at) : new Date(),
             offersCount: r.offersCount ?? 0,
-            countries: Array.isArray(r.countries)
+            countries: Array.isArray(r.selected_countries) && r.selected_countries.length > 0
+              ? r.selected_countries
+              : Array.isArray(r.countries)
               ? r.countries
               : (r.country ? [r.country] : []),
-            photos: Array.isArray(photoUrlsResolved)
-              ? photoUrlsResolved.length
-              : typeof rawPhotos === 'number'
-              ? rawPhotos
-              : 0,
-            photoUrls: photoUrlsResolved,
+            photos: 0,
+            photoUrls: [],
             // Sunucudan gelen kayıtlarda offers alanı olmayabilir; güvenli varsayılan ekleyelim
             offers: Array.isArray(r.offers) ? r.offers : []
           };
@@ -147,16 +108,6 @@ const UserDashboard: React.FC = () => {
               const prevItem = combined[idx];
               // Undefined değerlerin mevcut bilgiyi ezmesini engelle
               const merged = { ...prevItem, ...r } as any;
-              // Fotoğraf URL'leri yeni kayıtta yoksa eskileri koru
-              merged.photoUrls = Array.isArray(r.photoUrls) ? r.photoUrls : prevItem.photoUrls;
-              // Fotoğraf sayısını URL'lere göre senkronize et
-              if (Array.isArray(merged.photoUrls)) {
-                merged.photos = merged.photoUrls.length;
-              } else if (typeof r.photos === 'number') {
-                merged.photos = r.photos;
-              } else {
-                merged.photos = prevItem.photos ?? 0;
-              }
               combined[idx] = merged;
             }
           });
@@ -179,30 +130,6 @@ const UserDashboard: React.FC = () => {
     }
   }, [user]);
 
-  // Fotoğraf önizlemeleri için imzalı URL kullanımı (bucket private olabilir)
-  useEffect(() => {
-    const signMissingPhotoUrls = async () => {
-      if (!requests || requests.length === 0) return;
-      const updated = await Promise.all(requests.map(async (r: any) => {
-        const urls: string[] = Array.isArray(r.photoUrls) ? r.photoUrls : [];
-        if (urls.length === 0) return r;
-        // Zaten imzalıysa tekrar işlem yapma
-        const alreadySigned = urls.some(u => u.includes('token='));
-        if (alreadySigned) return r;
-        try {
-          const signed = await signRequestPhotoUrls(urls, 3600);
-          return { ...r, photoUrls: signed };
-        } catch {
-          return r;
-        }
-      }));
-      setRequests(updated);
-    };
-    // Uzun döngüleri engellemek için sadece liste uzunluğu değiştiğinde çalıştır
-    signMissingPhotoUrls();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [requests.length]);
-
   const handleRequestClick = (request: any) => {
     setSelectedRequest(request);
     setIsDetailsModalOpen(true);
@@ -214,20 +141,6 @@ const UserDashboard: React.FC = () => {
 
   const handleDeleteRequest = (requestId: string) => {
     setRequests(prev => prev.filter(req => req.id !== requestId));
-  };
-
-  const handlePhotoClick = (photo: string) => {
-    setEnlargedPhoto(photo);
-  };
-
-  const handleClosePhotoModal = () => {
-    setEnlargedPhoto(null);
-  };
-
-  const handleModalBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      setEnlargedPhoto(null);
-    }
   };
 
   const handleFilterClick = (filter: string) => {
@@ -503,28 +416,34 @@ const UserDashboard: React.FC = () => {
                           <span className="ml-2">{getStatusText(request.status)}</span>
                         </span>
                       </div>
-                      
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                        <div className="flex flex-col text-sm">
-                          <div className="flex items-center space-x-2 text-gray-600">
-                            <Calendar className="w-4 h-4 text-gray-400" />
-                            <span>{safeFormatDateTR(request.createdAt)}</span>
-                          </div>
-                          {request.procedure && (
-                            <span className="text-sm text-gray-600 font-medium">{request.procedure}</span>
-                          )}
-                          {request.countries?.length > 0 && (
-                            <span className="text-sm text-gray-500">{request.countries.join(', ')}</span>
-                          )}
+
+                      <div className="flex flex-wrap items-center gap-3 mb-4">
+                        <div className="flex items-center space-x-1.5 text-sm text-gray-500">
+                          <Calendar className="w-4 h-4 text-gray-400" />
+                          <span>{safeFormatDateTR(request.createdAt)}</span>
                         </div>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
+                        {request.status === 'active' && (() => {
+                          const created = request.createdAt instanceof Date ? request.createdAt : new Date(request.createdAt);
+                          const expiresAt = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+                          const diffMs = expiresAt.getTime() - Date.now();
+                          const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+                          return (
+                            <div className={`flex items-center space-x-1.5 text-sm px-2 py-0.5 rounded-full ${diffDays <= 2 ? 'bg-red-50 text-red-600' : 'bg-blue-50 text-blue-600'}`}>
+                              <Clock className="w-3.5 h-3.5" />
+                              <span>{diffDays} gün kaldı</span>
+                            </div>
+                          );
+                        })()}
+                        <div className="flex items-center space-x-1.5 text-sm text-gray-500">
                           <DollarSign className="w-4 h-4 text-gray-400" />
-                          <span>{request.offersCount} {t('userDashboard.offer')}</span>
+                          <span>{request.offersCount} teklif</span>
                         </div>
-                        <div className="flex items-center space-x-2 text-sm text-gray-600">
-                          <MapPin className="w-4 h-4 text-gray-400" />
-                          <span>{formatCountries(Array.isArray(request.countries) ? request.countries : (request.countries ? [String(request.countries)] : []))}</span>
-                        </div>
+                        {Array.isArray(request.countries) && request.countries.length > 0 && (
+                          <div className="flex items-center space-x-1.5 text-sm text-gray-500">
+                            <MapPin className="w-4 h-4 text-gray-400" />
+                            <span>{formatCountries(request.countries)}</span>
+                          </div>
+                        )}
                       </div>
 
                       {/* Offers Preview */}

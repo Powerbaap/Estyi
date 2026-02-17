@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar, Eye } from 'lucide-react';
-import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
-import { signRequestPhotoUrls } from '../../services/storage';
+import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar } from 'lucide-react';
 
 interface Offer {
   id: string;
@@ -55,37 +52,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   };
   const [offerStatuses, setOfferStatuses] = React.useState<{[key: string]: 'pending' | 'accepted' | 'rejected'}>({});
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
-  const [enlargedPhoto, setEnlargedPhoto] = useState<string | null>(null);
-  const [displayPhotoUrls, setDisplayPhotoUrls] = useState<string[]>([]);
-  const [photoLoadError, setPhotoLoadError] = useState<boolean>(false);
-  const [failedPhotos, setFailedPhotos] = useState<Record<number, boolean>>({});
-
-  const handleImageError = (idx: number) => {
-    setPhotoLoadError(true);
-    setFailedPhotos(prev => ({ ...prev, [idx]: true }));
-  };
-
-  useEffect(() => {
-    let cancelled = false;
-    const run = async () => {
-      setPhotoLoadError(false);
-      setFailedPhotos({});
-      const urls = Array.isArray(request?.photoUrls) ? request!.photoUrls! : [];
-      if (urls.length === 0) {
-        setDisplayPhotoUrls([]);
-        return;
-      }
-      try {
-        const signed = await signRequestPhotoUrls(urls, 3600);
-        if (!cancelled) setDisplayPhotoUrls(signed);
-      } catch {
-        if (!cancelled) setPhotoLoadError(true);
-        if (!cancelled) setDisplayPhotoUrls(urls);
-      }
-    };
-    run();
-    return () => { cancelled = true; };
-  }, [request?.photoUrls]);
 
   const handleContactClinic = (clinicName: string) => {
     // Mesaj bölümüne yönlendir
@@ -260,15 +226,26 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                   <div className="text-sm text-purple-700 font-medium">{t('requestDetails.countries')}</div>
                 </div>
               </div>
-              <div className="bg-gradient-to-br from-pink-50 to-rose-50 rounded-2xl p-6 border border-pink-100">
-                <div className="text-center">
-                  <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl flex items-center justify-center mx-auto mb-3">
-                    <Eye className="w-6 h-6 text-white" />
+              {(() => {
+                const created = request.createdAt instanceof Date ? request.createdAt : new Date(request.createdAt);
+                const expiresAt = new Date(created.getTime() + 7 * 24 * 60 * 60 * 1000);
+                const diffMs = expiresAt.getTime() - Date.now();
+                const diffDays = Math.max(0, Math.ceil(diffMs / (1000 * 60 * 60 * 24)));
+                const isExpiringSoon = diffDays <= 2;
+                return (
+                  <div className={`bg-gradient-to-br rounded-2xl p-6 border ${isExpiringSoon ? 'from-red-50 to-orange-50 border-red-100' : 'from-green-50 to-emerald-50 border-green-100'}`}>
+                    <div className="text-center">
+                      <div className={`w-12 h-12 bg-gradient-to-r rounded-xl flex items-center justify-center mx-auto mb-3 ${isExpiringSoon ? 'from-red-500 to-orange-600' : 'from-green-500 to-emerald-600'}`}>
+                        <Clock className="w-6 h-6 text-white" />
+                      </div>
+                      <div className={`text-3xl font-bold ${isExpiringSoon ? 'text-red-600' : 'text-green-600'}`}>{diffDays}</div>
+                      <div className={`text-sm font-medium ${isExpiringSoon ? 'text-red-700' : 'text-green-700'}`}>
+                        {diffDays === 0 ? 'Bugün bitiyor!' : 'gün kaldı'}
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-3xl font-bold text-pink-600">{request.photos}</div>
-                  <div className="text-sm text-pink-700 font-medium">{t('requestDetails.photos')}</div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
 
             {/* Offers */}
@@ -451,72 +428,9 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               )}
             </div>
 
-            {/* User's Photos */}
-            <div className="mt-10">
-              <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center">
-                <Eye className="w-5 h-5 text-blue-600 mr-2" />
-                {t('requestDetails.myPhotos')}
-              </h3>
-              {photoLoadError && (
-                <div className="mb-3 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-3">
-                  {t('requestDetails.photoSignError')}
-                </div>
-              )}
-              {displayPhotoUrls && displayPhotoUrls.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                  {displayPhotoUrls.map((url, idx) => (
-                    // Gizle: yüklenemeyen görseller
-                    failedPhotos[idx] ? null : (
-                      <div key={idx} className="relative group">
-                        <LazyLoadImage
-                          src={url}
-                          alt={`${t('requestDetails.photos')} ${idx + 1}`}
-                          effect="blur"
-                          className="w-full h-40 object-cover rounded-xl border border-gray-200"
-                          onClick={() => setEnlargedPhoto(url)}
-                          onError={() => handleImageError(idx)}
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setEnlargedPhoto(url)}
-                          className="absolute inset-0 opacity-0 group-hover:opacity-100 bg-black/30 text-white flex items-center justify-center rounded-xl transition-opacity"
-                        >
-                          <Eye className="w-6 h-6" />
-                        </button>
-                      </div>
-                    )
-                  ))}
-                </div>
-              ) : (
-                <div className="text-gray-600 text-sm bg-gray-50 border border-gray-200 rounded-xl p-4">
-                  {t('userDashboard.noPhotos')}
-                </div>
-              )}
-            </div>
           </div>
         </div>
       </div>
-
-      {/* Photo Enlargement Modal */}
-      {enlargedPhoto && (
-        <div 
-          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-6"
-          onClick={() => setEnlargedPhoto(null)}
-        >
-          <div className="bg-white rounded-2xl overflow-hidden max-w-3xl w-full" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center justify-between p-4 border-b border-gray-200">
-              <h4 className="text-lg font-semibold">{t('requestDetails.enlargedPhoto')}</h4>
-              <button
-                onClick={() => setEnlargedPhoto(null)}
-                className="w-9 h-9 bg-gray-100 hover:bg-gray-200 rounded-full flex items-center justify-center"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            <img src={enlargedPhoto} alt={t('requestDetails.enlargedPhoto')} className="max-h-[70vh] w-full object-contain bg-black" />
-          </div>
-        </div>
-      )}
     </>
   );
 };
