@@ -18,6 +18,16 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_KEY
 );
 
+const isStrongPassword = (password) => {
+  if (typeof password !== 'string') return false;
+  const lengthOk = password.length >= 8;
+  const upperOk = /[A-Z]/.test(password);
+  const lowerOk = /[a-z]/.test(password);
+  const digitOk = /[0-9]/.test(password);
+  const symbolOk = /[^A-Za-z0-9]/.test(password);
+  return lengthOk && upperOk && lowerOk && digitOk && symbolOk;
+};
+
 // Dev fallback flags (decoupled):
 // - Email fallback: when SMTP creds are missing, don't send email; just log and return code
 // - Supabase fallback: when service key is missing, don't touch Supabase; keep codes in memory
@@ -320,6 +330,119 @@ app.post('/api/send-password-reset', async (req, res) => {
   } catch (error) {
     console.error('Password reset email error:', error);
     res.status(500).json({ error: 'Failed to send password reset email' });
+  }
+});
+
+app.post('/api/clinic-applications/apply', async (req, res) => {
+  try {
+    const body = req.body || {};
+    const clinic_name = body.clinic_name;
+    const email = body.email;
+    const password = body.password;
+    const countries = Array.isArray(body.countries) ? body.countries : [];
+    const specialties = Array.isArray(body.specialties) ? body.specialties : [];
+    if (!clinic_name || !email || !password) {
+      return res.status(400).json({ error: 'clinic_name, email ve password zorunludur.' });
+    }
+    if (!isStrongPassword(password)) {
+      return res.status(400).json({ error: 'Şifre en az 8 karakter olmalı ve en az bir büyük harf, küçük harf, rakam ve sembol içermelidir.' });
+    }
+    if (!countries.length || !specialties.length) {
+      return res.status(400).json({ error: 'En az bir ülke ve uzmanlık alanı seçilmelidir.' });
+    }
+    if (useSupabaseFallback) {
+      const fakeId = 'DEV_APP_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      const application = {
+        id: fakeId,
+        clinic_name,
+        email,
+        phone: body.phone || '',
+        website: body.website || '',
+        country: countries[0] || null,
+        countries,
+        cities_by_country: body.cities_by_country || {},
+        specialties,
+        description: body.description || '',
+        certificate_files: Array.isArray(body.certificate_files) ? body.certificate_files : [],
+        status: 'pending',
+        submitted_by: null
+      };
+      return res.json({ success: true, application });
+    }
+    let authUserId = null;
+    try {
+      const { data: authData, error: authError } = await supabase.auth.admin.createUser({
+        email,
+        password,
+        user_metadata: {
+          role: 'clinic',
+          name: clinic_name
+        }
+      });
+      if (authError) {
+        const msg = (authError.message || '').toLowerCase();
+        const already =
+          msg.includes('already') &&
+          (msg.includes('registered') || msg.includes('exists') || msg.includes('in use'));
+        if (already) {
+          return res.status(409).json({ error: 'Bu e-posta ile zaten hesap var. Giriş yapın veya Şifremi Unuttum kullanın.' });
+        }
+        console.error('Clinic auth creation error:', authError);
+        return res.status(400).json({ error: authError.message || 'Clinic auth user creation failed' });
+      } else if (authData && authData.user) {
+        authUserId = authData.user.id;
+        try {
+          const randomUserId = Math.random().toString(36).substring(2, 10).toUpperCase();
+          const { error: profileError } = await supabase
+            .from('users')
+            .upsert({
+              id: authUserId,
+              user_id: randomUserId,
+              email,
+              name: clinic_name,
+              role: 'clinic',
+              is_verified: false
+            });
+          if (profileError) {
+            console.warn('Clinic profile upsert on apply warning:', profileError);
+          }
+        } catch (e) {
+          console.warn('Clinic profile upsert on apply exception:', e && e.message ? e.message : e);
+        }
+      }
+    } catch (e) {
+      console.error('Clinic auth create exception:', e && e.message ? e.message : e);
+    }
+    if (!authUserId) {
+      return res.status(400).json({ error: 'Klinik kullanıcısı oluşturulamadı.' });
+    }
+    const insertPayload = {
+      clinic_name,
+      email,
+      phone: body.phone || null,
+      website: body.website || null,
+      country: countries[0] || null,
+      countries,
+      cities_by_country: body.cities_by_country && typeof body.cities_by_country === 'object' ? body.cities_by_country : {},
+      specialties,
+      description: body.description || null,
+      certificate_files: Array.isArray(body.certificate_files) ? body.certificate_files : [],
+      status: 'pending',
+      submitted_by: authUserId
+    };
+    const { data, error } = await supabase
+      .from('clinic_applications')
+      .insert(insertPayload)
+      .select('*');
+    if (error) {
+      console.error('Clinic application insert error:', error);
+      return res.status(400).json({ error: error.message });
+    }
+    const row = Array.isArray(data) ? data[0] : data;
+    res.json({ success: true, application: row || null });
+  } catch (error) {
+    console.error('Clinic application apply error:', error);
+    res.status(500).json({ error: 'Failed to submit clinic application' });
   }
 });
 

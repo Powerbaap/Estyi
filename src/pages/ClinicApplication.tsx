@@ -32,6 +32,8 @@ const ClinicApplication: React.FC = () => {
     website: '',
     phone: '',
     email: '',
+    password: '',
+    confirmPassword: '',
     description: '',
     certificates: [] as File[]
   });
@@ -143,6 +145,24 @@ const ClinicApplication: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      if (!formData.password || !formData.confirmPassword) {
+        alert('Lütfen şifre ve şifre tekrarını doldurun.');
+        return;
+      }
+      if (formData.password !== formData.confirmPassword) {
+        alert('Şifreler birbiriyle eşleşmiyor.');
+        return;
+      }
+      const pwd = formData.password;
+      const lengthOk = pwd.length >= 8;
+      const upperOk = /[A-Z]/.test(pwd);
+      const lowerOk = /[a-z]/.test(pwd);
+      const digitOk = /[0-9]/.test(pwd);
+      const symbolOk = /[^A-Za-z0-9]/.test(pwd);
+      if (!lengthOk || !upperOk || !lowerOk || !digitOk || !symbolOk) {
+        alert('Şifre en az 8 karakter olmalı ve en az bir büyük harf, küçük harf, rakam ve sembol içermelidir.');
+        return;
+      }
       setSubmitting(true);
       // 1) Sertifikalar varsa önce depoya yükle (anon kullanıcılar için güncelleme RLS'inden kaçınmak amacıyla)
       let certificateFiles: {
@@ -169,9 +189,9 @@ const ClinicApplication: React.FC = () => {
         website: formData.website,
         phone: formData.phone,
         email: formData.email,
+        password: formData.password,
         description: formData.description,
         certificate_files: certificateFiles,
-        submitted_by: user?.id || null
       });
       const actorId = user?.id || formData.email;
       try {
@@ -186,7 +206,11 @@ const ClinicApplication: React.FC = () => {
       const normalized = (raw || '').toLowerCase();
 
       let friendly = '';
-      if (normalized.includes('row-level security') || normalized.includes('rls')) {
+      if (normalized.includes('bu e-posta ile zaten hesap var') || normalized.includes('user already exists') || normalized.includes('already registered')) {
+        friendly = raw;
+      } else if (normalized.includes('şifre en az 8 karakter') || (normalized.includes('password') && normalized.includes('character'))) {
+        friendly = raw;
+      } else if (normalized.includes('row-level security') || normalized.includes('rls')) {
         friendly = 'Yetki politikası nedeniyle başvuru kaydı reddedildi (RLS). Lütfen yönetici politikalarını kontrol edin.';
       } else if (normalized.includes('permission denied')) {
         friendly = 'İzin hatası oluştu. Lütfen Supabase tabloları/depoyu ve politikaları kontrol edin.';
@@ -220,8 +244,8 @@ const ClinicApplication: React.FC = () => {
             website: formData.website || 'https://example.com',
             phone: formData.phone || '+90 212 555 0000',
             email: formData.email || 'test.clinic@example.com',
-            description: formData.description || 'Otomatik test başvurusu',
-            submitted_by: user?.id || null
+            password: formData.password || 'Test12345!',
+            description: formData.description || 'Otomatik test başvurusu'
           };
           const created = await clinicApplicationService.createApplication(payload);
           // Sertifika ekleme opsiyonel, dosya yoksa atla
@@ -466,6 +490,37 @@ const ClinicApplication: React.FC = () => {
                   />
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {getTranslation('clinicApplication.password', 'Password')} *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={formData.password}
+                    onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+                    placeholder={getTranslation('clinicApplication.passwordPlaceholder', 'Create a password for clinic admin')}
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    {getTranslation('clinicApplication.passwordHint', 'Keep this password safe; you’ll use it to access the clinic panel.')}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    {getTranslation('clinicApplication.confirmPassword', 'Confirm Password')} *
+                  </label>
+                  <input
+                    type="password"
+                    required
+                    value={formData.confirmPassword}
+                    onChange={(e) => setFormData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition-all duration-300"
+                    placeholder={getTranslation('clinicApplication.confirmPasswordPlaceholder', 'Re-enter your password')}
+                  />
+                </div>
+
                 {/* Description */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -532,13 +587,13 @@ const ClinicApplication: React.FC = () => {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={submitting || !formData.clinicName || formData.countries.length === 0 || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email || !acceptTerms}
+                  disabled={submitting || !formData.clinicName || formData.countries.length === 0 || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email || !formData.password || !formData.confirmPassword || !acceptTerms}
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
                   {submitting ? getTranslation('clinicApplication.submitting', 'Submitting...') : getTranslation('clinicApplication.submitApplication', 'Submit Application')}
                 </button>
                 <p className="text-xs text-gray-600 mt-3 italic text-center">
-                  {getTranslation('clinicApplication.loginNote', 'Başvurunuz onaylandığında e-posta adresinize bir aktivasyon linki gönderilecektir.')}
+                  {getTranslation('clinicApplication.loginNote', 'Daha sonra bu e-posta ve şifre ile giriş yapabilirsiniz.')}
                 </p>
               </form>
             </div>

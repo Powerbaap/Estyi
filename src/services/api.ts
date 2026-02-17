@@ -1,6 +1,8 @@
 import { supabase } from '../lib/supabaseClient';
 import { uploadClinicCertificates } from './storage';
 
+const offline = import.meta.env.VITE_OFFLINE_MODE === 'true';
+
 // Kullanıcı servisleri
 export const userService = {
   // Kullanıcı profil bilgilerini getir
@@ -99,6 +101,7 @@ export const clinicApplicationService = {
     website?: string;
     phone?: string;
     email: string;
+    password?: string;
     description?: string;
     certificate_files?: {
       path: string;
@@ -109,21 +112,67 @@ export const clinicApplicationService = {
     }[];
     submitted_by?: string | null;
   }) => {
-    // Anonim başvurular için RLS SELECT engeline takılmamak adına
-    // sadece INSERT yap ve temsil isteme; oturum açıkken temsil döndür.
-    const insertQuery = supabase
-      .from('clinic_applications')
-      .insert(payload);
-
-    if (payload.submitted_by) {
-      const { data, error } = await insertQuery.select('*');
-      if (error) throw error;
-      return Array.isArray(data) ? data[0] : data;
-    } else {
-      const { error } = await insertQuery; // return=minimal
-      if (error) throw error;
-      return { ok: true } as const;
+    if (!payload.password) {
+      throw new Error('Klinik başvurusu için şifre gereklidir.');
     }
+    if (offline) {
+      const fakeId = 'DEV_APP_' + Math.random().toString(36).substring(2, 10).toUpperCase();
+      const application = {
+        id: fakeId,
+        clinic_name: payload.clinic_name,
+        email: payload.email,
+        phone: payload.phone || '',
+        website: payload.website || '',
+        country: Array.isArray(payload.countries) && payload.countries.length > 0 ? payload.countries[0] : null,
+        countries: payload.countries || [],
+        cities_by_country: payload.cities_by_country || {},
+        specialties: payload.specialties || [],
+        description: payload.description || '',
+        certificate_files: Array.isArray(payload.certificate_files) ? payload.certificate_files : [],
+        status: 'pending',
+        submitted_by: null
+      };
+      return application;
+    }
+    const backendBase = import.meta.env.VITE_BACKEND_URL;
+    if (!backendBase) {
+      throw new Error('Backend API adresi tanımlı değil (VITE_BACKEND_URL).');
+    }
+    const url = `${backendBase.replace(/\/$/, '')}/api/clinic-applications/apply`;
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+    if (!response.ok) {
+      let message = 'Klinik başvurusu gönderilemedi.';
+      try {
+        const err = await response.json();
+        if (err && typeof err.error === 'string' && err.error) {
+          message = err.error;
+        }
+      } catch {
+        try {
+          const text = await response.text();
+          if (text) {
+            message = text;
+          }
+        } catch {}
+      }
+      throw new Error(message);
+    }
+    const data = await response.json().catch(() => null);
+    if (data && typeof data === 'object') {
+      if (data.application) {
+        return data.application;
+      }
+      if (Array.isArray(data)) {
+        return data[0];
+      }
+    }
+    return data;
   },
 
   // Sertifikaları yükle ve başvuruya ekle
