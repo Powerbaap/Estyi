@@ -56,18 +56,18 @@ export type AdminStats = {
   monthlyRevenue: number;
 };
 
-// const backendBase = import.meta.env.VITE_BACKEND_URL; // Backend deploy edildiğinde tekrar aktif edilecek
-// const isOffline = import.meta.env.VITE_OFFLINE_MODE === 'true';
-//
-// async function getAccessToken() {
-//   const { data } = await supabase.auth.getSession();
-//   const session = data?.session ?? null;
-//   const token = session?.access_token;
-//   if (!token) {
-//     throw new Error('Admin işlemleri için oturum bulunamadı');
-//   }
-//   return token;
-// }
+const backendBase = import.meta.env.VITE_BACKEND_URL;
+const isOffline = import.meta.env.VITE_OFFLINE_MODE === 'true';
+
+async function getAccessToken() {
+  const { data } = await supabase.auth.getSession();
+  const session = data?.session ?? null;
+  const token = session?.access_token;
+  if (!token) {
+    throw new Error('Admin işlemleri için oturum bulunamadı');
+  }
+  return token;
+}
 
 export const adminService = {
   async getUsers(): Promise<AdminUser[]> {
@@ -120,89 +120,33 @@ export const adminService = {
     }
   },
   async approveClinicApplication(id: string, approvedSpecialties?: string[]) {
-    const { data: app, error: appErr } = await supabase
-      .from('clinic_applications')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (appErr || !app) {
-      throw new Error(appErr?.message || 'Başvuru bulunamadı');
+    if (!backendBase || isOffline) {
+      throw new Error('Klinik onayı için backend API gereklidir.');
     }
 
-    if (app.status === 'approved') {
-      return { success: true, message: 'Başvuru zaten onaylanmış' };
+    const token = await getAccessToken();
+    const url = `${backendBase.replace(/\/$/, '')}/api/admin/clinic-applications/${id}/approve`;
+
+    const body: any = {};
+    if (Array.isArray(approvedSpecialties) && approvedSpecialties.length > 0) {
+      body.approved_specialties = approvedSpecialties;
     }
 
-    if (!app.submitted_by) {
-      throw new Error('Başvuruda submitted_by alanı eksik. Klinik hesabı oluşturulamamış olabilir.');
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(body),
+    });
+
+    const json = await res.json();
+    if (!res.ok) {
+      throw new Error(json?.error || 'Klinik başvurusu onaylanamadı');
     }
 
-    const authUserId = app.submitted_by as string;
-    const applicationSpecialties = Array.isArray(app.specialties) ? app.specialties : [];
-    const approved =
-      Array.isArray(approvedSpecialties) && approvedSpecialties.length > 0
-        ? approvedSpecialties
-        : applicationSpecialties;
-
-    const countries = Array.isArray(app.countries) ? app.countries : [];
-    const citiesByCountry =
-      app.cities_by_country && typeof app.cities_by_country === 'object'
-        ? app.cities_by_country
-        : {};
-
-    let location = '';
-    if (countries.length > 0) {
-      const firstCountry = countries[0];
-      const cities = (citiesByCountry as any)[firstCountry];
-      if (Array.isArray(cities) && cities.length > 0) {
-        location = `${firstCountry} / ${cities[0]}`;
-      } else {
-        location = firstCountry;
-      }
-    }
-
-    const clinicInsert = {
-      id: authUserId,
-      name: app.clinic_name,
-      email: app.email,
-      phone: app.phone || '',
-      website: app.website || '',
-      location,
-      description: app.description || '',
-      status: 'active',
-      rating: 0,
-      reviews: 0,
-      specialties: approved,
-      countries,
-      cities_by_country: citiesByCountry,
-    };
-
-    const { error: clinicErr } = await supabase.from('clinics').upsert(clinicInsert).select('*');
-
-    if (clinicErr) {
-      throw new Error(clinicErr.message);
-    }
-
-    const { error: updErr } = await supabase
-      .from('clinic_applications')
-      .update({ status: 'approved' })
-      .eq('id', id);
-
-    if (updErr) {
-      throw new Error(updErr.message);
-    }
-
-    try {
-      await supabase
-        .from('users')
-        .update({ role: 'clinic', is_verified: true })
-        .eq('id', authUserId);
-    } catch (e) {
-      console.warn('Users role update warning:', e);
-    }
-
-    return { success: true };
+    return json;
   },
   async resendInviteLink(id: string) {
     const { data: app, error: appErr } = await supabase
