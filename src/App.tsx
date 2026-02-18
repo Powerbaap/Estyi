@@ -51,7 +51,15 @@ const DMCA = lazy(() => import('./pages/Legal/DMCA'));
 const MedicalDisclaimer = lazy(() => import('./pages/Legal/MedicalDisclaimer'));
 const AllLegal = lazy(() => import('./pages/Legal/AllLegal'));
 
-// Loading component
+const ACCESS_CACHE_KEY = 'estyi_user_access_cache';
+
+type CachedAccess = {
+  userId: string;
+  role: UserRole;
+  isClinicApproved: boolean;
+  expiresAt: number;
+};
+
 const LoadingSpinner = () => (
   <div className="min-h-screen flex items-center justify-center">
     <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
@@ -70,16 +78,46 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
       if (!user) {
         if (active) {
           setRole('user');
+          setClinicApproved(true);
           setRoleLoading(false);
         }
         return;
       }
       setRoleLoading(true);
+
+      let cached: CachedAccess | null = null;
+      try {
+        const raw = localStorage.getItem(ACCESS_CACHE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as CachedAccess;
+          if (parsed.userId === user.id && parsed.expiresAt > Date.now()) {
+            cached = parsed;
+          }
+        }
+      } catch {}
+
+      if (cached && active) {
+        setRole(cached.role);
+        setClinicApproved(cached.isClinicApproved);
+        setRoleLoading(false);
+        return;
+      }
+
       const access = await getCurrentUserAccess(user);
+
       if (active) {
         setRole(access.role);
         setClinicApproved(access.isClinicApproved);
         setRoleLoading(false);
+        try {
+          const value: CachedAccess = {
+            userId: user.id,
+            role: access.role,
+            isClinicApproved: access.isClinicApproved,
+            expiresAt: Date.now() + 60_000,
+          };
+          localStorage.setItem(ACCESS_CACHE_KEY, JSON.stringify(value));
+        } catch {}
       }
     };
     resolveRole();

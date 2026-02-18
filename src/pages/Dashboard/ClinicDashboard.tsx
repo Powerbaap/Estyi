@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { 
@@ -26,6 +26,7 @@ import ClinicProfile from '../../components/Clinic/ClinicProfile';
 import ClinicMembership from '../../components/Clinic/ClinicMembership';
 import ClinicNotificationCenter from '../../components/Notifications/ClinicNotificationCenter';
 import ClinicProcedures from '../../components/Clinic/ClinicProcedures';
+import { supabase } from '../../lib/supabaseClient';
 
 const ClinicDashboard: React.FC = () => {
   const { t } = useTranslation();
@@ -36,6 +37,35 @@ const ClinicDashboard: React.FC = () => {
   const [filterProcedure] = useState('all');
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
   const notificationButtonRef = React.useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const checkFirstLogin = async () => {
+      if (!user) return;
+      try {
+        const email = user.email;
+        const { data: clinic } = await supabase
+          .from('clinics')
+          .select('id, specialties')
+          .eq('email', email)
+          .maybeSingle();
+
+        if (!clinic?.id) return;
+
+        const { data: prices } = await supabase
+          .from('clinic_price_list')
+          .select('id')
+          .eq('clinic_id', clinic.id)
+          .limit(1);
+
+        if (clinic.specialties?.length > 0 && (!prices || prices.length === 0)) {
+          setActiveTab('fixedPrices');
+        }
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    checkFirstLogin();
+  }, [user]);
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('clinicDashboard.menu.dashboard'), count: null },

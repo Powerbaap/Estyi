@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
-import { getCurrentUserAccess } from '../utils/auth';
+import { getCurrentUserAccess, getUserRole } from '../utils/auth';
 
 const offline = import.meta.env.VITE_OFFLINE_MODE === 'true';
 
@@ -55,14 +55,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const { data } = await supabase.auth.getSession();
           const currentSession = data?.session ?? null;
           if (currentSession?.user) {
-            const access = await getCurrentUserAccess(currentSession.user);
-            if (access.role === 'clinic' && !access.isClinicApproved) {
-              await supabase.auth.signOut();
-              setSession(null);
-              setUser(null);
+            const currentUser = currentSession.user;
+            const metaRole = getUserRole(currentUser);
+            if (metaRole === 'clinic') {
+              const access = await getCurrentUserAccess(currentUser);
+              if (access.role === 'clinic' && !access.isClinicApproved) {
+                await supabase.auth.signOut();
+                setSession(null);
+                setUser(null);
+              } else {
+                setSession(currentSession);
+                setUser(currentUser);
+              }
             } else {
               setSession(currentSession);
-              setUser(currentSession.user ?? null);
+              setUser(currentUser);
             }
           } else {
             setSession(currentSession);
@@ -83,17 +90,21 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           if (offline) return;
           try {
             if (session?.user) {
-              const access = await getCurrentUserAccess(session.user);
-              if (access.role === 'clinic' && !access.isClinicApproved) {
-                await supabase.auth.signOut();
-                setSession(null);
-                setUser(null);
-                return;
+              const currentUser = session.user;
+              const metaRole = getUserRole(currentUser);
+              if (metaRole === 'clinic') {
+                const access = await getCurrentUserAccess(currentUser);
+                if (access.role === 'clinic' && !access.isClinicApproved) {
+                  await supabase.auth.signOut();
+                  setSession(null);
+                  setUser(null);
+                  return;
+                }
               }
             }
             setSession(session);
             setUser(session?.user ?? null);
-          } catch { /* ignore */ }
+          } catch {}
           setIsLoading(false);
         }
       );
@@ -134,16 +145,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (!error) {
         const currentUser = data?.user ?? null;
         if (currentUser) {
-          const access = await getCurrentUserAccess(currentUser);
-          if (access.role === 'clinic' && !access.isClinicApproved) {
-            await supabase.auth.signOut();
-            setSession(null);
-            setUser(null);
-            return { success: false, error: 'Başvurunuz incelemede. Onaylanmadan giriş yapılamaz.' };
+          const metaRole = getUserRole(currentUser);
+          if (metaRole === 'clinic') {
+            const access = await getCurrentUserAccess(currentUser);
+            if (access.role === 'clinic' && !access.isClinicApproved) {
+              await supabase.auth.signOut();
+              setSession(null);
+              setUser(null);
+              return { success: false, error: 'Başvurunuz incelemede. Onaylanmadan giriş yapılamaz.' };
+            }
           }
           try {
             await supabase.from('users').upsert(
-              { id: currentUser.id, email, role: access.role, is_verified: true },
+              { id: currentUser.id, email, role: getUserRole(currentUser), is_verified: true },
               { onConflict: 'id' }
             );
           } catch {}

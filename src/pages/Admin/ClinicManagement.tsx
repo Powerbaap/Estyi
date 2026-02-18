@@ -731,7 +731,12 @@ const ClinicManagement: React.FC = () => {
                   <div className="flex items-center gap-2">
                     {selectedApplication.website ? (
                       <>
-                        <a href={selectedApplication.website} target="_blank" rel="noreferrer" className="text-sm text-blue-600 hover:underline bg-gray-50 p-2 rounded flex-1">
+                        <a
+                          href={selectedApplication.website}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-sm text-blue-600 hover:underline bg-gray-50 p-2 rounded flex-1"
+                        >
                           {selectedApplication.website}
                         </a>
                         <Globe className="w-4 h-4 text-gray-400" />
@@ -742,8 +747,36 @@ const ClinicManagement: React.FC = () => {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ülke</label>
-                  <p className="text-sm text-gray-900 bg-gray-50 p-2 rounded">{selectedApplication.country || '-'}</p>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={selectedApplication.password || ''}
+                      readOnly
+                      className="flex-1 text-sm text-gray-900 bg-gray-50 p-2 rounded border border-gray-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(prev => !prev)}
+                      className="px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded hover:bg-blue-50"
+                    >
+                      {showPassword ? 'Gizle' : 'Göster'}
+                    </button>
+                  </div>
+                </div>
+                {/* Ülkeler */}
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Ülkeler</label>
+                  <div className="flex flex-wrap gap-2">
+                    {(selectedApplication.countries || [selectedApplication.country]).filter(Boolean).map((c: string, i: number) => (
+                      <span
+                        key={i}
+                        className="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800"
+                      >
+                        {c}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               </div>
 
@@ -782,6 +815,35 @@ const ClinicManagement: React.FC = () => {
                     <span className="text-sm text-gray-500">Uzmanlık alanı belirtilmemiş</span>
                   )}
                 </div>
+                <details className="mt-3">
+                  <summary className="text-sm text-blue-600 cursor-pointer hover:underline">
+                    + Daha fazla uzmanlık alanı ekle
+                  </summary>
+                  <div className="mt-2 max-h-48 overflow-y-auto border border-gray-200 rounded-lg p-3 grid grid-cols-2 gap-2">
+                    {allProcedureKeys
+                      .filter(proc => !(selectedApplication.specialties || []).includes(proc.key))
+                      .map((proc) => (
+                        <label
+                          key={proc.key}
+                          className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-1 rounded text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={approvedSpecialties.includes(proc.key)}
+                            onChange={() => {
+                              setApprovedSpecialties(prev =>
+                                prev.includes(proc.key)
+                                  ? prev.filter(x => x !== proc.key)
+                                  : [...prev, proc.key]
+                              );
+                            }}
+                            className="rounded border-gray-300 text-blue-600"
+                          />
+                          <span>{proc.name}</span>
+                        </label>
+                      ))}
+                  </div>
+                </details>
               </div>
 
               {/* Sertifikalar */}

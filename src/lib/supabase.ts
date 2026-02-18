@@ -54,7 +54,7 @@ function createDevSupabaseMock() {
     // Yeni sabit fiyat modeli tabloları
     doctors: [],
     procedures: [],
-    clinic_procedure_prices: [],
+    clinic_price_list: [],
     appointments: [],
     ratings: []
   };
@@ -127,7 +127,7 @@ function createDevSupabaseMock() {
         name: values.name || 'Procedure'
       };
     }
-    if (table === 'clinic_procedure_prices') {
+    if (table === 'clinic_price_list') {
       return {
         ...base,
         clinic_id: values.clinic_id,
@@ -164,7 +164,7 @@ function createDevSupabaseMock() {
       select(_cols?: string) {
         // v_market_cards sanal görünümü
         if (table === 'v_market_cards') {
-          const rows = (devStore.clinic_procedure_prices || []).map((cpp: any) => {
+          const rows = (devStore.clinic_price_list || []).map((cpp: any) => {
             const clinic = (devStore.clinics || []).find((c: any) => c.id === cpp.clinic_id) || {};
             const doctor = (devStore.doctors || []).find((d: any) => d.clinic_id === cpp.clinic_id) || {};
             const procedure = (devStore.procedures || []).find((p: any) => p.id === cpp.procedure_id) || {};
@@ -279,7 +279,7 @@ function createDevSupabaseMock() {
       { id: 'rat_ist', clinic_id: 'clinic_ist', score: 4.7, review_count: 124, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
       { id: 'rat_ber', clinic_id: 'clinic_ber', score: 4.5, review_count: 87, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }
     ];
-    devStore.clinic_procedure_prices = [
+    devStore.clinic_price_list = [
       { id: 'cpp_ist_rh', clinic_id: 'clinic_ist', procedure_id: 'proc_rhinoplasty', price_currency: 'USD', price_amount: 2800, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
       { id: 'cpp_ist_hair', clinic_id: 'clinic_ist', procedure_id: 'proc_hair', price_currency: 'USD', price_amount: 1500, created_at: new Date().toISOString(), updated_at: new Date().toISOString() },
       { id: 'cpp_ber_rh', clinic_id: 'clinic_ber', procedure_id: 'proc_rhinoplasty', price_currency: 'EUR', price_amount: 3500, created_at: new Date().toISOString(), updated_at: new Date().toISOString() }

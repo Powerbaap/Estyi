@@ -93,7 +93,7 @@ const ClinicProcedures: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await (supabase as any).from('clinic_procedure_prices').select('*').eq('clinic_id', cid);
+      const { data, error } = await (supabase as any).from('clinic_price_list').select('*').eq('clinic_id', cid);
       if (error) {
         console.error('Fiyat yükleme hatası:', error);
         throw error;
@@ -160,7 +160,7 @@ const ClinicProcedures: React.FC = () => {
           setLoading(false);
           return;
         }
-        const { error: updateError } = await (supabase as any).from('clinic_procedure_prices').update({
+        const { error: updateError } = await (supabase as any).from('clinic_price_list').update({
           procedure_id: form.procedure_id,
           currency,
           amount: form.amount,
@@ -174,7 +174,7 @@ const ClinicProcedures: React.FC = () => {
           currency,
           amount: Number(form.amount),
         };
-        const { error: insertError } = await (supabase as any).from('clinic_procedure_prices').insert(newPrice);
+        const { error: insertError } = await (supabase as any).from('clinic_price_list').insert(newPrice);
         if (insertError) throw insertError;
       }
       await loadPrices(clinicId);
@@ -193,7 +193,7 @@ const ClinicProcedures: React.FC = () => {
     setLoading(true);
     setError(null);
     try {
-      await (supabase as any).from('clinic_procedure_prices').delete().eq('id', id);
+      await (supabase as any).from('clinic_price_list').delete().eq('id', id);
       await loadPrices(clinicId);
     } catch (e: any) {
       console.error(e);

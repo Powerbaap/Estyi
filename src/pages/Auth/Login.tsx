@@ -5,7 +5,6 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, User, Building, Mail, X } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
-import { getCurrentUserRole } from '../../utils/auth';
 
 const withTimeout = <T,>(promise: Promise<T>, ms = 12000) =>
   Promise.race<T>([
@@ -15,7 +14,7 @@ const withTimeout = <T,>(promise: Promise<T>, ms = 12000) =>
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
-  const { login, resetPassword } = useAuth();
+  const { login, resetPassword, isLoading } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -53,18 +52,10 @@ const Login: React.FC = () => {
         return;
       }
 
-      console.log('[LOGIN] login ok, fetching role');
-      let role: string | null = null;
-      try {
-        role = await withTimeout(getCurrentUserRole(), 8000);
-      } catch {
-        role = requestedRole;
-      }
-
-      console.log('[LOGIN] navigating', role);
-      if (role === 'admin') {
+      console.log('[LOGIN] login ok, navigating');
+      if (requestedRole === 'admin') {
         navigate('/admin/dashboard');
-      } else if (role === 'clinic') {
+      } else if (requestedRole === 'clinic') {
         navigate('/clinic-dashboard');
       } else {
         navigate('/dashboard');
