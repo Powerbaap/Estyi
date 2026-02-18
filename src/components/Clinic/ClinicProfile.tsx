@@ -32,7 +32,9 @@ const ClinicProfile: React.FC = () => {
     aboutUs: '',
     languages: [] as string[],
     certifications: [] as string[],
-    workingHours: ''
+    workingHours: '',
+    countries: [] as string[],
+    cities: [] as string[]
   });
   const [profileLoading, setProfileLoading] = useState(true);
 
@@ -96,7 +98,7 @@ const ClinicProfile: React.FC = () => {
   const lang = (i18n.language || 'en') as string;
 
   useEffect(() => {
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    const clinicId = user?.id;
     if (!clinicId) {
       setProfileLoading(false);
       return;
@@ -104,25 +106,106 @@ const ClinicProfile: React.FC = () => {
     setProfileLoading(true);
     (async () => {
       try {
-        const { data, error } = await (supabase as any).from('clinics').select('*').eq('id', clinicId).single();
-        if (error) throw error;
-        if (data) {
-          setProfileData(prev => ({
-            ...prev,
-            clinicName: data.name ?? prev.clinicName,
-            address: data.address ?? prev.address,
-            phone: data.phone ?? prev.phone,
-            email: data.email ?? prev.email,
-            website: data.website ?? prev.website,
-            branchCity: data.location ?? data.branch_city ?? prev.branchCity,
-            specialties: Array.isArray(data.specialties) ? data.specialties : [],
-            aboutUs: data.description ?? prev.aboutUs,
-            teamDescription: data.team_description ?? prev.teamDescription,
-            languages: Array.isArray(data.languages) ? data.languages : prev.languages,
-            certifications: Array.isArray(data.certifications) ? data.certifications : prev.certifications,
-            workingHours: data.working_hours ?? prev.workingHours
-          }));
+        const { data: clinic, error: clinicError } = await supabase
+          .from('clinics')
+          .select('*')
+          .eq('id', clinicId)
+          .maybeSingle();
+        if (clinicError) {
+          throw clinicError;
         }
+
+        let application: any = null;
+        const needsFallback =
+          !clinic?.phone ||
+          !clinic?.website ||
+          !clinic?.location ||
+          !clinic?.branch_city ||
+          !clinic?.countries ||
+          !clinic?.cities;
+
+        if (needsFallback) {
+          const applicationEmail = clinic?.email || user?.email;
+          if (applicationEmail) {
+            const { data: applicationData, error: applicationError } =
+              await supabase
+                .from('clinic_applications')
+                .select('*')
+                .eq('email', applicationEmail)
+                .maybeSingle();
+            if (!applicationError && applicationData) {
+              application = applicationData;
+            }
+          }
+        }
+
+        const countriesFromClinic = Array.isArray(clinic?.countries)
+          ? clinic?.countries
+          : [];
+        const countriesFromApplication = Array.isArray(application?.countries)
+          ? application?.countries
+          : application?.country
+          ? [application.country]
+          : [];
+
+        const citiesFromClinic = Array.isArray(clinic?.cities)
+          ? clinic?.cities
+          : [];
+        const citiesFromApplication = Array.isArray(application?.cities)
+          ? application?.cities
+          : application?.city
+          ? [application.city]
+          : [];
+
+        setProfileData({
+          clinicName: clinic?.name || application?.clinic_name || '',
+          address:
+            clinic?.address ||
+            application?.address ||
+            application?.full_address ||
+            '',
+          phone: clinic?.phone || application?.phone || '',
+          email: clinic?.email || application?.email || user?.email || '',
+          website: clinic?.website || application?.website || '',
+          branchCity:
+            clinic?.location ||
+            clinic?.branch_city ||
+            application?.city ||
+            (citiesFromApplication[0] as string) ||
+            '',
+          specialties: Array.isArray(clinic?.specialties)
+            ? clinic?.specialties
+            : Array.isArray(application?.specialties)
+            ? application?.specialties
+            : [],
+          teamDescription:
+            clinic?.team_description ||
+            application?.team_description ||
+            application?.teamDescription ||
+            '',
+          aboutUs:
+            clinic?.description ||
+            application?.about ||
+            application?.about_us ||
+            '',
+          languages: Array.isArray(clinic?.languages)
+            ? clinic?.languages
+            : Array.isArray(application?.languages)
+            ? application?.languages
+            : [],
+          certifications: Array.isArray(clinic?.certifications)
+            ? clinic?.certifications
+            : Array.isArray(application?.certifications)
+            ? application?.certifications
+            : [],
+          workingHours: clinic?.working_hours || '',
+          countries:
+            countriesFromClinic.length > 0
+              ? countriesFromClinic
+              : countriesFromApplication,
+          cities:
+            citiesFromClinic.length > 0 ? citiesFromClinic : citiesFromApplication
+        });
       } catch (e) {
         console.error('Profil yükleme hatası:', e);
       } finally {
@@ -182,6 +265,46 @@ const ClinicProfile: React.FC = () => {
                     {profileData.website}
                   </a>
                 </p>
+              </div>
+              <div className="md:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Ülkeler
+                  </label>
+                  {profileData.countries.length === 0 ? (
+                    <p className="text-gray-500 text-sm">Bilgi bulunmuyor</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.countries.map((country) => (
+                        <span
+                          key={country}
+                          className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
+                        >
+                          {country}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Şehirler
+                  </label>
+                  {profileData.cities.length === 0 ? (
+                    <p className="text-gray-500 text-sm">Bilgi bulunmuyor</p>
+                  ) : (
+                    <div className="flex flex-wrap gap-2">
+                      {profileData.cities.map((city) => (
+                        <span
+                          key={city}
+                          className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm"
+                        >
+                          {city}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <div className="mt-4">

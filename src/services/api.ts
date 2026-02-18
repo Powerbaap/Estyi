@@ -299,12 +299,16 @@ export const requestService = {
     return data;
   },
   
-  // Klinik için tüm talepleri getir
-  getClinicRequests: async () => {
+  // Klinik dashboard'u için talepleri getir
+  // Not: Şu anda requests tablosunda doğrudan clinic_id alanı bulunmuyor.
+  // Bu sorgu, kliniklerin görebileceği taleplerin RLS/policy'ler tarafından kısıtlandığı varsayımıyla çalışır.
+  // Eğer ortamınızda farklı bir clinic-request eşleşme modeli varsa, burada clinicId ile ek filtre uygulanmalıdır.
+  getClinicDashboardRequests: async (clinicId: string) => {
     const { data, error } = await supabase
       .from('requests')
       .select('*')
-      .eq('status', 'active');
+      .in('status', ['active', 'expired', 'inactive'])
+      .order('created_at', { ascending: false });
     
     if (error) throw error;
     return data;
@@ -424,7 +428,8 @@ export const offerService = {
     const { data, error } = await supabase
       .from('offers')
       .select('*, requests(*)')
-      .eq('clinic_id', clinicId);
+      .eq('clinic_id', clinicId)
+      .order('created_at', { ascending: false });
     
     if (error) throw error;
     return data;
@@ -474,5 +479,34 @@ export const messageService = {
     
     if (error) throw error;
     return data;
+  },
+
+  // Klinik ve kullanıcı arasında konuşma bul veya oluştur
+  findOrCreateConversation: async (clinicId: string, userId: string) => {
+    const { data: existing, error } = await supabase
+      .from('conversations')
+      .select('id')
+      .eq('clinic_id', clinicId)
+      .eq('user_id', userId)
+      .limit(1)
+      .maybeSingle();
+
+    if (error) throw error;
+
+    if (existing && (existing as any).id) {
+      return (existing as any).id as string;
+    }
+
+    const { data: inserted, error: insertError } = await supabase
+      .from('conversations')
+      .insert({
+        clinic_id: clinicId,
+        user_id: userId,
+      } as any)
+      .select('id')
+      .single();
+
+    if (insertError) throw insertError;
+    return (inserted as any).id as string;
   }
 };
