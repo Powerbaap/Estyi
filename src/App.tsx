@@ -71,6 +71,7 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
   const [role, setRole] = useState<UserRole>('user');
   const [clinicApproved, setClinicApproved] = useState(true);
   const [roleLoading, setRoleLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let active = true;
@@ -103,21 +104,36 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
         return;
       }
 
-      const access = await getCurrentUserAccess(user);
+      try {
+        const access = await Promise.race([
+          getCurrentUserAccess(user),
+          new Promise<never>((_, reject) => setTimeout(() => reject(new Error('ROLE_ACCESS_TIMEOUT')), 6000))
+        ]);
 
-      if (active) {
-        setRole(access.role);
-        setClinicApproved(access.isClinicApproved);
-        setRoleLoading(false);
-        try {
-          const value: CachedAccess = {
-            userId: user.id,
-            role: access.role,
-            isClinicApproved: access.isClinicApproved,
-            expiresAt: Date.now() + 60_000,
-          };
-          localStorage.setItem(ACCESS_CACHE_KEY, JSON.stringify(value));
-        } catch {}
+        if (active) {
+          setRole(access.role);
+          setClinicApproved(access.isClinicApproved);
+          try {
+            const value: CachedAccess = {
+              userId: user.id,
+              role: access.role,
+              isClinicApproved: access.isClinicApproved,
+              expiresAt: Date.now() + 60_000,
+            };
+            localStorage.setItem(ACCESS_CACHE_KEY, JSON.stringify(value));
+          } catch {}
+        }
+      } catch (err) {
+        console.error('[RoleRoute] access error:', err);
+        if (active) {
+          const { getUserRole } = await import('./utils/auth');
+          const fallbackRole = getUserRole(user);
+          setRole(fallbackRole);
+          setClinicApproved(true);
+          setHasError(true);
+        }
+      } finally {
+        if (active) setRoleLoading(false);
       }
     };
     resolveRole();
@@ -132,6 +148,10 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
 
   if (!user) {
     return <Navigate to="/login" replace />;
+  }
+
+  if (hasError) {
+    return <>{children}</>;
   }
 
   if (role === 'clinic' && !clinicApproved) {
