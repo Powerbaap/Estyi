@@ -97,84 +97,53 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
   const [currentFilterProcedure, setCurrentFilterProcedure] = useState(filterProcedure);
   const [searchTerm, setSearchTerm] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [requests, setRequests] = useState<UserRequest[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (!user?.id) {
-      setRequests([]);
-      setLoading(false);
-      return;
+  
+  // API'den gelen verileri tutacak state
+  const [requests, setRequests] = useState<UserRequest[]>([
+    {
+      id: 'req1',
+      userId: 'Kullanıcı1234',
+      procedure: getProcedureDisplayName('gogus_buyutme'),
+      procedureKey: 'gogus_buyutme',
+      photos: [
+        'https://images.pexels.com/photos/5069437/pexels-photo-5069437.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/5069438/pexels-photo-5069438.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/5069439/pexels-photo-5069439.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      countries: ['turkey', 'germany'],
+      citiesTR: ['İstanbul'],
+      age: 26,
+      gender: t('genders.female'),
+      treatmentDate: '2025-02-15',
+      description: 'Doğal sonuçlar arıyorum, minimal kesi tercih ediyorum',
+      createdAt: new Date('2025-01-20T10:30:00'),
+      status: 'new',
+      offersCount: 0,
+      sla_deadline_at: new Date(Date.now() + 22 * 60 * 60 * 1000).toISOString()
+    },
+    {
+      id: 'req2',
+      userId: 'Kullanıcı2234',
+      procedure: getProcedureDisplayName('sac_ekimi_fue'),
+      procedureKey: 'sac_ekimi_fue',
+      photos: [
+        'https://images.pexels.com/photos/5069440/pexels-photo-5069440.jpeg?auto=compress&cs=tinysrgb&w=400',
+        'https://images.pexels.com/photos/5069441/pexels-photo-5069441.jpeg?auto=compress&cs=tinysrgb&w=400'
+      ],
+      countries: ['turkey', 'germany'],
+      citiesTR: [t('cities.istanbul')],
+      age: 27,
+      gender: t('genders.male'),
+      treatmentDate: '2025-03-01',
+      description: 'FUE tekniği tercih ediyorum, doğal görünüm önemli',
+      createdAt: new Date('2025-01-19T15:20:00'),
+      status: 'offered',
+      offersCount: 1,
+      offerType: 'manual',
+      offerPriceUsd: 3500,
+      sla_deadline_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
     }
-    let isMounted = true;
-    setLoading(true);
-    setLoadError(null);
-    requestService
-      .getClinicDashboardRequests(user.id)
-      .then((data: any[]) => {
-        if (!isMounted || !Array.isArray(data)) return;
-        const mapped: UserRequest[] = data.map((row) => {
-          const createdAt = row.created_at ? new Date(row.created_at) : new Date();
-          const statusRaw = (row.status || '').toString().toLowerCase();
-          let status: UserRequest['status'] = 'new';
-          if (statusRaw === 'expired') status = 'expired';
-          if (statusRaw === 'offered') status = 'offered';
-          const countries = Array.isArray(row.selected_countries) ? row.selected_countries : [];
-          const citiesTR =
-            Array.isArray(row.cities_tr) && row.cities_tr.length > 0
-              ? row.cities_tr
-              : Array.isArray(row.citiesTR)
-              ? row.citiesTR
-              : [];
-          const photos = Array.isArray(row.photos) ? row.photos : [];
-          const procedureKey =
-            row.procedure_key || row.procedure_category || undefined;
-          const procedureName =
-            row.procedure_name ||
-            getProcedureDisplayName(procedureKey, row.procedure_name);
-          const slaDeadline =
-            row.sla_deadline_at ||
-            (row.created_at
-              ? new Date(new Date(row.created_at).getTime() + 24 * 60 * 60 * 1000).toISOString()
-              : undefined);
-          return {
-            id: row.id,
-            userId: row.user_id || '',
-            procedure: procedureName,
-            procedureKey,
-            photos,
-            countries,
-            citiesTR,
-            cities_tr: Array.isArray(row.cities_tr) ? row.cities_tr : undefined,
-            age: row.age || undefined,
-            gender: row.gender || undefined,
-            treatmentDate: row.treatment_date || undefined,
-            description: row.notes || row.description || '',
-            status,
-            createdAt,
-            offersCount: typeof row.offers_count === 'number' ? row.offers_count : 0,
-            sla_deadline_at: slaDeadline,
-            offerType: row.offer_type || undefined,
-            offerPriceUsd:
-              typeof row.offer_price_usd === 'number' ? row.offer_price_usd : undefined
-          };
-        });
-        setRequests(mapped);
-      })
-      .catch((err: any) => {
-        const message =
-          (typeof err?.message === 'string' && err.message) ||
-          'Talepler yüklenirken bir hata oluştu.';
-        if (isMounted) setLoadError(message);
-      })
-      .finally(() => {
-        if (isMounted) setLoading(false);
-      });
-    return () => {
-      isMounted = false;
-    };
-  }, []);
+  ]);
 
   const getSlaRemaining = (slaDeadline?: string) => {
     if (!slaDeadline) return null;
@@ -410,13 +379,7 @@ const ClinicRequests: React.FC<ClinicRequestsProps> = ({
 
       {/* Requests Grid/List */}
       <div className="p-6">
-        {loading ? (
-          <div className="text-center py-12">
-            <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">{t('clinicRequests.loading')}</h3>
-            {loadError && <p className="text-red-500 text-sm mt-2">{loadError}</p>}
-          </div>
-        ) : filteredRequests.length === 0 ? (
+        {filteredRequests.length === 0 ? (
           <div className="text-center py-12">
             <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">{t('clinicRequests.noRequests')}</h3>

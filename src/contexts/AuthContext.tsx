@@ -56,22 +56,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           const currentSession = data?.session ?? null;
           if (currentSession?.user) {
             const currentUser = currentSession.user;
-            setSession(currentSession);
-            setUser(currentUser);
             const metaRole = getUserRole(currentUser);
             if (metaRole === 'clinic') {
-              getCurrentUserAccess(currentUser)
-                .then(access => {
-                  if (access.role === 'clinic' && !access.isClinicApproved) {
-                    supabase.auth.signOut().then(() => {
-                      setSession(null);
-                      setUser(null);
-                    });
-                  }
-                })
-                .catch(() => {
-                  console.warn('[AuthContext] clinic access check failed, keeping session');
-                });
+              const access = await getCurrentUserAccess(currentUser);
+              if (access.role === 'clinic' && !access.isClinicApproved) {
+                await supabase.auth.signOut();
+                setSession(null);
+                setUser(null);
+              } else {
+                setSession(currentSession);
+                setUser(currentUser);
+              }
+            } else {
+              setSession(currentSession);
+              setUser(currentUser);
             }
           } else {
             setSession(currentSession);
@@ -90,24 +88,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const authChange = supabase.auth.onAuthStateChange(
         async (_event, session) => {
           if (offline) return;
-          setSession(session);
-          setUser(session?.user ?? null);
-          setIsLoading(false);
-          if (session?.user) {
-            const metaRole = getUserRole(session.user);
-            if (metaRole === 'clinic') {
-              try {
-                const access = await getCurrentUserAccess(session.user);
+          try {
+            if (session?.user) {
+              const currentUser = session.user;
+              const metaRole = getUserRole(currentUser);
+              if (metaRole === 'clinic') {
+                const access = await getCurrentUserAccess(currentUser);
                 if (access.role === 'clinic' && !access.isClinicApproved) {
                   await supabase.auth.signOut();
                   setSession(null);
                   setUser(null);
+                  return;
                 }
-              } catch {
-                console.warn('[AuthContext] clinic check in onAuthStateChange failed');
               }
             }
-          }
+            setSession(session);
+            setUser(session?.user ?? null);
+          } catch {}
+          setIsLoading(false);
         }
       );
       subscription = authChange?.data?.subscription;

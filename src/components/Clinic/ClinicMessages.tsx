@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Phone, Video, MoreVertical, Check, CheckCheck, HandPlatter as Translate, X } from 'lucide-react';
-import { useAuth } from '../../contexts/AuthContext';
-import { messageService } from '../../services/api';
 
 interface Message {
   id: string;
@@ -27,20 +25,105 @@ interface Conversation {
   messages: Message[];
 }
 
-interface ClinicMessagesProps {
-  selectedConversationId?: string | null;
-}
-
-const ClinicMessages: React.FC<ClinicMessagesProps> = ({ selectedConversationId }) => {
+const ClinicMessages: React.FC = () => {
   const { t } = useTranslation();
-  const { user } = useAuth();
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
   const [newMessage, setNewMessage] = useState('');
   const [showTranslation, setShowTranslation] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-  const [loadingConversations, setLoadingConversations] = useState(false);
-  const [loadingMessages, setLoadingMessages] = useState(false);
+
+  const [conversations, setConversations] = useState<Conversation[]>([
+    {
+      id: '1',
+      userId: 'User1234',
+      procedure: 'Rhinoplasty',
+      lastMessage: 'Thank you for the offer. When can we schedule the consultation?',
+      lastMessageTime: new Date('2025-01-20T14:30:00'),
+      unreadCount: 1,
+      isOnline: true,
+      language: 'English',
+      messages: [
+        {
+          id: 'm1',
+          senderId: 'clinic',
+          receiverId: 'User1234',
+          content: 'Thank you for accepting our offer! We are excited to help you with your rhinoplasty procedure.',
+          timestamp: new Date('2025-01-20T10:00:00'),
+          seen: true,
+          delivered: true
+        },
+        {
+          id: 'm2',
+          senderId: 'User1234',
+          receiverId: 'clinic',
+          content: 'Thank you for the offer. When can we schedule the consultation?',
+          timestamp: new Date('2025-01-20T14:30:00'),
+          seen: false,
+          delivered: true
+        }
+      ]
+    },
+    {
+      id: '2',
+      userId: 'User5678',
+      procedure: 'Hair Transplant',
+      lastMessage: 'I have some questions about the procedure details.',
+      lastMessageTime: new Date('2025-01-19T16:45:00'),
+      unreadCount: 0,
+      isOnline: false,
+      language: 'Turkish',
+      messages: [
+        {
+          id: 'm3',
+          senderId: 'clinic',
+          receiverId: 'User5678',
+          content: 'We have received your request for hair transplant. Here is our detailed offer.',
+          timestamp: new Date('2025-01-19T14:00:00'),
+          seen: true,
+          delivered: true
+        },
+        {
+          id: 'm4',
+          senderId: 'User5678',
+          receiverId: 'clinic',
+          content: 'I have some questions about the procedure details.',
+          timestamp: new Date('2025-01-19T16:45:00'),
+          seen: true,
+          delivered: true
+        }
+      ]
+    },
+    {
+      id: '3',
+      userId: 'User9012',
+      procedure: 'Breast Surgery',
+      lastMessage: 'The consultation date works perfectly for me.',
+      lastMessageTime: new Date('2025-01-18T11:20:00'),
+      unreadCount: 0,
+      isOnline: true,
+      language: 'Arabic',
+      messages: [
+        {
+          id: 'm5',
+          senderId: 'clinic',
+          receiverId: 'User9012',
+          content: 'We have scheduled your consultation for next week. Please confirm if this works for you.',
+          timestamp: new Date('2025-01-18T10:00:00'),
+          seen: true,
+          delivered: true
+        },
+        {
+          id: 'm6',
+          senderId: 'User9012',
+          receiverId: 'clinic',
+          content: 'The consultation date works perfectly for me.',
+          timestamp: new Date('2025-01-18T11:20:00'),
+          seen: true,
+          delivered: true
+        }
+      ]
+    }
+  ]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -50,132 +133,15 @@ const ClinicMessages: React.FC<ClinicMessagesProps> = ({ selectedConversationId 
     scrollToBottom();
   }, [selectedConversation, conversations]);
 
-  useEffect(() => {
-    if (!user?.id) {
-      setConversations([]);
-      return;
-    }
-    const clinicId = user.id;
-    const loadConversations = async () => {
-      try {
-        setLoadingConversations(true);
-        const data = await messageService.getUserConversations(clinicId);
-        const convs: Conversation[] = (Array.isArray(data) ? data : []).map(
-          (row: any) => {
-            const createdAt = row.updated_at || row.created_at;
-            const lastMessageTime = createdAt
-              ? new Date(createdAt)
-              : new Date();
-            const lastMessage =
-              row.last_message ||
-              row.lastMessage ||
-              row.last_message_content ||
-              '';
-            return {
-              id: row.id,
-              userId: row.user_id || row.other_user_id || 'User',
-              procedure:
-                row.procedure_name ||
-                row.procedure ||
-                t('clinic.unknownProcedure'),
-              lastMessage,
-              lastMessageTime,
-              unreadCount:
-                typeof row.unread_count === 'number' ? row.unread_count : 0,
-              isOnline: false,
-              language: row.language || 'N/A',
-              messages: []
-            };
-          }
-        );
-        setConversations(convs);
-      } catch (e) {
-        console.error('Konuşmalar yüklenirken hata:', e);
-        setConversations([]);
-      } finally {
-        setLoadingConversations(false);
-      }
-    };
-    loadConversations();
-  }, [user, t]);
-
-  useEffect(() => {
-    if (selectedConversationId) {
-      setSelectedConversation(selectedConversationId);
-      markAsRead(selectedConversationId);
-    }
-  }, [selectedConversationId]);
-
-  useEffect(() => {
-    if (!selectedConversation) return;
-    const conv = conversations.find((c) => c.id === selectedConversation);
-    if (!conv || conv.messages.length > 0) return;
-    const loadMessages = async () => {
-      try {
-        setLoadingMessages(true);
-        const data = await messageService.getConversationMessages(
-          selectedConversation
-        );
-        const msgs: Message[] = (Array.isArray(data) ? data : []).map(
-          (row: any) => {
-            const createdAt = row.created_at
-              ? new Date(row.created_at)
-              : new Date();
-            return {
-              id: row.id,
-              senderId:
-                row.sender_id ||
-                row.from_id ||
-                row.user_id ||
-                'unknown_sender',
-              receiverId:
-                row.receiver_id ||
-                row.to_id ||
-                row.clinic_id ||
-                'unknown_receiver',
-              content: row.content || row.message || '',
-              translatedContent: row.translated_content || undefined,
-              timestamp: createdAt,
-              seen: !!row.seen || !!row.seen_at,
-              delivered: true
-            };
-          }
-        );
-        setConversations((prev) =>
-          prev.map((c) =>
-            c.id === selectedConversation
-              ? {
-                  ...c,
-                  messages: msgs,
-                  lastMessage: msgs.length ? msgs[msgs.length - 1].content : c.lastMessage,
-                  lastMessageTime: msgs.length
-                    ? msgs[msgs.length - 1].timestamp
-                    : c.lastMessageTime
-                }
-              : c
-          )
-        );
-      } catch (e) {
-        console.error('Mesajlar yüklenirken hata:', e);
-      } finally {
-        setLoadingMessages(false);
-      }
-    };
-    loadMessages();
-  }, [selectedConversation, conversations]);
-
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!newMessage.trim() || !selectedConversation) return;
 
     const conversation = conversations.find(c => c.id === selectedConversation);
     if (!conversation) return;
 
-    if (!user?.id) return;
-    const clinicId = user.id;
-
-    const tempMessage: Message = {
-      id: `temp-${Date.now()}`,
-      senderId: clinicId,
+    const message: Message = {
+      id: `m${Date.now()}`,
+      senderId: 'clinic',
       receiverId: conversation.userId,
       content: newMessage,
       timestamp: new Date(),
@@ -183,71 +149,52 @@ const ClinicMessages: React.FC<ClinicMessagesProps> = ({ selectedConversationId 
       delivered: true
     };
 
-    setConversations(prev =>
-      prev.map(conv =>
-        conv.id === selectedConversation
-          ? {
-              ...conv,
-              messages: [...conv.messages, tempMessage],
-              lastMessage: newMessage,
-              lastMessageTime: tempMessage.timestamp
-            }
-          : conv
-      )
-    );
+    setConversations(prev => prev.map(conv => {
+      if (conv.id === selectedConversation) {
+        return {
+          ...conv,
+          messages: [...conv.messages, message],
+          lastMessage: newMessage,
+          lastMessageTime: new Date()
+        };
+      }
+      return conv;
+    }));
 
     setNewMessage('');
 
-    try {
-      const payload = {
-        conversation_id: conversation.id,
-        sender_id: clinicId,
-        receiver_id: conversation.userId,
-        content: tempMessage.content
-      };
-      const data = await messageService.sendMessage(payload);
-      const inserted = Array.isArray(data) ? data[0] : data;
-      if (!inserted) {
-        return;
-      }
-      const createdAt = inserted.created_at
-        ? new Date(inserted.created_at)
-        : tempMessage.timestamp;
-      const persistedMessage: Message = {
-        id: inserted.id || tempMessage.id,
-        senderId:
-          inserted.sender_id ||
-          inserted.from_id ||
-          inserted.user_id ||
-          clinicId,
-        receiverId:
-          inserted.receiver_id ||
-          inserted.to_id ||
-          inserted.clinic_id ||
-          conversation.userId,
-        content: inserted.content || inserted.message || tempMessage.content,
-        translatedContent: inserted.translated_content || undefined,
-        timestamp: createdAt,
-        seen: !!inserted.seen || !!inserted.seen_at,
+    // Simulate patient response after 3 seconds
+    setTimeout(() => {
+      const responses = [
+        'Thank you for the information!',
+        'That sounds good, when can we proceed?',
+        'I need to think about it.',
+        'Can you provide more details?'
+      ];
+      
+      const response: Message = {
+        id: `m${Date.now() + 1}`,
+        senderId: conversation.userId,
+        receiverId: 'clinic',
+        content: responses[Math.floor(Math.random() * responses.length)],
+        timestamp: new Date(),
+        seen: false,
         delivered: true
       };
-      setConversations(prev =>
-        prev.map(conv =>
-          conv.id === selectedConversation
-            ? {
-                ...conv,
-                messages: conv.messages
-                  .filter(m => !m.id.startsWith('temp-'))
-                  .concat(persistedMessage),
-                lastMessage: persistedMessage.content,
-                lastMessageTime: persistedMessage.timestamp
-              }
-            : conv
-        )
-      );
-    } catch (e) {
-      console.error('Mesaj gönderilirken hata:', e);
-    }
+
+      setConversations(prev => prev.map(conv => {
+        if (conv.id === selectedConversation) {
+          return {
+            ...conv,
+            messages: [...conv.messages, response],
+            lastMessage: response.content,
+            lastMessageTime: new Date(),
+            unreadCount: conv.unreadCount + 1
+          };
+        }
+        return conv;
+      }));
+    }, 3000);
   };
 
   const markAsRead = (conversationId: string) => {
@@ -295,11 +242,7 @@ const ClinicMessages: React.FC<ClinicMessagesProps> = ({ selectedConversationId 
         </div>
 
         <div className="flex-1 overflow-y-auto">
-          {loadingConversations ? (
-            <div className="p-8 text-center text-gray-500 text-sm">
-              Konuşmalar yükleniyor...
-            </div>
-          ) : conversations.length === 0 ? (
+          {conversations.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
               <div className="text-4xl mb-4">💬</div>
               <p>{t('clinic.noConversations')}</p>
@@ -411,11 +354,6 @@ const ClinicMessages: React.FC<ClinicMessagesProps> = ({ selectedConversationId 
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {loadingMessages && selectedConv.messages.length === 0 && (
-                <p className="text-center text-gray-500 text-sm">
-                  Mesajlar yükleniyor...
-                </p>
-              )}
               {selectedConv.messages.map((message) => (
                 <div
                   key={message.id}
@@ -569,11 +507,6 @@ const ClinicMessages: React.FC<ClinicMessagesProps> = ({ selectedConversationId 
 
                   {/* Messages */}
                   <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {loadingMessages && selectedConv.messages.length === 0 && (
-                      <p className="text-center text-gray-500 text-sm">
-                        Mesajlar yükleniyor...
-                      </p>
-                    )}
                     {selectedConv.messages.map((message) => (
                       <div
                         key={message.id}
