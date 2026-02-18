@@ -96,10 +96,12 @@ const ClinicDashboard: React.FC = () => {
     const loadData = async () => {
       try {
         setIsDataLoading(true);
-        const [requestsData, offersData] = await Promise.all([
+        const results = await Promise.allSettled([
           requestService.getClinicDashboardRequests(clinicId),
           offerService.getClinicOffers(clinicId),
         ]);
+        const requestsData = results[0].status === 'fulfilled' ? results[0].value : [];
+        const offersData = results[1].status === 'fulfilled' ? results[1].value : [];
         setClinicRequests(Array.isArray(requestsData) ? requestsData : []);
         setClinicOffers(Array.isArray(offersData) ? offersData : []);
       } catch (e) {

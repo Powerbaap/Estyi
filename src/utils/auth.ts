@@ -3,7 +3,9 @@ import { supabase } from '../lib/supabaseClient';
 
 export type UserRole = 'user' | 'clinic' | 'admin';
 
+// Daha uzun cache süresi: 5 dakika
 const roleCache = new Map<string, { value: UserRole; expiresAt: number }>();
+const ROLE_CACHE_TTL = 5 * 60 * 1000;
 
 export function getUserRole(user: User | null | undefined): UserRole {
   if (!user) return 'user';
@@ -61,8 +63,8 @@ export async function getCurrentUserRole(user?: User | null): Promise<UserRole> 
 
     const metaRole = getUserRole(currentUser);
 
-    try {
-      const { data, error } = await withTimeout(
+      try {
+        const { data, error } = await withTimeout(
         supabase
           .from('users')
           .select('role')
@@ -73,12 +75,12 @@ export async function getCurrentUserRole(user?: User | null): Promise<UserRole> 
 
       if (!error && data?.role && (data.role === 'admin' || data.role === 'clinic' || data.role === 'user')) {
         const value = data.role as UserRole;
-        roleCache.set(currentUser.id, { value, expiresAt: Date.now() + 60_000 });
+        roleCache.set(currentUser.id, { value, expiresAt: Date.now() + ROLE_CACHE_TTL });
         return value;
       }
     } catch {}
 
-    roleCache.set(currentUser.id, { value: metaRole, expiresAt: Date.now() + 60_000 });
+    roleCache.set(currentUser.id, { value: metaRole, expiresAt: Date.now() + ROLE_CACHE_TTL });
     return metaRole;
   } catch {
     if (user?.email?.toLowerCase() === 'admin@estyi.com') {
@@ -99,11 +101,7 @@ export async function getCurrentUserAccess(user?: User | null): Promise<UserAcce
   let isAdmin = role === 'admin';
   let isClinicApproved = true;
 
-  let currentUser = user ?? null;
-  if (!currentUser) {
-    const { data } = await supabase.auth.getUser();
-    currentUser = data?.user ?? null;
-  }
+  const currentUser = user ?? null;
 
   if (role === 'clinic') {
     isClinicApproved = false;

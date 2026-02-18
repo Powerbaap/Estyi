@@ -118,7 +118,7 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
               userId: user.id,
               role: access.role,
               isClinicApproved: access.isClinicApproved,
-              expiresAt: Date.now() + 60_000,
+              expiresAt: Date.now() + 5 * 60 * 1000,
             };
             localStorage.setItem(ACCESS_CACHE_KEY, JSON.stringify(value));
           } catch {}

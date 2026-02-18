@@ -134,6 +134,13 @@ export const clinicApplicationService = {
       };
     }
 
+    // ÖNEMLİ: Mevcut session'ı kaydet
+    let existingSession: any = null;
+    try {
+      const { data } = await supabase.auth.getSession();
+      existingSession = data?.session;
+    } catch {}
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
@@ -158,7 +165,20 @@ export const clinicApplicationService = {
       throw new Error('Kullanıcı oluşturulamadı.');
     }
 
+    // signOut - sadece yeni oluşturulan klinik session'ını temizle
     await supabase.auth.signOut();
+
+    // Mevcut session'ı geri yükle (eğer varsa)
+    if (existingSession?.access_token && existingSession?.refresh_token) {
+      try {
+        await supabase.auth.setSession({
+          access_token: existingSession.access_token,
+          refresh_token: existingSession.refresh_token,
+        });
+      } catch (e) {
+        console.warn('[clinicApplication] session restore failed:', e);
+      }
+    }
 
     try {
       await supabase.from('users').upsert(
