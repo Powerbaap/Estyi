@@ -387,6 +387,17 @@ app.post('/api/clinic-applications/apply', async (req, res) => {
     const email = body.email;
     const password = body.password;
     const countries = Array.isArray(body.countries) ? body.countries : [];
+    const citiesByCountry = body.cities_by_country && typeof body.cities_by_country === 'object'
+      ? body.cities_by_country
+      : {};
+    let primaryCity = body.city || null;
+    if (!primaryCity && countries.length > 0) {
+      const firstCountry = countries[0];
+      const citiesArr = Array.isArray(citiesByCountry[firstCountry]) ? citiesByCountry[firstCountry] : [];
+      if (citiesArr.length > 0) {
+        primaryCity = citiesArr[0];
+      }
+    }
     const specialties = Array.isArray(body.specialties) ? body.specialties : [];
     if (!clinic_name || !email || !password) {
       return res.status(400).json({ error: 'clinic_name, email ve password zorunludur.' });
@@ -407,7 +418,8 @@ app.post('/api/clinic-applications/apply', async (req, res) => {
         website: body.website || '',
         country: countries[0] || null,
         countries,
-        cities_by_country: body.cities_by_country || {},
+        city: primaryCity,
+        cities_by_country: citiesByCountry,
         specialties,
         description: body.description || '',
         certificate_files: Array.isArray(body.certificate_files) ? body.certificate_files : [],
@@ -470,7 +482,8 @@ app.post('/api/clinic-applications/apply', async (req, res) => {
       website: body.website || null,
       country: countries[0] || null,
       countries,
-      cities_by_country: body.cities_by_country && typeof body.cities_by_country === 'object' ? body.cities_by_country : {},
+      city: primaryCity,
+      cities_by_country: citiesByCountry,
       specialties,
       description: body.description || null,
       certificate_files: Array.isArray(body.certificate_files) ? body.certificate_files : [],
@@ -753,6 +766,30 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
 
     const authUserId = app.submitted_by;
 
+    const countries = Array.isArray(app.countries) ? app.countries : [];
+    const citiesByCountry = app.cities_by_country && typeof app.cities_by_country === 'object'
+      ? app.cities_by_country
+      : {};
+
+    let location = '';
+    let primaryCity = app.city || null;
+    if (countries.length > 0) {
+      const firstCountry = countries[0];
+      const cities = citiesByCountry && citiesByCountry[firstCountry];
+      if (Array.isArray(cities) && cities.length > 0) {
+        primaryCity = primaryCity || cities[0];
+        location = `${firstCountry} / ${primaryCity}`;
+      } else {
+        location = firstCountry;
+      }
+    } else if (app.country) {
+      location = app.country;
+    }
+
+    if (!primaryCity) {
+      return res.status(400).json({ error: 'City is required to approve clinic.' });
+    }
+
     const applicationSpecialties = Array.isArray(app.specialties) ? app.specialties : [];
     const approved =
       Array.isArray(approved_specialties) && approved_specialties.length > 0
@@ -763,24 +800,6 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
       return res.status(400).json({ error: 'At least one specialty must be approved' });
     }
 
-    const countries = Array.isArray(app.countries) ? app.countries : [];
-    const citiesByCountry = app.cities_by_country && typeof app.cities_by_country === 'object'
-      ? app.cities_by_country
-      : {};
-
-    let location = '';
-    if (countries.length > 0) {
-      const firstCountry = countries[0];
-      const cities = citiesByCountry && citiesByCountry[firstCountry];
-      if (Array.isArray(cities) && cities.length > 0) {
-        location = `${firstCountry} / ${cities[0]}`;
-      } else {
-        location = firstCountry;
-      }
-    } else if (app.country) {
-      location = app.country;
-    }
-
     const clinicInsert = {
       id: authUserId,
       name: app.clinic_name,
@@ -788,6 +807,7 @@ app.post('/api/admin/clinic-applications/:id/approve', async (req, res) => {
       phone: app.phone || '',
       website: app.website || '',
       location,
+      city: primaryCity,
       description: app.description || '',
       status: 'active',
       rating: 0,
