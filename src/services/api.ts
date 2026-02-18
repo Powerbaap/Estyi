@@ -117,7 +117,7 @@ export const clinicApplicationService = {
     }
     if (offline) {
       const fakeId = 'DEV_APP_' + Math.random().toString(36).substring(2, 10).toUpperCase();
-      const application = {
+      return {
         id: fakeId,
         clinic_name: payload.clinic_name,
         email: payload.email,
@@ -132,47 +132,76 @@ export const clinicApplicationService = {
         status: 'pending',
         submitted_by: null
       };
-      return application;
     }
-    const backendBase = import.meta.env.VITE_BACKEND_URL;
-    if (!backendBase) {
-      throw new Error('Backend API adresi tanımlı değil (VITE_BACKEND_URL).');
-    }
-    const url = `${backendBase.replace(/\/$/, '')}/api/clinic-applications/apply`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-    if (!response.ok) {
-      let message = 'Klinik başvurusu gönderilemedi.';
-      try {
-        const err = await response.json();
-        if (err && typeof err.error === 'string' && err.error) {
-          message = err.error;
+
+    const { data: authData, error: authError } = await supabase.auth.signUp({
+      email: payload.email,
+      password: payload.password,
+      options: {
+        data: {
+          role: 'clinic',
+          name: payload.clinic_name
         }
-      } catch {
-        try {
-          const text = await response.text();
-          if (text) {
-            message = text;
-          }
-        } catch {}
       }
-      throw new Error(message);
+    });
+
+    if (authError) {
+      const msg = (authError.message || '').toLowerCase();
+      if (msg.includes('already') && (msg.includes('registered') || msg.includes('exists'))) {
+        throw new Error('Bu e-posta ile zaten bir hesap var. Giriş yapın veya Şifremi Unuttum kullanın.');
+      }
+      throw new Error(authError.message);
     }
-    const data = await response.json().catch(() => null);
-    if (data && typeof data === 'object') {
-      if (data.application) {
-        return data.application;
-      }
-      if (Array.isArray(data)) {
-        return data[0];
-      }
+
+    const authUserId = authData?.user?.id;
+    if (!authUserId) {
+      throw new Error('Kullanıcı oluşturulamadı.');
     }
-    return data;
+
+    await supabase.auth.signOut();
+
+    try {
+      await supabase.from('users').upsert(
+        {
+          id: authUserId,
+          email: payload.email,
+          name: payload.clinic_name,
+          role: 'clinic',
+          is_verified: false
+        },
+        { onConflict: 'id' }
+      );
+    } catch (e) {
+      console.warn('Users profil upsert uyarı:', e);
+    }
+
+    const countries = Array.isArray(payload.countries) ? payload.countries : [];
+    const insertPayload = {
+      clinic_name: payload.clinic_name,
+      email: payload.email,
+      phone: payload.phone || null,
+      website: payload.website || null,
+      country: countries[0] || null,
+      countries,
+      cities_by_country:
+        payload.cities_by_country && typeof payload.cities_by_country === 'object'
+          ? payload.cities_by_country
+          : {},
+      specialties: Array.isArray(payload.specialties) ? payload.specialties : [],
+      description: payload.description || null,
+      certificate_files: Array.isArray(payload.certificate_files) ? payload.certificate_files : [],
+      status: 'pending',
+      submitted_by: authUserId
+    };
+
+    const { data, error } = await supabase.from('clinic_applications').insert(insertPayload).select('*');
+
+    if (error) {
+      console.error('Clinic application insert error:', error);
+      throw new Error(error.message);
+    }
+
+    return Array.isArray(data) ? data[0] : data;
   },
 
   // Sertifikaları yükle ve başvuruya ekle
