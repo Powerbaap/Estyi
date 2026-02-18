@@ -148,8 +148,8 @@ const ClinicDashboard: React.FC = () => {
   ];
 
   const getProcedureName = (offer: any) => {
-    const key = offer.requests?.procedure_key || '';
-    if (!key) return t('clinicDashboard.unknownProcedure');
+    const key = offer.requests?.procedure_name || offer.requests?.procedure_key || '';
+    if (!key) return 'Bilinmeyen İşlem';
     const translationKey = `procedures.${key}`;
     const translated = t(translationKey);
     return translated && translated !== translationKey ? translated : key;
@@ -171,8 +171,10 @@ const ClinicDashboard: React.FC = () => {
   };
 
   const getPriceText = (offer: any) => {
-    const min = offer.min_price;
-    const max = offer.max_price;
+    const price = offer.price;
+    const min = offer.price_min;
+    const max = offer.price_max;
+    if (price) return `${price} USD`;
     if (min && max && min !== max) return `${min} - ${max} USD`;
     if (min) return `${min} USD`;
     if (max) return `${max} USD`;

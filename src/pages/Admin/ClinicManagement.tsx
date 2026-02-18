@@ -324,7 +324,6 @@ const ClinicManagement: React.FC = () => {
     try {
       setApproving(true);
       const result = await adminService.approveClinicApplication(app.id, specialtiesToApprove);
-      
       setApplications(prev =>
         prev.map(a =>
           a.id === app.id ? { ...a, status: 'approved', specialties: specialtiesToApprove } : a
@@ -335,6 +334,65 @@ const ClinicManagement: React.FC = () => {
       const refreshed = await adminService.getClinics();
       setClinics(Array.isArray(refreshed) ? refreshed : []);
       
+      try {
+        const clinicId = app.submitted_by as string | undefined;
+        const countries =
+          (Array.isArray(app.countries) && app.countries.length > 0
+            ? app.countries
+            : app.country
+            ? [app.country]
+            : []) as string[];
+
+        const priceItems = Array.isArray(app.price_data) ? app.price_data : [];
+
+        if (clinicId && countries.length > 0 && priceItems.length > 0) {
+          const rows: any[] = [];
+
+          for (const item of priceItems) {
+            const procedureKey = item?.procedure_key || item?.procedure_name || '';
+            if (!procedureKey) continue;
+            const priceValue =
+              typeof item.price === 'number'
+                ? item.price
+                : typeof item.price === 'string'
+                ? Number(item.price)
+                : null;
+            if (!priceValue || !Number.isFinite(priceValue) || priceValue <= 0) continue;
+
+            for (const country of countries) {
+              if (!country) continue;
+              rows.push({
+                clinic_id: clinicId,
+                is_active: true,
+                procedure_name: procedureKey,
+                country,
+                region: item.region || null,
+                sessions:
+                  item.sessions === null || item.sessions === undefined
+                    ? null
+                    : Number(item.sessions),
+                currency: 'USD',
+                price: priceValue,
+                price_min: priceValue,
+                price_max: null,
+                cities: null
+              });
+            }
+          }
+
+          if (rows.length > 0) {
+            const { error: priceErr } = await supabase
+              .from('clinic_price_rules')
+              .insert(rows);
+            if (priceErr) {
+              console.error('clinic_price_rules insert hatası:', priceErr);
+            }
+          }
+        }
+      } catch (priceRulesError) {
+        console.error('Fiyat kuralları oluşturulurken hata oluştu:', priceRulesError);
+      }
+
       setShowApplicationModal(false);
       alert('Başvuru onaylandı ve klinik aktifleştirildi.');
     } catch (err: any) {
@@ -787,6 +845,56 @@ const ClinicManagement: React.FC = () => {
                   <p className="text-sm text-gray-900 bg-gray-50 p-3 rounded whitespace-pre-wrap">{selectedApplication.description}</p>
                 </div>
               )}
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Fiyat Bilgileri
+                </label>
+                {Array.isArray(selectedApplication.price_data) && selectedApplication.price_data.length > 0 ? (
+                  <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                    <table className="min-w-full text-sm">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-3 py-2 text-left font-medium text-gray-700">İşlem</th>
+                          <th className="px-3 py-2 text-left font-medium text-gray-700">Bölge</th>
+                          <th className="px-3 py-2 text-left font-medium text-gray-700">Seans</th>
+                          <th className="px-3 py-2 text-right font-medium text-gray-700">Fiyat (USD)</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-100">
+                        {selectedApplication.price_data.map((item: any, index: number) => {
+                          const key = item?.procedure_key || item?.procedure_name || '';
+                          const found = allProcedureKeys.find(p => p.key === key);
+                          const label = found?.name || key || '-';
+                          const region = item?.region || '-';
+                          const sessions =
+                            item?.sessions === null || item?.sessions === undefined
+                              ? '-'
+                              : String(item.sessions);
+                          const price =
+                            typeof item?.price === 'number'
+                              ? item.price
+                              : typeof item?.price === 'string'
+                              ? Number(item.price)
+                              : null;
+                          return (
+                            <tr key={index}>
+                              <td className="px-3 py-2 text-gray-900">{label}</td>
+                              <td className="px-3 py-2 text-gray-700">{region}</td>
+                              <td className="px-3 py-2 text-gray-700">{sessions}</td>
+                              <td className="px-3 py-2 text-right text-gray-900">
+                                {price && Number.isFinite(price) && price > 0 ? `${price} USD` : '-'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Fiyat bilgisi girilmemiş</p>
+                )}
+              </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
