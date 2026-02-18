@@ -2,41 +2,28 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabaseClient';
-import { PROCEDURE_CATEGORIES } from '../../data/procedureCategories';
-import { Plus, Edit2, Trash2, FileText } from 'lucide-react';
+import { Edit2, FileText } from 'lucide-react';
 
 interface ClinicPrice {
   id: string;
   clinic_id: string;
-  procedure_id: string;
-  currency: string;
-  amount: number;
+  procedure_name: string | null;
+  country: string | null;
+  region: string | null;
+  sessions: number | null;
+  currency: string | null;
+  price: number | null;
 }
 
 const ClinicProcedures: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [clinicId, setClinicId] = useState<string | null>(null);
-  const [clinicSpecialties, setClinicSpecialties] = useState<string[]>([]);
   const [prices, setPrices] = useState<ClinicPrice[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [editing, setEditing] = useState<ClinicPrice | null>(null);
-  const [form, setForm] = useState<{ procedure_id?: string; amount?: number }>({});
-
-  // Talep formu ve klinik başvurusu ile birebir aynı: procedureCategories (tek kaynak). Sadece klinik uzmanlık alanları gösterilir.
-  const procedureOptions: { key: string; name: string }[] = (() => {
-    const all = PROCEDURE_CATEGORIES.flatMap((cat) =>
-      cat.procedures.map((proc) => {
-        const trKey = `procedureCategories.procedures.${proc.key}`;
-        const translated = t(trKey);
-        const name = translated && translated !== trKey ? translated : proc.name;
-        return { key: proc.key, name };
-      })
-    );
-    if (clinicSpecialties.length === 0) return all;
-    return all.filter((s) => clinicSpecialties.includes(s.key));
-  })();
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingValue, setEditingValue] = useState<string>('');
 
   async function resolveClinicId() {
     const cached = localStorage.getItem('clinic_id');
@@ -78,22 +65,14 @@ const ClinicProcedures: React.FC = () => {
     }
   }
 
-  async function loadClinicSpecialties(cid: string) {
-    try {
-      const { data } = await (supabase as any).from('clinics').select('specialties').eq('id', cid).single();
-      const specs = Array.isArray(data?.specialties) ? data.specialties : [];
-      setClinicSpecialties(specs);
-    } catch (e) {
-      console.error(e);
-      setClinicSpecialties([]);
-    }
-  }
-
   async function loadPrices(cid: string) {
     setLoading(true);
     setError(null);
     try {
-      const { data, error } = await (supabase as any).from('clinic_price_list').select('*').eq('clinic_id', cid);
+      const { data, error } = await (supabase as any)
+        .from('clinic_price_rules')
+        .select('id, clinic_id, procedure_name, country, region, sessions, currency, price')
+        .eq('clinic_id', cid);
       if (error) {
         console.error('Fiyat yükleme hatası:', error);
         throw error;
@@ -113,104 +92,54 @@ const ClinicProcedures: React.FC = () => {
     (async () => {
       const cid = await resolveClinicId();
       if (cid) {
-        await loadClinicSpecialties(cid);
         await loadPrices(cid);
       }
     })();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  function resetForm() {
-    setForm({});
-    setEditing(null);
+  function cancelEditing() {
+    setEditingId(null);
+    setEditingValue('');
   }
 
-  async function savePrice() {
+  async function saveInlinePrice(id: string) {
     if (!clinicId) {
       setError('Klinik ID bulunamadı. Lütfen tekrar giriş yapın.');
       return;
     }
-    if (!form.procedure_id) {
-      setError('Lütfen işlem seçin');
-      return;
-    }
-    if (!form.amount || form.amount <= 0) {
+    const value = Number(editingValue);
+    if (!value || value <= 0) {
       setError('Lütfen geçerli bir tutar girin');
       return;
     }
 
-    // Duplicate kontrolü: Aynı işlem için zaten fiyat varsa (edit modunda değilse) hata ver
-    if (!editing) {
-      const existing = prices.find(p => p.procedure_id === form.procedure_id);
-      if (existing) {
-        setError('Bu işlem için zaten bir fiyat tanımlı. Lütfen mevcut fiyatı düzenleyin.');
-        return;
-      }
-    }
-
     setLoading(true);
     setError(null);
     try {
-      const currency = 'USD';
-      if (editing) {
-        // Edit modunda: aynı procedure_id'ye sahip başka bir kayıt varsa (kendi kaydı hariç) hata ver
-        const otherExisting = prices.find(p => p.procedure_id === form.procedure_id && p.id !== editing.id);
-        if (otherExisting) {
-          setError('Bu işlem için zaten başka bir fiyat tanımlı.');
-          setLoading(false);
-          return;
-        }
-        const { error: updateError } = await (supabase as any).from('clinic_price_list').update({
-          procedure_id: form.procedure_id,
-          currency,
-          amount: form.amount,
-        }).eq('id', editing.id);
-        if (updateError) throw updateError;
-      } else {
-        const newPrice: ClinicPrice = {
-          id: `price_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-          clinic_id: clinicId,
-          procedure_id: form.procedure_id!,
-          currency,
-          amount: Number(form.amount),
-        };
-        const { error: insertError } = await (supabase as any).from('clinic_price_list').insert(newPrice);
-        if (insertError) throw insertError;
-      }
+      const { error: updateError } = await (supabase as any)
+        .from('clinic_price_rules')
+        .update({ price: value })
+        .eq('id', id);
+      if (updateError) throw updateError;
       await loadPrices(clinicId);
-      resetForm();
-    } catch (e: any) {
-      console.error('Fiyat kaydetme hatası:', e);
-      const errorMsg = e?.message || e?.error?.message || 'Kaydetme sırasında hata oluştu';
-      setError(errorMsg);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function deletePrice(id: string) {
-    if (!clinicId) return;
-    setLoading(true);
-    setError(null);
-    try {
-      await (supabase as any).from('clinic_price_list').delete().eq('id', id);
-      await loadPrices(clinicId);
+      cancelEditing();
     } catch (e: any) {
       console.error(e);
-      setError(e?.message || 'Silme sırasında hata oluştu');
+      const msg = e?.message || e?.error?.message || 'Kaydetme sırasında hata oluştu';
+      setError(msg);
     } finally {
       setLoading(false);
     }
   }
 
-  function procedureName(pid: string) {
-    const o = procedureOptions.find((x) => x.key === pid);
-    return o ? o.name : pid;
+  function procedureName(p: ClinicPrice) {
+    return p.procedure_name || '-';
   }
 
   return (
     <div className="space-y-6">
-      {/* Otomatik Fiyatlar — klinik uzmanlık alanları, sadece USD */}
+      {/* Sabit Fiyatlar — klinik sadece mevcut fiyatları düzenleyebilir */}
       <section className="bg-white rounded-2xl shadow-lg border-2 border-emerald-200 overflow-hidden">
         <div className="bg-gradient-to-r from-emerald-500 to-emerald-600 px-6 py-4 flex items-center justify-between flex-wrap gap-2">
           <div className="flex items-center gap-3">
@@ -224,109 +153,112 @@ const ClinicProcedures: React.FC = () => {
               </span>
             </div>
           </div>
-          <button
-            onClick={resetForm}
-            className="inline-flex items-center px-4 py-2 bg-white text-emerald-700 font-medium rounded-lg hover:bg-emerald-50 transition-colors"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            {t('clinicProcedures.newPrice')}
-          </button>
         </div>
         <div className="p-6">
           <p className="text-sm text-gray-600 mb-6">{t('clinicProcedures.automaticPricesDesc')}</p>
-          {procedureOptions.length === 0 && (
-            <p className="text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm mb-4">
-              {t('clinicProcedures.noSpecialtiesHint')}
-            </p>
-          )}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <label className="block text-sm font-medium text-gray-700">{t('clinicProcedures.procedure')}</label>
-              <select
-                value={form.procedure_id || ''}
-                onChange={(e) => setForm((f) => ({ ...f, procedure_id: e.target.value }))}
-                className="w-full rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
-              >
-                <option value="">{t('clinicProcedures.selectProcedure')}</option>
-                {procedureOptions.map((o) => (
-                  <option key={o.key} value={o.key}>{o.name}</option>
-                ))}
-              </select>
-
-              <label className="block text-sm font-medium text-gray-700">{t('clinicProcedures.currency')}</label>
-              <div className="w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-2.5 text-gray-700 font-medium">
-                USD
+          <div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('clinicProcedures.priceList')}</h3>
+            {loading && prices.length === 0 ? (
+              <p className="text-gray-500">{t('clinicProcedures.loading')}</p>
+            ) : prices.length === 0 ? (
+              <p className="text-gray-500">{t('clinicProcedures.noFixedPrices')}</p>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        İşlem
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Bölge
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Seans
+                      </th>
+                      <th className="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        Fiyat (USD)
+                      </th>
+                      <th className="px-4 py-2 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        İşlem
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {prices.map((p) => {
+                      const isEditing = editingId === p.id;
+                      return (
+                        <tr key={p.id} className="hover:bg-gray-50">
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            {procedureName(p)}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
+                            {p.region || '-'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-600">
+                            {p.sessions ?? '-'}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-gray-900">
+                            {isEditing ? (
+                              <input
+                                type="number"
+                                className="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
+                                value={editingValue}
+                                onChange={(e) => setEditingValue(e.target.value)}
+                                placeholder={p.price !== null && p.price !== undefined ? String(p.price) : ''}
+                              />
+                            ) : (
+                              <>
+                                {p.price !== null && p.price !== undefined ? p.price : '-'} USD
+                              </>
+                            )}
+                          </td>
+                          <td className="px-4 py-3 text-sm text-right">
+                            {isEditing ? (
+                              <div className="flex items-center justify-end gap-2">
+                                <button
+                                  onClick={() => saveInlinePrice(p.id)}
+                                  disabled={loading}
+                                  className="inline-flex items-center px-3 py-1.5 rounded-md bg-emerald-600 text-white text-xs font-medium hover:bg-emerald-700 disabled:opacity-50"
+                                >
+                                  Kaydet
+                                </button>
+                                <button
+                                  onClick={cancelEditing}
+                                  disabled={loading}
+                                  className="inline-flex items-center px-3 py-1.5 rounded-md bg-gray-200 text-gray-800 text-xs font-medium hover:bg-gray-300 disabled:opacity-50"
+                                >
+                                  İptal
+                                </button>
+                              </div>
+                            ) : (
+                              <button
+                                onClick={() => {
+                                  setEditingId(p.id);
+                                  setEditingValue(p.price !== null && p.price !== undefined ? String(p.price) : '');
+                                  setError(null);
+                                }}
+                                className="inline-flex items-center px-3 py-1.5 rounded-md bg-white border border-gray-300 text-xs font-medium text-gray-700 hover:bg-gray-50"
+                              >
+                                <Edit2 className="w-4 h-4 mr-1" />
+                                Düzenle
+                              </button>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
               </div>
-
-              <label className="block text-sm font-medium text-gray-700">{t('clinicProcedures.amount')}</label>
-              <input
-                type="number"
-                value={form.amount ?? ''}
-                onChange={(e) => setForm((f) => ({ ...f, amount: Number(e.target.value) }))}
-                className="w-full rounded-lg border border-gray-300 focus:border-emerald-500 focus:ring-emerald-500"
-                placeholder={t('clinicProcedures.amountPlaceholder')}
-              />
-
-              <div className="flex gap-3">
-                <button
-                  onClick={savePrice}
-                  disabled={loading}
-                  className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 font-medium"
-                >
-                  {editing ? t('clinicProcedures.update') : t('clinicProcedures.save')}
-                </button>
-                <button
-                  onClick={resetForm}
-                  disabled={loading}
-                  className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 disabled:opacity-50"
-                >
-                  {t('clinicProcedures.clear')}
-                </button>
-              </div>
-              {error && <p className="text-red-600 text-sm">{error}</p>}
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{t('clinicProcedures.priceList')}</h3>
-              {loading && prices.length === 0 ? (
-                <p className="text-gray-500">{t('clinicProcedures.loading')}</p>
-              ) : prices.length === 0 ? (
-                <p className="text-gray-500">{t('clinicProcedures.noFixedPrices')}</p>
-              ) : (
-                <ul className="divide-y divide-gray-200">
-                  {prices.map((p) => (
-                    <li key={p.id} className="py-3 flex items-center justify-between">
-                      <div>
-                        <p className="font-medium text-gray-900">{procedureName(p.procedure_id)}</p>
-                        <p className="text-sm text-gray-600">{p.amount} USD</p>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => {
-                            setEditing(p);
-                            setForm({ procedure_id: p.procedure_id, amount: p.amount });
-                          }}
-                          className="p-2 rounded-lg hover:bg-gray-100"
-                          title="Düzenle"
-                        >
-                          <Edit2 className="w-4 h-4 text-gray-700" />
-                        </button>
-                        <button
-                          onClick={() => deletePrice(p.id)}
-                          className="p-2 rounded-lg hover:bg-gray-100"
-                          title="Sil"
-                        >
-                          <Trash2 className="w-4 h-4 text-red-600" />
-                        </button>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
+            )}
+            {error && <p className="mt-3 text-red-600 text-sm">{error}</p>}
           </div>
         </div>
       </section>
+      <p className="text-xs text-gray-500">
+        İşlem eklemek veya kaldırmak için estyi@sport.com adresine e-posta gönderin.
+      </p>
     </div>
   );
 };

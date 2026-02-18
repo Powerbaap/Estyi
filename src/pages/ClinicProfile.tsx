@@ -1,65 +1,53 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Globe, Award, Users, Clock, DollarSign } from 'lucide-react';
-
-interface ClinicProfileProps {
-  clinicName?: string;
-  clinicCountry?: string;
-}
+import { ArrowLeft, MapPin, Star, Phone, Mail, Globe, Award, Users } from 'lucide-react';
+import { supabase } from '../lib/supabaseClient';
 
 const ClinicProfile: React.FC = () => {
   const { t } = useTranslation();
-  const location = useLocation();
   const navigate = useNavigate();
-  const [clinicData, setClinicData] = useState<any>(null);
-
-  // Location state'den veya props'tan klinik bilgilerini al
-  const clinicName = location.state?.clinicName || 'İstanbul Estetik Merkezi';
-  const clinicCountry = location.state?.clinicCountry || 'Türkiye';
+  const { clinicId } = useParams<{ clinicId: string }>();
+  const [clinicData, setClinicData] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock klinik verisi
-    setClinicData({
-      name: clinicName,
-      country: clinicCountry,
-      rating: 4.8,
-      reviews: 245,
-      phone: '+90 212 555 0123',
-      email: 'info@istanbulestetik.com',
-      website: 'www.istanbulestetik.com',
-      specialties: ['Rhinoplasty', 'Hair Transplant', 'Breast Surgery', 'Face Lift'],
-      description: '15 yıllık deneyimimizle İstanbul\'da estetik cerrahi alanında hizmet veriyoruz. Uluslararası standartlarda tedavi ve hasta memnuniyeti odaklı yaklaşımımızla binlerce başarılı operasyon gerçekleştirdik.',
-      team: 'Deneyimli cerrahlarımız ve uzman ekibimizle en güncel teknikleri kullanarak doğal ve estetik sonuçlar elde ediyoruz.',
-      photos: [
-        'https://images.pexels.com/photos/3376790/pexels-photo-3376790.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/3376791/pexels-photo-3376791.jpeg?auto=compress&cs=tinysrgb&w=400',
-        'https://images.pexels.com/photos/3376792/pexels-photo-3376792.jpeg?auto=compress&cs=tinysrgb&w=400'
-      ],
-      procedures: [
-        {
-          name: 'Rhinoplasty',
-          price: '2500 - 3500 USD',
-          duration: '2-3 saat',
-          recovery: '1-2 hafta'
-        },
-        {
-          name: 'Hair Transplant',
-          price: '1500 - 2500 USD',
-          duration: '4-6 saat',
-          recovery: '2-3 hafta'
-        },
-        {
-          name: 'Breast Surgery',
-          price: '3000 - 5000 USD',
-          duration: '3-4 saat',
-          recovery: '2-4 hafta'
+    if (!clinicId) {
+      setLoading(false);
+      return;
+    }
+    let active = true;
+    const loadClinic = async () => {
+      try {
+        const { data, error } = await (supabase as any)
+          .from('clinics')
+          .select('*')
+          .eq('id', clinicId)
+          .single();
+        if (!active) return;
+        if (error) {
+          console.error('Klinik profili yüklenemedi:', error);
+          setClinicData(null);
+        } else {
+          setClinicData(data);
         }
-      ]
-    });
-  }, [clinicName, clinicCountry]);
+      } catch (e) {
+        if (!active) return;
+        console.error('Klinik profili yüklenirken hata oluştu:', e);
+        setClinicData(null);
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    };
+    loadClinic();
+    return () => {
+      active = false;
+    };
+  }, [clinicId]);
 
-  if (!clinicData) {
+  if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
@@ -70,10 +58,26 @@ const ClinicProfile: React.FC = () => {
     );
   }
 
+  if (!clinicData) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="mt-4 text-gray-600">Klinik profili bulunamadı.</p>
+        </div>
+      </div>
+    );
+  }
+
+  const countries = Array.isArray(clinicData.countries) ? clinicData.countries : [];
+  const citiesByCountry = clinicData.cities_by_country || {};
+  const specialties = Array.isArray(clinicData.specialties) ? clinicData.specialties : [];
+  const doctors = Array.isArray(clinicData.doctors) ? clinicData.doctors : [];
+  const photos = Array.isArray(clinicData.photos) ? clinicData.photos : [];
+  const socialMedia = clinicData.social_media || {};
+
   return (
     <div className="min-h-screen bg-gray-50 py-6">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
         <div className="mb-6">
           <button
             onClick={() => navigate(-1)}
@@ -87,7 +91,7 @@ const ClinicProfile: React.FC = () => {
             <div className="flex items-start space-x-6">
               <div className="w-20 h-20 bg-gradient-to-br from-blue-600 to-blue-700 rounded-xl flex items-center justify-center">
                 <span className="text-white font-bold text-2xl">
-                  {clinicData.name.charAt(0)}
+                  {clinicData.name?.charAt(0) || '?'}
                 </span>
               </div>
               
@@ -97,18 +101,20 @@ const ClinicProfile: React.FC = () => {
                   <Award className="w-6 h-6 text-blue-600" />
                 </div>
                 
-                <div className="flex items-center space-x-4 text-sm text-gray-600 mb-3">
+                <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
                   <span className="flex items-center space-x-1">
                     <MapPin className="w-4 h-4" />
-                    <span>{clinicData.country}</span>
+                    <span>{clinicData.location}</span>
                   </span>
                   <span className="flex items-center space-x-1">
                     <Star className="w-4 h-4 text-yellow-500" />
-                    <span>{clinicData.rating} ({clinicData.reviews} değerlendirme)</span>
+                    <span>
+                      {(clinicData.rating || 0).toFixed(1)} ({clinicData.reviews || 0} değerlendirme)
+                    </span>
                   </span>
                 </div>
 
-                <div className="flex items-center space-x-4 text-sm">
+                <div className="flex flex-wrap items-center gap-4 text-sm">
                   <span className="flex items-center space-x-1">
                     <Phone className="w-4 h-4" />
                     <span>{clinicData.phone}</span>
@@ -119,7 +125,14 @@ const ClinicProfile: React.FC = () => {
                   </span>
                   <span className="flex items-center space-x-1">
                     <Globe className="w-4 h-4" />
-                    <span>{clinicData.website}</span>
+                    <a
+                      href={clinicData.website}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:underline"
+                    >
+                      {clinicData.website}
+                    </a>
                   </span>
                 </div>
               </div>
@@ -127,91 +140,235 @@ const ClinicProfile: React.FC = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* About */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Hakkında</h2>
-              <p className="text-gray-700 leading-relaxed mb-4">{clinicData.description}</p>
-              <div className="flex items-start space-x-2">
-                <Users className="w-5 h-5 text-gray-500 mt-1" />
-                <p className="text-gray-700">{clinicData.team}</p>
+        <div className="space-y-6">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h2 className="text-lg font-semibold text-gray-900">BÖLÜM A - Başvurudan Gelen Bilgiler</h2>
+                <p className="text-sm text-gray-500 mt-1">
+                  Bu bilgiler başvuru sırasında sağlanan verilere göre doldurulur.
+                </p>
               </div>
+              <span className="text-xs text-gray-500">
+                Bu bilgileri değiştirmek için estyi@sport.com adresine mail atın.
+              </span>
             </div>
 
-            {/* Specialties */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Uzmanlık Alanları</h2>
-              <div className="flex flex-wrap gap-2">
-                {clinicData.specialties.map((specialty: string) => (
-                  <span key={specialty} className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {specialty}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Procedures */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">İşlemler ve Fiyatlar</h2>
-              <div className="space-y-4">
-                {clinicData.procedures.map((procedure: any) => (
-                  <div key={procedure.name} className="border border-gray-200 rounded-lg p-4">
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className="font-semibold text-gray-900">{procedure.name}</h3>
-                      <span className="text-green-600 font-semibold">{procedure.price}</span>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2 space-y-6">
+                <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-3">Temel Bilgiler</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 mb-1">Klinik Adı</p>
+                      <p className="text-gray-900">{clinicData.name}</p>
                     </div>
-                    <div className="flex items-center space-x-4 text-sm text-gray-600">
-                      <span className="flex items-center space-x-1">
-                        <Clock className="w-4 h-4" />
-                        <span>{procedure.duration}</span>
-                      </span>
-                      <span>İyileşme: {procedure.recovery}</span>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 mb-1">Konum</p>
+                      <p className="text-gray-900 flex items-center space-x-2">
+                        <MapPin className="w-4 h-4 text-gray-500" />
+                        <span>{clinicData.location}</span>
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 mb-1">Web Sitesi</p>
+                      <p className="text-gray-900 flex items-center space-x-2">
+                        <Globe className="w-4 h-4 text-gray-500" />
+                        <a
+                          href={clinicData.website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-600 hover:underline"
+                        >
+                          {clinicData.website}
+                        </a>
+                      </p>
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="bg-gray-50 rounded-lg border border-gray-200 p-4 space-y-4">
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-800 mb-2">Ülkeler</h3>
+                    {countries.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {countries.map((country: string) => (
+                          <span
+                            key={country}
+                            className="bg-blue-50 text-blue-800 px-3 py-1 rounded-full text-xs font-medium"
+                          >
+                            {country}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500">Ülke bilgisi henüz eklenmemiş.</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-800 mb-2">Şehirler</h3>
+                    {citiesByCountry && Object.keys(citiesByCountry).length > 0 ? (
+                      <div className="space-y-3">
+                        {Object.entries(citiesByCountry).map(([country, cities]) => (
+                          <div key={country}>
+                            <p className="text-xs font-medium text-gray-600 mb-1">{country}</p>
+                            <div className="flex flex-wrap gap-2">
+                              {(cities as string[]).map(city => (
+                                <span
+                                  key={city}
+                                  className="bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-xs"
+                                >
+                                  {city}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500">Şehir bilgisi henüz eklenmemiş.</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-800 mb-2">Uzmanlık Alanları</h3>
+                    {specialties.length > 0 ? (
+                      <div className="flex flex-wrap gap-2">
+                        {specialties.map((specialty: string) => (
+                          <span
+                            key={specialty}
+                            className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium"
+                          >
+                            {specialty}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-gray-500">Uzmanlık alanı bilgisi henüz eklenmemiş.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-3">İletişim</h3>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    <p className="flex items-center gap-2">
+                      <Phone className="w-4 h-4 text-gray-500" />
+                      <span>{clinicData.phone}</span>
+                    </p>
+                    <p className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-gray-500" />
+                      <span>{clinicData.email}</span>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-3">Sosyal Medya</h3>
+                  <div className="space-y-2 text-xs">
+                    {[
+                      { key: 'instagram', label: 'Instagram' },
+                      { key: 'facebook', label: 'Facebook' },
+                      { key: 'twitter', label: 'Twitter/X' },
+                      { key: 'youtube', label: 'YouTube' },
+                      { key: 'tiktok', label: 'TikTok' }
+                    ].map(item => {
+                      const value = socialMedia[item.key] as string | undefined;
+                      return (
+                        <div key={item.key} className="flex items-center gap-2">
+                          <span className="w-24 text-gray-600">{item.label}</span>
+                          {value ? (
+                            <a
+                              href={value}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-blue-600 hover:underline break-all"
+                            >
+                              {value}
+                            </a>
+                          ) : (
+                            <span className="text-gray-400">Henüz eklenmemiş</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
 
-          {/* Sidebar */}
-          <div className="space-y-6">
-            {/* Contact */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">İletişim</h3>
-              <div className="space-y-3">
-                <button className="w-full flex items-center justify-center space-x-2 bg-blue-600 text-white px-4 py-3 rounded-lg hover:bg-blue-700 transition-colors font-medium">
-                  <Phone className="w-4 h-4" />
-                  <span>Ara</span>
-                </button>
-                <button 
-                  onClick={() => navigate('/messages', { 
-                    state: { 
-                      selectedClinic: clinicData.name,
-                      messageType: 'clinic_contact'
-                    } 
-                  })}
-                  className="w-full flex items-center justify-center space-x-2 bg-green-600 text-white px-4 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                >
-                  <Mail className="w-4 h-4" />
-                  <span>Mesaj Gönder</span>
-                </button>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2 space-y-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h2 className="text-xl font-semibold text-gray-900 mb-4">Klinik Tanıtımı</h2>
+                <p className="text-gray-700 leading-relaxed mb-4">
+                  {clinicData.clinic_intro ||
+                    clinicData.description ||
+                    'Klinik tanıtımı henüz eklenmemiş.'}
+                </p>
+                <div className="flex items-start space-x-2">
+                  <Users className="w-5 h-5 text-gray-500 mt-1" />
+                  <p className="text-gray-700">
+                    {clinicData.team_description || 'Doktor ekibi hakkında bilgi henüz eklenmemiş.'}
+                  </p>
+                </div>
               </div>
+
+              {doctors.length > 0 && (
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-4">Doktorlar</h2>
+                  <div className="space-y-4">
+                    {doctors.map((doctor: any, index: number) => (
+                      <div
+                        key={index}
+                        className="flex items-start gap-3 border border-gray-100 rounded-lg p-3"
+                      >
+                        {doctor.photo_url && (
+                          <img
+                            src={doctor.photo_url}
+                            alt={doctor.full_name || 'Doktor'}
+                            className="w-14 h-14 rounded-full object-cover"
+                          />
+                        )}
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {doctor.full_name || 'İsimsiz Doktor'}
+                          </p>
+                          <p className="text-xs text-gray-600 mb-1">
+                            {doctor.specialty || 'Uzmanlık bilgisi yok'}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            {doctor.bio || 'Kısa biyografi eklenmemiş.'}
+                          </p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Photos */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Klinik Fotoğrafları</h3>
-              <div className="grid grid-cols-2 gap-2">
-                {clinicData.photos.map((photo: string, index: number) => (
-                  <img
-                    key={index}
-                    src={photo}
-                    alt={`Klinik fotoğrafı ${index + 1}`}
-                    className="w-full h-24 object-cover rounded-lg"
-                  />
-                ))}
+            <div className="space-y-6">
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">Klinik Fotoğrafları</h3>
+                {photos.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    {photos.map((photo: string, index: number) => (
+                      <img
+                        key={index}
+                        src={photo}
+                        alt={`Klinik fotoğrafı ${index + 1}`}
+                        className="w-full h-24 object-cover rounded-lg"
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">Henüz klinik fotoğrafı eklenmemiş.</p>
+                )}
               </div>
             </div>
           </div>
@@ -221,4 +378,4 @@ const ClinicProfile: React.FC = () => {
   );
 };
 
-export default ClinicProfile; 
+export default ClinicProfile;

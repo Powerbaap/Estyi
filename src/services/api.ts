@@ -103,6 +103,12 @@ export const clinicApplicationService = {
     email: string;
     password?: string;
     description?: string;
+    price_data?: {
+      procedure_key: string;
+      region: string | null;
+      sessions: number | null;
+      price: number;
+    }[];
     certificate_files?: {
       path: string;
       bucket: string;
@@ -129,6 +135,7 @@ export const clinicApplicationService = {
         specialties: payload.specialties || [],
         description: payload.description || '',
         certificate_files: Array.isArray(payload.certificate_files) ? payload.certificate_files : [],
+        price_data: Array.isArray(payload.price_data) ? payload.price_data : [],
         status: 'pending',
         submitted_by: null
       };
@@ -190,6 +197,7 @@ export const clinicApplicationService = {
       specialties: Array.isArray(payload.specialties) ? payload.specialties : [],
       description: payload.description || null,
       certificate_files: Array.isArray(payload.certificate_files) ? payload.certificate_files : [],
+      price_data: Array.isArray(payload.price_data) ? payload.price_data : [],
       status: 'pending',
       submitted_by: authUserId
     };

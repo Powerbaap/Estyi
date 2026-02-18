@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle, Upload, Award, Globe, Sparkles, Heart, Star, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
@@ -35,7 +35,13 @@ const ClinicApplication: React.FC = () => {
     password: '',
     confirmPassword: '',
     description: '',
-    certificates: [] as File[]
+    certificates: [] as File[],
+    price_data: [] as {
+      procedure_key: string;
+      region: string | null;
+      sessions: number | null;
+      price: number;
+    }[]
   });
   const [citiesByCountry, setCitiesByCountry] = useState<Record<string, string[]>>({});
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -43,6 +49,158 @@ const ClinicApplication: React.FC = () => {
   const [acceptTerms, setAcceptTerms] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
+
+  type PriceCombo = {
+    procedure_key: string;
+    region: string | null;
+    sessions: number | null;
+  };
+
+  const findProcedure = (procedureKey: string) => {
+    for (const category of PROCEDURE_CATEGORIES) {
+      const found = category.procedures.find((p) => p.key === procedureKey);
+      if (found) return found;
+    }
+    return undefined;
+  };
+
+  const requiredPriceCombos: PriceCombo[] = useMemo(() => {
+    const specialties = Array.isArray(formData.specialties) ? formData.specialties : [];
+    const combos: PriceCombo[] = [];
+
+    specialties.forEach((key) => {
+      const proc = findProcedure(key);
+      if (!proc || !Array.isArray(proc.params) || proc.params.length === 0) {
+        combos.push({
+          procedure_key: key,
+          region: null,
+          sessions: null,
+        });
+        return;
+      }
+
+      const regionParam = proc.params.find((p: any) => p.type === 'bolge');
+      const sessionsParam = proc.params.find((p: any) => p.type === 'seans');
+      const regions = Array.isArray(regionParam?.options) ? regionParam.options : [];
+      const sessionsRaw = Array.isArray(sessionsParam?.options) ? sessionsParam.options : [];
+      const sessionsValues = sessionsRaw.map((v: any) => {
+        const n = Number(v);
+        return Number.isFinite(n) ? n : null;
+      });
+
+      if (regions.length === 0 && sessionsValues.length === 0) {
+        combos.push({
+          procedure_key: key,
+          region: null,
+          sessions: null,
+        });
+      } else if (regions.length > 0 && sessionsValues.length === 0) {
+        regions.forEach((region: string) => {
+          combos.push({
+            procedure_key: key,
+            region: region || null,
+            sessions: null,
+          });
+        });
+      } else if (regions.length === 0 && sessionsValues.length > 0) {
+        sessionsValues.forEach((s) => {
+          combos.push({
+            procedure_key: key,
+            region: null,
+            sessions: s,
+          });
+        });
+      } else {
+        regions.forEach((region: string) => {
+          sessionsValues.forEach((s) => {
+            combos.push({
+              procedure_key: key,
+              region: region || null,
+              sessions: s,
+            });
+          });
+        });
+      }
+    });
+
+    return combos;
+  }, [formData.specialties]);
+
+  const findPriceItem = (procedureKey: string, region: string | null, sessions: number | null) => {
+    return (formData.price_data || []).find((item) => {
+      if (!item || item.procedure_key !== procedureKey) return false;
+      const regionMatch = (item.region || null) === (region || null);
+      const sessionsMatch = (item.sessions ?? null) === (sessions ?? null);
+      return regionMatch && sessionsMatch;
+    });
+  };
+
+  const handlePriceChange = (
+    procedureKey: string,
+    region: string | null,
+    sessions: number | null,
+    value: string
+  ) => {
+    const normalized = value.replace(',', '.');
+    const num = Number(normalized);
+    const price = Number.isFinite(num) && num >= 0 ? num : 0;
+
+    setFormData((prev) => {
+      const current = Array.isArray(prev.price_data) ? prev.price_data : [];
+      const next = [...current];
+      const index = next.findIndex((item) => {
+        if (!item || item.procedure_key !== procedureKey) return false;
+        const regionMatch = (item.region || null) === (region || null);
+        const sessionsMatch = (item.sessions ?? null) === (sessions ?? null);
+        return regionMatch && sessionsMatch;
+      });
+
+      if (price <= 0) {
+        if (index !== -1) {
+          next.splice(index, 1);
+        }
+      } else if (index === -1) {
+        next.push({
+          procedure_key: procedureKey,
+          region,
+          sessions,
+          price,
+        });
+      } else {
+        next[index] = {
+          ...next[index],
+          price,
+        };
+      }
+
+      return {
+        ...prev,
+        price_data: next,
+      };
+    });
+  };
+
+  const totalRequiredPriceCount = requiredPriceCombos.length;
+
+  const filledPriceCount = useMemo(() => {
+    if (!Array.isArray(formData.price_data) || formData.price_data.length === 0) {
+      return 0;
+    }
+    let count = 0;
+    requiredPriceCombos.forEach((combo) => {
+      const item = findPriceItem(combo.procedure_key, combo.region, combo.sessions);
+      if (item && typeof item.price === 'number' && item.price > 0) {
+        count += 1;
+      }
+    });
+    return count;
+  }, [formData.price_data, requiredPriceCombos]);
+
+  const hasPriceError =
+    Array.isArray(formData.specialties) &&
+    formData.specialties.length > 0 &&
+    totalRequiredPriceCount > 0 &&
+    filledPriceCount < totalRequiredPriceCount;
 
   const toggleCountry = (countryKey: string) => {
     setFormData(prev => {
@@ -156,11 +314,8 @@ const ClinicApplication: React.FC = () => {
       const pwd = formData.password;
       const lengthOk = pwd.length >= 8;
       const upperOk = /[A-Z]/.test(pwd);
-      const lowerOk = /[a-z]/.test(pwd);
-      const digitOk = /[0-9]/.test(pwd);
-      const symbolOk = /[^A-Za-z0-9]/.test(pwd);
-      if (!lengthOk || !upperOk || !lowerOk || !digitOk || !symbolOk) {
-        alert('Şifre en az 8 karakter olmalı ve en az bir büyük harf, küçük harf, rakam ve sembol içermelidir.');
+      if (!lengthOk || !upperOk) {
+        alert('Şifre en az 8 karakter olmalı ve en az bir büyük harf içermelidir.');
         return;
       }
       setSubmitting(true);
@@ -192,6 +347,7 @@ const ClinicApplication: React.FC = () => {
         password: formData.password,
         description: formData.description,
         certificate_files: certificateFiles,
+        price_data: Array.isArray(formData.price_data) ? formData.price_data : [],
       });
       const actorId = user?.id || formData.email;
       try {
@@ -446,6 +602,123 @@ const ClinicApplication: React.FC = () => {
                   </p>
                 </div>
 
+                {formData.specialties.length > 0 && (
+                  <div className="border border-purple-100 bg-purple-50/60 rounded-2xl p-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">Fiyat Belirleme</p>
+                        <p className="text-xs text-gray-600">
+                          Seçtiğiniz işlemler için USD fiyatları girin.
+                        </p>
+                      </div>
+                      <span className="text-xs text-gray-500">
+                        {filledPriceCount}/{totalRequiredPriceCount || 0} fiyat girildi
+                      </span>
+                    </div>
+
+                    {hasPriceError && (
+                      <p className="text-xs text-red-600">
+                        Seçtiğiniz tüm işlemler için fiyat girmeniz zorunludur.
+                      </p>
+                    )}
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      {formData.specialties.map((key) => {
+                        const proc = findProcedure(key);
+                        const name = proc?.name || key;
+                        const combos = requiredPriceCombos.filter((c) => c.procedure_key === key);
+                        const filledForProcedure = combos.reduce((acc, combo) => {
+                          const item = findPriceItem(combo.procedure_key, combo.region, combo.sessions);
+                          if (item && typeof item.price === 'number' && item.price > 0) {
+                            return acc + 1;
+                          }
+                          return acc;
+                        }, 0);
+
+                        return (
+                          <div
+                            key={key}
+                            className="border border-purple-100 bg-white/80 rounded-xl p-3 space-y-2"
+                          >
+                            <div className="flex items-center justify-between">
+                              <p className="text-sm font-semibold text-gray-900 truncate">{name}</p>
+                              <span className="text-xs text-gray-500">
+                                {filledForProcedure}/{combos.length || 1}
+                              </span>
+                            </div>
+
+                            {combos.length === 0 ? (
+                              <div className="flex items-center justify-between gap-3">
+                                <span className="text-xs text-gray-600">Tek fiyat (USD)</span>
+                                <input
+                                  type="number"
+                                  min={0}
+                                  step="1"
+                                  className="w-28 px-2 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                  value={findPriceItem(key, null, null)?.price ?? ''}
+                                  onChange={(e) =>
+                                    handlePriceChange(key, null, null, e.target.value)
+                                  }
+                                  placeholder="USD"
+                                />
+                              </div>
+                            ) : (
+                              <div className="space-y-2">
+                                {combos.map((combo, index) => {
+                                  const regionLabel = combo.region || '-';
+                                  const sessionsLabel =
+                                    combo.sessions != null ? `${combo.sessions} seans` : '-';
+                                  const current = findPriceItem(
+                                    combo.procedure_key,
+                                    combo.region,
+                                    combo.sessions
+                                  );
+
+                                  return (
+                                    <div
+                                      key={`${combo.procedure_key}-${combo.region ?? 'none'}-${
+                                        combo.sessions ?? 'none'
+                                      }-${index}`}
+                                      className="flex items-center justify-between gap-3"
+                                    >
+                                      <div className="flex-1">
+                                        <p className="text-[11px] font-medium text-gray-700">
+                                          Bölge:{' '}
+                                          <span className="font-normal">{regionLabel}</span>
+                                        </p>
+                                        <p className="text-[11px] font-medium text-gray-700">
+                                          Seans:{' '}
+                                          <span className="font-normal">{sessionsLabel}</span>
+                                        </p>
+                                      </div>
+                                      <input
+                                        type="number"
+                                        min={0}
+                                        step="1"
+                                        className="w-24 px-2 py-1 border border-gray-300 rounded-md text-xs focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                                        value={current?.price ?? ''}
+                                        onChange={(e) =>
+                                          handlePriceChange(
+                                            combo.procedure_key,
+                                            combo.region,
+                                            combo.sessions,
+                                            e.target.value
+                                          )
+                                        }
+                                        placeholder="USD"
+                                      />
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
                 {/* Website */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -582,12 +855,29 @@ const ClinicApplication: React.FC = () => {
                       <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-purple-600 hover:underline font-medium">{t('legal.clickwrap.legalPage')}</a>
                     </span>
                   </label>
+                  {formData.specialties.length > 0 && hasPriceError && (
+                    <p className="mt-2 text-xs text-red-600">
+                      Başvuruyu göndermek için tüm işlemler için fiyat girmelisiniz.
+                    </p>
+                  )}
                 </div>
 
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  disabled={submitting || !formData.clinicName || formData.countries.length === 0 || formData.specialties.length === 0 || !formData.description || !formData.phone || !formData.email || !formData.password || !formData.confirmPassword || !acceptTerms}
+                  disabled={
+                    submitting ||
+                    !formData.clinicName ||
+                    formData.countries.length === 0 ||
+                    formData.specialties.length === 0 ||
+                    !formData.description ||
+                    !formData.phone ||
+                    !formData.email ||
+                    !formData.password ||
+                    !formData.confirmPassword ||
+                    !acceptTerms ||
+                    hasPriceError
+                  }
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"
                 >
                   {submitting ? getTranslation('clinicApplication.submitting', 'Submitting...') : getTranslation('clinicApplication.submitApplication', 'Submit Application')}

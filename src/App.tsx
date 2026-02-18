@@ -169,7 +169,7 @@ function AppContent() {
             <Route path="/messages" element={<Messages />} />
             <Route path="/search" element={<Search />} />
             <Route path="/reviews" element={<Reviews />} />
-            <Route path="/clinic-profile" element={<ClinicProfile />} />
+            <Route path="/clinic/:clinicId/profile" element={<ClinicProfile />} />
             <Route path="/clinic-application" element={<ClinicApplication />} />
             <Route path="/request/new" element={<NewRequest />} />
             <Route path="/request" element={<FixedPriceRequest />} />

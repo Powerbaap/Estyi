@@ -341,6 +341,12 @@ export interface Database {
           email: string;
           password: string | null;
           description: string | null;
+          price_data: {
+            procedure_key: string;
+            region: string | null;
+            sessions: number | null;
+            price: number;
+          }[] | null;
           clinic_id: string | null;
           approved_at: string | null;
           certificate_files: {
@@ -367,6 +373,12 @@ export interface Database {
           email: string;
           password?: string;
           description?: string;
+          price_data?: {
+            procedure_key: string;
+            region: string | null;
+            sessions: number | null;
+            price: number;
+          }[] | null;
           clinic_id?: string | null;
           approved_at?: string | null;
           certificate_files?: {
@@ -393,6 +405,12 @@ export interface Database {
           email?: string;
           password?: string;
           description?: string;
+          price_data?: {
+            procedure_key: string;
+            region: string | null;
+            sessions: number | null;
+            price: number;
+          }[] | null;
           clinic_id?: string | null;
           approved_at?: string | null;
           certificate_files?: {
