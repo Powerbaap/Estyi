@@ -134,6 +134,10 @@ export const clinicApplicationService = {
       };
     }
 
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
