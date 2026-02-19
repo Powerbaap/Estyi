@@ -39,7 +39,7 @@ const ClinicApplication: React.FC = () => {
     price_data: [] as {
       procedure_key: string;
       region: string | null;
-      sessions: number | null;
+      sessions: string | number | null;
       price: number;
     }[]
   });
@@ -53,7 +53,7 @@ const ClinicApplication: React.FC = () => {
   type PriceCombo = {
     procedure_key: string;
     region: string | null;
-    sessions: number | null;
+    sessions: string | number | null;
   };
 
   const findProcedure = (procedureKey: string) => {
@@ -85,9 +85,9 @@ const ClinicApplication: React.FC = () => {
       );
       const regions = Array.isArray(regionParam?.options) ? regionParam.options : [];
       const sessionsRaw = Array.isArray(sessionsParam?.options) ? sessionsParam.options : [];
-      const sessionsValues = sessionsRaw.map((v: any) => {
+      const sessionsValues: (string | number)[] = sessionsRaw.map((v: any) => {
         const n = Number(v);
-        return Number.isFinite(n) ? n : null;
+        return Number.isFinite(n) ? n : String(v);
       });
 
       if (regions.length === 0 && sessionsValues.length === 0) {
@@ -128,7 +128,7 @@ const ClinicApplication: React.FC = () => {
     return combos;
   }, [formData.specialties]);
 
-  const findPriceItem = (procedureKey: string, region: string | null, sessions: number | null) => {
+  const findPriceItem = (procedureKey: string, region: string | null, sessions: string | number | null) => {
     return (formData.price_data || []).find((item) => {
       if (!item || item.procedure_key !== procedureKey) return false;
       const regionMatch = (item.region || null) === (region || null);
@@ -140,7 +140,7 @@ const ClinicApplication: React.FC = () => {
   const handlePriceChange = (
     procedureKey: string,
     region: string | null,
-    sessions: number | null,
+    sessions: string | number | null,
     value: string
   ) => {
     const normalized = value.replace(',', '.');
@@ -669,7 +669,11 @@ const ClinicApplication: React.FC = () => {
                                 {combos.map((combo, index) => {
                                   const regionLabel = combo.region || '-';
                                   const sessionsLabel =
-                                    combo.sessions != null ? `${combo.sessions} seans` : '-';
+                                    combo.sessions != null
+                                      ? typeof combo.sessions === 'number'
+                                        ? `${combo.sessions} seans`
+                                        : String(combo.sessions)
+                                      : '-';
                                   const current = findPriceItem(
                                     combo.procedure_key,
                                     combo.region,

@@ -210,7 +210,9 @@ const ClinicProcedures: React.FC = () => {
                               />
                             ) : (
                               <>
-                                {(p.price_min ?? 0) || '-'} USD
+                                {(p.price_min ?? 0)
+                                  ? new Intl.NumberFormat('tr-TR').format(p.price_min!)
+                                  : '-'} USD
                               </>
                             )}
                           </td>
