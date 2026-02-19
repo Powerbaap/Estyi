@@ -12,7 +12,6 @@ interface ClinicPrice {
   region: string | null;
   sessions: number | null;
   currency: string | null;
-  price: number | null;
   price_min: number | null;
   price_max: number | null;
 }
@@ -35,36 +34,34 @@ const ClinicProcedures: React.FC = () => {
     }
     const metaClinicId = (user as any)?.user_metadata?.clinic_id;
     if (metaClinicId) {
-      localStorage.setItem('clinic_id', metaClinicId);
+      try {
+        localStorage.setItem('clinic_id', metaClinicId);
+      } catch {}
       setClinicId(metaClinicId);
       return metaClinicId;
     }
-    const fallbackId = `clinic_${Date.now()}`;
-    try {
-      const email = (user as any)?.email || (user as any)?.user_metadata?.email;
-      const name = (user as any)?.user_metadata?.name || 'Test Clinic';
-      const { data: existing } = await (supabase as any).from('clinics').select('*').eq('email', email);
-      if (existing && existing.length > 0) {
-        localStorage.setItem('clinic_id', existing[0].id);
-        setClinicId(existing[0].id);
-        return existing[0].id;
+    if (user?.id) {
+      const { data } = await supabase.from('clinics').select('id').eq('id', user.id).maybeSingle();
+      if (data?.id) {
+        try {
+          localStorage.setItem('clinic_id', data.id);
+        } catch {}
+        setClinicId(data.id);
+        return data.id;
       }
-      const newClinic = {
-        id: fallbackId,
-        name,
-        email: email || `test_${fallbackId}@example.com`,
-        phone: '', website: '', address: '', location: 'Istanbul', specialties: [], description: '', photo_url: '', rating: 0,
-      };
-      await (supabase as any).from('clinics').insert(newClinic);
-      localStorage.setItem('clinic_id', fallbackId);
-      setClinicId(fallbackId);
-      return fallbackId;
-    } catch (e) {
-      console.error(e);
-      localStorage.setItem('clinic_id', fallbackId);
-      setClinicId(fallbackId);
-      return fallbackId;
     }
+    const email = user?.email;
+    if (email) {
+      const { data } = await supabase.from('clinics').select('id').eq('email', email).maybeSingle();
+      if (data?.id) {
+        try {
+          localStorage.setItem('clinic_id', data.id);
+        } catch {}
+        setClinicId(data.id);
+        return data.id;
+      }
+    }
+    return null;
   }
 
   async function loadPrices(cid: string) {
@@ -73,7 +70,7 @@ const ClinicProcedures: React.FC = () => {
     try {
       const { data, error } = await (supabase as any)
         .from('clinic_price_rules')
-        .select('id, clinic_id, procedure_name, country, region, sessions, currency, price, price_min, price_max')
+        .select('id, clinic_id, procedure_name, country, region, sessions, currency, price_min, price_max')
         .eq('clinic_id', cid);
       if (error) {
         console.error('Fiyat yükleme hatası:', error);
@@ -121,7 +118,7 @@ const ClinicProcedures: React.FC = () => {
     try {
       const { error: updateError } = await (supabase as any)
         .from('clinic_price_rules')
-        .update({ price: value, price_min: value })
+        .update({ price_min: value, price_max: value })
         .eq('id', id);
       if (updateError) throw updateError;
       await loadPrices(clinicId);
@@ -208,16 +205,12 @@ const ClinicProcedures: React.FC = () => {
                                 value={editingValue}
                                 onChange={(e) => setEditingValue(e.target.value)}
                                 placeholder={
-                                  p.price !== null && p.price !== undefined
-                                    ? String(p.price)
-                                    : p.price_min !== null && p.price_min !== undefined
-                                    ? String(p.price_min)
-                                    : ''
+                                  p.price_min !== null && p.price_min !== undefined ? String(p.price_min) : ''
                                 }
                               />
                             ) : (
                               <>
-                                {(p.price ?? p.price_min ?? 0) || '-'} USD
+                                {(p.price_min ?? 0) || '-'} USD
                               </>
                             )}
                           </td>
@@ -243,7 +236,7 @@ const ClinicProcedures: React.FC = () => {
                               <button
                                 onClick={() => {
                                   setEditingId(p.id);
-                                  const basePrice = p.price ?? p.price_min ?? 0;
+                                  const basePrice = p.price_min ?? 0;
                                   setEditingValue(basePrice ? String(basePrice) : '');
                                   setError(null);
                                 }}
