@@ -645,7 +645,7 @@
       "offers": "Teklifler",
       "messages": "Mesajlar",
       "doctors": "Doktorlar",
-      "fixedPrices": "Sabit Fiyatlar",
+      "fixedPrices": "Otomatik Fiyatlar",
       "profile": "Profil",
       "membership": "Üyelik"
     },
@@ -658,6 +658,7 @@
     "welcome": "Hoş Geldiniz, {{name}}!",
     "clinic": "Klinik",
     "today": "Bugün",
+    "noOffers": "Henüz teklif bulunmamaktadır.",
     "activeRequest": "Aktif Talep",
     "pendingOffer": "Bekleyen Teklif",
     "fromLastMonth": "geçen aydan",
@@ -1455,7 +1456,7 @@
       "offers": "Teklifler",
       "messages": "Mesajlar",
       "doctors": "Doktorlar",
-      "fixedPrices": "Sabit Fiyatlar",
+      "fixedPrices": "Otomatik Fiyatlar",
       "profile": "Profil",
       "membership": "Üyelik"
     },

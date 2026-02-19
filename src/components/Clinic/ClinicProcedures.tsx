@@ -13,6 +13,8 @@ interface ClinicPrice {
   sessions: number | null;
   currency: string | null;
   price: number | null;
+  price_min: number | null;
+  price_max: number | null;
 }
 
 const ClinicProcedures: React.FC = () => {
@@ -71,7 +73,7 @@ const ClinicProcedures: React.FC = () => {
     try {
       const { data, error } = await (supabase as any)
         .from('clinic_price_rules')
-        .select('id, clinic_id, procedure_name, country, region, sessions, currency, price')
+        .select('id, clinic_id, procedure_name, country, region, sessions, currency, price, price_min, price_max')
         .eq('clinic_id', cid);
       if (error) {
         console.error('Fiyat yükleme hatası:', error);
@@ -119,7 +121,7 @@ const ClinicProcedures: React.FC = () => {
     try {
       const { error: updateError } = await (supabase as any)
         .from('clinic_price_rules')
-        .update({ price: value })
+        .update({ price: value, price_min: value })
         .eq('id', id);
       if (updateError) throw updateError;
       await loadPrices(clinicId);
@@ -205,11 +207,17 @@ const ClinicProcedures: React.FC = () => {
                                 className="w-28 rounded-md border border-gray-300 px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500"
                                 value={editingValue}
                                 onChange={(e) => setEditingValue(e.target.value)}
-                                placeholder={p.price !== null && p.price !== undefined ? String(p.price) : ''}
+                                placeholder={
+                                  p.price !== null && p.price !== undefined
+                                    ? String(p.price)
+                                    : p.price_min !== null && p.price_min !== undefined
+                                    ? String(p.price_min)
+                                    : ''
+                                }
                               />
                             ) : (
                               <>
-                                {p.price !== null && p.price !== undefined ? p.price : '-'} USD
+                                {(p.price ?? p.price_min ?? 0) || '-'} USD
                               </>
                             )}
                           </td>
@@ -235,7 +243,8 @@ const ClinicProcedures: React.FC = () => {
                               <button
                                 onClick={() => {
                                   setEditingId(p.id);
-                                  setEditingValue(p.price !== null && p.price !== undefined ? String(p.price) : '');
+                                  const basePrice = p.price ?? p.price_min ?? 0;
+                                  setEditingValue(basePrice ? String(basePrice) : '');
                                   setError(null);
                                 }}
                                 className="inline-flex items-center px-3 py-1.5 rounded-md bg-white border border-gray-300 text-xs font-medium text-gray-700 hover:bg-gray-50"
