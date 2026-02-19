@@ -79,8 +79,10 @@ const ClinicApplication: React.FC = () => {
         return;
       }
 
-      const regionParam = proc.params.find((p: any) => p.type === 'bolge');
-      const sessionsParam = proc.params.find((p: any) => p.type === 'seans');
+      const regionParam = proc.params.find((p: any) => ['bolge', 'seviye', 'taraf'].includes(p.type));
+      const sessionsParam = proc.params.find((p: any) =>
+        ['seans', 'ip_sayisi', 'greft_araligi', 'adet', 'ml', 'paket', 'plak_paket', 'dis_tipi', 'implant_tipi', 'sac_uzunlugu'].includes(p.type)
+      );
       const regions = Array.isArray(regionParam?.options) ? regionParam.options : [];
       const sessionsRaw = Array.isArray(sessionsParam?.options) ? sessionsParam.options : [];
       const sessionsValues = sessionsRaw.map((v: any) => {

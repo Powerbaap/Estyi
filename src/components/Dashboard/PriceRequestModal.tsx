@@ -211,16 +211,27 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
     const region =
       (formData.procedureParams['bolge'] as string | undefined) ||
       (formData.procedureParams['region'] as string | undefined) ||
+      (formData.procedureParams['seviye'] as string | undefined) ||
+      (formData.procedureParams['taraf'] as string | undefined) ||
       null;
 
     const sessionsRaw =
       (formData.procedureParams['seans'] as string | undefined) ||
-      (formData.procedureParams['sessions'] as string | undefined);
+      (formData.procedureParams['sessions'] as string | undefined) ||
+      (formData.procedureParams['ip_sayisi'] as string | undefined) ||
+      (formData.procedureParams['greft_araligi'] as string | undefined) ||
+      (formData.procedureParams['adet'] as string | undefined) ||
+      (formData.procedureParams['ml'] as string | undefined) ||
+      (formData.procedureParams['paket'] as string | undefined) ||
+      (formData.procedureParams['plak_paket'] as string | undefined) ||
+      (formData.procedureParams['dis_tipi'] as string | undefined) ||
+      (formData.procedureParams['implant_tipi'] as string | undefined) ||
+      (formData.procedureParams['sac_uzunlugu'] as string | undefined);
     const sessions =
       sessionsRaw && !Number.isNaN(Number(sessionsRaw)) ? Number(sessionsRaw) : null;
 
     const payload = {
-      procedure_name: selectedProcedure ? getProcedureDisplayName(selectedProcedure) : formData.procedure,
+      procedure_name: formData.procedureKey || (selectedProcedure ? selectedProcedure.key : formData.procedure),
       procedure_category: procedureCategory ? procedureCategory.name : null,
       region,
       sessions,
