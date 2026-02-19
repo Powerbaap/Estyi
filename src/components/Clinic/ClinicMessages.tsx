@@ -32,98 +32,7 @@ const ClinicMessages: React.FC = () => {
   const [showTranslation, setShowTranslation] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [conversations, setConversations] = useState<Conversation[]>([
-    {
-      id: '1',
-      userId: 'User1234',
-      procedure: 'Rhinoplasty',
-      lastMessage: 'Thank you for the offer. When can we schedule the consultation?',
-      lastMessageTime: new Date('2025-01-20T14:30:00'),
-      unreadCount: 1,
-      isOnline: true,
-      language: 'English',
-      messages: [
-        {
-          id: 'm1',
-          senderId: 'clinic',
-          receiverId: 'User1234',
-          content: 'Thank you for accepting our offer! We are excited to help you with your rhinoplasty procedure.',
-          timestamp: new Date('2025-01-20T10:00:00'),
-          seen: true,
-          delivered: true
-        },
-        {
-          id: 'm2',
-          senderId: 'User1234',
-          receiverId: 'clinic',
-          content: 'Thank you for the offer. When can we schedule the consultation?',
-          timestamp: new Date('2025-01-20T14:30:00'),
-          seen: false,
-          delivered: true
-        }
-      ]
-    },
-    {
-      id: '2',
-      userId: 'User5678',
-      procedure: 'Hair Transplant',
-      lastMessage: 'I have some questions about the procedure details.',
-      lastMessageTime: new Date('2025-01-19T16:45:00'),
-      unreadCount: 0,
-      isOnline: false,
-      language: 'Turkish',
-      messages: [
-        {
-          id: 'm3',
-          senderId: 'clinic',
-          receiverId: 'User5678',
-          content: 'We have received your request for hair transplant. Here is our detailed offer.',
-          timestamp: new Date('2025-01-19T14:00:00'),
-          seen: true,
-          delivered: true
-        },
-        {
-          id: 'm4',
-          senderId: 'User5678',
-          receiverId: 'clinic',
-          content: 'I have some questions about the procedure details.',
-          timestamp: new Date('2025-01-19T16:45:00'),
-          seen: true,
-          delivered: true
-        }
-      ]
-    },
-    {
-      id: '3',
-      userId: 'User9012',
-      procedure: 'Breast Surgery',
-      lastMessage: 'The consultation date works perfectly for me.',
-      lastMessageTime: new Date('2025-01-18T11:20:00'),
-      unreadCount: 0,
-      isOnline: true,
-      language: 'Arabic',
-      messages: [
-        {
-          id: 'm5',
-          senderId: 'clinic',
-          receiverId: 'User9012',
-          content: 'We have scheduled your consultation for next week. Please confirm if this works for you.',
-          timestamp: new Date('2025-01-18T10:00:00'),
-          seen: true,
-          delivered: true
-        },
-        {
-          id: 'm6',
-          senderId: 'User9012',
-          receiverId: 'clinic',
-          content: 'The consultation date works perfectly for me.',
-          timestamp: new Date('2025-01-18T11:20:00'),
-          seen: true,
-          delivered: true
-        }
-      ]
-    }
-  ]);
+  const [conversations, setConversations] = useState<Conversation[]>([]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -243,9 +152,8 @@ const ClinicMessages: React.FC = () => {
 
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
-              <div className="text-4xl mb-4">💬</div>
-              <p>{t('clinic.noConversations')}</p>
+            <div className="flex-1 flex items-center justify-center text-gray-500">
+              <p>Henüz mesajınız bulunmamaktadır.</p>
             </div>
           ) : (
             <div className="space-y-1 p-2">

@@ -16,6 +16,43 @@ function getSpecialtyDisplayName(key: string, t: (k: string) => string): string 
   return key;
 }
 
+async function resolveClinicId(user: any): Promise<string | null> {
+  try {
+    const stored = localStorage.getItem('clinic_id');
+    if (stored) return stored;
+  } catch {}
+
+  const metaId = user?.user_metadata?.clinic_id;
+  if (metaId) {
+    try {
+      localStorage.setItem('clinic_id', metaId);
+    } catch {}
+    return metaId;
+  }
+
+  if (user?.id) {
+    const { data } = await (supabase as any).from('clinics').select('id').eq('id', user.id).maybeSingle();
+    if (data?.id) {
+      try {
+        localStorage.setItem('clinic_id', data.id);
+      } catch {}
+      return data.id;
+    }
+  }
+
+  if (user?.email) {
+    const { data } = await (supabase as any).from('clinics').select('id').eq('email', user.email).maybeSingle();
+    if (data?.id) {
+      try {
+        localStorage.setItem('clinic_id', data.id);
+      } catch {}
+      return data.id;
+    }
+  }
+
+  return null;
+}
+
 const ClinicProfile: React.FC = () => {
   const { t, i18n } = useTranslation();
   const { user } = useAuth();
@@ -46,12 +83,7 @@ const ClinicProfile: React.FC = () => {
     workingHours: ''
   });
   const [profileLoading, setProfileLoading] = useState(true);
-  const [documents, setDocuments] = useState([
-    { id: 1, name: 'Medical License.pdf', type: 'License', uploadDate: '2024-01-15', size: '2.3 MB' },
-    { id: 2, name: 'JCI Certificate.pdf', type: 'Certificate', uploadDate: '2024-01-10', size: '1.8 MB' },
-    { id: 3, name: 'ISO Certificate.pdf', type: 'Certificate', uploadDate: '2024-01-05', size: '1.2 MB' },
-    { id: 4, name: 'Team Credentials.pdf', type: 'Team', uploadDate: '2024-01-01', size: '4.1 MB' }
-  ]);
+  const [documents, setDocuments] = useState<any[]>([]);
 
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
   const [editingIntro, setEditingIntro] = useState(false);
@@ -75,7 +107,7 @@ const ClinicProfile: React.FC = () => {
   };
 
   const handleClinicIntroSave = async () => {
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    const clinicId = await resolveClinicId(user);
     if (!clinicId) return;
     try {
       await (supabase as any)
@@ -91,7 +123,7 @@ const ClinicProfile: React.FC = () => {
   };
 
   const handleSocialMediaSave = async () => {
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    const clinicId = await resolveClinicId(user);
     if (!clinicId) return;
     try {
       await (supabase as any)
@@ -107,7 +139,7 @@ const ClinicProfile: React.FC = () => {
   };
 
   const handleDoctorsSave = async () => {
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    const clinicId = await resolveClinicId(user);
     if (!clinicId) return;
     try {
       await (supabase as any)
@@ -123,7 +155,7 @@ const ClinicProfile: React.FC = () => {
   };
 
   const handlePhotosSave = async () => {
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    const clinicId = await resolveClinicId(user);
     if (!clinicId) return;
     try {
       await (supabase as any)
@@ -142,7 +174,7 @@ const ClinicProfile: React.FC = () => {
     setPhotoError(null);
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
+    const clinicId = await resolveClinicId(user);
     if (!clinicId) return;
     const currentPhotos = profileData.photos || [];
     if (currentPhotos.length >= 10) return;
@@ -251,17 +283,45 @@ const ClinicProfile: React.FC = () => {
   const lang = (i18n.language || 'en') as string;
 
   useEffect(() => {
-    const clinicId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
-    if (!clinicId) {
+    if (!user) {
       setProfileLoading(false);
       return;
     }
+    const storedId = localStorage.getItem('clinic_id') || (user as any)?.user_metadata?.clinic_id;
     setProfileLoading(true);
     (async () => {
       try {
-        const { data, error } = await (supabase as any).from('clinics').select('*').eq('id', clinicId).single();
-        if (error) throw error;
+        let data: any = null;
+        let error: any = null;
+
+        if (storedId) {
+          const res = await (supabase as any).from('clinics').select('*').eq('id', storedId).maybeSingle();
+          data = res.data;
+          error = res.error;
+        }
+
+        if (!data && user.id) {
+          const res = await (supabase as any).from('clinics').select('*').eq('id', user.id).maybeSingle();
+          data = res.data;
+          error = res.error;
+        }
+
+        if (!data && user.email) {
+          const res = await (supabase as any).from('clinics').select('*').eq('email', user.email).maybeSingle();
+          data = res.data;
+          error = res.error;
+        }
+
+        if (error && !data) {
+          throw error;
+        }
+
         if (data) {
+          if (data.id) {
+            try {
+              localStorage.setItem('clinic_id', data.id);
+            } catch {}
+          }
           setProfileData(prev => ({
             ...prev,
             clinicName: data.name ?? prev.clinicName,

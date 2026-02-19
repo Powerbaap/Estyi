@@ -33,6 +33,8 @@ const ClinicDashboard: React.FC = () => {
   const [clinicOffers, setClinicOffers] = useState<any[]>([]);
   const [offersLoading, setOffersLoading] = useState(false);
   const [activeDashboardTab, setActiveDashboardTab] = useState<'auto' | 'accepted' | 'active' | 'expired'>('auto');
+  const [clinicName, setClinicName] = useState('');
+  const [planName, setPlanName] = useState('');
 
   useEffect(() => {
     const checkFirstLogin = async () => {
@@ -61,6 +63,31 @@ const ClinicDashboard: React.FC = () => {
       }
     };
     checkFirstLogin();
+  }, [user]);
+
+  useEffect(() => {
+    const loadClinicInfo = async () => {
+      if (!user) return;
+      const clinicId = (user as any)?.user_metadata?.clinic_id || user.id;
+      try {
+        const { data } = await supabase
+          .from('clinics')
+          .select('name, plan')
+          .or(`id.eq.${clinicId},email.eq.${user.email}`)
+          .maybeSingle();
+        if (data) {
+          setClinicName(data.name || user.email || '');
+          setPlanName(data.plan || 'Standart Plan');
+        } else {
+          setClinicName((user as any)?.user_metadata?.name || user.email || '');
+          setPlanName('Standart Plan');
+        }
+      } catch {
+        setClinicName((user as any)?.user_metadata?.name || user.email || '');
+        setPlanName('Standart Plan');
+      }
+    };
+    loadClinicInfo();
   }, [user]);
 
   useEffect(() => {
@@ -401,27 +428,6 @@ const ClinicDashboard: React.FC = () => {
 
     return (
       <div className="space-y-4">
-        <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-xl p-6 text-white">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold mb-2">
-                {t('clinicDashboard.welcome', {
-                  name: ((user as any)?.user_metadata?.name) || t('clinicDashboard.clinic')
-                })}
-              </h1>
-              <p className="text-blue-100">
-                {t('clinicDashboard.today')}{' '}
-                {new Date().toLocaleDateString('tr-TR', {
-                  weekday: 'long',
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </p>
-            </div>
-          </div>
-        </div>
-
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
           {stats.map((stat) => (
             <button
@@ -524,23 +530,13 @@ const ClinicDashboard: React.FC = () => {
         <div className="bg-white shadow-sm border-b border-gray-200 px-6 py-4">
           <div className="max-w-full mx-auto flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              {/* Mobile Menu Button */}
               <button
                 onClick={() => setSidebarOpen(true)}
                 className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <Menu className="w-6 h-6" />
               </button>
-              
-              <div>
-                  <h1 className="text-2xl font-bold text-gray-900">
-                  {(user as any)?.user_metadata?.name || t('clinicDashboard.istanbulAestheticCenter')}
-                  </h1>
-                <p className="text-sm text-gray-600">{t('clinicDashboard.medicalDashboard')}</p>
-              </div>
             </div>
-            
-            {/* Enhanced User Menu */}
             <div className="flex items-center space-x-4">
               <button
                 ref={notificationButtonRef}
@@ -550,20 +546,6 @@ const ClinicDashboard: React.FC = () => {
                 <Bell className="w-5 h-5 text-gray-600" />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </button>
-              
-              <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
-                  <span className="text-white text-sm font-bold">
-                     {((user as any)?.user_metadata?.name || 'K').charAt(0)}
-                  </span>
-                </div>
-                <div className="hidden md:block">
-                  <p className="text-sm font-bold text-gray-900">
-                     {(user as any)?.user_metadata?.name || t('clinicDashboard.testClinic')}
-                  </p>
-                  <p className="text-xs text-gray-500">{t('clinicDashboard.premiumMember')}</p>
-                </div>
-              </div>
             </div>
           </div>
         </div>
@@ -571,6 +553,19 @@ const ClinicDashboard: React.FC = () => {
         {/* Page Content */}
         <main className="p-2 lg:p-3">
           <div className="w-full">
+            <div className="bg-gradient-to-r from-blue-600 via-blue-700 to-indigo-800 rounded-xl p-6 text-white mb-4 flex items-center justify-between">
+              <div>
+                <h1 className="text-2xl font-bold mb-1">
+                  {t('clinicDashboard.welcome', { name: clinicName })}
+                </h1>
+                <p className="text-blue-100">
+                  {new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm font-semibold text-white">{planName}</p>
+              </div>
+            </div>
             {renderContent()}
           </div>
         </main>
