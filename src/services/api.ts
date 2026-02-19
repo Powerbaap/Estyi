@@ -144,10 +144,11 @@ export const clinicApplicationService = {
       throw new Error('Kullanıcı oluşturulamadı.');
     }
 
-    try {
+    const currentSession = (await supabase.auth.getSession()).data.session;
+    if (currentSession?.user?.id === authUserId) {
       await supabase.auth.signOut();
-    } catch {}
-    await new Promise((r) => setTimeout(r, 300));
+      await new Promise((r) => setTimeout(r, 200));
+    }
 
     try {
       await supabase.from('users').upsert(

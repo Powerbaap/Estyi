@@ -95,10 +95,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const metaRole = getUserRole(currentUser);
 
-      if (requestedRole && metaRole !== requestedRole) {
-        return { success: false, error: 'Bu hesapla bu role giriş yapamazsınız.' };
-      }
-
       if (metaRole === 'clinic') {
         const access = await getCurrentUserAccess(currentUser);
         if (access.role === 'clinic' && !access.isClinicApproved) {
