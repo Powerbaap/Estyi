@@ -233,13 +233,6 @@ const ClinicDashboard: React.FC = () => {
     }
   };
 
-  const dashboardTabs = [
-    { id: 'auto' as const, label: 'Otomatik Teklif Verilen Talepler' },
-    { id: 'accepted' as const, label: 'Kabul Edilen Talepler' },
-    { id: 'active' as const, label: 'Aktif Talepler (Beklemede)' },
-    { id: 'expired' as const, label: 'Pasif Talepler (Süresi Dolmuş)' }
-  ];
-
   const renderDashboardTabContent = () => {
     if (offersLoading) {
       return (
@@ -433,7 +426,11 @@ const ClinicDashboard: React.FC = () => {
             <button
               key={stat.key}
               onClick={() => handleStatClick(stat.key)}
-              className="group relative bg-white rounded-lg shadow-sm border border-gray-200 p-4 text-left hover:shadow-md transition-all duration-300 overflow-hidden"
+              className={`group relative bg-white rounded-lg shadow-sm border-2 p-4 text-left hover:shadow-md transition-all duration-300 overflow-hidden ${
+                activeDashboardTab === (stat.key === 'total' ? 'auto' : stat.key === 'pending' ? 'active' : (stat.key as any))
+                  ? 'border-blue-500 bg-blue-50'
+                  : 'border-gray-200'
+              }`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -448,27 +445,8 @@ const ClinicDashboard: React.FC = () => {
           ))}
         </div>
 
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="border-b border-gray-200 px-4 sm:px-6 pt-4">
-            <div className="flex flex-wrap gap-2">
-              {dashboardTabs.map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveDashboardTab(tab.id)}
-                  className={`px-3 py-2 text-sm font-medium rounded-full border ${
-                    activeDashboardTab === tab.id
-                      ? 'bg-blue-600 text-white border-blue-600'
-                      : 'bg-gray-50 text-gray-700 border-gray-200 hover:bg-gray-100'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="p-4 sm:p-6">
-            {renderDashboardTabContent()}
-          </div>
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6">
+          {renderDashboardTabContent()}
         </div>
       </div>
     );

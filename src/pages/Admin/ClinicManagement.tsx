@@ -42,7 +42,6 @@ const ClinicManagement: React.FC = () => {
   const [loadingApps, setLoadingApps] = useState(false);
   const [selectedApplication, setSelectedApplication] = useState<any>(null);
   const [showApplicationModal, setShowApplicationModal] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const [approving, setApproving] = useState(false);
   const [approvedSpecialties, setApprovedSpecialties] = useState<string[]>([]);
   
@@ -359,7 +358,7 @@ const ClinicManagement: React.FC = () => {
                 : null;
             if (!priceValue || !Number.isFinite(priceValue) || priceValue <= 0) continue;
 
-            for (const country of countries) {
+                for (const country of countries) {
               if (!country) continue;
               rows.push({
                 clinic_id: clinicId,
@@ -371,10 +370,9 @@ const ClinicManagement: React.FC = () => {
                   item.sessions === null || item.sessions === undefined
                     ? null
                     : Number(item.sessions),
-                currency: 'USD',
-                price: priceValue,
-                price_min: priceValue,
-                price_max: null,
+                    currency: 'USD',
+                    price_min: priceValue,
+                    price_max: priceValue,
                 cities: null
               });
             }
@@ -804,24 +802,6 @@ const ClinicManagement: React.FC = () => {
                     )}
                   </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Şifre</label>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type={showPassword ? 'text' : 'password'}
-                      value={selectedApplication.password || ''}
-                      readOnly
-                      className="flex-1 text-sm text-gray-900 bg-gray-50 p-2 rounded border border-gray-200"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(prev => !prev)}
-                      className="px-2 py-1 text-xs text-blue-600 border border-blue-200 rounded hover:bg-blue-50"
-                    >
-                      {showPassword ? 'Gizle' : 'Göster'}
-                    </button>
-                  </div>
-                </div>
                 {/* Ülkeler */}
                 <div className="col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Ülkeler</label>
@@ -836,6 +816,26 @@ const ClinicManagement: React.FC = () => {
                     ))}
                   </div>
                 </div>
+                {selectedApplication.cities_by_country && Object.keys(selectedApplication.cities_by_country).length > 0 && (
+                  <div className="col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Şehirler</label>
+                    <div className="space-y-2">
+                      {Object.entries(selectedApplication.cities_by_country).map(([country, cities]: [string, any]) => (
+                        <div key={country} className="flex flex-wrap gap-2 items-center">
+                          <span className="text-xs font-semibold text-gray-600 uppercase">{country}:</span>
+                          {(Array.isArray(cities) ? cities : []).map((city: string, i: number) => (
+                            <span
+                              key={i}
+                              className="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800"
+                            >
+                              {city}
+                            </span>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Açıklama */}
