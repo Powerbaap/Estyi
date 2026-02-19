@@ -144,25 +144,13 @@ export const clinicApplicationService = {
       throw new Error('Kullanıcı oluşturulamadı.');
     }
 
-    const currentSession = (await supabase.auth.getSession()).data.session;
-    if (currentSession?.user?.id === authUserId) {
-      await supabase.auth.signOut();
-      await new Promise((r) => setTimeout(r, 200));
-    }
-
     try {
       await supabase.from('users').upsert(
-        {
-          id: authUserId,
-          email: payload.email,
-          name: payload.clinic_name,
-          role: 'clinic',
-          is_verified: false
-        },
+        { id: authUserId, email: payload.email, name: payload.clinic_name, role: 'clinic', is_verified: false },
         { onConflict: 'id' }
       );
     } catch (e) {
-      console.warn('Users profil upsert uyarı:', e);
+      console.warn('Users upsert uyarı:', e);
     }
 
     const countries = Array.isArray(payload.countries) ? payload.countries : [];
@@ -173,10 +161,7 @@ export const clinicApplicationService = {
       website: payload.website || null,
       country: countries[0] || null,
       countries,
-      cities_by_country:
-        payload.cities_by_country && typeof payload.cities_by_country === 'object'
-          ? payload.cities_by_country
-          : {},
+      cities_by_country: payload.cities_by_country && typeof payload.cities_by_country === 'object' ? payload.cities_by_country : {},
       specialties: Array.isArray(payload.specialties) ? payload.specialties : [],
       description: payload.description || null,
       certificate_files: Array.isArray(payload.certificate_files) ? payload.certificate_files : [],
@@ -186,11 +171,14 @@ export const clinicApplicationService = {
     };
 
     const { data, error } = await supabase.from('clinic_applications').insert(insertPayload).select('*');
-
     if (error) {
       console.error('Clinic application insert error:', error);
       throw new Error(error.message);
     }
+
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch {}
 
     return Array.isArray(data) ? data[0] : data;
   },

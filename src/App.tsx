@@ -141,7 +141,7 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
   }, [user]);
 
   if (isLoading || roleLoading) {
-    return null;
+    return <LoadingSpinner />;
   }
 
   if (!user) {

@@ -23,7 +23,17 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
         return;
       }
       setRoleLoading(true);
-      const resolved = await getCurrentUserRole(user);
+      let resolved;
+      try {
+        resolved = await Promise.race([
+          getCurrentUserRole(user),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+        ]);
+      } catch {
+        const meta = (user as any)?.user_metadata || {};
+        const email = (user.email || '').toLowerCase();
+        resolved = email === 'admin@estyi.com' ? 'admin' : (meta.role || 'user');
+      }
       if (active) {
         setRole(resolved);
         setRoleLoading(false);
@@ -37,7 +47,11 @@ const AdminRoute: React.FC<AdminRouteProps> = ({ children }) => {
 
   // Başlangıçta auth durumu yüklenirken bekle
   if (isLoading || roleLoading) {
-    return null;
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+      </div>
+    );
   }
 
   // Kullanıcı giriş yapmamışsa login sayfasına yönlendir
