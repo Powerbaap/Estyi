@@ -1,8 +1,6 @@
 import { supabase } from '../lib/supabaseClient';
 import { uploadClinicCertificates } from './storage';
 
-const offline = import.meta.env.VITE_OFFLINE_MODE === 'true';
-
 // Kullanıcı servisleri
 export const userService = {
   // Kullanıcı profil bilgilerini getir
@@ -121,25 +119,6 @@ export const clinicApplicationService = {
     if (!payload.password) {
       throw new Error('Klinik başvurusu için şifre gereklidir.');
     }
-    if (offline) {
-      const fakeId = 'DEV_APP_' + Math.random().toString(36).substring(2, 10).toUpperCase();
-      return {
-        id: fakeId,
-        clinic_name: payload.clinic_name,
-        email: payload.email,
-        phone: payload.phone || '',
-        website: payload.website || '',
-        country: Array.isArray(payload.countries) && payload.countries.length > 0 ? payload.countries[0] : null,
-        countries: payload.countries || [],
-        cities_by_country: payload.cities_by_country || {},
-        specialties: payload.specialties || [],
-        description: payload.description || '',
-        certificate_files: Array.isArray(payload.certificate_files) ? payload.certificate_files : [],
-        price_data: Array.isArray(payload.price_data) ? payload.price_data : [],
-        status: 'pending',
-        submitted_by: null
-      };
-    }
 
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: payload.email,
@@ -165,7 +144,10 @@ export const clinicApplicationService = {
       throw new Error('Kullanıcı oluşturulamadı.');
     }
 
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+    await new Promise((r) => setTimeout(r, 300));
 
     try {
       await supabase.from('users').upsert(

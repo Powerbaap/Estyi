@@ -6,7 +6,7 @@ import Footer from './components/Layout/Footer';
 import ScrollToTop from './components/Layout/ScrollToTop';
 import ErrorBoundary from './components/Layout/ErrorBoundary';
 import AdminRoute from './components/AdminRoute';
-import { getCurrentUserAccess, type UserRole } from './utils/auth';
+import { getCurrentUserAccess, getUserRole, type UserRole } from './utils/auth';
 
 // Lazy load pages for better performance
 const Home = lazy(() => import('./pages/Home'));
@@ -76,6 +76,9 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
     let active = true;
     const resolveRole = async () => {
       if (!user) {
+        try {
+          localStorage.removeItem(ACCESS_CACHE_KEY);
+        } catch {}
         if (active) {
           setRole('user');
           setClinicApproved(true);
@@ -103,7 +106,18 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
         return;
       }
 
-      const access = await getCurrentUserAccess(user);
+      let access: { role: UserRole; isClinicApproved: boolean };
+      try {
+        access = (await Promise.race([
+          getCurrentUserAccess(user),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 5000)),
+        ])) as any;
+      } catch {
+        access = {
+          role: getUserRole(user),
+          isClinicApproved: true,
+        };
+      }
 
       if (active) {
         setRole(access.role);

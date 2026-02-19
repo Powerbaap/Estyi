@@ -6,15 +6,9 @@ import { Eye, EyeOff, User, Building, Mail, X } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
 
-const withTimeout = <T,>(promise: Promise<T>, ms = 12000) =>
-  Promise.race<T>([
-    promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error('LOGIN_TIMEOUT')), ms)),
-  ]);
-
 const Login: React.FC = () => {
   const { t } = useTranslation();
-  const { login, resetPassword, isLoading } = useAuth();
+  const { login, resetPassword, signInWithGoogle, isLoading } = useAuth();
   const navigate = useNavigate();
   
   const [formData, setFormData] = useState({
@@ -45,7 +39,7 @@ const Login: React.FC = () => {
       const normalizedEmail = formData.email.trim().toLowerCase();
       const requestedRole = normalizedEmail === 'admin@estyi.com' ? 'admin' : formData.role;
       console.log('[LOGIN] calling login()');
-      const result = await withTimeout(login(formData.email, formData.password, requestedRole), 12000);
+      const result = await login(formData.email, formData.password, requestedRole);
 
       if (!result?.success) {
         setError(result.error || t('login.loginError'));
@@ -60,13 +54,8 @@ const Login: React.FC = () => {
       } else {
         navigate('/dashboard');
       }
-    } catch (e) {
-      const err = e as { message?: string };
-      const msg =
-        err?.message === 'LOGIN_TIMEOUT'
-          ? 'Giriş zaman aşımına uğradı. İnternetinizi kontrol edip tekrar deneyin.'
-          : (err?.message || t('login.loginError'));
-      setError(msg);
+    } catch (e: any) {
+      setError(e?.message || t('login.loginError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -74,9 +63,16 @@ const Login: React.FC = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      // Google signup functionality would be implemented here
-    } catch (err) {
-      setError(t('login.googleError'));
+      setIsSubmitting(true);
+      setError('');
+      const result = await signInWithGoogle();
+      if (!result.success) {
+        setError(result.error || 'Google ile giriş başarısız');
+      }
+    } catch (err: any) {
+      setError(err?.message || 'Google ile giriş hatası');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
