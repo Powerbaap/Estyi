@@ -5,8 +5,12 @@ export interface ProcedureGuideInfo {
   metaDescription: string;
   summary: string;
   priceRange: {
+    india: string;
+    mexico: string;
     turkey: string;
-    europe: string;
+    thailand: string;
+    poland: string;
+    uk: string;
     usa: string;
   };
   duration: string;
@@ -19,8 +23,6 @@ export interface ProcedureGuideInfo {
   risks: string[];
   steps: { title: string; desc: string }[];
   faq: { q: string; a: string }[];
-  includes: string[];
-  notIncludes: string[];
   category: string;
 }
 
@@ -31,10 +33,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Saç Ekimi FUE - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Saç ekimi FUE hakkında her şey. 2026 fiyatlar, süreç, iyileşme ve ülke karşılaştırması.',
     summary:
-      'FUE saç ekimi, saç köklerinin tek tek alınıp seyrek bölgelere nakledildiği minimal invaziv yöntemdir. Türkiye yılda 500.000+ operasyonla dünya lideridir.',
+      'FUE saç ekimi, saç köklerinin tek tek alınıp seyrek bölgelere nakledildiği minimal invaziv yöntemdir. Hindistan, Türkiye, Meksika, Tayland ve Güney Kore başlıca medikal turizm destinasyonlarıdır. Fiyatlar ülkeye göre büyük farklılıklar gösterir.',
     priceRange: {
+      india: '1.000 - 2.500 USD',
+      mexico: '2.000 - 4.500 USD',
       turkey: '1.500 - 4.000 USD',
-      europe: '4.000 - 12.000 EUR',
+      thailand: '2.000 - 5.000 USD',
+      poland: '2.500 - 5.500 USD',
+      uk: '6.000 - 15.000 USD',
       usa: '8.000 - 15.000 USD',
     },
     duration: '6-8 saat',
@@ -77,8 +83,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
         a: 'Yılda 500.000+ operasyon deneyimi, son teknoloji ve Avrupa fiyatının 1/3ü.',
       },
     ],
-    includes: ['Havalimanı transferi', 'Otel (2-3 gece)', 'İlaçlar ve bakım ürünleri', 'PRP tedavisi', 'Kontrol muayeneleri'],
-    notIncludes: ['Uçak bileti', 'Ekstra konaklama', 'Kişisel harcamalar'],
     category: 'Saç & Kaş',
   },
   {
@@ -87,10 +91,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Saç Ekimi DHI - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'DHI saç ekimi rehberi. 2026 fiyatlar, FUE farkları, Choi kalemi ve tıraşsız ekim.',
     summary:
-      'DHI, Choi kalemi ile saç köklerinin kanal açmadan doğrudan ekildiği ileri tekniktir. Tıraşsız uygulanabilir, hassas bölgelerde tercih edilir.',
+      'DHI, Choi kalemi ile saç köklerinin kanal açmadan doğrudan ekildiği ileri tekniktir. Tıraşsız uygulanabilir ve hassas bölgelerde tercih edilir. Türkiye, Hindistan, Meksika, Tayland ve Güney Kore bu yöntemin sık uygulandığı ülkeler arasındadır.',
     priceRange: {
+      india: '1.200 - 3.000 USD',
+      mexico: '2.500 - 5.500 USD',
       turkey: '2.000 - 5.000 USD',
-      europe: '5.000 - 15.000 EUR',
+      thailand: '3.000 - 6.000 USD',
+      poland: '3.000 - 7.000 USD',
+      uk: '7.000 - 18.000 USD',
       usa: '10.000 - 20.000 USD',
     },
     duration: '6-10 saat',
@@ -116,8 +124,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       { q: 'Tıraşsız mümkün mü?', a: 'Evet, DHI en büyük avantajı. Kadınlar ve uzun saçlılar için ideal.' },
       { q: 'Kaç greft ekilir?', a: 'Tek seansta 2000-4000 greft.' },
     ],
-    includes: ['Transfer', 'Otel (2-3 gece)', 'İlaçlar', 'PRP', 'Kontroller'],
-    notIncludes: ['Uçak bileti', 'Ekstra konaklama'],
     category: 'Saç & Kaş',
   },
   {
@@ -126,10 +132,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Burun Estetiği (Rinoplasti) - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Burun estetiği rehberi. 2026 fiyatları, ameliyat süreci, iyileşme ve Türkiye avantajları.',
     summary:
-      'Rinoplasti, burnun şeklini veya fonksiyonunu düzeltmek için yapılan cerrahi işlemdir. Türkiye yılda 100.000+ rinoplasti ile dünyanın en deneyimli ülkelerindendir.',
+      'Rinoplasti, burnun şeklini veya fonksiyonunu düzeltmek için yapılan cerrahi işlemdir. Türkiye, İran, Güney Kore, Meksika ve Hindistan dünyanın en çok rinoplasti yapılan ülkeleridir.',
     priceRange: {
-      turkey: '2.500 - 5.500 USD',
-      europe: '6.000 - 12.000 EUR',
+      india: '1.500 - 3.000 USD',
+      mexico: '2.500 - 5.000 USD',
+      turkey: '2.000 - 4.000 USD',
+      thailand: '2.500 - 5.000 USD',
+      poland: '2.500 - 5.000 USD',
+      uk: '6.000 - 10.000 USD',
       usa: '8.000 - 15.000 USD',
     },
     duration: '1.5-3 saat',
@@ -156,8 +166,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       { q: 'Sonuç ne zaman?', a: 'İlk sonuç alçı çıkınca. Nihai sonuç 12 ay sonra.' },
       { q: 'Kaç gün kalmalıyım?', a: '7-10 gün önerilir.' },
     ],
-    includes: ['VIP transfer', 'Otel (5-7 gece)', 'Ameliyathane ve hastane', 'Cerrah ve anestezi', 'İlaçlar', 'Kontroller'],
-    notIncludes: ['Uçak bileti', 'Ekstra konaklama', 'Revizyon ameliyatı'],
     category: 'Yüz Cerrahisi',
   },
   {
@@ -166,10 +174,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Diş İmplantı - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Diş implantı rehberi. 2026 fiyatlar, işlem aşamaları ve Türkiye avantajları.',
     summary:
-      'Diş implantı, eksik dişlerin yerine titanyum vida ile kalıcı diş kökü yerleştirilmesidir. %95+ başarı oranı. Türkiye Avrupa fiyatının 1/3-1/4 ile dünya lideri.',
+      'Diş implantı, eksik dişlerin yerine titanyum vida ile kalıcı diş kökü yerleştirilmesidir. %95+ başarı oranı. Hindistan, Macaristan, Meksika, Türkiye ve Tayland en popüler diş turizmi destinasyonlarıdır.',
     priceRange: {
+      india: '300 - 800 USD',
+      mexico: '600 - 1.200 USD',
       turkey: '400 - 1.000 USD',
-      europe: '1.500 - 3.500 EUR',
+      thailand: '500 - 1.500 USD',
+      poland: '500 - 1.200 USD',
+      uk: '2.000 - 4.000 USD',
       usa: '3.000 - 6.000 USD',
     },
     duration: '30-60 dk',
@@ -198,8 +210,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
         a: "4 implant üzerine tam çene sabit köprü. Türkiye'de 5.000-8.000 USD.",
       },
     ],
-    includes: ['Röntgen ve tomografi', 'İmplant', 'Abutment', 'Geçici kron', 'Kontroller'],
-    notIncludes: ['Kalıcı kron (150-300 USD/diş)', 'Kemik grefti', 'Uçak bileti', 'Konaklama'],
     category: 'Diş',
   },
   {
@@ -208,10 +218,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Zirkonyum Diş Kaplama - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Zirkonyum kaplama rehberi. 2026 fiyatları ve Türkiye karşılaştırması.',
     summary:
-      "Zirkonyum kaplama, doğal diş görünümüne en yakın, metal içermeyen estetik restorasyondur. Türkiye'de diş başına 150-300 USD ile Avrupa'nın 1/4'ü fiyata.",
+      'Zirkonyum kaplama, doğal diş görünümüne yakın, metal içermeyen estetik restorasyondur. Türkiye, Macaristan, Polonya, Meksika ve Tayland gibi ülkelerde yaygın uygulanır; fiyatlar kliniğe ve ülkeye göre değişir.',
     priceRange: {
-      turkey: '150 - 300 USD (diş başı)',
-      europe: '600 - 1.200 EUR',
+      india: '80 - 200 USD',
+      mexico: '200 - 450 USD',
+      turkey: '150 - 300 USD',
+      thailand: '200 - 400 USD',
+      poland: '250 - 500 USD',
+      uk: '600 - 1.200 USD',
       usa: '1.000 - 2.000 USD',
     },
     duration: '5-7 gün',
@@ -240,8 +254,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
         a: "Türkiye'de 3.000-6.000 USD. Avrupa'da 12.000-24.000 EUR.",
       },
     ],
-    includes: ['Röntgen', 'Dijital tasarım', 'Geçici kaplamalar', 'Zirkonyum kaplamalar'],
-    notIncludes: ['Uçak bileti', 'Konaklama', 'Kök kanal tedavisi'],
     category: 'Diş',
   },
   {
@@ -250,10 +262,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Hollywood Gülüşü - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Hollywood gülüşü rehberi. 2026 fiyatları, veneer vs laminat ve Türkiye avantajları.',
     summary:
-      "Hollywood gülüşü, dişlerin veneer/laminat/zirkonyum ile kusursuz görünüme kavuşturulmasıdır. 16-20 diş kaplanır. Türkiye dünya'nın en popüler destinasyonudur.",
+      'Hollywood gülüşü, dişlerin veneer, laminat veya zirkonyum kaplamalarla estetik olarak yeniden şekillendirilmesidir. Genellikle 16-20 diş kaplanır. Türkiye, Macaristan, İtalya, Meksika ve Brezilya diş estetiği için sık tercih edilen ülkelerdendir.',
     priceRange: {
+      india: '1.500 - 4.000 USD',
+      mexico: '3.500 - 9.000 USD',
       turkey: '3.000 - 8.000 USD',
-      europe: '12.000 - 30.000 EUR',
+      thailand: '3.500 - 8.000 USD',
+      poland: '5.000 - 12.000 USD',
+      uk: '12.000 - 30.000 USD',
       usa: '20.000 - 50.000 USD',
     },
     duration: '5-10 gün',
@@ -279,8 +295,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       },
       { q: 'Kaç diş?', a: 'Standart 16-20 diş. Sadece üst dişler de yapılabilir.' },
     ],
-    includes: ['Röntgen', 'Dijital tasarım', 'Geçici kaplamalar', 'Kalıcı kaplamalar', 'Tüm randevular'],
-    notIncludes: ['Uçak bileti', 'Konaklama', 'Kök kanal tedavisi', 'Diş eti estetiği'],
     category: 'Diş',
   },
   {
@@ -289,10 +303,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Lazer Epilasyon - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Lazer epilasyon rehberi. 2026 fiyatlar, seans sayısı ve sonuçlar.',
     summary:
-      'Lazer epilasyon, ışık enerjisi ile kıl köklerini kalıcı etkisiz hale getiren işlemdir. 6-10 seans ile %80-90 kalıcı azalma sağlanır.',
+      'Lazer epilasyon, ışık enerjisi ile kıl köklerini kalıcı olarak zayıflatan işlemdir. 6-10 seans ile %80-90 kalıcı azalma hedeflenir. Türkiye, Hindistan, Meksika, Tayland ve İspanya medikal turizmde sık tercih edilen merkezlerdir.',
     priceRange: {
+      india: '30 - 250 USD',
+      mexico: '50 - 400 USD',
       turkey: '50 - 500 USD',
-      europe: '200 - 2.000 EUR',
+      thailand: '50 - 400 USD',
+      poland: '50 - 400 USD',
+      uk: '200 - 2.000 USD',
       usa: '300 - 3.000 USD',
     },
     duration: '15-60 dk',
@@ -318,8 +336,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       { q: 'Ağrılı mı?', a: 'Hafif lastik çıtlama hissi.' },
       { q: 'Kalıcı mı?', a: '%80-90 kalıcı. Yılda 1-2 idame seansı.' },
     ],
-    includes: ['Cilt analizi', 'Test atışı', 'Lazer uygulaması', 'Soğutucu bakım'],
-    notIncludes: ['Birden fazla bölge', 'İdame seansları'],
     category: 'Cilt & Dermatoloji',
   },
   {
@@ -328,10 +344,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Göğüs Büyütme - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Göğüs büyütme rehberi. 2026 fiyatları, implant türleri ve iyileşme.',
     summary:
-      "Göğüs büyütme, silikon implant ile göğüs boyutunu artıran cerrahi işlemdir. Türkiye'de FDA onaylı implantlarla Avrupa'nın yarısı fiyata yapılır.",
+      'Göğüs büyütme, silikon implant veya yağ transferi ile göğüs hacmini artıran cerrahi işlemdir. Planlama hastanın vücut yapısına ve beklentisine göre kişiselleştirilir. Türkiye, Brezilya, Meksika, ABD ve İspanya bu alanda sık uygulama yapılan ülkeler arasındadır.',
     priceRange: {
+      india: '2.000 - 3.500 USD',
+      mexico: '3.000 - 5.000 USD',
       turkey: '3.000 - 5.500 USD',
-      europe: '6.000 - 12.000 EUR',
+      thailand: '3.500 - 6.000 USD',
+      poland: '3.500 - 6.000 USD',
+      uk: '6.000 - 12.000 USD',
       usa: '8.000 - 15.000 USD',
     },
     duration: '1-2 saat',
@@ -356,15 +376,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       { q: 'Ne kadar dayanır?', a: 'Modern implantlar 10-20+ yıl.' },
       { q: 'Emzirmeyi etkiler mi?', a: 'Genelde hayır.' },
     ],
-    includes: [
-      'Cerrah ve anestezi',
-      'Hastane 1 gece',
-      'FDA onaylı implant',
-      'Destek sütyeni',
-      'İlaçlar',
-      'Kontroller',
-    ],
-    notIncludes: ['Uçak bileti', 'Konaklama'],
     category: 'Göğüs Cerrahisi',
   },
   {
@@ -373,10 +384,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Liposuction - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Liposuction rehberi. 2026 fiyatları, VASER vs klasik ve iyileşme.',
     summary:
-      'Liposuction, inatçı yağ birikintilerini cerrahi alan vücut şekillendirme işlemidir. VASER, lazer ve klasik teknikleri vardır.',
+      'Liposuction, inatçı yağ birikintilerini cerrahi olarak azaltan vücut şekillendirme işlemidir. VASER, lazer ve klasik teknikler kullanılabilir. Türkiye, Meksika, Brezilya, Tayland ve Hindistan gibi ülkelerde vücut kontürü için sık tercih edilir.',
     priceRange: {
+      india: '1.200 - 3.000 USD',
+      mexico: '2.000 - 4.500 USD',
       turkey: '2.000 - 5.000 USD',
-      europe: '4.000 - 10.000 EUR',
+      thailand: '2.000 - 5.000 USD',
+      poland: '2.000 - 5.000 USD',
+      uk: '4.000 - 10.000 USD',
       usa: '5.000 - 12.000 USD',
     },
     duration: '1-3 saat',
@@ -398,8 +413,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       { q: 'VASER farkı?', a: 'Ultrasonik enerji ile daha hassas şekillendirme.' },
       { q: 'Yağ transfer edilebilir mi?', a: 'Evet, BBL veya yüz dolgunlaştırma için.' },
     ],
-    includes: ['Cerrah ve anestezi', 'Ameliyathane', 'Korse', 'İlaçlar', 'Kontroller'],
-    notIncludes: ['Uçak bileti', 'Konaklama', 'VASER ek ücreti'],
     category: 'Vücut Cerrahisi',
   },
   {
@@ -408,10 +421,14 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     title: 'Karın Germe - 2026 Rehberi ve Fiyatlar',
     metaDescription: 'Karın germe rehberi. 2026 fiyatları, mini vs tam ve iyileşme süreci.',
     summary:
-      'Abdominoplasti, karın bölgesindeki fazla deri ve yağı alarak kasları sıkılaştıran cerrahi işlemdir. Doğum veya kilo kaybı sonrası tercih edilir.',
+      'Abdominoplasti, karın bölgesindeki fazla deri ve yağı alarak kasları sıkılaştıran cerrahi işlemdir. Genellikle doğum veya büyük kilo kaybı sonrası karın bölgesini yeniden şekillendirmek için tercih edilir. Türkiye, Meksika, Brezilya, Tayland ve İspanya bu alanda medikal turizmde öne çıkan ülkelerdir.',
     priceRange: {
+      india: '1.800 - 3.500 USD',
+      mexico: '3.000 - 5.500 USD',
       turkey: '3.000 - 6.000 USD',
-      europe: '6.000 - 12.000 EUR',
+      thailand: '3.000 - 6.000 USD',
+      poland: '3.000 - 6.000 USD',
+      uk: '6.000 - 12.000 USD',
       usa: '8.000 - 15.000 USD',
     },
     duration: '2-4 saat',
@@ -439,8 +456,6 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
       },
       { q: 'Kaç gün kalmalıyım?', a: '7-10 gün.' },
     ],
-    includes: ['Cerrah ve anestezi', 'Hastane 1-2 gece', 'Korse', 'İlaçlar', 'Kontroller', 'Transfer'],
-    notIncludes: ['Uçak bileti', 'Konaklama', 'Liposuction ek bölge'],
     category: 'Vücut Cerrahisi',
   },
 ];
