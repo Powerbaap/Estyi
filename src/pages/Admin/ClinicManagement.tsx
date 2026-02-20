@@ -369,7 +369,9 @@ const ClinicManagement: React.FC = () => {
                 sessions:
                   item.sessions === null || item.sessions === undefined
                     ? null
-                    : Number(item.sessions),
+                    : Number.isFinite(Number(item.sessions))
+                      ? Number(item.sessions)
+                      : null,
                     currency: 'USD',
                     price_min: priceValue,
                     price_max: priceValue,
