@@ -334,7 +334,17 @@ const ClinicManagement: React.FC = () => {
       setClinics(Array.isArray(refreshed) ? refreshed : []);
       
       try {
-        const clinicId = app.submitted_by as string | undefined;
+        let clinicId = app.submitted_by as string | undefined;
+        try {
+          const { data: realClinic } = await supabase
+            .from('clinics')
+            .select('id')
+            .eq('email', app.email)
+            .maybeSingle();
+          if (realClinic?.id) {
+            clinicId = realClinic.id;
+          }
+        } catch {}
         const countries =
           (Array.isArray(app.countries) && app.countries.length > 0
             ? app.countries

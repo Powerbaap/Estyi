@@ -96,16 +96,20 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
         .single();
 
       if (offerData?.request_id) {
-        await supabase
-          .from('offers')
-          .update({ status: 'rejected', updated_at: new Date().toISOString() })
-          .eq('request_id', offerData.request_id)
-          .neq('id', offerId);
+        try {
+          await supabase
+            .from('offers')
+            .update({ status: 'rejected', updated_at: new Date().toISOString() })
+            .eq('request_id', offerData.request_id)
+            .neq('id', offerId);
+        } catch {}
 
-        await supabase
-          .from('requests')
-          .update({ status: 'accepted', updated_at: new Date().toISOString() })
-          .eq('id', offerData.request_id);
+        try {
+          await supabase
+            .from('requests')
+            .update({ status: 'accepted', updated_at: new Date().toISOString() })
+            .eq('id', offerData.request_id);
+        } catch {}
       }
 
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'accepted' }));
@@ -374,7 +378,12 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         </div>
                         <div className="text-right flex-shrink-0 ml-6">
                           <div className="text-3xl font-bold text-green-600 mb-1">
-                            ${Number(offer.priceMin ?? 0).toLocaleString()}{offer.priceMax != null && offer.priceMax !== offer.priceMin ? ` - $${Number(offer.priceMax).toLocaleString()}` : ''} <span className="text-base font-normal text-gray-500">USD</span>
+                            ${Number(offer.priceMin ?? (offer as any).price_min ?? (offer as any).price ?? 0).toLocaleString()}
+                            {((offer.priceMax ?? (offer as any).price_max) != null &&
+                              (offer.priceMax ?? (offer as any).price_max) !== (offer.priceMin ?? (offer as any).price_min))
+                              ? ` - $${Number(offer.priceMax ?? (offer as any).price_max).toLocaleString()}`
+                              : ''}{' '}
+                            <span className="text-base font-normal text-gray-500">USD</span>
                           </div>
                           <div className="inline-flex items-center gap-1.5 mt-1 px-2 py-1 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-xs font-medium">
                             <span aria-hidden>🔒</span>
