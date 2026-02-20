@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { X, MapPin, Clock, DollarSign, MessageCircle, Star, Award, Calendar } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
 
 interface Offer {
   id: string;
@@ -17,6 +18,17 @@ interface Offer {
   description: string;
   createdAt: Date;
   isVerified: boolean;
+  clinic_name?: string;
+  country?: string;
+  clinics?: {
+    id?: string;
+    name?: string;
+    country?: string;
+    city?: string;
+    rating?: number;
+    review_count?: number;
+    certificate_files?: any[] | null;
+  } | null;
 }
 
 interface Request {
@@ -70,21 +82,45 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const handleAcceptOffer = async (offerId: string, clinicName: string) => {
     setIsProcessing(offerId);
     try {
-      // Simüle edilmiş API çağrısı
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const { error: offerError } = await supabase
+        .from('offers')
+        .update({ status: 'accepted', updated_at: new Date().toISOString() })
+        .eq('id', offerId);
+
+      if (offerError) throw offerError;
+
+      const { data: offerData } = await supabase
+        .from('offers')
+        .select('request_id')
+        .eq('id', offerId)
+        .single();
+
+      if (offerData?.request_id) {
+        await supabase
+          .from('offers')
+          .update({ status: 'rejected', updated_at: new Date().toISOString() })
+          .eq('request_id', offerData.request_id)
+          .neq('id', offerId);
+
+        await supabase
+          .from('requests')
+          .update({ status: 'accepted', updated_at: new Date().toISOString() })
+          .eq('id', offerData.request_id);
+      }
+
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'accepted' }));
-      
-      // Estyi: Teklif kabul edilince konuşma (chat) açılır
-      navigate('/messages', { 
-        state: { 
+
+      navigate('/messages', {
+        state: {
           selectedClinic: clinicName,
           messageType: 'clinic_contact',
-          offerAccepted: true
-        } 
+          offerAccepted: true,
+          offerId: offerId,
+        },
       });
       onClose();
     } catch (error) {
+      console.error('Teklif kabul hatası:', error);
       alert(t('auth.acceptError'));
     } finally {
       setIsProcessing(null);
@@ -94,18 +130,16 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const handleRejectOffer = async (offerId: string, clinicName: string) => {
     setIsProcessing(offerId);
     try {
-      // Simüle edilmiş API çağrısı
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      const { error } = await supabase
+        .from('offers')
+        .update({ status: 'rejected', updated_at: new Date().toISOString() })
+        .eq('id', offerId);
+
+      if (error) throw error;
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'rejected' }));
-      
-      // Kliniğe bildirim gönder
-      
-      // Başarı mesajı göster
       alert(t('auth.rejectSuccess', { clinicName }));
-      
     } catch (error) {
-      alert(t('auth.rejectError'));
+      console.error('Teklif red hatası:', error);
     } finally {
       setIsProcessing(null);
     }
@@ -286,8 +320,8 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                       <div className="flex items-start justify-between mb-6">
                         <div className="flex items-start space-x-4 flex-1 min-w-0">
                           <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-700 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
-                              <span className="text-white font-bold text-xl">
-                              {String(offer.clinicName ?? 'K').charAt(0)}
+                            <span className="text-white font-bold text-xl">
+                              {String(offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik').charAt(0)}
                             </span>
                           </div>
                           <div className="min-w-0 flex-1">
@@ -297,14 +331,14 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                                 onClick={() => {
                                   navigate('/clinic-profile', { 
                                     state: { 
-                                      clinicName: offer.clinicName,
-                                      clinicCountry: offer.clinicCountry
+                                      clinicName: offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik',
+                                      clinicCountry: offer.country ?? offer.clinicCountry ?? offer.clinics?.country ?? ''
                                     } 
                                   });
                                   onClose();
                                 }}
                               >
-                                {offer.clinicName}
+                                {offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik'}
                               </h4>
                               {offer.isVerified && (
                                 <div className="flex items-center space-x-1 bg-blue-50 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
@@ -312,11 +346,23 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                                   <span>{t('requestDetails.verified')}</span>
                                 </div>
                               )}
+                              {offer.clinics?.certificate_files && Array.isArray(offer.clinics.certificate_files) && offer.clinics.certificate_files.length > 0 && (
+                                <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                      fillRule="evenodd"
+                                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                      clipRule="evenodd"
+                                    />
+                                  </svg>
+                                  Sertifikalı
+                                </span>
+                              )}
                             </div>
                             <div className="flex items-center space-x-6 text-sm text-gray-600 flex-wrap">
                               <span className="flex items-center space-x-2 flex-shrink-0">
                                 <MapPin className="w-4 h-4 text-green-500" />
-                                <span>{offer.clinicCountry}</span>
+                                <span>{offer.country ?? offer.clinicCountry ?? offer.clinics?.country ?? ''}</span>
                               </span>
                               <span className="flex items-center space-x-2 flex-shrink-0">
                                 <Star className="w-4 h-4 text-amber-500" />
@@ -392,8 +438,8 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         {/* Aksiyon Butonları */}
                         {!offerStatuses[offer.id] && (
                           <div className="flex items-center space-x-3 flex-shrink-0">
-                            <button
-                              onClick={() => handleAcceptOffer(offer.id, offer.clinicName)}
+                              <button
+                              onClick={() => handleAcceptOffer(offer.id, offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
                               disabled={isProcessing === offer.id}
                               className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
@@ -406,7 +452,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             </button>
                             
                             <button
-                              onClick={() => handleRejectOffer(offer.id, offer.clinicName)}
+                              onClick={() => handleRejectOffer(offer.id, offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
                               disabled={isProcessing === offer.id}
                               className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
@@ -419,7 +465,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             </button>
                             
                             <button
-                              onClick={() => handleContactClinic(offer.clinicName)}
+                              onClick={() => handleContactClinic(offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
                               className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                               <MessageCircle className="w-4 h-4" />
@@ -431,7 +477,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         {/* Kabul/Red sonrası sadece iletişim butonu */}
                         {offerStatuses[offer.id] && (
                           <button
-                            onClick={() => handleContactClinic(offer.clinicName)}
+                            onClick={() => handleContactClinic(offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
                             className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                           >
                             <MessageCircle className="w-4 h-4" />

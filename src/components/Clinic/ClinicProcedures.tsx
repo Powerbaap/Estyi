@@ -28,7 +28,9 @@ const ClinicProcedures: React.FC = () => {
 
   async function resolveClinicId() {
     const cached = localStorage.getItem('clinic_id');
-    if (cached) {
+    const cacheTime = localStorage.getItem('clinic_id_time');
+    const isValid = cached && cacheTime && (Date.now() - Number(cacheTime)) < 3600000;
+    if (isValid && cached) {
       setClinicId(cached);
       return cached;
     }
@@ -36,6 +38,7 @@ const ClinicProcedures: React.FC = () => {
     if (metaClinicId) {
       try {
         localStorage.setItem('clinic_id', metaClinicId);
+        localStorage.setItem('clinic_id_time', String(Date.now()));
       } catch {}
       setClinicId(metaClinicId);
       return metaClinicId;
@@ -45,6 +48,7 @@ const ClinicProcedures: React.FC = () => {
       if (data?.id) {
         try {
           localStorage.setItem('clinic_id', data.id);
+          localStorage.setItem('clinic_id_time', String(Date.now()));
         } catch {}
         setClinicId(data.id);
         return data.id;
@@ -56,9 +60,48 @@ const ClinicProcedures: React.FC = () => {
       if (data?.id) {
         try {
           localStorage.setItem('clinic_id', data.id);
+          localStorage.setItem('clinic_id_time', String(Date.now()));
         } catch {}
         setClinicId(data.id);
         return data.id;
+      }
+    }
+    if (email) {
+      const { data: appData } = await supabase
+        .from('clinic_applications')
+        .select('id, status')
+        .eq('email', email)
+        .eq('status', 'approved')
+        .maybeSingle();
+      if (appData?.id) {
+        const { data: clinicByApp } = await supabase
+          .from('clinics')
+          .select('id')
+          .eq('email', email)
+          .maybeSingle();
+        if (clinicByApp?.id) {
+          try {
+            localStorage.setItem('clinic_id', clinicByApp.id);
+            localStorage.setItem('clinic_id_time', String(Date.now()));
+          } catch {}
+          setClinicId(clinicByApp.id);
+          return clinicByApp.id;
+        }
+      }
+    }
+    if (user?.id) {
+      const { data: clinicByUserId } = await supabase
+        .from('clinics')
+        .select('id')
+        .eq('user_id', user.id)
+        .maybeSingle();
+      if (clinicByUserId?.id) {
+        try {
+          localStorage.setItem('clinic_id', clinicByUserId.id);
+          localStorage.setItem('clinic_id_time', String(Date.now()));
+        } catch {}
+        setClinicId(clinicByUserId.id);
+        return clinicByUserId.id;
       }
     }
     return null;

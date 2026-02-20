@@ -282,7 +282,7 @@ export const requestService = {
         try {
           const { data: offers } = await supabase
             .from('offers')
-            .select('*')
+            .select('*, clinics(id, name, country, city, rating, review_count, certificate_files)')
             .eq('request_id', req.id)
             .order('created_at', { ascending: false });
           return {
