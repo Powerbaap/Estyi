@@ -101,8 +101,8 @@ const ProcedureGuide: React.FC = () => {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <DollarSign className="w-5 h-5 mx-auto mb-1 text-green-300" />
-                <div className="text-xs text-blue-200">Türkiye Fiyat</div>
-                <div className="font-bold text-sm">{guide.priceRange.turkey}</div>
+                <div className="text-xs text-blue-200">Fiyat Aralığı</div>
+                <div className="font-bold text-sm">{guide.priceRange.india} ~</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Clock className="w-5 h-5 mx-auto mb-1 text-yellow-300" />
@@ -133,36 +133,27 @@ const ProcedureGuide: React.FC = () => {
                 <thead>
                   <tr className="bg-gray-50">
                     <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Ülke</th>
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Fiyat Aralığı</th>
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700 hidden md:table-cell">Tasarruf</th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Fiyat Aralığı (USD)</th>
                   </tr>
                 </thead>
                 <tbody>
-                  <tr className="border-t bg-green-50">
-                    <td className="px-4 py-3 font-medium flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-green-600" />
-                      <span className="text-green-700">Türkiye</span>
-                      <span className="text-xs bg-green-600 text-white px-2 py-0.5 rounded-full">En Uygun</span>
-                    </td>
-                    <td className="px-4 py-3 font-bold text-green-700">{guide.priceRange.turkey}</td>
-                    <td className="px-4 py-3 text-green-600 hidden md:table-cell">%60-70 tasarruf</td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="px-4 py-3 font-medium flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      Avrupa
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">{guide.priceRange.europe}</td>
-                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell">-</td>
-                  </tr>
-                  <tr className="border-t">
-                    <td className="px-4 py-3 font-medium flex items-center gap-2">
-                      <MapPin className="w-4 h-4 text-gray-400" />
-                      ABD
-                    </td>
-                    <td className="px-4 py-3 text-gray-700">{guide.priceRange.usa}</td>
-                    <td className="px-4 py-3 text-gray-500 hidden md:table-cell">-</td>
-                  </tr>
+                  {[
+                    { flag: '🇮🇳', name: 'Hindistan', price: guide.priceRange.india },
+                    { flag: '🇲🇽', name: 'Meksika', price: guide.priceRange.mexico },
+                    { flag: '🇹🇷', name: 'Türkiye', price: guide.priceRange.turkey },
+                    { flag: '🇹🇭', name: 'Tayland', price: guide.priceRange.thailand },
+                    { flag: '🇵🇱', name: 'Polonya', price: guide.priceRange.poland },
+                    { flag: '🇬🇧', name: 'İngiltere', price: guide.priceRange.uk },
+                    { flag: '🇺🇸', name: 'ABD', price: guide.priceRange.usa },
+                  ].map((row, i) => (
+                    <tr key={i} className="border-t hover:bg-gray-50">
+                      <td className="px-4 py-3 font-medium flex items-center gap-2">
+                        <span>{row.flag}</span>
+                        <span>{row.name}</span>
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-700">{row.price}</td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>

@@ -13,7 +13,7 @@ const PriceIndex: React.FC = () => {
     '@context': 'https://schema.org',
     '@type': 'Dataset',
     name: 'Estyi Estetik Fiyat Endeksi 2026',
-    description: 'Türkiye, Avrupa ve ABD estetik işlem fiyat karşılaştırması.',
+    description: '7 ülkede estetik işlem fiyat karşılaştırması.',
     url: 'https://estyi.com/fiyat-endeksi',
     creator: {
       '@type': 'Organization',
@@ -33,10 +33,10 @@ const PriceIndex: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Estetik Fiyat Endeksi 2026 - Türkiye vs Avrupa vs ABD | Estyi</title>
+        <title>Estetik Fiyat Endeksi 2026 - 7 Ülke Karşılaştırma | Estyi</title>
         <meta
           name="description"
-          content="2026 güncel estetik işlem fiyatları. Saç ekimi, burun estetiği, diş implant için Türkiye, Avrupa ve ABD karşılaştırması."
+          content="2026 güncel estetik işlem fiyatları. Saç ekimi, burun estetiği, diş implant için 7 ülkenin fiyat aralıklarını karşılaştırın."
         />
         <link rel="canonical" href="https://estyi.com/fiyat-endeksi" />
         <script type="application/ld+json">{JSON.stringify(schema)}</script>
@@ -53,8 +53,8 @@ const PriceIndex: React.FC = () => {
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">Estetik İşlemler Fiyat Endeksi 2026</h1>
             <p className="text-lg text-emerald-100 mb-6 max-w-2xl">
-              Türkiye, Avrupa ve ABD fiyat karşılaştırması. Estyi platformundaki gerçek verilerden derlenen güncel
-              fiyat aralıkları.
+              7 ülkede estetik işlem fiyat aralıklarını karşılaştırın. Estyi platformundaki gerçek verilerden derlenen
+              güncel fiyat aralıkları.
             </p>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
@@ -64,8 +64,8 @@ const PriceIndex: React.FC = () => {
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Globe className="w-5 h-5 mx-auto mb-1 text-emerald-300" />
-                <div className="font-bold text-lg">3</div>
-                <div className="text-xs text-emerald-200">Bölge</div>
+                <div className="font-bold text-lg">7</div>
+                <div className="text-xs text-emerald-200">Ülke</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Calendar className="w-5 h-5 mx-auto mb-1 text-emerald-300" />
@@ -74,8 +74,8 @@ const PriceIndex: React.FC = () => {
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <TrendingUp className="w-5 h-5 mx-auto mb-1 text-emerald-300" />
-                <div className="font-bold text-lg">%60-80</div>
-                <div className="text-xs text-emerald-200">Tasarruf</div>
+                <div className="font-bold text-lg">7</div>
+                <div className="text-xs text-emerald-200">Ülke Karşılaştırma</div>
               </div>
             </div>
           </div>
@@ -83,8 +83,8 @@ const PriceIndex: React.FC = () => {
         <div className="max-w-5xl mx-auto px-4 py-8 space-y-8">
           <div>
             <p className="text-gray-700 leading-relaxed">
-              2026 yılı itibariyle Türkiye, estetik ve medikal turizm alanında dünya lideridir. Avrupa fiyatlarının
-              %60-80 altında kaliteli hizmet sunulmaktadır.
+              2026 fiyat endeksi, Hindistan, Meksika, Türkiye, Tayland, Polonya, İngiltere ve ABD gibi popüler
+              destinasyonlarda seçili estetik işlemlerin tipik fiyat aralıklarını karşılaştırmalı olarak gösterir.
             </p>
           </div>
           {categories.map(cat => (
@@ -96,12 +96,18 @@ const PriceIndex: React.FC = () => {
                     <thead>
                       <tr className="bg-gray-50 border-b">
                         <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">İşlem</th>
-                        <th className="text-left px-4 py-3 text-sm font-semibold text-green-700">Türkiye</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">🇮🇳</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">🇲🇽</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">🇹🇷</th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">🇹🇭</th>
                         <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700 hidden md:table-cell">
-                          Avrupa
+                          🇵🇱
                         </th>
                         <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700 hidden md:table-cell">
-                          ABD
+                          🇬🇧
+                        </th>
+                        <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700 hidden md:table-cell">
+                          🇺🇸
                         </th>
                         <th className="w-12" />
                       </tr>
@@ -117,13 +123,17 @@ const PriceIndex: React.FC = () => {
                               {item.title.split(' - ')[0]}
                             </Link>
                           </td>
-                          <td className="px-4 py-3 font-bold text-green-700 text-sm">
-                            {item.priceRange.turkey}
+                          <td className="px-4 py-3 text-xs text-gray-700">{item.priceRange.india}</td>
+                          <td className="px-4 py-3 text-xs text-gray-700">{item.priceRange.mexico}</td>
+                          <td className="px-4 py-3 text-xs text-gray-700">{item.priceRange.turkey}</td>
+                          <td className="px-4 py-3 text-xs text-gray-700">{item.priceRange.thailand}</td>
+                          <td className="px-4 py-3 text-xs text-gray-700 hidden md:table-cell">
+                            {item.priceRange.poland}
                           </td>
-                          <td className="px-4 py-3 text-gray-600 text-sm hidden md:table-cell">
-                            {item.priceRange.europe}
+                          <td className="px-4 py-3 text-xs text-gray-700 hidden md:table-cell">
+                            {item.priceRange.uk}
                           </td>
-                          <td className="px-4 py-3 text-gray-600 text-sm hidden md:table-cell">
+                          <td className="px-4 py-3 text-xs text-gray-700 hidden md:table-cell">
                             {item.priceRange.usa}
                           </td>
                           <td className="px-4 py-3">
