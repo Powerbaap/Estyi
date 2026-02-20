@@ -39,7 +39,7 @@ const ClinicApplication: React.FC = () => {
     price_data: [] as {
       procedure_key: string;
       region: string | null;
-      sessions: string | number | null;
+      sessions: number | null;
       price: number;
     }[]
   });
@@ -53,7 +53,7 @@ const ClinicApplication: React.FC = () => {
   type PriceCombo = {
     procedure_key: string;
     region: string | null;
-    sessions: string | number | null;
+    sessions: number | null;
   };
 
   const findProcedure = (procedureKey: string) => {
@@ -79,33 +79,50 @@ const ClinicApplication: React.FC = () => {
         return;
       }
 
-      const regionParam = proc.params.find((p: any) => ['bolge', 'seviye', 'taraf'].includes(p.type));
-      const sessionsParam = proc.params.find((p: any) =>
-        ['seans', 'ip_sayisi', 'greft_araligi', 'adet', 'ml', 'paket', 'plak_paket', 'dis_tipi', 'implant_tipi', 'sac_uzunlugu'].includes(p.type)
-      );
-      const regions = Array.isArray(regionParam?.options) ? regionParam.options : [];
-      const sessionsRaw = Array.isArray(sessionsParam?.options) ? sessionsParam.options : [];
-      const sessionsValues: (string | number)[] = sessionsRaw.map((v: any) => {
-        const n = Number(v);
-        return Number.isFinite(n) ? n : String(v);
-      });
+      const isIntegerParam = (p: any) => p && p.options.every((o: string) => Number.isFinite(Number(o)));
+      const param1 = proc.params[0] || null;
+      const param2 = proc.params[1] || null;
+      let regionOptions: string[] = [];
+      let sessionsOptions: number[] = [];
+      if (param1 && param2) {
+        if (isIntegerParam(param1) && !isIntegerParam(param2)) {
+          sessionsOptions = param1.options.map((v: string) => Number(v));
+          regionOptions = Array.isArray(param2.options) ? param2.options : [];
+        } else if (!isIntegerParam(param1) && isIntegerParam(param2)) {
+          regionOptions = Array.isArray(param1.options) ? param1.options : [];
+          sessionsOptions = param2.options.map((v: string) => Number(v));
+        } else {
+          regionOptions = [];
+          param1.options.forEach((a: string) => {
+            param2.options.forEach((b: string) => {
+              regionOptions.push(a + ' | ' + b);
+            });
+          });
+        }
+      } else if (param1) {
+        if (isIntegerParam(param1)) {
+          sessionsOptions = param1.options.map((v: string) => Number(v));
+        } else {
+          regionOptions = Array.isArray(param1.options) ? param1.options : [];
+        }
+      }
 
-      if (regions.length === 0 && sessionsValues.length === 0) {
+      if (regionOptions.length === 0 && sessionsOptions.length === 0) {
         combos.push({
           procedure_key: key,
           region: null,
           sessions: null,
         });
-      } else if (regions.length > 0 && sessionsValues.length === 0) {
-        regions.forEach((region: string) => {
+      } else if (regionOptions.length > 0 && sessionsOptions.length === 0) {
+        regionOptions.forEach((region: string) => {
           combos.push({
             procedure_key: key,
             region: region || null,
             sessions: null,
           });
         });
-      } else if (regions.length === 0 && sessionsValues.length > 0) {
-        sessionsValues.forEach((s) => {
+      } else if (regionOptions.length === 0 && sessionsOptions.length > 0) {
+        sessionsOptions.forEach((s) => {
           combos.push({
             procedure_key: key,
             region: null,
@@ -113,8 +130,8 @@ const ClinicApplication: React.FC = () => {
           });
         });
       } else {
-        regions.forEach((region: string) => {
-          sessionsValues.forEach((s) => {
+        regionOptions.forEach((region: string) => {
+          sessionsOptions.forEach((s) => {
             combos.push({
               procedure_key: key,
               region: region || null,
@@ -128,7 +145,7 @@ const ClinicApplication: React.FC = () => {
     return combos;
   }, [formData.specialties]);
 
-  const findPriceItem = (procedureKey: string, region: string | null, sessions: string | number | null) => {
+  const findPriceItem = (procedureKey: string, region: string | null, sessions: number | null) => {
     return (formData.price_data || []).find((item) => {
       if (!item || item.procedure_key !== procedureKey) return false;
       const regionMatch = (item.region || null) === (region || null);
@@ -140,7 +157,7 @@ const ClinicApplication: React.FC = () => {
   const handlePriceChange = (
     procedureKey: string,
     region: string | null,
-    sessions: string | number | null,
+    sessions: number | null,
     value: string
   ) => {
     const normalized = value.replace(',', '.');
@@ -669,11 +686,7 @@ const ClinicApplication: React.FC = () => {
                                 {combos.map((combo, index) => {
                                   const regionLabel = combo.region || '-';
                                   const sessionsLabel =
-                                    combo.sessions != null
-                                      ? typeof combo.sessions === 'number'
-                                        ? `${combo.sessions} seans`
-                                        : String(combo.sessions)
-                                      : '-';
+                                    combo.sessions != null ? `${combo.sessions} seans` : '-';
                                   const current = findPriceItem(
                                     combo.procedure_key,
                                     combo.region,
