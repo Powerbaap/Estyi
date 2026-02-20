@@ -504,20 +504,28 @@ const UserDashboard: React.FC = () => {
                               <div key={offer.id} className="flex items-center justify-between p-3 bg-white rounded-lg border border-gray-100">
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center space-x-2 mb-1">
-                                    <span className="font-semibold text-gray-900 truncate">{offer.clinicName}</span>
-                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">({offer.clinicCountry})</span>
+                                    <span className="font-semibold text-gray-900 truncate">
+                                      {offer.clinic_name ?? offer.clinicName ?? 'Klinik'}
+                                    </span>
+                                    <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                      ({offer.country ?? offer.clinicCountry ?? ''})
+                                    </span>
                                   </div>
                                   <div className="flex items-center space-x-2 text-xs text-gray-600">
                                     <span className="flex items-center">
                                       <Star className="w-3 h-3 text-amber-500 mr-1" />
-                                      {offer.clinicRating}
+                                      {offer.clinic_rating ?? offer.clinicRating ?? '-'}
                                     </span>
-                                    <span>({offer.clinicReviews} {t('userDashboard.reviews')})</span>
+                                    <span>({offer.clinic_reviews ?? offer.clinicReviews ?? 0} {t('userDashboard.reviews')})</span>
                                   </div>
                                 </div>
                                 <div className="text-right flex-shrink-0 ml-4">
-                                  <div className="text-lg font-bold text-gray-900">${offer.priceMin.toLocaleString()}</div>
-                                  <div className="text-sm text-gray-500">- ${offer.priceMax.toLocaleString()}</div>
+                                  <div className="text-lg font-bold text-gray-900">
+                                    ${(offer.price_min ?? offer.priceMin ?? 0).toLocaleString()}
+                                  </div>
+                                  <div className="text-sm text-gray-500">
+                                    - ${(offer.price_max ?? offer.priceMax ?? 0).toLocaleString()}
+                                  </div>
                                 </div>
                               </div>
                             ))}
