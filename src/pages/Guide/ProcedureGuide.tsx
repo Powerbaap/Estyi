@@ -18,11 +18,13 @@ import {
   Calendar,
 } from 'lucide-react';
 import { getGuideBySlug, PROCEDURE_GUIDES } from '../../data/procedureGuideData';
+import { useAuth } from '../../contexts/AuthContext';
 
 const ProcedureGuide: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const guide = getGuideBySlug(slug || '');
   const [openFaq, setOpenFaq] = useState<number[]>([0]);
+  const { user } = useAuth();
 
   if (!guide) {
     return (
@@ -293,7 +295,7 @@ const ProcedureGuide: React.FC = () => {
                 Estyi ile birden fazla sertifikalı klinikten anında fiyat teklifi alın.
               </p>
               <Link
-                to="/request/new"
+                to={user ? "/request/new" : "/signup"}
                 className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-3 rounded-full hover:bg-blue-50"
               >
                 Teklif Al <ArrowRight className="w-5 h-5" />

@@ -3,9 +3,11 @@ import { Helmet } from 'react-helmet-async';
 import { Link } from 'react-router-dom';
 import { TrendingUp, ArrowRight, DollarSign, Globe, Calendar, BarChart3 } from 'lucide-react';
 import { PROCEDURE_GUIDES } from '../../data/procedureGuideData';
+import { useAuth } from '../../contexts/AuthContext';
 
 const PriceIndex: React.FC = () => {
   const currentDate = new Date().toLocaleDateString('tr-TR', { month: 'long', year: 'numeric' });
+  const { user } = useAuth();
 
   const schema = {
     '@context': 'https://schema.org',
@@ -144,7 +146,7 @@ const PriceIndex: React.FC = () => {
                 Yukarıdaki fiyatlar genel aralıklardır. Kişisel teklif için talep oluşturun.
               </p>
               <Link
-                to="/request/new"
+                to={user ? "/request/new" : "/signup"}
                 className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-3 rounded-full hover:bg-blue-50"
               >
                 <DollarSign className="w-5 h-5" />
@@ -166,4 +168,3 @@ const PriceIndex: React.FC = () => {
 };
 
 export default PriceIndex;
-

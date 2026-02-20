@@ -147,13 +147,6 @@ const Header: React.FC = () => {
 
           {/* Desktop Navigation — sağa hizalı, dil seçeneği her zaman en sağda */}
           <nav className="hidden md:flex items-center justify-end space-x-6 flex-1 min-w-0" role="navigation" aria-label="Ana navigasyon">
-            <Link
-              to="/fiyat-endeksi"
-              className="text-gray-600 hover:text-blue-600 font-medium text-sm"
-              onClick={scrollToTopInstant}
-            >
-              Fiyat Rehberi
-            </Link>
             {user ? (
               <>
                 {/* Messages Link */}
@@ -396,13 +389,6 @@ const Header: React.FC = () => {
         {isMenuOpen && (
           <div id="mobile-menu" className="md:hidden py-4 border-t border-gray-200/50 bg-white/90 backdrop-blur-xl rounded-2xl mt-2" role="navigation" aria-label="Mobil navigasyon">
             <div className="flex flex-col space-y-4">
-              <Link
-                to="/fiyat-endeksi"
-                className="px-4 py-2 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-xl transition-all duration-300"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Fiyat Rehberi
-              </Link>
               {user ? (
                 <>
                   <Link
