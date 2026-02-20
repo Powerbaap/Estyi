@@ -171,7 +171,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       !user?.id ||
       !formData.procedure ||
       formData.countries.length === 0 ||
-      !formData.gender ||
       isMissingCities ||
       !paramsFilled
     );
@@ -184,7 +183,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       hints.push(getTranslation('priceRequest.hintProcedureParams', 'Seçtiğiniz işlem için bölge/seans vb. alanları doldurun'));
     if (formData.countries.length === 0) hints.push(getTranslation('priceRequest.hintCountries', 'En az bir ülke seçin'));
     if (formData.countries.includes('turkey') && formData.citiesTR.length === 0) hints.push(getTranslation('priceRequest.hintCitiesTR', 'Türkiye için şehir seçin'));
-    if (!formData.gender) hints.push(getTranslation('priceRequest.hintGender', 'Cinsiyet seçin'));
     return hints;
   };
 
@@ -700,48 +698,12 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               </div>
             );
           })}
-          {/* Gender */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.gender', 'Gender')} *
-            </label>
-            <select
-              required
-              value={formData.gender}
-              onChange={(e) => setFormData(prev => ({ ...prev, gender: e.target.value }))}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="">{getTranslation('priceRequest.selectGender', 'Select gender')}</option>
-              <option value="female">{getTranslation('priceRequest.female', 'Female')}</option>
-              <option value="male">{getTranslation('priceRequest.male', 'Male')}</option>
-            </select>
-          </div>
-
-
-
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              {getTranslation('priceRequest.additionalDetails', 'Additional Details')}
-            </label>
-            <textarea
-              rows={4}
-              value={formData.description}
-              onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-              className="w-full px-3 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-              placeholder={getTranslation('priceRequest.descriptionPlaceholder', 'Additional information about treatment, your expectations, special requests...')}
-            />
-          </div>
-
-          {/* (Old simple photo input removed; professional uploader is at the top) */}
-
           {/* Important Notice */}
           <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
             <h4 className="font-semibold text-blue-900 mb-2">{getTranslation('priceRequest.importantInfo', 'Important Information')}</h4>
             <ul className="text-sm text-blue-800 space-y-1">
               <li>{t('legal.medicalDisclaimer')}</li>
               <li>{getTranslation('priceRequest.requestActive', 'Clinics can send offers as long as your request is active.')}</li>
-              <li>{getTranslation('priceRequest.notifications', 'You will be notified when new offers arrive.')}</li>
               {isAllSelected && (
                 <li className="text-blue-900 font-medium">{getTranslation('priceRequest.allCountriesInfo', 'You will receive offers from all countries. More options!')}</li>
               )}

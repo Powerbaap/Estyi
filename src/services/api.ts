@@ -275,7 +275,35 @@ export const requestService = {
       .order('created_at', { ascending: false });
     
     if (error) throw error;
-    return data;
+    
+    const requests = Array.isArray(data) ? data : [];
+    const enriched = await Promise.all(
+      requests.map(async (req: any) => {
+        try {
+          const { data: offers } = await supabase
+            .from('offers')
+            .select('*')
+            .eq('request_id', req.id)
+            .order('created_at', { ascending: false });
+          return {
+            ...req,
+            offers: Array.isArray(offers) ? offers : [],
+            offersCount: Array.isArray(offers) ? offers.length : 0,
+          };
+        } catch {
+          return { ...req, offers: [], offersCount: 0 };
+        }
+      })
+    );
+    return enriched;
+  },
+  
+  deleteRequest: async (requestId: string) => {
+    const { error } = await supabase
+      .from('requests')
+      .delete()
+      .eq('id', requestId);
+    if (error) throw error;
   },
   
   // Klinik için tüm talepleri getir

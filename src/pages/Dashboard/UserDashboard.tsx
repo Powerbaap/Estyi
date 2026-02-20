@@ -33,6 +33,21 @@ const UserDashboard: React.FC = () => {
     if (!Array.isArray(countries)) return '';
     return countries.map(getCountryDisplayName).filter(Boolean).join(', ');
   };
+
+  const formatCountriesWithCities = (countries?: string[], citiesByCountry?: Record<string, string[]>) => {
+    if (!Array.isArray(countries)) return '';
+    const parts: string[] = [];
+    countries.forEach((ckey) => {
+      const countryName = getCountryDisplayName(ckey);
+      const cities = citiesByCountry && Array.isArray(citiesByCountry[ckey]) ? citiesByCountry[ckey] : [];
+      if (cities.length > 0) {
+        parts.push(`${countryName} / ${cities.join(', ')}`);
+      } else {
+        parts.push(countryName);
+      }
+    });
+    return parts.join(', ');
+  };
   const safeFormatDateTR = (value: any): string => {
     try {
       if (!value) return '';
@@ -83,7 +98,11 @@ const UserDashboard: React.FC = () => {
         const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => {
           return {
             id: r.id,
-            procedure: r.procedure_name ?? r.procedure ?? getProcedureDisplayName(r.procedure_key ?? r.procedureKey, r.procedure_name),
+            procedure: (() => {
+              const procKey = r.procedure_name || r.procedure_key || r.procedureKey;
+              const found = getProcedure(procKey);
+              return found ? found.name : (r.procedure_name ?? r.procedure ?? procKey ?? '');
+            })(),
             procedureKey: r.procedure_key ?? r.procedureKey,
             status: r.status ?? 'active',
             createdAt: r.created_at ? new Date(r.created_at) : new Date(),
@@ -93,6 +112,7 @@ const UserDashboard: React.FC = () => {
               : Array.isArray(r.countries)
               ? r.countries
               : (r.country ? [r.country] : []),
+            citiesByCountry: (r.cities_by_country && typeof r.cities_by_country === 'object') ? r.cities_by_country : null,
             region: r.region ?? null,
             sessions: r.sessions ?? null,
             gender: r.gender ?? null,
@@ -144,15 +164,14 @@ const UserDashboard: React.FC = () => {
   };
 
   const handleDeleteRequest = async (requestId: string) => {
-    const { error } = await supabase
-      .from('requests')
-      .update({ status: 'cancelled' })
-      .eq('id', requestId);
-
-    if (!error) {
+    if (!confirm(t('userDashboard.deleteRequestConfirm') || 'Bu talebi silmek istediğinize emin misiniz?')) {
+      return;
+    }
+    try {
+      await requestService.deleteRequest(requestId);
       setRequests(prev => prev.filter(req => req.id !== requestId));
-    } else {
-      alert('Talep silinirken hata oluştu.');
+    } catch {
+      alert(t('userDashboard.deleteRequestError') || 'Talep silinirken hata oluştu.');
     }
   };
 
@@ -429,7 +448,7 @@ const UserDashboard: React.FC = () => {
                         </span>
                       </div>
 
-                      {(request.region || request.sessions || request.gender) && (
+                      {(request.region || request.sessions) && (
                         <div className="flex flex-wrap gap-2 mb-2">
                           {request.region && (
                             <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full border border-indigo-100">
@@ -439,11 +458,6 @@ const UserDashboard: React.FC = () => {
                           {request.sessions && (
                             <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full border border-purple-100">
                               🔁 {request.sessions} seans
-                            </span>
-                          )}
-                          {request.gender && (
-                            <span className="text-xs bg-pink-50 text-pink-700 px-2 py-1 rounded-full border border-pink-100">
-                              👤 {request.gender === 'female' ? 'Kadın' : request.gender === 'male' ? 'Erkek' : request.gender}
                             </span>
                           )}
                         </div>
@@ -473,7 +487,7 @@ const UserDashboard: React.FC = () => {
                         {Array.isArray(request.countries) && request.countries.length > 0 && (
                           <div className="flex items-center space-x-1.5 text-sm text-gray-500">
                             <MapPin className="w-4 h-4 text-gray-400" />
-                            <span>{formatCountries(request.countries)}</span>
+                            <span>{formatCountriesWithCities(request.countries, request.citiesByCountry)}</span>
                           </div>
                         )}
                       </div>
@@ -516,7 +530,7 @@ const UserDashboard: React.FC = () => {
                       <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center group-hover:bg-blue-100 transition-colors">
                         <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-blue-600 transition-colors" />
                       </div>
-                      {(request.status === 'active' || request.status === 'open') && (
+                      {(request.status === 'cancelled' || request.status === 'closed' || request.status === 'expired') && (
                         <button
                           onClick={(e) => {
                             e.stopPropagation();

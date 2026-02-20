@@ -31,7 +31,6 @@ interface Request {
   photoUrls?: string[];
   region?: string | null;
   sessions?: number | null;
-  gender?: string | null;
   notes?: string | null;
 }
 
@@ -186,7 +185,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               <h2 className="text-3xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-indigo-900 bg-clip-text text-transparent">
                 {request.procedure}
               </h2>
-              {(request.region || request.sessions || request.gender) && (
+              {(request.region || request.sessions) && (
                 <div className="flex flex-wrap gap-2 mt-2">
                   {request.region && (
                     <span className="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded-full border border-indigo-100">
@@ -196,11 +195,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                   {request.sessions && (
                     <span className="text-xs bg-purple-50 text-purple-700 px-2 py-1 rounded-full border border-purple-100">
                       🔁 {request.sessions} seans
-                    </span>
-                  )}
-                  {request.gender && (
-                    <span className="text-xs bg-pink-50 text-pink-700 px-2 py-1 rounded-full border border-pink-100">
-                      👤 {request.gender === 'female' ? 'Kadın' : request.gender === 'male' ? 'Erkek' : request.gender}
                     </span>
                   )}
                 </div>
