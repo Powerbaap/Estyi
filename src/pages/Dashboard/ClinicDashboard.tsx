@@ -72,12 +72,12 @@ const ClinicDashboard: React.FC = () => {
       try {
         const { data } = await supabase
           .from('clinics')
-          .select('name, plan')
+          .select('name')
           .or(`id.eq.${clinicId},email.eq.${user.email}`)
           .maybeSingle();
         if (data) {
           setClinicName(data.name || user.email || '');
-          setPlanName(data.plan || 'Standart Plan');
+          setPlanName('Standart Plan');
         } else {
           setClinicName((user as any)?.user_metadata?.name || user.email || '');
           setPlanName('Standart Plan');
