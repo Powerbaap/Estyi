@@ -222,6 +222,66 @@ const Footer = () => {
               </li>
             </ul>
           </div>
+
+          {/* Guides */}
+          <div>
+            <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center space-x-2">
+              <Star className="w-4 h-4 text-blue-400" />
+              <span>İşlem Rehberleri</span>
+            </h3>
+            <ul className="space-y-3">
+              <li>
+                <Link
+                  to="/rehber/sac-ekimi-fue"
+                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                  onClick={scrollToTopInstant}
+                >
+                  <span>Saç Ekimi FUE</span>
+                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/rehber/burun-estetigi"
+                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                  onClick={scrollToTopInstant}
+                >
+                  <span>Burun Estetiği</span>
+                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/rehber/dis-implant"
+                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                  onClick={scrollToTopInstant}
+                >
+                  <span>Diş İmplantı</span>
+                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/rehber/hollywood-gulus"
+                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                  onClick={scrollToTopInstant}
+                >
+                  <span>Hollywood Gülüşü</span>
+                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/fiyat-endeksi"
+                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                  onClick={scrollToTopInstant}
+                >
+                  <span>Fiyat Endeksi 2026</span>
+                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                </Link>
+              </li>
+            </ul>
+          </div>
         </div>
 
         <div className="border-t border-gray-800/50 mt-8 sm:mt-12 pt-8 sm:pt-12 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
