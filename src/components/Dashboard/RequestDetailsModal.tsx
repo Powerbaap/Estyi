@@ -104,7 +104,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
             .eq('request_id', offerData.request_id)
             .neq('id', offerId);
         } catch {}
-
+        
         try {
           await supabase
             .from('requests')
@@ -112,8 +112,49 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
             .eq('id', offerData.request_id);
         } catch {}
       }
-
+      
       setOfferStatuses(prev => ({ ...prev, [offerId]: 'accepted' }));
+
+      // Conversation oluştur
+      let conversationId: string | null = null;
+      try {
+        const { data: fullOffer } = await supabase
+          .from('offers')
+          .select('id, request_id, clinic_id, price_min, currency')
+          .eq('id', offerId)
+          .single();
+        if (fullOffer) {
+          const { data: sessionData } = await supabase.auth.getSession();
+          const userId = sessionData?.session?.user?.id;
+          if (userId && fullOffer.clinic_id) {
+            const { data: existingConv } = await supabase
+              .from('conversations')
+              .select('id')
+              .eq('user_id', userId)
+              .eq('clinic_id', fullOffer.clinic_id)
+              .maybeSingle();
+            if (existingConv?.id) {
+              conversationId = existingConv.id;
+            } else {
+              const { data: newConv } = await supabase
+                .from('conversations')
+                .insert({ user_id: userId, clinic_id: fullOffer.clinic_id })
+                .select('id')
+                .single();
+              conversationId = newConv?.id || null;
+            }
+            if (conversationId) {
+              await supabase.from('messages').insert({
+                conversation_id: conversationId,
+                sender_id: userId,
+                content: `Merhaba, teklifinizi kabul ettim. Detaylar hakkında görüşmek istiyorum.`,
+              });
+            }
+          }
+        }
+      } catch (convErr) {
+        console.error('Conversation oluşturma hatası:', convErr);
+      }
 
       navigate('/messages', {
         state: {
@@ -121,6 +162,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
           messageType: 'clinic_contact',
           offerAccepted: true,
           offerId: offerId,
+          conversationId: conversationId,
         },
       });
       onClose();
@@ -342,12 +384,17 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                               <h4 
                                 className="text-xl font-bold text-gray-900 cursor-pointer hover:text-blue-600 transition-colors truncate"
                                 onClick={() => {
-                                  navigate('/clinic-profile', { 
-                                    state: { 
-                                      clinicName: offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik',
-                                      clinicCountry: offer.country ?? offer.clinicCountry ?? offer.clinics?.country ?? ''
-                                    } 
-                                  });
+                                  const cId = offer.clinics?.id ?? (offer as any).clinic_id;
+                                  if (cId) {
+                                    navigate(`/clinic/${cId}`);
+                                  } else {
+                                    navigate('/clinic-profile', { 
+                                      state: { 
+                                        clinicName: offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik',
+                                        clinicCountry: offer.country ?? (offer as any).clinicCountry ?? offer.clinics?.country_code ?? ''
+                                      } 
+                                    });
+                                  }
                                   onClose();
                                 }}
                               >
@@ -375,7 +422,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             <div className="flex items-center space-x-6 text-sm text-gray-600 flex-wrap">
                               <span className="flex items-center space-x-2 flex-shrink-0">
                                 <MapPin className="w-4 h-4 text-green-500" />
-                                <span>{getCountryDisplayName(offer.country ?? (offer as any).clinicCountry ?? offer.clinics?.country ?? '')}</span>
+                                <span>{getCountryDisplayName(offer.country ?? (offer as any).clinicCountry ?? offer.clinics?.country_code ?? '')}</span>
                               </span>
                               {(offer.clinics?.rating ?? (offer as any).clinicRating) > 0 && (
                                 <span className="flex items-center space-x-2 flex-shrink-0">
