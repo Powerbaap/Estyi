@@ -1,0 +1,28 @@
+ [build]
+   command = "npm run build"
+   publish = "dist"
+
+ [[redirects]]
+   from = "/*"
+   to = "/index.html"
+   status = 200
+
+ [[headers]]
+   for = "/rehber/*"
+   [headers.values]
+     X-Robots-Tag = "index, follow"
+
+ [[headers]]
+   for = "/fiyat-endeksi"
+   [headers.values]
+     X-Robots-Tag = "index, follow"
+
+ [[headers]]
+   for = "/admin/*"
+   [headers.values]
+     X-Robots-Tag = "noindex, nofollow"
+
+ [[headers]]
+   for = "/dashboard"
+   [headers.values]
+     X-Robots-Tag = "noindex, nofollow"
