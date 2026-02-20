@@ -98,12 +98,7 @@ const ProcedureGuide: React.FC = () => {
             </div>
             <h1 className="text-3xl md:text-4xl font-bold mb-4">{guide.title.split(' - ')[0]}</h1>
             <p className="text-lg text-blue-100 leading-relaxed mb-6">{guide.summary}</p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-              <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
-                <DollarSign className="w-5 h-5 mx-auto mb-1 text-green-300" />
-                <div className="text-xs text-blue-200">Fiyat Aralığı</div>
-                <div className="font-bold text-sm">{guide.priceRange.india} ~</div>
-              </div>
+            <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Clock className="w-5 h-5 mx-auto mb-1 text-yellow-300" />
                 <div className="text-xs text-blue-200">Süre</div>
