@@ -292,7 +292,7 @@ export const requestService = {
               try {
                 const { data: clinic } = await supabase
                   .from('clinics')
-                  .select('id, name, country_code, city, rating, review_count, specialities')
+                  .select('id, name, country_code, city, rating, reviews, specialties')
                   .eq('id', offer.clinic_id)
                   .maybeSingle();
                 return { ...offer, clinics: clinic || null };
