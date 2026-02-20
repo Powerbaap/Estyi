@@ -51,6 +51,9 @@ const DMCA = lazy(() => import('./pages/Legal/DMCA'));
 const MedicalDisclaimer = lazy(() => import('./pages/Legal/MedicalDisclaimer'));
 const AllLegal = lazy(() => import('./pages/Legal/AllLegal'));
 
+const ProcedureGuide = lazy(() => import('./pages/Guide/ProcedureGuide'));
+const PriceIndex = lazy(() => import('./pages/Guide/PriceIndex'));
+
 const ACCESS_CACHE_KEY = 'estyi_user_access_cache';
 
 type CachedAccess = {
@@ -203,6 +206,8 @@ function AppContent() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/rehber/:slug" element={<ProcedureGuide />} />
+            <Route path="/fiyat-endeksi" element={<PriceIndex />} />
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/terms" element={<TermsOfUse />} />
             <Route path="/terms-of-use" element={<TermsOfUse />} />
