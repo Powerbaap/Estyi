@@ -283,4 +283,176 @@ export const PROCEDURE_GUIDES: ProcedureGuideInfo[] = [
     notIncludes: ['Uçak bileti', 'Konaklama', 'Kök kanal tedavisi', 'Diş eti estetiği'],
     category: 'Diş',
   },
+  {
+    slug: 'lazer-epilasyon',
+    procedureKey: 'lazer_epilasyon',
+    title: 'Lazer Epilasyon - 2026 Rehberi ve Fiyatlar',
+    metaDescription: 'Lazer epilasyon rehberi. 2026 fiyatlar, seans sayısı ve sonuçlar.',
+    summary:
+      'Lazer epilasyon, ışık enerjisi ile kıl köklerini kalıcı etkisiz hale getiren işlemdir. 6-10 seans ile %80-90 kalıcı azalma sağlanır.',
+    priceRange: {
+      turkey: '50 - 500 USD',
+      europe: '200 - 2.000 EUR',
+      usa: '300 - 3.000 USD',
+    },
+    duration: '15-60 dk',
+    recoveryTime: 'Yok',
+    anesthesia: 'Gerek yok',
+    hospitalStay: 'Yok',
+    results: '6-10 seans sonrası %80-90 kalıcı azalma',
+    suitableFor: [
+      'Kalıcı tüy azalması isteyenler',
+      'Koyu tüylü açık tenli kişiler',
+      'Ağdadan kurtulmak isteyenler',
+    ],
+    notSuitableFor: ['Hamile/emziren kadınlar', 'Aktif cilt enfeksiyonu', 'Çok açık/beyaz tüylü kişiler'],
+    risks: ['Geçici kızarıklık', 'Hafif yanma hissi', 'Nadir: pigmentasyon değişikliği'],
+    steps: [
+      { title: 'Cilt Analizi', desc: 'Uygun lazer türü seçilir' },
+      { title: 'Test Atışı', desc: 'Küçük alanda test' },
+      { title: 'Lazer Uygulaması', desc: 'Bölge taranır' },
+      { title: 'Bakım', desc: 'Soğutucu krem uygulanır' },
+    ],
+    faq: [
+      { q: 'Kaç seans?', a: '6-10 seans, arası 4-6 hafta.' },
+      { q: 'Ağrılı mı?', a: 'Hafif lastik çıtlama hissi.' },
+      { q: 'Kalıcı mı?', a: '%80-90 kalıcı. Yılda 1-2 idame seansı.' },
+    ],
+    includes: ['Cilt analizi', 'Test atışı', 'Lazer uygulaması', 'Soğutucu bakım'],
+    notIncludes: ['Birden fazla bölge', 'İdame seansları'],
+    category: 'Cilt & Dermatoloji',
+  },
+  {
+    slug: 'gogus-buyutme',
+    procedureKey: 'gogus_buyutme',
+    title: 'Göğüs Büyütme - 2026 Rehberi ve Fiyatlar',
+    metaDescription: 'Göğüs büyütme rehberi. 2026 fiyatları, implant türleri ve iyileşme.',
+    summary:
+      "Göğüs büyütme, silikon implant ile göğüs boyutunu artıran cerrahi işlemdir. Türkiye'de FDA onaylı implantlarla Avrupa'nın yarısı fiyata yapılır.",
+    priceRange: {
+      turkey: '3.000 - 5.500 USD',
+      europe: '6.000 - 12.000 EUR',
+      usa: '8.000 - 15.000 USD',
+    },
+    duration: '1-2 saat',
+    recoveryTime: '1-2 hafta',
+    anesthesia: 'Genel anestezi',
+    hospitalStay: '1 gece',
+    results: 'Anında görünür, 3-6 ayda yerleşme',
+    suitableFor: ['Göğüs boyutu artırmak isteyenler', 'Doğum sonrası hacim kaybı', 'Asimetri düzeltme'],
+    notSuitableFor: ['Aktif meme kanseri', 'Hamileler', 'Kontrol edilemeyen kronik hastalık'],
+    risks: ['Şişlik (2-3 hafta)', 'Kapsül kontraktürü (%5-10)', 'Nadir: implant yırtılma'],
+    steps: [
+      { title: 'Konsültasyon', desc: 'İmplant tipi ve boyutu, 3D simülasyon' },
+      { title: 'Ameliyat (1-2 saat)', desc: 'Genel anestezi altında implant yerleştirme' },
+      { title: 'Hastanede 1 Gece', desc: 'Gözlem' },
+      { title: 'İyileşme', desc: 'Destek sütyeni 4-6 hafta' },
+    ],
+    faq: [
+      {
+        q: 'Yuvarlak mı anatomik mi?',
+        a: 'Yuvarlak dolgun dekolte, anatomik doğal görünüm sağlar.',
+      },
+      { q: 'Ne kadar dayanır?', a: 'Modern implantlar 10-20+ yıl.' },
+      { q: 'Emzirmeyi etkiler mi?', a: 'Genelde hayır.' },
+    ],
+    includes: [
+      'Cerrah ve anestezi',
+      'Hastane 1 gece',
+      'FDA onaylı implant',
+      'Destek sütyeni',
+      'İlaçlar',
+      'Kontroller',
+    ],
+    notIncludes: ['Uçak bileti', 'Konaklama'],
+    category: 'Göğüs Cerrahisi',
+  },
+  {
+    slug: 'liposuction',
+    procedureKey: 'liposuction',
+    title: 'Liposuction - 2026 Rehberi ve Fiyatlar',
+    metaDescription: 'Liposuction rehberi. 2026 fiyatları, VASER vs klasik ve iyileşme.',
+    summary:
+      'Liposuction, inatçı yağ birikintilerini cerrahi alan vücut şekillendirme işlemidir. VASER, lazer ve klasik teknikleri vardır.',
+    priceRange: {
+      turkey: '2.000 - 5.000 USD',
+      europe: '4.000 - 10.000 EUR',
+      usa: '5.000 - 12.000 USD',
+    },
+    duration: '1-3 saat',
+    recoveryTime: '1-2 hafta',
+    anesthesia: 'Genel veya lokal+sedasyon',
+    hospitalStay: 'Günübirlik veya 1 gece',
+    results: '3-6 ayda netleşir',
+    suitableFor: ['İnatçı bölgesel yağlar', 'Normal kiloya yakın bireyler', 'Deri elastikiyeti iyi olanlar'],
+    notSuitableFor: ['Obez bireyler', 'Deri sarkması fazla olanlar', 'Hamileler'],
+    risks: ['Şişlik (2-4 hafta)', 'Geçici uyuşukluk', 'Nadir: seroma', 'Nadir: deri düzensizliği'],
+    steps: [
+      { title: 'Vücut Analizi', desc: 'Bölgeler işaretlenir' },
+      { title: 'Anestezi', desc: 'Lokal veya genel' },
+      { title: 'Yağ Aspirasyonu', desc: 'Kanüller ile yağ vakumlanır' },
+      { title: 'Korse', desc: '4-6 hafta kompresyon' },
+    ],
+    faq: [
+      { q: 'Kalıcı mı?', a: 'Evet, alınan yağ hücreleri geri gelmez.' },
+      { q: 'VASER farkı?', a: 'Ultrasonik enerji ile daha hassas şekillendirme.' },
+      { q: 'Yağ transfer edilebilir mi?', a: 'Evet, BBL veya yüz dolgunlaştırma için.' },
+    ],
+    includes: ['Cerrah ve anestezi', 'Ameliyathane', 'Korse', 'İlaçlar', 'Kontroller'],
+    notIncludes: ['Uçak bileti', 'Konaklama', 'VASER ek ücreti'],
+    category: 'Vücut Cerrahisi',
+  },
+  {
+    slug: 'karin-germe',
+    procedureKey: 'abdominoplasti',
+    title: 'Karın Germe - 2026 Rehberi ve Fiyatlar',
+    metaDescription: 'Karın germe rehberi. 2026 fiyatları, mini vs tam ve iyileşme süreci.',
+    summary:
+      'Abdominoplasti, karın bölgesindeki fazla deri ve yağı alarak kasları sıkılaştıran cerrahi işlemdir. Doğum veya kilo kaybı sonrası tercih edilir.',
+    priceRange: {
+      turkey: '3.000 - 6.000 USD',
+      europe: '6.000 - 12.000 EUR',
+      usa: '8.000 - 15.000 USD',
+    },
+    duration: '2-4 saat',
+    recoveryTime: '2-3 hafta',
+    anesthesia: 'Genel anestezi',
+    hospitalStay: '1-2 gece',
+    results: 'Anında görünür, 6-12 ayda nihai',
+    suitableFor: ['Doğum sonrası karın sarkması', 'Büyük kilo kaybı sonrası', 'Karın kasları ayrılması (diastazis)'],
+    notSuitableFor: ['Gelecekte hamilelik planlayanlar', 'Aktif sigara içenler', 'BMI 30 üzeri'],
+    risks: ['Şişlik (3-4 hafta)', 'İz (bikini altında)', 'Nadir: seroma', 'Geçici uyuşukluk'],
+    steps: [
+      { title: 'Konsültasyon', desc: 'Mini veya tam abdominoplasti planı' },
+      { title: 'Ameliyat (2-4 saat)', desc: 'Fazla deri/yağ alınır, kaslar dikilir' },
+      { title: 'Hastane (1-2 gece)', desc: 'Drenler takılır' },
+      { title: 'İyileşme', desc: 'Korse 6-8 hafta, 6 hafta sonra spor' },
+    ],
+    faq: [
+      {
+        q: 'Mini ve tam farkı?',
+        a: 'Mini sadece göbek altı. Tam tüm karın, göbek yeniden konumlandırılır.',
+      },
+      {
+        q: 'İz kalır mı?',
+        a: 'Evet ama bikini altında gizlenir, 12-18 ayda solar.',
+      },
+      { q: 'Kaç gün kalmalıyım?', a: '7-10 gün.' },
+    ],
+    includes: ['Cerrah ve anestezi', 'Hastane 1-2 gece', 'Korse', 'İlaçlar', 'Kontroller', 'Transfer'],
+    notIncludes: ['Uçak bileti', 'Konaklama', 'Liposuction ek bölge'],
+    category: 'Vücut Cerrahisi',
+  },
 ];
+
+export function getGuideBySlug(slug: string): ProcedureGuideInfo | undefined {
+  return PROCEDURE_GUIDES.find(g => g.slug === slug);
+}
+
+export function getGuideByKey(key: string): ProcedureGuideInfo | undefined {
+  return PROCEDURE_GUIDES.find(g => g.procedureKey === key);
+}
+
+export function getAllGuideSlugs(): string[] {
+  return PROCEDURE_GUIDES.map(g => g.slug);
+}
