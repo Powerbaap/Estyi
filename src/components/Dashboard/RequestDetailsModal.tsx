@@ -38,6 +38,7 @@ interface Request {
   createdAt: Date;
   offersCount: number;
   countries: string[];
+  citiesByCountry?: Record<string, string[]> | null;
   photos: number;
   offers: Offer[];
   photoUrls?: string[];
@@ -244,7 +245,15 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                 </span>
                 <span className="flex items-center space-x-2 flex-shrink-0">
                   <MapPin className="w-4 h-4 text-green-500" />
-                  <span>{formatCountries(Array.isArray(request.countries) ? request.countries : (request.countries ? [String(request.countries)] : []))}</span>
+                  <span>{(() => {
+                    const countries = Array.isArray(request.countries) ? request.countries : (request.countries ? [String(request.countries)] : []);
+                    const cbd = request.citiesByCountry;
+                    return countries.map(c => {
+                      const name = getCountryDisplayName(c);
+                      const cities = cbd && Array.isArray(cbd[c]) ? cbd[c] : [];
+                      return cities.length > 0 ? `${name} / ${cities.join(', ')}` : name;
+                    }).filter(Boolean).join(', ');
+                  })()}</span>
                 </span>
                 <span className={`px-3 py-1.5 rounded-full text-sm font-medium border ${getStatusColor(request.status)}`}>
                   {getStatusText(request.status)}
@@ -366,13 +375,14 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             <div className="flex items-center space-x-6 text-sm text-gray-600 flex-wrap">
                               <span className="flex items-center space-x-2 flex-shrink-0">
                                 <MapPin className="w-4 h-4 text-green-500" />
-                                <span>{offer.country ?? offer.clinicCountry ?? offer.clinics?.country ?? ''}</span>
+                                <span>{getCountryDisplayName(offer.country ?? (offer as any).clinicCountry ?? offer.clinics?.country ?? '')}</span>
                               </span>
-                              <span className="flex items-center space-x-2 flex-shrink-0">
-                                <Star className="w-4 h-4 text-amber-500" />
-                                <span className="font-medium">{offer.clinicRating}</span>
-                                <span className="text-gray-500">({offer.clinicReviews} {t('requestDetails.reviews')})</span>
-                              </span>
+                              {(offer.clinics?.rating ?? (offer as any).clinicRating) > 0 && (
+                                <span className="flex items-center space-x-2 flex-shrink-0">
+                                  <Star className="w-4 h-4 text-amber-500" />
+                                  <span className="font-medium">{offer.clinics?.rating ?? (offer as any).clinicRating ?? 0}</span>
+                                </span>
+                              )}
                             </div>
                           </div>
                         </div>
@@ -395,23 +405,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-6 mb-6 text-sm">
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <Clock className="w-5 h-5 text-blue-500" />
-                          <div>
-                            <span className="font-medium text-gray-700">{t('requestDetails.duration')}:</span>
-                            <span className="text-gray-600 ml-2">{offer.duration}</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center space-x-3 p-3 bg-gray-50 rounded-xl">
-                          <span className="text-lg">🏥</span>
-                          <div>
-                            <span className="font-medium text-gray-700">{t('requestDetails.hospitalization')}:</span>
-                            <span className="text-gray-600 ml-2">{offer.hospitalization}</span>
-                          </div>
-                        </div>
-                      </div>
-
                       {offer.description && (
                         <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-100">
                           <p className="text-gray-700 text-sm leading-relaxed">
@@ -421,10 +414,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                       )}
 
                       <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-                        <div className="text-sm text-gray-500 flex-shrink-0 bg-gray-100 px-3 py-1.5 rounded-full">
-                          {t('requestDetails.offerNumber')} #{(typeof offer.id === 'string' ? offer.id : String(offer.id ?? '')).slice(-6).toUpperCase()}
-                        </div>
-                        
                         {/* Teklif Durumu */}
                         {offerStatuses[offer.id] === 'accepted' && (
                           <div className="flex items-center space-x-2 flex-shrink-0">
