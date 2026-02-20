@@ -282,13 +282,29 @@ export const requestService = {
         try {
           const { data: offers } = await supabase
             .from('offers')
-            .select('*, clinics(id, name, country, city, rating, review_count, certificate_files)')
+            .select('*')
             .eq('request_id', req.id)
             .order('created_at', { ascending: false });
+          const offerList = Array.isArray(offers) ? offers : [];
+          const enrichedOffers = await Promise.all(
+            offerList.map(async (offer: any) => {
+              if (!offer.clinic_id) return offer;
+              try {
+                const { data: clinic } = await supabase
+                  .from('clinics')
+                  .select('id, name, country, city, rating, review_count, certificate_files')
+                  .eq('id', offer.clinic_id)
+                  .maybeSingle();
+                return { ...offer, clinics: clinic || null };
+              } catch {
+                return offer;
+              }
+            })
+          );
           return {
             ...req,
-            offers: Array.isArray(offers) ? offers : [],
-            offersCount: Array.isArray(offers) ? offers.length : 0,
+            offers: enrichedOffers,
+            offersCount: enrichedOffers.length,
           };
         } catch {
           return { ...req, offers: [], offersCount: 0 };
