@@ -505,10 +505,10 @@ const UserDashboard: React.FC = () => {
                                 <div className="min-w-0 flex-1">
                                   <div className="flex items-center space-x-2 mb-1">
                                     <span className="font-semibold text-gray-900 truncate">
-                                      {offer.clinic_name ?? offer.clinicName ?? 'Klinik'}
+                                      {offer.clinics?.name ?? offer.clinic_name ?? offer.clinicName ?? 'Klinik'}
                                     </span>
                                     <span className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                                      ({offer.country ?? offer.clinicCountry ?? ''})
+                                      ({offer.clinics?.country_code ?? offer.country ?? offer.clinicCountry ?? ''})
                                     </span>
                                   </div>
                                   <div className="flex items-center space-x-2 text-xs text-gray-600">

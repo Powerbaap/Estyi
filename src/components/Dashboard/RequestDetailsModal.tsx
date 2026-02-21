@@ -85,7 +85,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
     try {
       const { error: offerError } = await supabase
         .from('offers')
-        .update({ status: 'accepted', updated_at: new Date().toISOString() })
+        .update({ status: 'accepted' })
         .eq('id', offerId);
 
       if (offerError) throw offerError;
@@ -100,7 +100,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
         try {
           await supabase
             .from('offers')
-            .update({ status: 'rejected', updated_at: new Date().toISOString() })
+            .update({ status: 'rejected' })
             .eq('request_id', offerData.request_id)
             .neq('id', offerId);
         } catch {}
@@ -108,7 +108,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
         try {
           await supabase
             .from('requests')
-            .update({ status: 'accepted', updated_at: new Date().toISOString() })
+            .update({ status: 'accepted' })
             .eq('id', offerData.request_id);
         } catch {}
       }
@@ -179,7 +179,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
     try {
       const { error } = await supabase
         .from('offers')
-        .update({ status: 'rejected', updated_at: new Date().toISOString() })
+        .update({ status: 'rejected' })
         .eq('id', offerId);
 
       if (error) throw error;
