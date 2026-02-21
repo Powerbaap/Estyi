@@ -95,6 +95,7 @@ const UserDashboard: React.FC = () => {
           return;
         }
         const userRequests = await requestService.getUserRequests(user.id);
+        console.log('[DASHBOARD] loaded requests:', Array.isArray(userRequests) ? userRequests.length : 0);
         const mapped = (Array.isArray(userRequests) ? userRequests : []).map((r: any) => {
           return {
             id: r.id,

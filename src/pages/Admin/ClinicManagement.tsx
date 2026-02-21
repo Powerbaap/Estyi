@@ -385,7 +385,7 @@ const ClinicManagement: React.FC = () => {
                     currency: 'USD',
                     price_min: priceValue,
                     price_max: priceValue,
-                cities: null
+                cities: []
               });
             }
           }
@@ -396,6 +396,7 @@ const ClinicManagement: React.FC = () => {
               .insert(rows);
             if (priceErr) {
               console.error('clinic_price_rules insert hatası:', priceErr);
+              alert('Fiyat kuralları kaydedilirken bir hata oluştu. Lütfen tekrar deneyin veya sistem yöneticisine başvurun.');
             }
           }
         }
