@@ -386,7 +386,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                                 onClick={() => {
                                   const cId = offer.clinics?.id ?? (offer as any).clinic_id;
                                   if (cId) {
-                                    navigate(`/clinic/${cId}`);
+                                    navigate(`/clinic/${cId}/profile`);
                                   } else {
                                     navigate('/clinic-profile', { 
                                       state: { 

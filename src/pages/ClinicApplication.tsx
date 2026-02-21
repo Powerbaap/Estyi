@@ -337,13 +337,11 @@ const ClinicApplication: React.FC = () => {
         alert('Şifre en az 8 karakter olmalı ve en az bir büyük harf içermelidir.');
         return;
       }
-      // Şehir seçimi validasyonu
-      const selectedCountries = formData.countries || [];
-      const hasMissingCities = selectedCountries.some((countryKey: string) => {
+      const hasMissingCities = (formData.countries || []).some((countryKey: string) => {
         const cities = citiesByCountry[countryKey];
         return !cities || cities.length === 0;
       });
-      if (selectedCountries.length > 0 && hasMissingCities) {
+      if ((formData.countries || []).length > 0 && hasMissingCities) {
         alert(getTranslation('clinicApplication.cityRequired', 'Lütfen seçtiğiniz her ülke için en az bir şehir seçin.'));
         return;
       }
