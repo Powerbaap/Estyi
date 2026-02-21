@@ -462,7 +462,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
 
                       <div className="flex items-center justify-between pt-6 border-t border-gray-100">
                         {/* Teklif Durumu */}
-                        {offerStatuses[offer.id] === 'accepted' && (
+                        {(offerStatuses[offer.id] === 'accepted' || (offer as any).status === 'accepted') && (
                           <div className="flex items-center space-x-2 flex-shrink-0">
                             <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                               <span className="text-green-600 text-lg">✓</span>
@@ -471,7 +471,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                           </div>
                         )}
                         
-                        {offerStatuses[offer.id] === 'rejected' && (
+                        {(offerStatuses[offer.id] === 'rejected' || (offer as any).status === 'rejected') && (
                           <div className="flex items-center space-x-2 flex-shrink-0">
                             <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                               <span className="text-red-600 text-lg">✗</span>
@@ -481,7 +481,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         )}
                         
                         {/* Aksiyon Butonları */}
-                        {!offerStatuses[offer.id] && (
+                        {!offerStatuses[offer.id] && (offer as any).status !== 'accepted' && (offer as any).status !== 'rejected' && (
                           <div className="flex items-center space-x-3 flex-shrink-0">
                               <button
                               onClick={() => handleAcceptOffer(offer.id, offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
@@ -520,7 +520,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         )}
                         
                         {/* Kabul/Red sonrası sadece iletişim butonu */}
-                        {offerStatuses[offer.id] && (
+                        {(offerStatuses[offer.id] || (offer as any).status === 'accepted' || (offer as any).status === 'rejected') && (
                           <button
                             onClick={() => handleContactClinic(offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
                             className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"

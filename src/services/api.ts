@@ -286,21 +286,23 @@ export const requestService = {
             .eq('request_id', req.id)
             .order('created_at', { ascending: false });
           const offerList = Array.isArray(offers) ? offers : [];
-          const enrichedOffers = await Promise.all(
-            offerList.map(async (offer: any) => {
-              if (!offer.clinic_id) return offer;
-              try {
-                const { data: clinic } = await supabase
-                  .from('clinics')
-                  .select('id, name, country_code, city, rating, reviews, specialties')
-                  .eq('id', offer.clinic_id)
-                  .maybeSingle();
-                return { ...offer, clinics: clinic || null };
-              } catch {
-                return offer;
+          const clinicIds = [...new Set(offerList.map((o: any) => o.clinic_id).filter(Boolean))];
+          let clinicsMap: Record<string, any> = {};
+          if (clinicIds.length > 0) {
+            try {
+              const { data: clinicsData } = await supabase
+                .from('clinics')
+                .select('id, name, country_code, city, rating, reviews, specialties')
+                .in('id', clinicIds);
+              if (Array.isArray(clinicsData)) {
+                clinicsData.forEach((c: any) => { clinicsMap[c.id] = c; });
               }
-            })
-          );
+            } catch {}
+          }
+          const enrichedOffers = offerList.map((offer: any) => ({
+            ...offer,
+            clinics: offer.clinic_id ? (clinicsMap[offer.clinic_id] || null) : null,
+          }));
           return {
             ...req,
             offers: enrichedOffers,
