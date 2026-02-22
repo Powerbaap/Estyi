@@ -18,11 +18,16 @@
     "trustMessage": "10,000+ trusted patients prefer us",
     "guides": "Procedure Guides",
     "guideFue": "Hair Transplant FUE",
+    "guideDhi": "Hair Transplant DHI",
     "guideRhinoplasty": "Rhinoplasty",
     "guideDental": "Dental Implant",
     "guideHollywood": "Hollywood Smile",
     "guideLipo": "Liposuction",
-    "guidePriceIndex": "Price Index 2026"
+    "guidePriceIndex": "Price Index 2026",
+    "comparisons": "Comparisons",
+    "compFueDhi": "FUE vs DHI",
+    "compTrPl": "Turkey vs Poland",
+    "compIstAnt": "Istanbul vs Antalya"
   },
   "countries": {
     "turkey": "Turkey",
@@ -2005,5 +2010,30 @@
     "hairTransplantDetails": "Hair Transplant Details",
     "liposuctionQuestion": "Liposuction Question",
     "hairTransplantAppointment": "Hair Transplant Appointment"
+  },
+  "guide": {
+    "priceComparison": "Price Comparison (2026)",
+    "priceComparisonTitle": "How Much Does This Procedure Cost?",
+    "country": "Country",
+    "priceRange": "Price Range (USD)",
+    "procedureProcess": "How Does the Procedure Work?",
+    "suitableFor": "Who Is a Good Candidate?",
+    "notSuitableFor": "Who Is Not Suitable?",
+    "risks": "What Are the Known Risks?",
+    "faq": "Frequently Asked Questions",
+    "getFreeQuote": "Get Free Price Quotes",
+    "getPersonalQuote": "Get instant quotes from multiple certified clinics through Estyi.",
+    "getQuoteBtn": "Get Quote",
+    "medicalDisclaimer": "This page is for general information only and does not constitute medical advice.",
+    "lastUpdated": "Last updated: February 2026",
+    "otherGuides": "Other Guides",
+    "breadcrumbHome": "Home",
+    "breadcrumbGuide": "Guide",
+    "duration": "Duration",
+    "recovery": "Recovery",
+    "anesthesia": "Anesthesia",
+    "notFound": "Page Not Found",
+    "backHome": "Back to Home",
+    "medicalInfo": "Medical Information"
   }
 }

@@ -18,11 +18,16 @@
     "trustMessage": "10,000+ مريض موثوق يفضلنا",
     "guides": "أدلة العمليات",
     "guideFue": "زراعة الشعر FUE",
+    "guideDhi": "زراعة الشعر DHI",
     "guideRhinoplasty": "تجميل الأنف",
     "guideDental": "زراعة الأسنان",
     "guideHollywood": "ابتسامة هوليوود",
     "guideLipo": "شفط الدهون",
-    "guidePriceIndex": "مؤشر الأسعار 2026"
+    "guidePriceIndex": "مؤشر الأسعار 2026",
+    "comparisons": "مقارنات",
+    "compFueDhi": "FUE مقابل DHI",
+    "compTrPl": "تركيا مقابل بولندا",
+    "compIstAnt": "إسطنبول مقابل أنطاليا"
   },
   "countries": {
     "turkey": "تركيا",
@@ -1922,5 +1927,30 @@
     "hairTransplantDetails": "تفاصيل زرع الشعر",
     "liposuctionQuestion": "سؤال شفط الدهون",
     "hairTransplantAppointment": "موعد زرع الشعر"
+  },
+  "guide": {
+    "priceComparison": "مقارنة الأسعار (2026)",
+    "priceComparisonTitle": "كم تكلفة هذا الإجراء؟",
+    "country": "الدولة",
+    "priceRange": "نطاق السعر (USD)",
+    "procedureProcess": "كيف يتم الإجراء؟",
+    "suitableFor": "من هم المرشحون المناسبون؟",
+    "notSuitableFor": "من لا يناسبهم هذا الإجراء؟",
+    "risks": "ما هي المخاطر المعروفة؟",
+    "faq": "الأسئلة الشائعة",
+    "getFreeQuote": "احصل على عروض أسعار مجانية",
+    "getPersonalQuote": "احصل على عروض فورية من عيادات معتمدة عبر Estyi.",
+    "getQuoteBtn": "احصل على عرض",
+    "medicalDisclaimer": "هذه الصفحة لأغراض معلوماتية عامة فقط ولا تمثل نصيحة طبية.",
+    "lastUpdated": "آخر تحديث: فبراير 2026",
+    "otherGuides": "أدلة أخرى",
+    "breadcrumbHome": "الرئيسية",
+    "breadcrumbGuide": "الدليل",
+    "duration": "المدة",
+    "recovery": "التعافي",
+    "anesthesia": "التخدير",
+    "notFound": "الصفحة غير موجودة",
+    "backHome": "العودة للرئيسية",
+    "medicalInfo": "المعلومات الطبية"
   }
 }
