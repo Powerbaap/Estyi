@@ -183,6 +183,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
               await supabase.from('messages').insert({
                 conversation_id: conversationId,
                 sender_id: userId,
+                sender_type: 'user',
                 content: `Merhaba, teklifinizi kabul ettim. Detaylar hakkında görüşmek istiyorum.`,
               });
             }

@@ -201,6 +201,7 @@ const ClinicMessages: React.FC = () => {
     const { error } = await supabase.from('messages').insert({
       conversation_id: selectedConversation,
       sender_id: currentUserId,
+      sender_type: 'clinic',
       content,
     });
     if (error) {

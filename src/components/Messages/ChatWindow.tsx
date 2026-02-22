@@ -129,7 +129,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     try {
       const { error } = await supabase
         .from('messages')
-        .insert({ conversation_id: conversationId, sender_id: user.id, content: newMessage.trim() });
+        .insert({ conversation_id: conversationId, sender_id: user.id, sender_type: 'user', content: newMessage.trim() });
       if (!error) { setNewMessage(''); }
       else { console.error('Mesaj gönderme hatası:', error); }
     } catch (err) { console.error('Mesaj gönderme hatası:', err); }
