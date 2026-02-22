@@ -1,6 +1,6 @@
 import React, { memo } from 'react';
 import { Link } from 'react-router-dom';
-import { Shield, Lock, Globe, Sparkles, Star } from 'lucide-react';
+import { Shield, Lock, Globe, Sparkles } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from './Logo';
 import { useTranslation } from 'react-i18next';
@@ -93,13 +93,17 @@ const Footer = () => {
   };
 
   // Güvenli çeviri fonksiyonu - mevcut dile göre fallback kullan
-  const safeTranslate = (key: string) => {
+  const safeTranslate = (key: string, defaultText?: string) => {
     if (ready) {
       const translation = t(key);
       // Eğer çeviri bulunduysa ve anahtar kendisi değilse kullan
       if (translation && translation !== key) {
         return translation;
       }
+    }
+
+    if (defaultText) {
+      return defaultText;
     }
 
     // Fallback: mevcut dile göre uygun metni döndür
@@ -191,8 +195,7 @@ const Footer = () => {
 
           {/* Legal */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center space-x-2">
-              <Star className="w-4 h-4 text-pink-400" />
+            <h3 className="text-base sm:text-lg font-semibold mb-4">
               <span>{safeTranslate('footer.legal')}</span>
             </h3>
             <ul className="space-y-3">
@@ -225,70 +228,59 @@ const Footer = () => {
 
           {/* Guides */}
           <div>
-            <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center space-x-2">
-              <span>{t('footer.guides')}</span>
+            <h3 className="text-base sm:text-lg font-semibold mb-4">
+              <span>{safeTranslate('footer.guides', 'İşlem Rehberleri')}</span>
             </h3>
             <ul className="space-y-3">
-              <li>
-                <Link
-                  to="/rehber/sac-ekimi-fue"
-                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <span>{t('footer.guideFue')}</span>
-                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/rehber/burun-estetigi"
-                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <span>{t('footer.guideRhinoplasty')}</span>
-                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/rehber/dis-implant"
-                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <span>{t('footer.guideDental')}</span>
-                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/rehber/hollywood-gulus"
-                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <span>{t('footer.guideHollywood')}</span>
-                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/rehber/liposuction"
-                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <span>{t('footer.guideLipo')}</span>
-                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/fiyat-endeksi"
-                  className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
-                  onClick={scrollToTopInstant}
-                >
-                  <span>{t('footer.guidePriceIndex')}</span>
-                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
-                </Link>
-              </li>
+              {[
+                { to: '/rehber/sac-ekimi-fue', label: safeTranslate('footer.guideFue', 'Saç Ekimi FUE') },
+                { to: '/rehber/sac-ekimi-dhi', label: safeTranslate('footer.guideDhi', 'Saç Ekimi DHI') },
+                { to: '/rehber/burun-estetigi', label: safeTranslate('footer.guideRhinoplasty', 'Burun Estetiği') },
+                { to: '/rehber/dis-implant', label: safeTranslate('footer.guideDental', 'Diş İmplantı') },
+                { to: '/rehber/hollywood-gulus', label: safeTranslate('footer.guideHollywood', 'Hollywood Gülüşü') },
+                { to: '/rehber/liposuction', label: safeTranslate('footer.guideLipo', 'Liposuction') },
+                { to: '/fiyat-endeksi', label: safeTranslate('footer.guidePriceIndex', 'Fiyat Endeksi 2026') },
+              ].map(item => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                    onClick={scrollToTopInstant}
+                  >
+                    <span>{item.label}</span>
+                    <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div>
+            <h3 className="text-base sm:text-lg font-semibold mb-4">
+              <span>{safeTranslate('footer.comparisons', 'Karşılaştırmalar')}</span>
+            </h3>
+            <ul className="space-y-3">
+              {[
+                { to: '/karsilastirma/fue-vs-dhi', label: 'FUE vs DHI' },
+                {
+                  to: '/karsilastirma/turkiye-vs-polonya-sac-ekimi',
+                  label: safeTranslate('footer.compTrPl', 'Türkiye vs Polonya')
+                },
+                {
+                  to: '/karsilastirma/istanbul-vs-antalya-estetik',
+                  label: safeTranslate('footer.compIstAnt', 'İstanbul vs Antalya')
+                }
+              ].map(item => (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
+                    onClick={scrollToTopInstant}
+                  >
+                    <span>{item.label}</span>
+                    <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         </div>

@@ -30,9 +30,11 @@ const ProcedureGuide: React.FC = () => {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Sayfa Bulunamadı</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">
+            {t('guide.notFound', 'Sayfa Bulunamadı')}
+          </h1>
           <Link to="/" className="text-blue-600 hover:underline">
-            Ana Sayfaya Dön
+            {t('guide.backHome', 'Ana Sayfaya Dön')}
           </Link>
         </div>
       </div>
@@ -43,17 +45,23 @@ const ProcedureGuide: React.FC = () => {
     setOpenFaq(prev => (prev.includes(i) ? prev.filter(x => x !== i) : [...prev, i]));
   };
 
-  const schema = {
+  const medicalSchema = {
     '@context': 'https://schema.org',
     '@type': 'MedicalWebPage',
     name: guide.title,
     description: guide.metaDescription,
     url: `https://estyi.com/rehber/${guide.slug}`,
+    dateModified: '2026-02-01',
+    author: {
+      '@type': 'Organization',
+      name: 'Estyi',
+      url: 'https://estyi.com',
+    },
     mainEntity: {
       '@type': 'MedicalProcedure',
       name: guide.title.split(' - ')[0],
       procedureType: 'https://schema.org/CosmeticProcedure',
-      howPerformed: guide.steps.map(s => s.desc).join(' '),
+      howPerformed: guide.steps.map((s: any) => s.desc).join(' '),
       followup: guide.recoveryTime,
       risks: guide.risks.join(', '),
     },
@@ -62,7 +70,7 @@ const ProcedureGuide: React.FC = () => {
   const faqSchema = {
     '@context': 'https://schema.org',
     '@type': 'FAQPage',
-    mainEntity: guide.faq.map(f => ({
+    mainEntity: guide.faq.map((f: any) => ({
       '@type': 'Question',
       name: f.q,
       acceptedAnswer: {
@@ -71,6 +79,55 @@ const ProcedureGuide: React.FC = () => {
       },
     })),
   };
+
+  const howToSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'HowTo',
+    name: guide.title.split(' - ')[0],
+    description: guide.summary,
+    totalTime: guide.duration,
+    step: guide.steps.map((step: any, i: number) => ({
+      '@type': 'HowToStep',
+      position: i + 1,
+      name: step.title,
+      text: step.desc,
+    })),
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Ana Sayfa',
+        item: 'https://estyi.com',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Rehber',
+        item: 'https://estyi.com/fiyat-endeksi',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: guide.title.split(' - ')[0],
+        item: `https://estyi.com/rehber/${guide.slug}`,
+      },
+    ],
+  };
+
+  const priceRows = [
+    { flag: '🇮🇳', code: 'IN', name: 'Hindistan', price: guide.priceRange.india },
+    { flag: '🇲🇽', code: 'MX', name: 'Meksika', price: guide.priceRange.mexico },
+    { flag: '🇹🇷', code: 'TR', name: 'Türkiye', price: guide.priceRange.turkey },
+    { flag: '🇹🇭', code: 'TH', name: 'Tayland', price: guide.priceRange.thailand },
+    { flag: '🇵🇱', code: 'PL', name: 'Polonya', price: guide.priceRange.poland },
+    { flag: '🇬🇧', code: 'GB', name: 'İngiltere', price: guide.priceRange.uk },
+    { flag: '🇺🇸', code: 'US', name: 'ABD', price: guide.priceRange.usa },
+  ];
 
   return (
     <>
@@ -81,37 +138,44 @@ const ProcedureGuide: React.FC = () => {
         <meta property="og:title" content={guide.title} />
         <meta property="og:description" content={guide.metaDescription} />
         <meta property="og:type" content="article" />
-        <script type="application/ld+json">{JSON.stringify(schema)}</script>
+        <meta name="robots" content="index, follow" />
+        <script type="application/ld+json">{JSON.stringify(medicalSchema)}</script>
         <script type="application/ld+json">{JSON.stringify(faqSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(howToSchema)}</script>
+        <script type="application/ld+json">{JSON.stringify(breadcrumbSchema)}</script>
       </Helmet>
       <div className="min-h-screen bg-gray-50">
         <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 md:py-16">
           <div className="max-w-4xl mx-auto px-4">
-            <div className="flex items-center gap-2 text-blue-200 text-sm mb-3">
+            <nav className="flex items-center gap-2 text-blue-200 text-sm mb-4">
               <Link to="/" className="hover:text-white">
-                Ana Sayfa
+                {t('guide.breadcrumbHome', 'Ana Sayfa')}
               </Link>
               <span>/</span>
-              <span>Rehber</span>
+              <Link to="/fiyat-endeksi" className="hover:text-white">
+                {t('guide.breadcrumbGuide', 'Rehber')}
+              </Link>
               <span>/</span>
-              <span className="text-white">{guide.category}</span>
+              <span className="text-white">{guide.title.split(' - ')[0]}</span>
+            </nav>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">{guide.title.split(' - ')[0]}</h1>
+            <div className="bg-white/15 backdrop-blur rounded-xl p-4 mb-6 border border-white/20">
+              <p className="text-base text-white leading-relaxed">{guide.summary}</p>
             </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-4">{guide.title.split(' - ')[0]}</h1>
-            <p className="text-lg text-blue-100 leading-relaxed mb-6">{guide.summary}</p>
-            <div className="grid grid-cols-3 md:grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Clock className="w-5 h-5 mx-auto mb-1 text-yellow-300" />
-                <div className="text-xs text-blue-200">Süre</div>
+                <div className="text-xs text-blue-200">{t('guide.duration', 'Süre')}</div>
                 <div className="font-bold text-sm">{guide.duration}</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Calendar className="w-5 h-5 mx-auto mb-1 text-orange-300" />
-                <div className="text-xs text-blue-200">İyileşme</div>
+                <div className="text-xs text-blue-200">{t('guide.recovery', 'İyileşme')}</div>
                 <div className="font-bold text-sm">{guide.recoveryTime}</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Stethoscope className="w-5 h-5 mx-auto mb-1 text-pink-300" />
-                <div className="text-xs text-blue-200">Anestezi</div>
+                <div className="text-xs text-blue-200">{t('guide.anesthesia', 'Anestezi')}</div>
                 <div className="font-bold text-sm">{guide.anesthesia}</div>
               </div>
             </div>
@@ -119,31 +183,33 @@ const ProcedureGuide: React.FC = () => {
         </section>
         <div className="max-w-4xl mx-auto px-4 py-8">
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {t('guide.priceComparison')}
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">
+              {t('guide.priceComparisonTitle', 'Bu İşlemi Yaptırmak Ne Kadar Tutar?')}
             </h2>
+            <p className="text-gray-500 text-sm mb-4">
+              {t('guide.priceComparison', 'Fiyat Karşılaştırması (2026)')}
+            </p>
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Ülke</th>
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Fiyat Aralığı (USD)</th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">
+                      {t('guide.country', 'Ülke')}
+                    </th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">
+                      {t('guide.priceRange', 'Fiyat Aralığı (USD)')}
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
-                  {[
-                    { flag: '🇮🇳', name: 'Hindistan', price: guide.priceRange.india },
-                    { flag: '🇲🇽', name: 'Meksika', price: guide.priceRange.mexico },
-                    { flag: '🇹🇷', name: 'Türkiye', price: guide.priceRange.turkey },
-                    { flag: '🇹🇭', name: 'Tayland', price: guide.priceRange.thailand },
-                    { flag: '🇵🇱', name: 'Polonya', price: guide.priceRange.poland },
-                    { flag: '🇬🇧', name: 'İngiltere', price: guide.priceRange.uk },
-                    { flag: '🇺🇸', name: 'ABD', price: guide.priceRange.usa },
-                  ].map((row, i) => (
+                  {priceRows.map((row, i) => (
                     <tr key={i} className="border-t hover:bg-gray-50">
-                      <td className="px-4 py-3 font-medium flex items-center gap-2">
-                        <span>{row.flag}</span>
-                        <span>{row.name}</span>
+                      <td className="px-4 py-3 font-medium">
+                        <span className="inline-flex items-center gap-2">
+                          <span>{row.flag}</span>
+                          <span className="text-xs text-gray-400 font-mono">{row.code}</span>
+                          <span>{row.name}</span>
+                        </span>
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-700">{row.price}</td>
                     </tr>
@@ -154,10 +220,10 @@ const ProcedureGuide: React.FC = () => {
           </section>
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {t('guide.procedureProcess')}
+              {t('guide.procedureProcess', 'İşlem Nasıl Gerçekleşir?')}
             </h2>
             <div className="space-y-3">
-              {guide.steps.map((step, i) => (
+              {guide.steps.map((step: any, i: number) => (
                 <div key={i} className="bg-white rounded-xl shadow-sm border p-4 flex gap-4">
                   <div className="flex-shrink-0 w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm">
                     {i + 1}
@@ -174,10 +240,10 @@ const ProcedureGuide: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm border p-5">
               <h2 className="text-lg font-bold text-green-700 mb-3 flex items-center gap-2">
                 <CheckCircle className="w-5 h-5" />
-                Kimler İçin Uygun?
+                {t('guide.suitableFor', 'Kimler İçin Uygun?')}
               </h2>
               <ul className="space-y-2">
-                {guide.suitableFor.map((item, i) => (
+                {guide.suitableFor.map((item: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
                     {item}
@@ -188,10 +254,10 @@ const ProcedureGuide: React.FC = () => {
             <div className="bg-white rounded-xl shadow-sm border p-5">
               <h2 className="text-lg font-bold text-red-700 mb-3 flex items-center gap-2">
                 <XCircle className="w-5 h-5" />
-                Kimler İçin Uygun Değil?
+                {t('guide.notSuitableFor', 'Kimler İçin Uygun Değil?')}
               </h2>
               <ul className="space-y-2">
-                {guide.notSuitableFor.map((item, i) => (
+                {guide.notSuitableFor.map((item: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <XCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
                     {item}
@@ -201,13 +267,12 @@ const ProcedureGuide: React.FC = () => {
             </div>
           </section>
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <AlertTriangle className="w-6 h-6 text-amber-500" />
-              {t('guide.risks')}
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {t('guide.risks', 'Bilinen Riskler Nelerdir?')}
             </h2>
             <div className="bg-amber-50 rounded-xl border border-amber-200 p-5">
               <ul className="space-y-2">
-                {guide.risks.map((r, i) => (
+                {guide.risks.map((r: string, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                     {r}
@@ -217,16 +282,16 @@ const ProcedureGuide: React.FC = () => {
             </div>
           </section>
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Heart className="w-6 h-6 text-purple-600" />
-              {t('guide.faq')}
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {t('guide.faq', 'Sıkça Sorulan Sorular')}
             </h2>
             <div className="space-y-2">
-              {guide.faq.map((item, i) => (
+              {guide.faq.map((item: any, i: number) => (
                 <div key={i} className="bg-white rounded-xl shadow-sm border overflow-hidden">
                   <button
                     onClick={() => toggleFaq(i)}
                     className="w-full px-5 py-4 flex items-center justify-between text-left"
+                    aria-expanded={openFaq.includes(i)}
                   >
                     <h3 className="font-semibold text-gray-900 pr-4">{item.q}</h3>
                     {openFaq.includes(i) ? (
@@ -245,16 +310,19 @@ const ProcedureGuide: React.FC = () => {
           <section className="mb-10">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
               <h2 className="text-2xl font-bold mb-3">
-                {t('guide.getFreeQuote')}
+                {t('guide.getFreeQuote', 'Ücretsiz Fiyat Teklifi Alın')}
               </h2>
               <p className="text-blue-100 mb-6">
-                Estyi ile birden fazla sertifikalı klinikten anında fiyat teklifi alın.
+                {t(
+                  'guide.getPersonalQuote',
+                  'Estyi ile birden fazla sertifikalı klinikten anında fiyat teklifi alın.'
+                )}
               </p>
               <Link
-                to={user ? "/request/new" : "/signup"}
-                className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-3 rounded-full hover:bg-blue-50"
+                to={user ? '/request/new' : '/signup'}
+                className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-3 rounded-full hover:bg-blue-50 transition-colors"
               >
-                {t('guide.getPersonalQuote')} <ArrowRight className="w-5 h-5" />
+                {t('guide.getQuoteBtn', 'Teklif Al')} <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </section>
@@ -262,23 +330,30 @@ const ProcedureGuide: React.FC = () => {
             <div className="bg-gray-100 rounded-xl p-5 text-xs text-gray-500">
               <p className="font-semibold text-gray-600 mb-2 flex items-center gap-1">
                 <Shield className="w-4 h-4" />
-                Medikal Bilgilendirme
+                {t('guide.medicalInfo', 'Medikal Bilgilendirme')}
               </p>
               <p>
-                Bu sayfa genel bilgilendirme amaçlıdır ve tıbbi tavsiye yerine geçmez. Son güncelleme: Şubat 2026.
+                {t(
+                  'guide.medicalDisclaimer',
+                  'Bu sayfa genel bilgilendirme amaçlıdır ve tıbbi tavsiye yerine geçmez.'
+                )}{' '}
+                {t('guide.lastUpdated', 'Son güncelleme: Şubat 2026')}
+                .
               </p>
             </div>
           </section>
           <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Diğer Rehberler</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">
+              {t('guide.otherGuides', 'Diğer Rehberler')}
+            </h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-              {PROCEDURE_GUIDES.filter(g => g.slug !== guide.slug)
+              {PROCEDURE_GUIDES.filter((g: any) => g.slug !== guide.slug)
                 .slice(0, 6)
-                .map(g => (
+                .map((g: any) => (
                   <Link
                     key={g.slug}
                     to={`/rehber/${g.slug}`}
-                    className="bg-white rounded-lg border p-3 hover:shadow-md"
+                    className="bg-white rounded-lg border p-3 hover:shadow-md transition-shadow"
                   >
                     <div className="text-xs text-blue-600 mb-1">{g.category}</div>
                     <div className="font-medium text-gray-900 text-sm">{g.title.split(' - ')[0]}</div>

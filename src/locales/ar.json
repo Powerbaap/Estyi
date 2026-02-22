@@ -311,8 +311,19 @@
     "risks": "المخاطر والتحذيرات",
     "faq": "الأسئلة الشائعة",
     "getFreeQuote": "احصل على عرض مجاني",
-    "getPersonalQuote": "احصل على عرض سعر شخصي"
-  }
+    "getPersonalQuote": "احصل على عرض سعر شخصي",
+    "notFound": "الصفحة غير موجودة",
+    "backHome": "العودة إلى الصفحة الرئيسية",
+    "breadcrumbHome": "الصفحة الرئيسية",
+    "breadcrumbGuide": "الدليل",
+    "duration": "المدة",
+    "recovery": "فترة التعافي",
+    "anesthesia": "التخدير",
+    "priceComparisonTitle": "كم تبلغ تكلفة هذه العملية؟",
+    "country": "البلد",
+    "priceRange": "نطاق السعر (دولار أمريكي)",
+    "suitableFor": "لمن هذه العملية مناسبة؟",
+    "notSuitableFor": "لمن هذه العملية غير مناسبة؟"
   },
   "terms": {
     "title": "شروط الاستخدام",

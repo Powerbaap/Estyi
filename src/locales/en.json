@@ -311,8 +311,19 @@
     "risks": "Risks & Considerations",
     "faq": "Frequently Asked Questions",
     "getFreeQuote": "Get Free Quote",
-    "getPersonalQuote": "Get Your Personal Price Quote"
-  }
+    "getPersonalQuote": "Get Your Personal Price Quote",
+    "notFound": "Page Not Found",
+    "backHome": "Back to Home",
+    "breadcrumbHome": "Home",
+    "breadcrumbGuide": "Guide",
+    "duration": "Duration",
+    "recovery": "Recovery",
+    "anesthesia": "Anesthesia",
+    "priceComparisonTitle": "How Much Does This Procedure Cost?",
+    "country": "Country",
+    "priceRange": "Price Range (USD)",
+    "suitableFor": "Who Is It Suitable For?",
+    "notSuitableFor": "Who Is It Not Suitable For?"
   },
   "terms": {
     "title": "Terms of Use",

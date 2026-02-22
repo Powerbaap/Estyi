@@ -386,8 +386,20 @@
     "risks": "Riskler ve Dikkat Edilmesi Gerekenler",
     "faq": "Sık Sorulan Sorular",
     "getFreeQuote": "Ücretsiz Teklif Al",
-    "getPersonalQuote": "Kişisel Fiyat Teklifinizi Alın"
-  }
+    "getPersonalQuote": "Kişisel Fiyat Teklifinizi Alın",
+    "notFound": "Sayfa Bulunamadı",
+    "backHome": "Ana Sayfaya Dön",
+    "breadcrumbHome": "Ana Sayfa",
+    "breadcrumbGuide": "Rehber",
+    "duration": "Süre",
+    "recovery": "İyileşme",
+    "anesthesia": "Anestezi",
+    "priceComparisonTitle": "Bu İşlemi Yaptırmak Ne Kadar Tutar?",
+    "country": "Ülke",
+    "priceRange": "Fiyat Aralığı (USD)",
+    "suitableFor": "Kimler İçin Uygun?",
+    "notSuitableFor": "Kimler İçin Uygun Değil?"
+  },
   "terms": {
     "title": "Kullanım Şartları",
     "subtitle": "Platform kullanım koşullarını öğrenin",
