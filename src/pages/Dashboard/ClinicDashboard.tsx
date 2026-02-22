@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
 import {
   LayoutDashboard,
@@ -26,6 +26,7 @@ const ClinicDashboard: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'messages' | 'fixedPrices' | 'profile' | 'membership'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
@@ -64,6 +65,14 @@ const ClinicDashboard: React.FC = () => {
     };
     checkFirstLogin();
   }, [user]);
+
+  useEffect(() => {
+    const state = location.state as { activeTab?: string } | undefined;
+    if (state?.activeTab) {
+      setActiveTab(state.activeTab as any);
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location.state]);
 
   useEffect(() => {
     const loadClinicInfo = async () => {
@@ -290,7 +299,7 @@ const ClinicDashboard: React.FC = () => {
                     const userId = offer.requests?.user_id;
                     const clinicUserId = user?.id;
                     if (!userId || !clinicUserId) {
-                      navigate('/messages');
+                      setActiveTab('messages');
                       return;
                     }
                     const { data: conv } = await supabase
@@ -300,9 +309,9 @@ const ClinicDashboard: React.FC = () => {
                       .eq('user_id', userId)
                       .maybeSingle();
                     if (conv?.id) {
-                      navigate('/messages', { state: { conversationId: conv.id } });
+                      setActiveTab('messages');
                     } else {
-                      navigate('/messages');
+                      setActiveTab('messages');
                     }
                   }}
                   className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"

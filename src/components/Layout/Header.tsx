@@ -151,7 +151,8 @@ const Header: React.FC = () => {
               <>
                 {/* Messages Link */}
                 <Link
-                  to="/messages"
+                  to={getUserRole(user) === 'clinic' ? '/clinic-dashboard' : '/messages'}
+                  state={getUserRole(user) === 'clinic' ? { activeTab: 'messages' } : undefined}
                   className="flex items-center space-x-2 px-4 py-2 rounded-xl hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 transition-all duration-300 relative group"
                   onClick={scrollToTopInstant}
                 >
@@ -392,7 +393,8 @@ const Header: React.FC = () => {
               {user ? (
                 <>
                   <Link
-                    to="/messages"
+                    to={getUserRole(user) === 'clinic' ? '/clinic-dashboard' : '/messages'}
+                    state={getUserRole(user) === 'clinic' ? { activeTab: 'messages' } : undefined}
                     className="flex items-center space-x-3 px-4 py-2 text-gray-700 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 rounded-xl transition-all duration-300"
                     onClick={() => setIsMenuOpen(false)}
                   >

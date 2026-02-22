@@ -30,7 +30,7 @@ const ClinicMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loadingMessages, setLoadingMessages] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!clinicId) {
@@ -189,8 +189,8 @@ const ClinicMessages: React.FC = () => {
   }, [selectedConversation]);
 
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [messages]);
 
@@ -306,7 +306,7 @@ const ClinicMessages: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
+            <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
               {loadingMessages ? (
                 <div className="flex items-center justify-center h-full text-gray-500 text-sm">
                   <span>{t('clinic.loadingMessages') || 'Mesajlar yükleniyor...'}</span>
@@ -358,7 +358,6 @@ const ClinicMessages: React.FC = () => {
                   </div>
                 ))
               )}
-              <div ref={messagesEndRef} />
             </div>
             <div className="p-4 border-t border-gray-200">
               <div className="flex items-center space-x-3">
