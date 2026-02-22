@@ -1,142 +1,194 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, Phone, Video, MoreVertical, Check, CheckCheck, HandPlatter as Translate, X } from 'lucide-react';
-
-interface Message {
-  id: string;
-  senderId: string;
-  receiverId: string;
-  content: string;
-  translatedContent?: string;
-  timestamp: Date;
-  seen: boolean;
-  delivered: boolean;
-}
+import { Send } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
+import { useAuth } from '../../contexts/AuthContext';
 
 interface Conversation {
   id: string;
-  userId: string;
-  procedure: string;
+  user_id: string;
+  userEmail: string;
   lastMessage: string;
-  lastMessageTime: Date;
+  lastMessageTime: string;
   unreadCount: number;
-  isOnline: boolean;
-  language: string;
-  messages: Message[];
+}
+
+interface Message {
+  id: string;
+  sender_id: string;
+  content: string;
+  created_at: string;
 }
 
 const ClinicMessages: React.FC = () => {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  const clinicId = (user as any)?.user_metadata?.clinic_id || user?.id;
+  const currentUserId = user?.id || '';
+  const [conversations, setConversations] = useState<Conversation[]>([]);
   const [selectedConversation, setSelectedConversation] = useState<string | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
-  const [showTranslation, setShowTranslation] = useState(false);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
-  const [conversations, setConversations] = useState<Conversation[]>([]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  useEffect(() => {
+    if (!clinicId) {
+      setConversations([]);
+      return;
+    }
+    let active = true;
+    const loadConversations = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('conversations')
+          .select('*')
+          .eq('clinic_id', clinicId)
+          .order('created_at', { ascending: false });
+        if (error || !active) {
+          setConversations([]);
+          return;
+        }
+        const list = Array.isArray(data) ? data : [];
+        const enriched = await Promise.all(
+          list.map(async (conv: any) => {
+            let userEmail = '';
+            try {
+              const { data: userData } = await supabase
+                .from('users')
+                .select('email')
+                .eq('id', conv.user_id)
+                .maybeSingle();
+              if (userData?.email) {
+                userEmail = userData.email;
+              }
+            } catch {}
+            let lastMessage = '';
+            let lastTime = '';
+            try {
+              const { data: msg } = await supabase
+                .from('messages')
+                .select('content, created_at')
+                .eq('conversation_id', conv.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
+              if (msg) {
+                lastMessage = msg.content || '';
+                lastTime = msg.created_at || '';
+              }
+            } catch {}
+            return {
+              id: conv.id,
+              user_id: conv.user_id,
+              userEmail: userEmail || conv.user_id,
+              lastMessage,
+              lastMessageTime: lastTime,
+              unreadCount: 0,
+            } as Conversation;
+          })
+        );
+        if (active) {
+          setConversations(enriched);
+        }
+      } catch {
+        if (active) {
+          setConversations([]);
+        }
+      }
+    };
+    loadConversations();
+    return () => {
+      active = false;
+    };
+  }, [clinicId]);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [selectedConversation, conversations]);
-
-  const handleSendMessage = () => {
-    if (!newMessage.trim() || !selectedConversation) return;
-
-    const conversation = conversations.find(c => c.id === selectedConversation);
-    if (!conversation) return;
-
-    const message: Message = {
-      id: `m${Date.now()}`,
-      senderId: 'clinic',
-      receiverId: conversation.userId,
-      content: newMessage,
-      timestamp: new Date(),
-      seen: false,
-      delivered: true
-    };
-
-    setConversations(prev => prev.map(conv => {
-      if (conv.id === selectedConversation) {
-        return {
-          ...conv,
-          messages: [...conv.messages, message],
-          lastMessage: newMessage,
-          lastMessageTime: new Date()
-        };
-      }
-      return conv;
-    }));
-
-    setNewMessage('');
-
-    // Simulate patient response after 3 seconds
-    setTimeout(() => {
-      const responses = [
-        'Thank you for the information!',
-        'That sounds good, when can we proceed?',
-        'I need to think about it.',
-        'Can you provide more details?'
-      ];
-      
-      const response: Message = {
-        id: `m${Date.now() + 1}`,
-        senderId: conversation.userId,
-        receiverId: 'clinic',
-        content: responses[Math.floor(Math.random() * responses.length)],
-        timestamp: new Date(),
-        seen: false,
-        delivered: true
-      };
-
-      setConversations(prev => prev.map(conv => {
-        if (conv.id === selectedConversation) {
-          return {
-            ...conv,
-            messages: [...conv.messages, response],
-            lastMessage: response.content,
-            lastMessageTime: new Date(),
-            unreadCount: conv.unreadCount + 1
-          };
+    if (!selectedConversation) {
+      setMessages([]);
+      return;
+    }
+    let active = true;
+    const loadMessages = async () => {
+      setLoadingMessages(true);
+      try {
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('conversation_id', selectedConversation)
+          .order('created_at', { ascending: true });
+        if (!error && active) {
+          setMessages(Array.isArray(data) ? (data as Message[]) : []);
         }
-        return conv;
-      }));
-    }, 3000);
-  };
-
-  const markAsRead = (conversationId: string) => {
-    setConversations(prev => prev.map(conv => {
-      if (conv.id === conversationId) {
-        return {
-          ...conv,
-          unreadCount: 0,
-          messages: conv.messages.map(msg => ({ ...msg, seen: true }))
-        };
+      } catch {
+      } finally {
+        if (active) {
+          setLoadingMessages(false);
+        }
       }
-      return conv;
-    }));
-  };
+    };
+    loadMessages();
+    setConversations(prev =>
+      prev.map(conv =>
+        conv.id === selectedConversation ? { ...conv, unreadCount: 0 } : conv
+      )
+    );
+    const channel = supabase
+      .channel(`clinic-messages:${selectedConversation}`)
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${selectedConversation}`,
+        },
+        payload => {
+          if (active) {
+            setMessages(prev => [...prev, payload.new as Message]);
+          }
+        }
+      )
+      .subscribe();
+    return () => {
+      active = false;
+      supabase.removeChannel(channel);
+    };
+  }, [selectedConversation]);
 
-  // Modal'ı kapat
-  const closeModal = () => {
-    setSelectedConversation(null);
-  };
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages]);
 
-  // Modal dışına tıklayınca kapat
-  const handleBackdropClick = (e: React.MouseEvent) => {
-    if (e.target === e.currentTarget) {
-      closeModal();
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !selectedConversation || !currentUserId) return;
+    const content = newMessage.trim();
+    setNewMessage('');
+    try {
+      await supabase.from('messages').insert({
+        conversation_id: selectedConversation,
+        sender_id: currentUserId,
+        content,
+      });
+    } catch {
     }
   };
 
-  const selectedConv = conversations.find(c => c.id === selectedConversation);
+  const selectedConv = conversations.find(c => c.id === selectedConversation) || null;
   const totalUnread = conversations.reduce((sum, conv) => sum + conv.unreadCount, 0);
+
+  if (!user) {
+    return (
+      <div className="h-[calc(100vh-200px)] bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center">
+        <p className="text-gray-500 text-sm">{t('clinic.loginRequired')}</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-[calc(100vh-200px)] bg-white rounded-xl shadow-sm border border-gray-200 flex">
-      {/* Conversations List */}
       <div className="w-1/3 border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -149,21 +201,17 @@ const ClinicMessages: React.FC = () => {
           </div>
           <p className="text-sm text-gray-600 mt-1">{t('clinic.chatWithPatients')}</p>
         </div>
-
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
             <div className="flex-1 flex items-center justify-center text-gray-500">
-              <p>Henüz mesajınız bulunmamaktadır.</p>
+              <p className="text-sm">{t('clinic.noConversations') || 'Henüz mesajınız bulunmamaktadır.'}</p>
             </div>
           ) : (
             <div className="space-y-1 p-2">
-              {conversations.map((conversation) => (
+              {conversations.map(conversation => (
                 <div
                   key={conversation.id}
-                  onClick={() => {
-                    setSelectedConversation(conversation.id);
-                    markAsRead(conversation.id);
-                  }}
+                  onClick={() => setSelectedConversation(conversation.id)}
                   className={`p-4 rounded-lg cursor-pointer transition-colors ${
                     selectedConversation === conversation.id
                       ? 'bg-blue-50 border border-blue-200'
@@ -171,41 +219,35 @@ const ClinicMessages: React.FC = () => {
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className="relative">
-                      <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
-                        <span className="text-white font-bold text-lg">
-                          {conversation.userId.slice(-4)}
-                        </span>
-                      </div>
-                      {conversation.isOnline && (
-                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-white rounded-full"></div>
-                      )}
+                    <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
+                      <span className="text-white font-bold text-lg">
+                        {conversation.userEmail.charAt(0).toUpperCase()}
+                      </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-gray-900 truncate">
-                          {conversation.userId}
+                          {conversation.userEmail}
                         </h3>
                         <span className="text-xs text-gray-500">
-                          {conversation.lastMessageTime.toLocaleTimeString('en-US', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}
+                          {conversation.lastMessageTime
+                            ? new Date(conversation.lastMessageTime).toLocaleTimeString('tr-TR', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            : ''}
                         </span>
                       </div>
                       <p className="text-sm text-gray-600 truncate">
-                        {conversation.lastMessage}
+                        {conversation.lastMessage || t('clinic.noMessages') || 'Mesaj yok'}
                       </p>
-                      <div className="flex items-center justify-between mt-1">
-                        <span className="text-xs text-gray-500">
-                          {conversation.procedure} • {conversation.language}
-                        </span>
-                        {conversation.unreadCount > 0 && (
+                      {conversation.unreadCount > 0 && (
+                        <div className="mt-1">
                           <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
                             {conversation.unreadCount}
                           </span>
-                        )}
-                      </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -215,108 +257,78 @@ const ClinicMessages: React.FC = () => {
         </div>
       </div>
 
-      {/* Chat Area - Only show when conversation is selected */}
       <div className="flex-1 flex flex-col">
         {selectedConv ? (
           <>
-            {/* Chat Header */}
             <div className="p-4 border-b border-gray-200 flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
-                    <span className="text-white font-bold text-sm">
-                      {selectedConv.userId.slice(-4)}
-                    </span>
-                  </div>
-                  {selectedConv.isOnline && (
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                  )}
+                <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
+                  <span className="text-white font-bold text-sm">
+                    {selectedConv.userEmail.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{selectedConv.userId}</h3>
-                  <p className="text-sm text-gray-500">
-                    {selectedConv.procedure} • {selectedConv.language}
-                  </p>
+                  <h3 className="font-semibold text-gray-900">{selectedConv.userEmail}</h3>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Phone className="w-5 h-5 text-gray-600" />
-                </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <Video className="w-5 h-5 text-gray-600" />
-                </button>
-                <button 
-                  onClick={() => setShowTranslation(!showTranslation)}
-                  className={`p-2 rounded-lg transition-colors ${
-                    showTranslation ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                  }`}
-                >
-                  <Translate className="w-5 h-5" />
-                </button>
-                <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                  <MoreVertical className="w-5 h-5 text-gray-600" />
-                </button>
-              </div>
             </div>
-
-            {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">
-              {selectedConv.messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex ${message.senderId === 'clinic' ? 'justify-end' : 'justify-start'}`}
-                >
+              {loadingMessages ? (
+                <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                  <span>{t('clinic.loadingMessages') || 'Mesajlar yükleniyor...'}</span>
+                </div>
+              ) : messages.length === 0 ? (
+                <div className="flex items-center justify-center h-full text-gray-500 text-sm">
+                  <span>{t('clinic.noMessages') || 'Henüz mesaj yok. İlk mesajı gönderin.'}</span>
+                </div>
+              ) : (
+                messages.map(message => (
                   <div
-                    className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                      message.senderId === 'clinic'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-gray-100 text-gray-900'
+                    key={message.id}
+                    className={`flex ${
+                      message.sender_id === currentUserId ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    <p className="text-sm">{message.content}</p>
-                    {showTranslation && message.translatedContent && message.senderId !== 'clinic' && (
-                      <div className="mt-2 pt-2 border-t border-gray-300">
-                        <p className="text-xs text-gray-600 italic">{message.translatedContent}</p>
+                    <div
+                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                        message.sender_id === currentUserId
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-900'
+                      }`}
+                    >
+                      <p className="text-sm">{message.content}</p>
+                      <div
+                        className={`flex items-center justify-end mt-1 ${
+                          message.sender_id === currentUserId ? 'text-blue-100' : 'text-gray-500'
+                        }`}
+                      >
+                        <span className="text-xs">
+                          {message.created_at
+                            ? new Date(message.created_at).toLocaleTimeString('tr-TR', {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                              })
+                            : ''}
+                        </span>
                       </div>
-                    )}
-                    <div className={`flex items-center justify-end space-x-1 mt-1 ${
-                      message.senderId === 'clinic' ? 'text-blue-100' : 'text-gray-500'
-                    }`}>
-                      <span className="text-xs">
-                        {message.timestamp.toLocaleTimeString('en-US', { 
-                          hour: '2-digit', 
-                          minute: '2-digit' 
-                        })}
-                      </span>
-                      {message.senderId === 'clinic' && (
-                        <div className="flex items-center">
-                          {message.delivered ? (
-                            message.seen ? (
-                              <CheckCheck className="w-3 h-3" />
-                            ) : (
-                              <Check className="w-3 h-3" />
-                            )
-                          ) : (
-                            <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                          )}
-                        </div>
-                      )}
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
               <div ref={messagesEndRef} />
             </div>
-
-            {/* Message Input */}
             <div className="p-4 border-t border-gray-200">
               <div className="flex items-center space-x-3">
                 <input
                   type="text"
                   value={newMessage}
-                  onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                  onChange={e => setNewMessage(e.target.value)}
+                  onKeyPress={e => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault();
+                      handleSendMessage();
+                    }
+                  }}
                   placeholder={t('clinic.typeMessage')}
                   className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 />
@@ -328,12 +340,6 @@ const ClinicMessages: React.FC = () => {
                   <Send className="w-5 h-5" />
                 </button>
               </div>
-              {showTranslation && (
-                <div className="mt-2 text-xs text-gray-500 flex items-center space-x-1">
-                  <Translate className="w-3 h-3" />
-                  <span>{t('clinic.translationEnabled')}</span>
-                </div>
-              )}
             </div>
           </>
         ) : (
@@ -346,154 +352,6 @@ const ClinicMessages: React.FC = () => {
           </div>
         )}
       </div>
-
-      {/* Chat Modal */}
-      {selectedConversation && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50 p-4"
-          onClick={handleBackdropClick}
-        >
-          <div 
-            className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl h-[80vh] max-h-[700px] flex flex-col overflow-hidden"
-            onClick={(e) => e.stopPropagation()} // Modal içeriğine tıklayınca kapanmasın
-          >
-            {/* Modal Header */}
-            <div className="flex items-center justify-between p-4 border-b border-gray-200 flex-shrink-0">
-              <h2 className="text-lg font-semibold text-gray-900">{t('clinic.messages')}</h2>
-              <button
-                onClick={closeModal}
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
-              >
-                <X className="w-5 h-5 text-gray-600" />
-              </button>
-            </div>
-
-            {/* Chat Content */}
-            <div className="flex-1 overflow-hidden">
-              {selectedConv ? (
-                <div className="h-full flex flex-col">
-                  {/* Chat Header */}
-                  <div className="p-4 border-b border-gray-200 flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="relative">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">
-                            {selectedConv.userId.slice(-4)}
-                          </span>
-                        </div>
-                        {selectedConv.isOnline && (
-                          <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
-                        )}
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{selectedConv.userId}</h3>
-                        <p className="text-sm text-gray-500">
-                          {selectedConv.procedure} • {selectedConv.language}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Phone className="w-5 h-5 text-gray-600" />
-                      </button>
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <Video className="w-5 h-5 text-gray-600" />
-                      </button>
-                      <button 
-                        onClick={() => setShowTranslation(!showTranslation)}
-                        className={`p-2 rounded-lg transition-colors ${
-                          showTranslation ? 'bg-blue-100 text-blue-600' : 'hover:bg-gray-100 text-gray-600'
-                        }`}
-                      >
-                        <Translate className="w-5 h-5" />
-                      </button>
-                      <button className="p-2 hover:bg-gray-100 rounded-lg transition-colors">
-                        <MoreVertical className="w-5 h-5 text-gray-600" />
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Messages */}
-                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                    {selectedConv.messages.map((message) => (
-                      <div
-                        key={message.id}
-                        className={`flex ${message.senderId === 'clinic' ? 'justify-end' : 'justify-start'}`}
-                      >
-                        <div
-                          className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                            message.senderId === 'clinic'
-                              ? 'bg-blue-600 text-white'
-                              : 'bg-gray-100 text-gray-900'
-                          }`}
-                        >
-                          <p className="text-sm">{message.content}</p>
-                          {showTranslation && message.translatedContent && message.senderId !== 'clinic' && (
-                            <div className="mt-2 pt-2 border-t border-gray-300">
-                              <p className="text-xs text-gray-600 italic">{message.translatedContent}</p>
-                            </div>
-                          )}
-                          <div className={`flex items-center justify-end space-x-1 mt-1 ${
-                            message.senderId === 'clinic' ? 'text-blue-100' : 'text-gray-500'
-                          }`}>
-                            <span className="text-xs">
-                              {message.timestamp.toLocaleTimeString('en-US', { 
-                                hour: '2-digit', 
-                                minute: '2-digit' 
-                              })}
-                            </span>
-                            {message.senderId === 'clinic' && (
-                              <div className="flex items-center">
-                                {message.delivered ? (
-                                  message.seen ? (
-                                    <CheckCheck className="w-3 h-3" />
-                                  ) : (
-                                    <Check className="w-3 h-3" />
-                                  )
-                                ) : (
-                                  <div className="w-3 h-3 bg-gray-400 rounded-full"></div>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                    <div ref={messagesEndRef} />
-                  </div>
-
-                  {/* Message Input */}
-                  <div className="p-4 border-t border-gray-200">
-                    <div className="flex items-center space-x-3">
-                      <input
-                        type="text"
-                        value={newMessage}
-                        onChange={(e) => setNewMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                        placeholder={t('clinic.typeMessage')}
-                        className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                      />
-                      <button
-                        onClick={handleSendMessage}
-                        disabled={!newMessage.trim()}
-                        className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                      >
-                        <Send className="w-5 h-5" />
-                      </button>
-                    </div>
-                    {showTranslation && (
-                      <div className="mt-2 text-xs text-gray-500 flex items-center space-x-1">
-                        <Translate className="w-3 h-3" />
-                        <span>{t('clinic.translationEnabled')}</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

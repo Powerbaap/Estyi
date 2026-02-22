@@ -69,14 +69,50 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
   const [offerStatuses, setOfferStatuses] = React.useState<{[key: string]: 'pending' | 'accepted' | 'rejected'}>({});
   const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
 
-  const handleContactClinic = (clinicName: string) => {
-    // Mesaj bölümüne yönlendir
-    navigate('/messages', { 
-      state: { 
-        selectedClinic: clinicName,
-        messageType: 'clinic_contact'
-      } 
-    });
+  const handleContactClinic = async (clinicId: string, clinicName: string) => {
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const userId = sessionData?.session?.user?.id;
+
+      if (userId && clinicId) {
+        const { data: existingConv } = await supabase
+          .from('conversations')
+          .select('id')
+          .eq('user_id', userId)
+          .eq('clinic_id', clinicId)
+          .maybeSingle();
+
+        if (existingConv?.id) {
+          navigate('/messages', {
+            state: {
+              conversationId: existingConv.id,
+            },
+          });
+          onClose();
+          return;
+        }
+
+        const { data: newConv } = await supabase
+          .from('conversations')
+          .insert({ user_id: userId, clinic_id: clinicId })
+          .select('id')
+          .single();
+
+        if (newConv?.id) {
+          navigate('/messages', {
+            state: {
+              conversationId: newConv.id,
+            },
+          });
+          onClose();
+          return;
+        }
+      }
+    } catch (err) {
+      console.error('Conversation hatası:', err);
+    }
+
+    navigate('/messages');
     onClose();
   };
 
@@ -510,7 +546,13 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             </button>
                             
                             <button
-                              onClick={() => handleContactClinic(offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
+                              onClick={() => {
+                                const cId = offer.clinics?.id ?? (offer as any).clinic_id ?? '';
+                                handleContactClinic(
+                                  cId,
+                                  offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik'
+                                );
+                              }}
                               className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                             >
                               <MessageCircle className="w-4 h-4" />
@@ -519,10 +561,15 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                           </div>
                         )}
                         
-                        {/* Kabul/Red sonrası sadece iletişim butonu */}
                         {(offerStatuses[offer.id] || (offer as any).status === 'accepted' || (offer as any).status === 'rejected') && (
                           <button
-                            onClick={() => handleContactClinic(offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
+                            onClick={() => {
+                              const cId = offer.clinics?.id ?? (offer as any).clinic_id ?? '';
+                              handleContactClinic(
+                                cId,
+                                offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik'
+                              );
+                            }}
                             className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
                           >
                             <MessageCircle className="w-4 h-4" />
