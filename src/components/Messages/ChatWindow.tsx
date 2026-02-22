@@ -18,7 +18,7 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   const { user } = useAuth();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -120,7 +120,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   }, [conversationId, user?.id]);
 
   useEffect(() => {
-    if (messagesEndRef.current) { messagesEndRef.current.scrollIntoView({ behavior: 'smooth' }); }
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    }
   }, [messages]);
 
   const handleSendMessage = async () => {
@@ -153,7 +155,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
         </div>
         <div><h3 className="font-semibold text-gray-900">{partnerName || 'Sohbet'}</h3></div>
       </div>
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
+      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-gray-500"><p className="text-sm">Henüz mesaj yok. İlk mesajı gönderin!</p></div>
         ) : (
@@ -181,7 +183,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
             </div>
           ))
         )}
-        <div ref={messagesEndRef} />
       </div>
       <div className="p-4 border-t border-gray-200 flex-shrink-0">
         <div className="flex items-center space-x-3">
