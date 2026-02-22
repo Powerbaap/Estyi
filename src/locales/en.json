@@ -15,7 +15,14 @@
     "cookiePolicy": "Cookie Policy",
     "aboutUs": "About Us",
     "copyright": "© 2026 Estyi. All rights reserved.",
-    "trustMessage": "10,000+ trusted patients prefer us"
+    "trustMessage": "10,000+ trusted patients prefer us",
+    "guides": "Procedure Guides",
+    "guideFue": "Hair Transplant FUE",
+    "guideRhinoplasty": "Rhinoplasty",
+    "guideDental": "Dental Implant",
+    "guideHollywood": "Hollywood Smile",
+    "guideLipo": "Liposuction",
+    "guidePriceIndex": "Price Index 2026"
   },
   "countries": {
     "turkey": "Turkey",
@@ -296,8 +303,16 @@
       "language": {
         "title": "Language Cookies",
         "status": "Optional"
-      }
     }
+  },
+  "guide": {
+    "priceComparison": "Price Comparison (2026)",
+    "procedureProcess": "Procedure Process",
+    "risks": "Risks & Considerations",
+    "faq": "Frequently Asked Questions",
+    "getFreeQuote": "Get Free Quote",
+    "getPersonalQuote": "Get Your Personal Price Quote"
+  }
   },
   "terms": {
     "title": "Terms of Use",

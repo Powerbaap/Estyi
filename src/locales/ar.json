@@ -15,7 +15,14 @@
     "cookiePolicy": "سياسة ملفات تعريف الارتباط",
     "aboutUs": "من نحن",
     "copyright": "© 2026 Estyi. جميع الحقوق محفوظة.",
-    "trustMessage": "10,000+ مريض موثوق يفضلنا"
+    "trustMessage": "10,000+ مريض موثوق يفضلنا",
+    "guides": "أدلة العمليات",
+    "guideFue": "زراعة الشعر FUE",
+    "guideRhinoplasty": "تجميل الأنف",
+    "guideDental": "زراعة الأسنان",
+    "guideHollywood": "ابتسامة هوليوود",
+    "guideLipo": "شفط الدهون",
+    "guidePriceIndex": "مؤشر الأسعار 2026"
   },
   "countries": {
     "turkey": "تركيا",
@@ -296,8 +303,16 @@
       "language": {
         "title": "ملفات تعريف الارتباط اللغوية",
         "status": "اختياري"
-      }
     }
+  },
+  "guide": {
+    "priceComparison": "مقارنة الأسعار (2026)",
+    "procedureProcess": "مراحل العملية",
+    "risks": "المخاطر والتحذيرات",
+    "faq": "الأسئلة الشائعة",
+    "getFreeQuote": "احصل على عرض مجاني",
+    "getPersonalQuote": "احصل على عرض سعر شخصي"
+  }
   },
   "terms": {
     "title": "شروط الاستخدام",

@@ -226,8 +226,7 @@ const Footer = () => {
           {/* Guides */}
           <div>
             <h3 className="text-base sm:text-lg font-semibold mb-4 flex items-center space-x-2">
-              <Star className="w-4 h-4 text-blue-400" />
-              <span>İşlem Rehberleri</span>
+              <span>{t('footer.guides')}</span>
             </h3>
             <ul className="space-y-3">
               <li>
@@ -236,7 +235,7 @@ const Footer = () => {
                   className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
                   onClick={scrollToTopInstant}
                 >
-                  <span>Saç Ekimi FUE</span>
+                  <span>{t('footer.guideFue')}</span>
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>
@@ -246,7 +245,7 @@ const Footer = () => {
                   className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
                   onClick={scrollToTopInstant}
                 >
-                  <span>Burun Estetiği</span>
+                  <span>{t('footer.guideRhinoplasty')}</span>
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>
@@ -256,7 +255,7 @@ const Footer = () => {
                   className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
                   onClick={scrollToTopInstant}
                 >
-                  <span>Diş İmplantı</span>
+                  <span>{t('footer.guideDental')}</span>
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>
@@ -266,7 +265,7 @@ const Footer = () => {
                   className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
                   onClick={scrollToTopInstant}
                 >
-                  <span>Hollywood Gülüşü</span>
+                  <span>{t('footer.guideHollywood')}</span>
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>
@@ -276,7 +275,7 @@ const Footer = () => {
                   className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
                   onClick={scrollToTopInstant}
                 >
-                  <span>Liposuction</span>
+                  <span>{t('footer.guideLipo')}</span>
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>
@@ -286,7 +285,7 @@ const Footer = () => {
                   className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group"
                   onClick={scrollToTopInstant}
                 >
-                  <span>Fiyat Endeksi 2026</span>
+                  <span>{t('footer.guidePriceIndex')}</span>
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>

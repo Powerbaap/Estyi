@@ -15,7 +15,14 @@
     "cookiePolicy": "Çerez Politikası",
     "aboutUs": "Hakkımızda",
     "copyright": "© 2026 Estyi. Tüm hakları saklıdır.",
-    "trustMessage": "10,000+ güvenilir hasta tarafından tercih ediliyor"
+    "trustMessage": "10,000+ güvenilir hasta tarafından tercih ediliyor",
+    "guides": "İşlem Rehberleri",
+    "guideFue": "Saç Ekimi FUE",
+    "guideRhinoplasty": "Burun Estetiği",
+    "guideDental": "Diş İmplantı",
+    "guideHollywood": "Hollywood Gülüşü",
+    "guideLipo": "Liposuction",
+    "guidePriceIndex": "Fiyat Endeksi 2026"
   },
   "procedureCategories": {
     "searchPlaceholder": "İşlem ara (örn. saç ekimi, lazer)...",
@@ -373,6 +380,14 @@
       }
     }
   },
+  "guide": {
+    "priceComparison": "Fiyat Karşılaştırması (2026)",
+    "procedureProcess": "İşlem Süreci",
+    "risks": "Riskler ve Dikkat Edilmesi Gerekenler",
+    "faq": "Sık Sorulan Sorular",
+    "getFreeQuote": "Ücretsiz Teklif Al",
+    "getPersonalQuote": "Kişisel Fiyat Teklifinizi Alın"
+  }
   "terms": {
     "title": "Kullanım Şartları",
     "subtitle": "Platform kullanım koşullarını öğrenin",

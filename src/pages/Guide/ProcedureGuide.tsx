@@ -10,21 +10,21 @@ import {
   CheckCircle,
   XCircle,
   AlertTriangle,
-  DollarSign,
   MapPin,
   ArrowRight,
-  Star,
   Stethoscope,
   Calendar,
 } from 'lucide-react';
 import { getGuideBySlug, PROCEDURE_GUIDES } from '../../data/procedureGuideData';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 const ProcedureGuide: React.FC = () => {
   const { slug } = useParams<{ slug: string }>();
   const guide = getGuideBySlug(slug || '');
   const [openFaq, setOpenFaq] = useState<number[]>([0]);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   if (!guide) {
     return (
@@ -119,9 +119,8 @@ const ProcedureGuide: React.FC = () => {
         </section>
         <div className="max-w-4xl mx-auto px-4 py-8">
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <DollarSign className="w-6 h-6 text-green-600" />
-              Fiyat Karşılaştırması (2026)
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {t('guide.priceComparison')}
             </h2>
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
               <table className="w-full">
@@ -154,9 +153,8 @@ const ProcedureGuide: React.FC = () => {
             </div>
           </section>
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <Star className="w-6 h-6 text-blue-600" />
-              İşlem Süreci
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">
+              {t('guide.procedureProcess')}
             </h2>
             <div className="space-y-3">
               {guide.steps.map((step, i) => (
@@ -205,7 +203,7 @@ const ProcedureGuide: React.FC = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <AlertTriangle className="w-6 h-6 text-amber-500" />
-              Riskler
+              {t('guide.risks')}
             </h2>
             <div className="bg-amber-50 rounded-xl border border-amber-200 p-5">
               <ul className="space-y-2">
@@ -221,7 +219,7 @@ const ProcedureGuide: React.FC = () => {
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <Heart className="w-6 h-6 text-purple-600" />
-              Sıkça Sorulan Sorular
+              {t('guide.faq')}
             </h2>
             <div className="space-y-2">
               {guide.faq.map((item, i) => (
@@ -246,7 +244,9 @@ const ProcedureGuide: React.FC = () => {
           </section>
           <section className="mb-10">
             <div className="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white text-center">
-              <h2 className="text-2xl font-bold mb-3">Ücretsiz Fiyat Teklifi Alın</h2>
+              <h2 className="text-2xl font-bold mb-3">
+                {t('guide.getFreeQuote')}
+              </h2>
               <p className="text-blue-100 mb-6">
                 Estyi ile birden fazla sertifikalı klinikten anında fiyat teklifi alın.
               </p>
@@ -254,7 +254,7 @@ const ProcedureGuide: React.FC = () => {
                 to={user ? "/request/new" : "/signup"}
                 className="inline-flex items-center gap-2 bg-white text-blue-700 font-bold px-8 py-3 rounded-full hover:bg-blue-50"
               >
-                Teklif Al <ArrowRight className="w-5 h-5" />
+                {t('guide.getPersonalQuote')} <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </section>
