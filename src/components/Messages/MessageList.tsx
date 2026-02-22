@@ -50,11 +50,15 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
             const otherPartyId = conv.user_id === user.id ? conv.clinic_id : conv.user_id;
             let name = 'Bilinmeyen';
             try {
-              const { data: clinic } = await supabase.from('clinics').select('name').eq('id', otherPartyId).maybeSingle();
-              if (clinic?.name) { name = clinic.name; }
-              else {
-                const { data: userData } = await supabase.from('users').select('email').eq('id', otherPartyId).maybeSingle();
-                if (userData?.email) name = userData.email;
+              const { data: clinic } = await supabase
+                .from('clinics')
+                .select('name')
+                .eq('id', otherPartyId)
+                .maybeSingle();
+              if (clinic?.name) {
+                name = clinic.name;
+              } else {
+                name = `Kullanıcı ${otherPartyId.slice(-4)}`;
               }
             } catch {}
 

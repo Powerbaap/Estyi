@@ -220,8 +220,8 @@ const ClinicMessages: React.FC = () => {
   }
 
   return (
-    <div className="flex bg-white rounded-xl shadow-sm border border-gray-200 h-[calc(100vh-280px)] min-h-[500px]">
-      <div className="w-1/3 border-r border-gray-200 flex flex-col">
+    <div className="flex bg-white rounded-xl shadow-sm border border-gray-200 h-[calc(100vh-280px)] min-h-[500px] overflow-hidden">
+      <div className="w-1/3 border-r border-gray-200 flex flex-col overflow-hidden">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900">{t('clinic.messages')}</h2>
@@ -233,7 +233,7 @@ const ClinicMessages: React.FC = () => {
           </div>
           <p className="text-sm text-gray-600 mt-1">{t('clinic.chatWithPatients')}</p>
         </div>
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-contain">
           {conversations.length === 0 ? (
             <div className="flex-1 flex items-center justify-center text-gray-500">
               <p className="text-sm">{t('clinic.noConversations') || 'Henüz mesajınız bulunmamaktadır.'}</p>
@@ -306,7 +306,7 @@ const ClinicMessages: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
               {loadingMessages ? (
                 <div className="flex items-center justify-center h-full text-gray-500 text-sm">
                   <span>{t('clinic.loadingMessages') || 'Mesajlar yükleniyor...'}</span>
