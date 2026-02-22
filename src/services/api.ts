@@ -270,50 +270,29 @@ export const requestService = {
   getUserRequests: async (userId: string) => {
     const { data, error } = await supabase
       .from('requests')
-      .select('*')
+      .select(`
+        *,
+        offers (
+          *,
+          clinics (id, name, country_code, city, rating, reviews, specialties)
+        )
+      `)
       .eq('user_id', userId)
       .order('created_at', { ascending: false });
     
     if (error) throw error;
     
     const requests = Array.isArray(data) ? data : [];
-    const enriched = await Promise.all(
-      requests.map(async (req: any) => {
-        try {
-          const { data: offers } = await supabase
-            .from('offers')
-            .select('*')
-            .eq('request_id', req.id)
-            .order('created_at', { ascending: false });
-          const offerList = Array.isArray(offers) ? offers : [];
-          const clinicIds = [...new Set(offerList.map((o: any) => o.clinic_id).filter(Boolean))];
-          let clinicsMap: Record<string, any> = {};
-          if (clinicIds.length > 0) {
-            try {
-              const { data: clinicsData } = await supabase
-                .from('clinics')
-                .select('id, name, country_code, city, rating, reviews, specialties')
-                .in('id', clinicIds);
-              if (Array.isArray(clinicsData)) {
-                clinicsData.forEach((c: any) => { clinicsMap[c.id] = c; });
-              }
-            } catch {}
-          }
-          const enrichedOffers = offerList.map((offer: any) => ({
+    return requests.map((req: any) => ({
+      ...req,
+      offers: Array.isArray(req.offers)
+        ? req.offers.map((offer: any) => ({
             ...offer,
-            clinics: offer.clinic_id ? (clinicsMap[offer.clinic_id] || null) : null,
-          }));
-          return {
-            ...req,
-            offers: enrichedOffers,
-            offersCount: enrichedOffers.length,
-          };
-        } catch {
-          return { ...req, offers: [], offersCount: 0 };
-        }
-      })
-    );
-    return enriched;
+            clinics: offer.clinics || null,
+          }))
+        : [],
+      offersCount: Array.isArray(req.offers) ? req.offers.length : 0,
+    }));
   },
   
   deleteRequest: async (requestId: string) => {

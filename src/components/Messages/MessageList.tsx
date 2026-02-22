@@ -9,6 +9,7 @@ interface Conversation {
   name: string;
   lastMessage: string;
   timestamp: string;
+  rawTimestamp: string;
   unreadCount: number;
   clinic_id: string;
   user_id: string;
@@ -26,6 +27,13 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const handleSelectConversation = (id: string) => {
+    setConversations(prev =>
+      prev.map(c => (c.id === id ? { ...c, unreadCount: 0 } : c))
+    );
+    onSelectConversation(id);
+  };
 
   useEffect(() => {
     if (!user?.id) return;
@@ -64,6 +72,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
 
             let lastMessage = '';
             let timestamp = '';
+            let rawTimestamp = conv.created_at || '';
             try {
               const { data: msg } = await supabase
                 .from('messages')
@@ -74,6 +83,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
                 .maybeSingle();
               if (msg) {
                 lastMessage = msg.content?.substring(0, 50) || '';
+                rawTimestamp = msg.created_at || rawTimestamp;
                 timestamp = msg.created_at
                   ? new Date(msg.created_at).toLocaleString('tr-TR', {
                       hour: '2-digit',
@@ -101,12 +111,22 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
               name,
               lastMessage,
               timestamp,
+              rawTimestamp,
               unreadCount,
               clinic_id: conv.clinic_id,
               user_id: conv.user_id,
             };
           })
         );
+        enriched.sort((a, b) => {
+          if (!a.rawTimestamp && !b.rawTimestamp) return 0;
+          if (!a.rawTimestamp) return 1;
+          if (!b.rawTimestamp) return -1;
+          return (
+            new Date(b.rawTimestamp).getTime() -
+            new Date(a.rawTimestamp).getTime()
+          );
+        });
         setConversations(enriched);
       } catch (err) {
         console.error('Konuşma yükleme hatası:', err);
@@ -117,6 +137,15 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
     };
     loadConversations();
   }, [user?.id]);
+
+  useEffect(() => {
+    if (!selectedConversation) return;
+    setConversations(prev =>
+      prev.map(c =>
+        c.id === selectedConversation ? { ...c, unreadCount: 0 } : c
+      )
+    );
+  }, [selectedConversation]);
 
   const filteredConversations = conversations.filter(conversation => {
     const matchesSearch = conversation.name.toLowerCase().includes(searchTerm.toLowerCase()) || conversation.lastMessage.toLowerCase().includes(searchTerm.toLowerCase());
@@ -153,7 +182,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
             {filteredConversations.map((conversation) => (
               <div
                 key={conversation.id}
-                onClick={() => onSelectConversation(conversation.id)}
+                onClick={() => handleSelectConversation(conversation.id)}
                 className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-colors ${
                   selectedConversation === conversation.id
                     ? 'bg-blue-50 border border-blue-200'
