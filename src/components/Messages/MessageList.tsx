@@ -42,9 +42,14 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
       try {
         const { data, error } = await supabase
           .from('conversations')
-          .select('*')
+          .select(`
+            *,
+            messages (
+              id, content, created_at, sender_id, is_read
+            )
+          `)
           .or(`user_id.eq.${user.id},clinic_id.eq.${user.id}`)
-          .order('updated_at', { ascending: false });
+          .order('created_at', { ascending: false });
 
         if (error) {
           console.error('Konuşma yükleme hatası:', error);
@@ -53,80 +58,74 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
         }
 
         const convList = Array.isArray(data) ? data : [];
-        const enriched = await Promise.all(
-          convList.map(async (conv: any) => {
-            const otherPartyId = conv.user_id === user.id ? conv.clinic_id : conv.user_id;
-            let name = 'Bilinmeyen';
-            try {
-              const { data: clinic } = await supabase
-                .from('clinics')
-                .select('name')
-                .eq('id', otherPartyId)
-                .maybeSingle();
-              if (clinic?.name) {
-                name = clinic.name;
-              } else {
-                name = `Kullanıcı ${otherPartyId.slice(-4)}`;
-              }
-            } catch {}
 
-            let lastMessage = '';
-            let timestamp = '';
-            let rawTimestamp = conv.created_at || '';
-            try {
-              const { data: msg } = await supabase
-                .from('messages')
-                .select('content, created_at')
-                .eq('conversation_id', conv.id)
-                .order('created_at', { ascending: false })
-                .limit(1)
-                .maybeSingle();
-              if (msg) {
-                lastMessage = msg.content?.substring(0, 50) || '';
-                rawTimestamp = msg.created_at || rawTimestamp;
-                timestamp = msg.created_at
-                  ? new Date(msg.created_at).toLocaleString('tr-TR', {
-                      hour: '2-digit',
-                      minute: '2-digit',
-                      day: '2-digit',
-                      month: '2-digit',
-                    })
-                  : '';
-              }
-            } catch {}
+        const clinicIds = convList
+          .map((c: any) =>
+            c.user_id === user.id ? c.clinic_id : c.user_id
+          )
+          .filter(Boolean);
 
-            let unreadCount = 0;
-            try {
-              const { count } = await supabase
-                .from('messages')
-                .select('*', { count: 'exact', head: true })
-                .eq('conversation_id', conv.id)
-                .eq('is_read', false)
-                .neq('sender_id', user.id);
-              unreadCount = count || 0;
-            } catch {}
+        let clinicsMap: Record<string, string> = {};
+        if (clinicIds.length > 0) {
+          const { data: clinicsData } = await supabase
+            .from('clinics')
+            .select('id, name')
+            .in('id', clinicIds);
+          if (Array.isArray(clinicsData)) {
+            clinicsData.forEach((c: any) => {
+              clinicsMap[c.id] = c.name;
+            });
+          }
+        }
 
-            return {
-              id: conv.id,
-              name,
-              lastMessage,
-              timestamp,
-              rawTimestamp,
-              unreadCount,
-              clinic_id: conv.clinic_id,
-              user_id: conv.user_id,
-            };
-          })
-        );
-        enriched.sort((a, b) => {
-          if (!a.rawTimestamp && !b.rawTimestamp) return 0;
-          if (!a.rawTimestamp) return 1;
-          if (!b.rawTimestamp) return -1;
-          return (
+        const enriched = convList.map((conv: any) => {
+          const otherPartyId =
+            conv.user_id === user.id ? conv.clinic_id : conv.user_id;
+          const name =
+            clinicsMap[otherPartyId] ||
+            `Kullanıcı ${otherPartyId?.slice(-4) || '????'}`;
+
+          const msgs = Array.isArray(conv.messages) ? conv.messages : [];
+          const sorted = [...msgs].sort(
+            (a, b) =>
+              new Date(b.created_at).getTime() -
+              new Date(a.created_at).getTime()
+          );
+          const lastMsg = sorted[0];
+          const rawTimestamp =
+            lastMsg?.created_at || conv.created_at || '';
+          const lastMessage =
+            lastMsg?.content?.substring(0, 50) || '';
+          const timestamp = rawTimestamp
+            ? new Date(rawTimestamp).toLocaleString('tr-TR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                day: '2-digit',
+                month: '2-digit',
+              })
+            : '';
+
+          const unreadCount = msgs.filter(
+            (m: any) => !m.is_read && m.sender_id !== user.id
+          ).length;
+
+          return {
+            id: conv.id,
+            name,
+            lastMessage,
+            timestamp,
+            rawTimestamp,
+            unreadCount,
+            clinic_id: conv.clinic_id,
+            user_id: conv.user_id,
+          };
+        });
+
+        enriched.sort(
+          (a, b) =>
             new Date(b.rawTimestamp).getTime() -
             new Date(a.rawTimestamp).getTime()
-          );
-        });
+        );
         setConversations(enriched);
       } catch (err) {
         console.error('Konuşma yükleme hatası:', err);

@@ -52,7 +52,10 @@ const Header: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setUnreadMessages(0);
+      return;
+    }
     const loadUnread = async () => {
       const { data: convs } = await supabase
         .from('conversations')
@@ -76,8 +79,28 @@ const Header: React.FC = () => {
     };
 
     loadUnread();
-    const interval = setInterval(loadUnread, 30000);
-    return () => clearInterval(interval);
+
+    const channel = supabase
+      .channel('header-unread')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        () => {
+          loadUnread();
+        }
+      )
+      .on(
+        'postgres_changes',
+        { event: 'UPDATE', schema: 'public', table: 'messages' },
+        () => {
+          loadUnread();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [user]);
 
   const handleLogout = () => {
