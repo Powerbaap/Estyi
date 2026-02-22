@@ -308,6 +308,7 @@
       "language": {
         "title": "Language Cookies",
         "status": "Optional"
+      }
     }
   },
   "guide": {
@@ -2010,30 +2011,5 @@
     "hairTransplantDetails": "Hair Transplant Details",
     "liposuctionQuestion": "Liposuction Question",
     "hairTransplantAppointment": "Hair Transplant Appointment"
-  },
-  "guide": {
-    "priceComparison": "Price Comparison (2026)",
-    "priceComparisonTitle": "How Much Does This Procedure Cost?",
-    "country": "Country",
-    "priceRange": "Price Range (USD)",
-    "procedureProcess": "How Does the Procedure Work?",
-    "suitableFor": "Who Is a Good Candidate?",
-    "notSuitableFor": "Who Is Not Suitable?",
-    "risks": "What Are the Known Risks?",
-    "faq": "Frequently Asked Questions",
-    "getFreeQuote": "Get Free Price Quotes",
-    "getPersonalQuote": "Get instant quotes from multiple certified clinics through Estyi.",
-    "getQuoteBtn": "Get Quote",
-    "medicalDisclaimer": "This page is for general information only and does not constitute medical advice.",
-    "lastUpdated": "Last updated: February 2026",
-    "otherGuides": "Other Guides",
-    "breadcrumbHome": "Home",
-    "breadcrumbGuide": "Guide",
-    "duration": "Duration",
-    "recovery": "Recovery",
-    "anesthesia": "Anesthesia",
-    "notFound": "Page Not Found",
-    "backHome": "Back to Home",
-    "medicalInfo": "Medical Information"
   }
 }
