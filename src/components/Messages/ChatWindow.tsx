@@ -71,7 +71,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     loadMessages();
 
     const channel = supabase
-      .channel(`messages:${conversationId}`)
+      .channel(`public:messages:${conversationId}`)
       .on(
         'postgres_changes',
         {

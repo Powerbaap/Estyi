@@ -67,12 +67,24 @@ const ClinicMessages: React.FC = () => {
                 lastTime = msg.created_at || '';
               }
             } catch {}
+
+            let unreadCount = 0;
+            try {
+              const { count } = await supabase
+                .from('messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('conversation_id', conv.id)
+                .eq('is_read', false)
+                .neq('sender_id', currentUserId);
+              unreadCount = count || 0;
+            } catch {}
+
             return {
               id: conv.id,
               user_id: conv.user_id,
               lastMessage,
               lastMessageTime: lastTime,
-              unreadCount: 0,
+              unreadCount,
             } as Conversation;
           })
         );
@@ -249,6 +261,8 @@ const ClinicMessages: React.FC = () => {
                   className={`p-4 rounded-lg cursor-pointer transition-colors ${
                     selectedConversation === conversation.id
                       ? 'bg-blue-50 border border-blue-200'
+                      : conversation.unreadCount > 0
+                      ? 'bg-blue-50 border-l-4 border-blue-500'
                       : 'hover:bg-gray-50'
                   }`}
                 >
@@ -260,7 +274,13 @@ const ClinicMessages: React.FC = () => {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <h3 className="font-semibold text-gray-900 truncate">
+                        <h3
+                          className={`truncate ${
+                            conversation.unreadCount > 0
+                              ? 'font-bold text-gray-900'
+                              : 'font-semibold text-gray-900'
+                          }`}
+                        >
                           {`Kullanıcı ${conversation.user_id.slice(-4)}`}
                         </h3>
                         <span className="text-xs text-gray-500">
@@ -275,14 +295,14 @@ const ClinicMessages: React.FC = () => {
                       <p className="text-sm text-gray-600 truncate">
                         {conversation.lastMessage || t('clinic.noMessages') || 'Mesaj yok'}
                       </p>
-                      {conversation.unreadCount > 0 && (
-                        <div className="mt-1">
-                          <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
-                            {conversation.unreadCount}
-                          </span>
-                        </div>
-                      )}
                     </div>
+                    {conversation.unreadCount > 0 && (
+                      <div className="ml-2">
+                        <span className="bg-blue-600 text-white text-xs rounded-full px-2 py-1 min-w-[20px] text-center">
+                          {conversation.unreadCount}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

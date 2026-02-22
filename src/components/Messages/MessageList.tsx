@@ -65,14 +65,46 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
             let lastMessage = '';
             let timestamp = '';
             try {
-              const { data: msg } = await supabase.from('messages').select('content, created_at').eq('conversation_id', conv.id).order('created_at', { ascending: false }).limit(1).maybeSingle();
+              const { data: msg } = await supabase
+                .from('messages')
+                .select('content, created_at')
+                .eq('conversation_id', conv.id)
+                .order('created_at', { ascending: false })
+                .limit(1)
+                .maybeSingle();
               if (msg) {
                 lastMessage = msg.content?.substring(0, 50) || '';
-                timestamp = msg.created_at ? new Date(msg.created_at).toLocaleString('tr-TR', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '';
+                timestamp = msg.created_at
+                  ? new Date(msg.created_at).toLocaleString('tr-TR', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      day: '2-digit',
+                      month: '2-digit',
+                    })
+                  : '';
               }
             } catch {}
 
-            return { id: conv.id, name, lastMessage, timestamp, unreadCount: 0, clinic_id: conv.clinic_id, user_id: conv.user_id };
+            let unreadCount = 0;
+            try {
+              const { count } = await supabase
+                .from('messages')
+                .select('*', { count: 'exact', head: true })
+                .eq('conversation_id', conv.id)
+                .eq('is_read', false)
+                .neq('sender_id', user.id);
+              unreadCount = count || 0;
+            } catch {}
+
+            return {
+              id: conv.id,
+              name,
+              lastMessage,
+              timestamp,
+              unreadCount,
+              clinic_id: conv.clinic_id,
+              user_id: conv.user_id,
+            };
           })
         );
         setConversations(enriched);
@@ -119,17 +151,46 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
         ) : (
           <div className="p-2">
             {filteredConversations.map((conversation) => (
-              <div key={conversation.id} onClick={() => onSelectConversation(conversation.id)} className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-colors ${selectedConversation === conversation.id ? 'bg-blue-50 border border-blue-200' : 'hover:bg-gray-50'}`}>
+              <div
+                key={conversation.id}
+                onClick={() => onSelectConversation(conversation.id)}
+                className={`flex items-center space-x-3 p-3 rounded-xl cursor-pointer transition-colors ${
+                  selectedConversation === conversation.id
+                    ? 'bg-blue-50 border border-blue-200'
+                    : conversation.unreadCount > 0
+                    ? 'bg-blue-50 border-l-4 border-blue-500'
+                    : 'hover:bg-gray-50'
+                }`}
+              >
                 <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center flex-shrink-0">
-                  <span className="text-white font-bold text-lg">{conversation.name.charAt(0).toUpperCase()}</span>
+                  <span className="text-white font-bold text-lg">
+                    {conversation.name.charAt(0).toUpperCase()}
+                  </span>
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between mb-1">
-                    <h3 className="font-semibold text-gray-900 truncate">{conversation.name}</h3>
-                    <span className="text-xs text-gray-500 flex-shrink-0 ml-2">{conversation.timestamp}</span>
+                    <h3
+                      className={`truncate ${
+                        conversation.unreadCount > 0
+                          ? 'font-bold text-gray-900'
+                          : 'font-semibold text-gray-900'
+                      }`}
+                    >
+                      {conversation.name}
+                    </h3>
+                    <span className="text-xs text-gray-500 flex-shrink-0 ml-2">
+                      {conversation.timestamp}
+                    </span>
                   </div>
-                  <p className="text-sm text-gray-600 truncate">{conversation.lastMessage || 'Mesaj yok'}</p>
+                  <p className="text-sm text-gray-600 truncate">
+                    {conversation.lastMessage || 'Mesaj yok'}
+                  </p>
                 </div>
+                {conversation.unreadCount > 0 && (
+                  <span className="bg-blue-600 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+                    {conversation.unreadCount}
+                  </span>
+                )}
               </div>
             ))}
           </div>
