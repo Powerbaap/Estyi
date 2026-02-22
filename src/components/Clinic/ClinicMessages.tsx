@@ -1,13 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send } from 'lucide-react';
+import { Send, Check, CheckCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
 
 interface Conversation {
   id: string;
   user_id: string;
-  userEmail: string;
   lastMessage: string;
   lastMessageTime: string;
   unreadCount: number;
@@ -18,6 +17,7 @@ interface Message {
   sender_id: string;
   content: string;
   created_at: string;
+  is_read: boolean;
 }
 
 const ClinicMessages: React.FC = () => {
@@ -52,17 +52,6 @@ const ClinicMessages: React.FC = () => {
         const list = Array.isArray(data) ? data : [];
         const enriched = await Promise.all(
           list.map(async (conv: any) => {
-            let userEmail = '';
-            try {
-              const { data: userData } = await supabase
-                .from('users')
-                .select('email')
-                .eq('id', conv.user_id)
-                .maybeSingle();
-              if (userData?.email) {
-                userEmail = userData.email;
-              }
-            } catch {}
             let lastMessage = '';
             let lastTime = '';
             try {
@@ -81,7 +70,6 @@ const ClinicMessages: React.FC = () => {
             return {
               id: conv.id,
               user_id: conv.user_id,
-              userEmail: userEmail || conv.user_id,
               lastMessage,
               lastMessageTime: lastTime,
               unreadCount: 0,
@@ -118,8 +106,23 @@ const ClinicMessages: React.FC = () => {
           .eq('conversation_id', selectedConversation)
           .order('created_at', { ascending: true });
         if (!error && active) {
-          setMessages(Array.isArray(data) ? (data as Message[]) : []);
+          const list = Array.isArray(data) ? data : [];
+          setMessages(
+            list.map((m: any) => ({
+              id: m.id,
+              sender_id: m.sender_id,
+              content: m.content,
+              created_at: m.created_at,
+              is_read: !!m.is_read,
+            }))
+          );
         }
+
+        await supabase
+          .from('messages')
+          .update({ is_read: true })
+          .eq('conversation_id', selectedConversation)
+          .neq('sender_id', currentUserId);
       } catch {
       } finally {
         if (active) {
@@ -145,7 +148,36 @@ const ClinicMessages: React.FC = () => {
         },
         payload => {
           if (active) {
-            setMessages(prev => [...prev, payload.new as Message]);
+            setMessages(prev => [
+              ...prev,
+              {
+                id: payload.new.id,
+                sender_id: payload.new.sender_id,
+                content: payload.new.content,
+                created_at: payload.new.created_at,
+                is_read: !!payload.new.is_read,
+              },
+            ]);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${selectedConversation}`,
+        },
+        payload => {
+          if (active) {
+            setMessages(prev =>
+              prev.map(m =>
+                m.id === payload.new.id
+                  ? { ...m, is_read: !!payload.new.is_read }
+                  : m
+              )
+            );
           }
         }
       )
@@ -181,14 +213,14 @@ const ClinicMessages: React.FC = () => {
 
   if (!user) {
     return (
-      <div className="h-[calc(100vh-200px)] bg-white rounded-xl shadow-sm border border-gray-200 flex items-center justify-center">
+      <div className="flex bg-white rounded-xl shadow-sm border border-gray-200 items-center justify-center">
         <p className="text-gray-500 text-sm">{t('clinic.loginRequired')}</p>
       </div>
     );
   }
 
   return (
-    <div className="h-[calc(100vh-200px)] bg-white rounded-xl shadow-sm border border-gray-200 flex">
+    <div className="flex bg-white rounded-xl shadow-sm border border-gray-200">
       <div className="w-1/3 border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
@@ -221,13 +253,13 @@ const ClinicMessages: React.FC = () => {
                   <div className="flex items-start space-x-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
                       <span className="text-white font-bold text-lg">
-                        {conversation.userEmail.charAt(0).toUpperCase()}
+                        {`K${conversation.user_id.slice(-4)}`.charAt(0).toUpperCase()}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
                         <h3 className="font-semibold text-gray-900 truncate">
-                          {conversation.userEmail}
+                          {`Kullanıcı ${conversation.user_id.slice(-4)}`}
                         </h3>
                         <span className="text-xs text-gray-500">
                           {conversation.lastMessageTime
@@ -264,11 +296,13 @@ const ClinicMessages: React.FC = () => {
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-purple-600 to-purple-700 rounded-full flex items-center justify-center">
                   <span className="text-white font-bold text-sm">
-                    {selectedConv.userEmail.charAt(0).toUpperCase()}
+                    {`K${selectedConv.user_id.slice(-4)}`.charAt(0).toUpperCase()}
                   </span>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900">{selectedConv.userEmail}</h3>
+                  <h3 className="font-semibold text-gray-900">
+                    {`Kullanıcı ${selectedConv.user_id.slice(-4)}`}
+                  </h3>
                 </div>
               </div>
             </div>
@@ -302,7 +336,7 @@ const ClinicMessages: React.FC = () => {
                           message.sender_id === currentUserId ? 'text-blue-100' : 'text-gray-500'
                         }`}
                       >
-                        <span className="text-xs">
+                        <span className="text-xs mr-1">
                           {message.created_at
                             ? new Date(message.created_at).toLocaleTimeString('tr-TR', {
                                 hour: '2-digit',
@@ -310,6 +344,15 @@ const ClinicMessages: React.FC = () => {
                               })
                             : ''}
                         </span>
+                        {message.sender_id === currentUserId && (
+                          <span className="text-xs">
+                            {message.is_read ? (
+                              <CheckCheck className="w-3 h-3 text-blue-300" />
+                            ) : (
+                              <Check className="w-3 h-3 text-gray-300" />
+                            )}
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Check, CheckCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
 
@@ -8,6 +8,7 @@ interface Message {
   sender_id: string;
   content: string;
   created_at: string;
+  is_read: boolean;
 }
 
 interface ChatWindowProps {
@@ -42,17 +43,77 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
           } catch {}
         }
 
-        const { data, error } = await supabase.from('messages').select('*').eq('conversation_id', conversationId).order('created_at', { ascending: true });
-        if (!error && active) { setMessages(Array.isArray(data) ? data : []); }
+        const { data, error } = await supabase
+          .from('messages')
+          .select('*')
+          .eq('conversation_id', conversationId)
+          .order('created_at', { ascending: true });
+        if (!error && active) {
+          const list = Array.isArray(data) ? data : [];
+          setMessages(
+            list.map((m: any) => ({
+              id: m.id,
+              sender_id: m.sender_id,
+              content: m.content,
+              created_at: m.created_at,
+              is_read: !!m.is_read,
+            }))
+          );
+        }
+
+        await supabase
+          .from('messages')
+          .update({ is_read: true })
+          .eq('conversation_id', conversationId)
+          .neq('sender_id', user.id);
       } catch (err) { console.error('Mesaj yükleme hatası:', err); }
     };
     loadMessages();
 
     const channel = supabase
       .channel(`messages:${conversationId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, (payload: any) => {
-        if (active) { setMessages(prev => [...prev, payload.new as Message]); }
-      })
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload: any) => {
+          if (active) {
+            const msg = payload.new;
+            const mapped: Message = {
+              id: msg.id,
+              sender_id: msg.sender_id,
+              content: msg.content,
+              created_at: msg.created_at,
+              is_read: !!msg.is_read,
+            };
+            setMessages(prev => [...prev, mapped]);
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: 'UPDATE',
+          schema: 'public',
+          table: 'messages',
+          filter: `conversation_id=eq.${conversationId}`,
+        },
+        (payload: any) => {
+          if (active) {
+            setMessages(prev =>
+              prev.map(m =>
+                m.id === payload.new.id
+                  ? { ...m, is_read: !!payload.new.is_read }
+                  : m
+              )
+            );
+          }
+        }
+      )
       .subscribe();
 
     return () => { active = false; supabase.removeChannel(channel); };
@@ -66,7 +127,9 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     if (!newMessage.trim() || !conversationId || !user?.id || sending) return;
     setSending(true);
     try {
-      const { error } = await supabase.from('messages').insert({ conversation_id: conversationId, sender_id: user.id, content: newMessage.trim() });
+      const { error } = await supabase
+        .from('messages')
+        .insert({ conversation_id: conversationId, sender_id: user.id, content: newMessage.trim() });
       if (!error) { setNewMessage(''); }
       else { console.error('Mesaj gönderme hatası:', error); }
     } catch (err) { console.error('Mesaj gönderme hatası:', err); }
@@ -98,8 +161,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
             <div key={message.id} className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
               <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${message.sender_id === user?.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
                 <p className="text-sm">{message.content}</p>
-                <div className={`flex items-center justify-end mt-1 ${message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'}`}>
-                  <span className="text-xs">{formatTime(message.created_at)}</span>
+                <div
+                  className={`flex items-center justify-end mt-1 ${
+                    message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'
+                  }`}
+                >
+                  <span className="text-xs mr-1">{formatTime(message.created_at)}</span>
+                  {message.sender_id === user?.id && (
+                    <span className="text-xs">
+                      {message.is_read ? (
+                        <CheckCheck className="w-3 h-3 text-blue-200" />
+                      ) : (
+                        <Check className="w-3 h-3 text-gray-300" />
+                      )}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>

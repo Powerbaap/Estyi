@@ -99,7 +99,7 @@ const ClinicDashboard: React.FC = () => {
         setOffersLoading(true);
         const { data, error } = await supabase
           .from('offers')
-          .select('*, requests:requests(*)')
+          .select('*, requests:requests(user_id, sessions, region, expires_at, country, city, procedure_name, procedure_key, status)')
           .eq('clinic_id', clinicId)
           .order('created_at', { ascending: false });
         if (error) {
@@ -185,16 +185,8 @@ const ClinicDashboard: React.FC = () => {
   const getUserDisplay = (offer: any) => {
     const userId = offer.requests?.user_id || '';
     if (!userId) return t('clinicDashboard.user');
-    return `${t('clinicDashboard.user')} ${userId.slice(-4)}`;
-  };
-
-  const getLocation = (offer: any) => {
-    const req = offer.requests;
-    if (!req) return '';
-    const country = req.country;
-    const city = req.city;
-    if (country && city) return `${country} / ${city}`;
-    return country || city || '';
+    const shortId = userId.slice(-4) || '????';
+    return `Kullanıcı ${shortId}`;
   };
 
   const getPriceText = (offer: any) => {
@@ -263,12 +255,26 @@ const ClinicDashboard: React.FC = () => {
                 <p className="text-sm font-semibold text-gray-900">
                   {getProcedureName(offer)}
                 </p>
-                <p className="text-sm text-gray-600 mt-1">
-                  {getUserDisplay(offer)}
-                </p>
-                <p className="text-xs text-gray-500 mt-1">
-                  {getLocation(offer)}
-                </p>
+                <div className="flex flex-wrap gap-2 mt-1">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 text-gray-700">
+                    {getUserDisplay(offer)}
+                  </span>
+                  {offer.requests?.country && offer.requests?.city && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-blue-50 text-blue-700">
+                      {offer.requests.country} / {offer.requests.city}
+                    </span>
+                  )}
+                  {offer.requests?.sessions && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-purple-50 text-purple-700">
+                      {offer.requests.sessions} seans
+                    </span>
+                  )}
+                  {offer.requests?.region && (
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-emerald-50 text-emerald-700">
+                      {offer.requests.region}
+                    </span>
+                  )}
+                </div>
               </div>
               <div className="flex items-center gap-4">
                 <div className="text-right">
