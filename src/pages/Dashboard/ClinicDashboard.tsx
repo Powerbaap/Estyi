@@ -282,19 +282,29 @@ const ClinicDashboard: React.FC = () => {
                     {getPriceText(offer)}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {t('clinicDashboard.accepted')} {new Date(offer.updated_at || offer.created_at).toLocaleDateString('tr-TR')}
+                    {t('clinicDashboard.accepted')} {new Date(offer.created_at).toLocaleDateString('tr-TR')}
                   </p>
                 </div>
                 <button
-                  onClick={() =>
-                    navigate('/messages', {
-                      state: {
-                        messageType: 'clinic_contact',
-                        fromOfferId: offer.id,
-                        targetUserId: offer.requests?.user_id
-                      }
-                    })
-                  }
+                  onClick={async () => {
+                    const userId = offer.requests?.user_id;
+                    const clinicUserId = user?.id;
+                    if (!userId || !clinicUserId) {
+                      navigate('/messages');
+                      return;
+                    }
+                    const { data: conv } = await supabase
+                      .from('conversations')
+                      .select('id')
+                      .eq('clinic_id', clinicUserId)
+                      .eq('user_id', userId)
+                      .maybeSingle();
+                    if (conv?.id) {
+                      navigate('/messages', { state: { conversationId: conv.id } });
+                    } else {
+                      navigate('/messages');
+                    }
+                  }}
                   className="inline-flex items-center px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
                 >
                   <MessageCircle className="w-4 h-4 mr-2" />

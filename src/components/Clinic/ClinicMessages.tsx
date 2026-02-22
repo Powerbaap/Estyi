@@ -220,7 +220,7 @@ const ClinicMessages: React.FC = () => {
   }
 
   return (
-    <div className="flex bg-white rounded-xl shadow-sm border border-gray-200">
+    <div className="flex bg-white rounded-xl shadow-sm border border-gray-200 h-[calc(100vh-280px)] min-h-[500px]">
       <div className="w-1/3 border-r border-gray-200 flex flex-col">
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center justify-between">
