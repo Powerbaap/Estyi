@@ -135,11 +135,26 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     if (!newMessage.trim() || !conversationId || !user?.id || sending) return;
     setSending(true);
     try {
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('messages')
-        .insert({ conversation_id: conversationId, sender_id: user.id, sender_type: 'user', content: newMessage.trim() });
-      if (!error) { setNewMessage(''); }
-      else { console.error('Mesaj gönderme hatası:', error); }
+        .insert({ conversation_id: conversationId, sender_id: user.id, sender_type: 'user', content: newMessage.trim() })
+        .select()
+        .single();
+      if (!error && data) {
+        setNewMessage('');
+        setMessages(prev => [
+          ...prev,
+          {
+            id: data.id,
+            sender_id: data.sender_id,
+            content: data.content,
+            created_at: data.created_at,
+            is_read: !!data.is_read,
+          },
+        ]);
+      } else if (error) {
+        console.error('Mesaj gönderme hatası:', error);
+      }
     } catch (err) { console.error('Mesaj gönderme hatası:', err); }
     finally { setSending(false); }
   };
