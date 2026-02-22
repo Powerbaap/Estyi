@@ -198,13 +198,14 @@ const ClinicMessages: React.FC = () => {
     if (!newMessage.trim() || !selectedConversation || !currentUserId) return;
     const content = newMessage.trim();
     setNewMessage('');
-    try {
-      await supabase.from('messages').insert({
-        conversation_id: selectedConversation,
-        sender_id: currentUserId,
-        content,
-      });
-    } catch {
+    const { error } = await supabase.from('messages').insert({
+      conversation_id: selectedConversation,
+      sender_id: currentUserId,
+      content,
+    });
+    if (error) {
+      console.error('Mesaj gönderme hatası:', JSON.stringify(error));
+      alert('Mesaj gönderilemedi: ' + error.message);
     }
   };
 
