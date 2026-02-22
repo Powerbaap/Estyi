@@ -5,6 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { getUserRole } from '../../utils/auth';
 import { useTranslation } from 'react-i18next';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
+import { supabase } from '../../lib/supabaseClient';
 import Logo from './Logo';
 import LanguageSwitcher from './LanguageSwitcher';
 import ClinicNotificationCenter from '../Notifications/ClinicNotificationCenter';
@@ -22,6 +23,7 @@ const Header: React.FC = () => {
   const [isNotificationOpen, setIsNotificationOpen] = useState(false);
   const { notifications, markAsRead, unreadCount } = useNotifications();
   const [isClinicNotificationOpen, setIsClinicNotificationOpen] = useState(false);
+  const [unreadMessages, setUnreadMessages] = useState(0);
   
   const userRole = getUserRole(user);
 
@@ -48,6 +50,35 @@ const Header: React.FC = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  useEffect(() => {
+    if (!user) return;
+    const loadUnread = async () => {
+      const { data: convs } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`user_id.eq.${user.id},clinic_id.eq.${user.id}`);
+
+      if (!convs?.length) {
+        setUnreadMessages(0);
+        return;
+      }
+
+      const convIds = convs.map((c: any) => c.id);
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .in('conversation_id', convIds)
+        .eq('is_read', false)
+        .neq('sender_id', user.id);
+
+      setUnreadMessages(count || 0);
+    };
+
+    loadUnread();
+    const interval = setInterval(loadUnread, 30000);
+    return () => clearInterval(interval);
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -159,7 +190,14 @@ const Header: React.FC = () => {
                   <svg className="w-4 h-4 text-gray-600 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                   </svg>
-                  <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">{t('common.messages')}</span>
+                  <span className="text-sm font-medium text-gray-700 group-hover:text-purple-700 transition-colors">
+                    {t('common.messages')}
+                  </span>
+                  {unreadMessages > 0 && (
+                    <span className="bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold ml-1">
+                      {unreadMessages > 9 ? '9+' : unreadMessages}
+                    </span>
+                  )}
                 </Link>
 
                 {/* Notifications Dropdown */}

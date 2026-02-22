@@ -71,7 +71,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     loadMessages();
 
     const channel = supabase
-      .channel(`public:messages:${conversationId}`)
+      .channel(`room-${conversationId}`)
       .on(
         'postgres_changes',
         {
@@ -80,7 +80,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
           table: 'messages',
           filter: `conversation_id=eq.${conversationId}`,
         },
-        (payload: any) => {
+        async (payload: any) => {
           if (active) {
             const msg = payload.new;
             const mapped: Message = {
@@ -91,6 +91,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
               is_read: !!msg.is_read,
             };
             setMessages(prev => [...prev, mapped]);
+            if (msg.sender_id !== user?.id) {
+              await supabase
+                .from('messages')
+                .update({ is_read: true })
+                .eq('id', msg.id);
+            }
           }
         }
       )
