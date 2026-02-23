@@ -222,6 +222,15 @@ const ClinicDashboard: React.FC = () => {
     return `${dayPart}${hourPart} kaldı`;
   };
 
+  const getLocation = (offer: any) => {
+    const country = offer.requests?.country || '';
+    const city = offer.requests?.city || '';
+    if (country && city) return `${country} / ${city}`;
+    if (country) return country;
+    if (city) return city;
+    return '';
+  };
+
   const handleStatClick = (key: string) => {
     if (key === 'total') {
       setActiveDashboardTab('auto');
