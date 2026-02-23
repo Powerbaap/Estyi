@@ -264,10 +264,6 @@ const Footer = () => {
                 {
                   to: '/karsilastirma/turkiye-vs-polonya-sac-ekimi',
                   label: safeTranslate('footer.compTrPl', 'Türkiye vs Polonya')
-                },
-                {
-                  to: '/karsilastirma/istanbul-vs-antalya-estetik',
-                  label: safeTranslate('footer.compIstAnt', 'İstanbul vs Antalya')
                 }
               ].map(item => (
                 <li key={item.to}>

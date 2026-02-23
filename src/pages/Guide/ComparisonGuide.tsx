@@ -163,57 +163,6 @@ const COMPARISONS: CompData[] = [
     ],
     url: 'https://estyi.com/karsilastirma/turkiye-vs-polonya-sac-ekimi',
   },
-  {
-    slug: 'istanbul-vs-antalya-estetik',
-    leftLabel: 'İstanbul',
-    rightLabel: 'Antalya',
-    title: 'İstanbul mu Antalya mı — Estetik Turizm Karşılaştırması 2026',
-    metaDesc:
-      "İstanbul ve Antalya'da estetik operasyon: klinik yoğunluğu, fiyat farkı, ulaşım ve iyileşme ortamı. Tarafsız 2026.",
-    summary:
-      'İstanbul geniş klinik ağı ve uzmanlaşmış cerrah havuzuyla öne çıkar. Antalya iyileşme sürecini tatil ortamıyla birleştirme imkânı sunar. Fiyatlar benzer düzeydedir.',
-    rows: [
-      {
-        aspect: 'Uzmanlaşmış klinik sayısı',
-        left: 'Yüksek (ülkedeki en yoğun merkez)',
-        right: 'Orta',
-        winner: 'left',
-      },
-      {
-        aspect: 'Cerrah çeşitliliği',
-        left: 'Daha geniş uzman havuzu',
-        right: 'Daha sınırlı',
-        winner: 'left',
-      },
-      {
-        aspect: 'Ortalama fiyat farkı',
-        left: 'Referans fiyat',
-        right: 'Benzer veya %5–10 düşük',
-        winner: 'equal',
-      },
-      {
-        aspect: 'Uluslararası uçuş bağlantısı',
-        left: 'Çok güçlü (2 havalimanı)',
-        right: 'İyi',
-        winner: 'left',
-      },
-      {
-        aspect: 'İyileşme ortamı',
-        left: 'Şehir merkezi',
-        right: 'Tatil bölgesi, deniz yakın',
-        winner: 'right',
-      },
-    ],
-    verdict:
-      'Geniş cerrah seçeneği ve uluslararası erişim için İstanbul daha avantajlıdır. İyileşmeyi sıcak iklimde geçirmek isteyenler için Antalya cazip alternatiftir.',
-    faq: [
-      {
-        q: "Antalya'da operasyon sonrası iyileşmek uygun mu?",
-        a: 'Antalya’nın ılıman iklimi konforlu olabilir; ancak erken dönemde güneş maruziyetine dikkat edilmelidir.',
-      },
-    ],
-    url: 'https://estyi.com/karsilastirma/istanbul-vs-antalya-estetik',
-  },
 ];
 
 const ComparisonGuide: React.FC = () => {
