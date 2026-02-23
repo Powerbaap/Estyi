@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Send, ArrowLeft, Check, CheckCheck } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
@@ -23,141 +23,114 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [partnerName, setPartnerName] = useState('');
+  const partnerCacheRef = useRef<Record<string, string>>({});
+  const prevLengthRef = useRef(0);
 
   useEffect(() => {
     if (!conversationId || !user?.id) return;
     let active = true;
 
-    const loadMessages = async () => {
+    if (partnerCacheRef.current[conversationId]) {
+      setPartnerName(partnerCacheRef.current[conversationId]);
+    } else {
+      setPartnerName('');
+    }
+    setMessages([]);
+    prevLengthRef.current = 0;
+
+    const loadAll = async () => {
       try {
-        const { data: conv } = await supabase.from('conversations').select('user_id, clinic_id').eq('id', conversationId).single();
-        if (conv) {
+        const [convResult, messagesResult] = await Promise.all([
+          supabase.from('conversations').select('user_id, clinic_id').eq('id', conversationId).single(),
+          supabase.from('messages').select('id, sender_id, content, created_at, is_read').eq('conversation_id', conversationId).order('created_at', { ascending: true }),
+        ]);
+
+        if (!messagesResult.error && active) {
+          const list = Array.isArray(messagesResult.data) ? messagesResult.data : [];
+          setMessages(list.map((m: any) => ({ id: m.id, sender_id: m.sender_id, content: m.content, created_at: m.created_at, is_read: !!m.is_read })));
+        }
+
+        if (convResult.data && active) {
+          const conv = convResult.data;
           const otherPartyId = conv.user_id === user.id ? conv.clinic_id : conv.user_id;
-          try {
-            const { data: clinic } = await supabase.from('clinics').select('name').eq('id', otherPartyId).maybeSingle();
-            if (clinic?.name) setPartnerName(clinic.name);
-            else {
-              const { data: u } = await supabase.from('users').select('email').eq('id', otherPartyId).maybeSingle();
-              if (u?.email) setPartnerName(u.email);
-            }
-          } catch {}
+          const [clinicRes, userRes] = await Promise.all([
+            supabase.from('clinics').select('name').eq('id', otherPartyId).maybeSingle(),
+            supabase.from('users').select('email').eq('id', otherPartyId).maybeSingle(),
+          ]);
+          if (active) {
+            const name = clinicRes.data?.name || userRes.data?.email || '';
+            setPartnerName(name);
+            if (name) partnerCacheRef.current[conversationId] = name;
+          }
         }
 
-        const { data, error } = await supabase
-          .from('messages')
-          .select('*')
-          .eq('conversation_id', conversationId)
-          .order('created_at', { ascending: true });
-        if (!error && active) {
-          const list = Array.isArray(data) ? data : [];
-          setMessages(
-            list.map((m: any) => ({
-              id: m.id,
-              sender_id: m.sender_id,
-              content: m.content,
-              created_at: m.created_at,
-              is_read: !!m.is_read,
-            }))
-          );
-        }
-
-        await supabase
-          .from('messages')
-          .update({ is_read: true })
-          .eq('conversation_id', conversationId)
-          .neq('sender_id', user.id);
-      } catch (err) { console.error('Mesaj yükleme hatası:', err); }
+        supabase.from('messages').update({ is_read: true }).eq('conversation_id', conversationId).neq('sender_id', user.id).then(() => {});
+      } catch (err) {
+        console.error('Mesaj yükleme hatası:', err);
+      }
     };
-    loadMessages();
+
+    loadAll();
 
     const channel = supabase
       .channel(`room-${conversationId}`)
-      .on(
-        'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        async (payload: any) => {
-          if (active) {
-            const msg = payload.new;
-            const mapped: Message = {
-              id: msg.id,
-              sender_id: msg.sender_id,
-              content: msg.content,
-              created_at: msg.created_at,
-              is_read: !!msg.is_read,
-            };
-            setMessages(prev => [...prev, mapped]);
-            if (msg.sender_id !== user?.id) {
-              await supabase
-                .from('messages')
-                .update({ is_read: true })
-                .eq('id', msg.id);
-            }
-          }
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, async (payload: any) => {
+        if (!active) return;
+        const msg = payload.new;
+        setMessages(prev => {
+          if (prev.some(m => m.id === msg.id)) return prev;
+          return [...prev, { id: msg.id, sender_id: msg.sender_id, content: msg.content, created_at: msg.created_at, is_read: !!msg.is_read }];
+        });
+        if (msg.sender_id !== user?.id) {
+          supabase.from('messages').update({ is_read: true }).eq('id', msg.id).then(() => {});
         }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'messages',
-          filter: `conversation_id=eq.${conversationId}`,
-        },
-        (payload: any) => {
-          if (active) {
-            setMessages(prev =>
-              prev.map(m =>
-                m.id === payload.new.id
-                  ? { ...m, is_read: !!payload.new.is_read }
-                  : m
-              )
-            );
-          }
-        }
-      )
+      })
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, (payload: any) => {
+        if (!active) return;
+        setMessages(prev => prev.map(m => m.id === payload.new.id ? { ...m, is_read: !!payload.new.is_read } : m));
+      })
       .subscribe();
 
     return () => { active = false; supabase.removeChannel(channel); };
   }, [conversationId, user?.id]);
 
   useEffect(() => {
-    if (messagesContainerRef.current) {
-      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+    if (messages.length !== prevLengthRef.current) {
+      prevLengthRef.current = messages.length;
+      if (messagesContainerRef.current) {
+        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      }
     }
   }, [messages]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = useCallback(async () => {
     if (!newMessage.trim() || !conversationId || !user?.id || sending) return;
     setSending(true);
+    const content = newMessage.trim();
+    setNewMessage('');
+    const tempId = `temp-${Date.now()}`;
+    setMessages(prev => [...prev, { id: tempId, sender_id: user.id, content, created_at: new Date().toISOString(), is_read: false }]);
+
     try {
       const { data, error } = await supabase
         .from('messages')
-        .insert({ conversation_id: conversationId, sender_id: user.id, sender_type: 'user', content: newMessage.trim() })
+        .insert({ conversation_id: conversationId, sender_id: user.id, sender_type: 'user', content })
         .select()
         .single();
+
       if (!error && data) {
-        setNewMessage('');
-        setMessages(prev => [
-          ...prev,
-          {
-            id: data.id,
-            sender_id: data.sender_id,
-            content: data.content,
-            created_at: data.created_at,
-            is_read: !!data.is_read,
-          },
-        ]);
-      } else if (error) {
-        console.error('Mesaj gönderme hatası:', error);
+        setMessages(prev => prev.map(m => m.id === tempId ? { id: data.id, sender_id: data.sender_id, content: data.content, created_at: data.created_at, is_read: !!data.is_read } : m));
+      } else {
+        setMessages(prev => prev.filter(m => m.id !== tempId));
+        setNewMessage(content);
       }
-    } catch (err) { console.error('Mesaj gönderme hatası:', err); }
-    finally { setSending(false); }
-  };
+    } catch {
+      setMessages(prev => prev.filter(m => m.id !== tempId));
+      setNewMessage(content);
+    } finally {
+      setSending(false);
+    }
+  }, [newMessage, conversationId, user?.id, sending]);
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSendMessage(); }
@@ -170,45 +143,41 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   return (
     <div className="h-full flex flex-col overflow-hidden">
       <div className="p-4 border-b border-gray-200 flex items-center space-x-3 flex-shrink-0">
-        <button onClick={onBack} className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors"><ArrowLeft className="w-5 h-5 text-gray-600" /></button>
+        <button onClick={onBack} className="lg:hidden p-2 hover:bg-gray-100 rounded-lg transition-colors">
+          <ArrowLeft className="w-5 h-5 text-gray-600" />
+        </button>
         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
           <span className="text-white font-bold">{partnerName ? partnerName.charAt(0).toUpperCase() : '?'}</span>
         </div>
         <div><h3 className="font-semibold text-gray-900">{partnerName || 'Sohbet'}</h3></div>
       </div>
+
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 ? (
-          <div className="flex items-center justify-center h-64 text-gray-500"><p className="text-sm">Henüz mesaj yok. İlk mesajı gönderin!</p></div>
+          <div className="flex items-center justify-center h-64 text-gray-500">
+            <p className="text-sm">Henüz mesaj yok. İlk mesajı gönderin!</p>
+          </div>
         ) : (
-          messages.map((message) => (
+          messages.map(message => (
             <div key={message.id} className={`flex ${message.sender_id === user?.id ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${message.sender_id === user?.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'}`}>
+              <div className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${message.sender_id === user?.id ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'} ${message.id.startsWith('temp-') ? 'opacity-70' : ''}`}>
                 <p className="text-sm">{message.content}</p>
-                <div
-                  className={`flex items-center justify-end mt-1 ${
-                    message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'
-                  }`}
-                >
+                <div className={`flex items-center justify-end mt-1 ${message.sender_id === user?.id ? 'text-blue-100' : 'text-gray-500'}`}>
                   <span className="text-xs mr-1">{formatTime(message.created_at)}</span>
-                  {message.sender_id === user?.id && (
-                    <span className="text-xs">
-                      {message.is_read ? (
-                        <CheckCheck className="w-3 h-3 text-blue-200" />
-                      ) : (
-                        <Check className="w-3 h-3 text-gray-300" />
-                      )}
-                    </span>
-                  )}
+                  {message.sender_id === user?.id && (message.is_read ? <CheckCheck className="w-3 h-3 text-blue-200" /> : <Check className="w-3 h-3 text-gray-300" />)}
                 </div>
               </div>
             </div>
           ))
         )}
       </div>
+
       <div className="p-4 border-t border-gray-200 flex-shrink-0">
         <div className="flex items-center space-x-3">
-          <input type="text" value={newMessage} onChange={(e) => setNewMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder="Mesajınızı yazın..." className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          <button onClick={handleSendMessage} disabled={!newMessage.trim() || sending} className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"><Send className="w-5 h-5" /></button>
+          <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder="Mesajınızı yazın..." className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          <button onClick={handleSendMessage} disabled={!newMessage.trim() || sending} className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
+            <Send className="w-5 h-5" />
+          </button>
         </div>
       </div>
     </div>

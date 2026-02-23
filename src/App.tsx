@@ -74,7 +74,16 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
   const { user, isLoading } = useAuth();
   const [role, setRole] = useState<UserRole>('user');
   const [clinicApproved, setClinicApproved] = useState(true);
-  const [roleLoading, setRoleLoading] = useState(true);
+  const [roleLoading, setRoleLoading] = useState(() => {
+    try {
+      const raw = localStorage.getItem(ACCESS_CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw) as CachedAccess;
+        if (parsed.expiresAt > Date.now()) return false;
+      }
+    } catch {}
+    return true;
+  });
 
   useEffect(() => {
     let active = true;
@@ -132,7 +141,7 @@ const RoleRoute: React.FC<{ allow: UserRole[]; children: React.ReactNode }> = ({
             userId: user.id,
             role: access.role,
             isClinicApproved: access.isClinicApproved,
-            expiresAt: Date.now() + 60_000,
+            expiresAt: Date.now() + 300_000,
           };
           localStorage.setItem(ACCESS_CACHE_KEY, JSON.stringify(value));
         } catch {}

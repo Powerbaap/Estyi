@@ -38,32 +38,52 @@ const ClinicDashboard: React.FC = () => {
   const [planName, setPlanName] = useState('');
 
   useEffect(() => {
-    const checkFirstLogin = async () => {
-      if (!user) return;
+    if (!user) return;
+    let active = true;
+    const clinicId = (user as any)?.user_metadata?.clinic_id || user.id;
+    const email = user.email;
+
+    const loadAllClinicData = async () => {
       try {
-        const email = user.email;
-        const { data: clinic } = await supabase
-          .from('clinics')
-          .select('id, specialties')
-          .eq('email', email)
-          .maybeSingle();
+        const [clinicResult, offersResult] = await Promise.all([
+          supabase.from('clinics').select('id, name, specialties').or(`id.eq.${clinicId},email.eq.${email}`).maybeSingle(),
+          supabase.from('offers').select('*, requests:requests(user_id, sessions, region, expires_at, country, city, procedure_name, procedure_key, status)').eq('clinic_id', clinicId).order('created_at', { ascending: false }),
+        ]);
 
-        if (!clinic?.id) return;
+        if (!active) return;
 
-        const { data: prices } = await supabase
-          .from('clinic_price_list')
-          .select('id')
-          .eq('clinic_id', clinic.id)
-          .limit(1);
+        if (clinicResult.data) {
+          setClinicName(clinicResult.data.name || email || '');
+          setPlanName('Standart Plan');
+          const foundClinicId = clinicResult.data.id;
+          if (foundClinicId && clinicResult.data.specialties?.length > 0) {
+            const { data: prices } = await supabase.from('clinic_price_list').select('id').eq('clinic_id', foundClinicId).limit(1);
+            if (active && (!prices || prices.length === 0)) setActiveTab('fixedPrices');
+          }
+        } else {
+          setClinicName((user as any)?.user_metadata?.name || email || '');
+          setPlanName('Standart Plan');
+        }
 
-        if (clinic.specialties?.length > 0 && (!prices || prices.length === 0)) {
-          setActiveTab('fixedPrices');
+        if (!offersResult.error) {
+          setClinicOffers(Array.isArray(offersResult.data) ? offersResult.data : []);
+        } else {
+          setClinicOffers([]);
         }
       } catch (e) {
         console.error(e);
+        if (active) {
+          setClinicName((user as any)?.user_metadata?.name || email || '');
+          setClinicOffers([]);
+        }
+      } finally {
+        if (active) setOffersLoading(false);
       }
     };
-    checkFirstLogin();
+
+    setOffersLoading(true);
+    loadAllClinicData();
+    return () => { active = false; };
   }, [user]);
 
   useEffect(() => {
@@ -73,59 +93,6 @@ const ClinicDashboard: React.FC = () => {
       navigate(location.pathname, { replace: true, state: {} });
     }
   }, [location.state]);
-
-  useEffect(() => {
-    const loadClinicInfo = async () => {
-      if (!user) return;
-      const clinicId = (user as any)?.user_metadata?.clinic_id || user.id;
-      try {
-        const { data } = await supabase
-          .from('clinics')
-          .select('name')
-          .or(`id.eq.${clinicId},email.eq.${user.email}`)
-          .maybeSingle();
-        if (data) {
-          setClinicName(data.name || user.email || '');
-          setPlanName('Standart Plan');
-        } else {
-          setClinicName((user as any)?.user_metadata?.name || user.email || '');
-          setPlanName('Standart Plan');
-        }
-      } catch {
-        setClinicName((user as any)?.user_metadata?.name || user.email || '');
-        setPlanName('Standart Plan');
-      }
-    };
-    loadClinicInfo();
-  }, [user]);
-
-  useEffect(() => {
-    const loadClinicOffers = async () => {
-      if (!user) return;
-      try {
-        const clinicId = (user as any)?.user_metadata?.clinic_id || (user as any)?.id;
-        if (!clinicId) return;
-        setOffersLoading(true);
-        const { data, error } = await supabase
-          .from('offers')
-          .select('*, requests:requests(user_id, sessions, region, expires_at, country, city, procedure_name, procedure_key, status)')
-          .eq('clinic_id', clinicId)
-          .order('created_at', { ascending: false });
-        if (error) {
-          console.error(error);
-          setClinicOffers([]);
-          return;
-        }
-        setClinicOffers(Array.isArray(data) ? data : []);
-      } catch (e) {
-        console.error(e);
-        setClinicOffers([]);
-      } finally {
-        setOffersLoading(false);
-      }
-    };
-    loadClinicOffers();
-  }, [user]);
 
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('clinicDashboard.menu.dashboard'), count: null },
