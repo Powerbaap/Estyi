@@ -260,11 +260,7 @@ const Footer = () => {
             </h3>
             <ul className="space-y-3">
               {[
-                { to: '/karsilastirma/fue-vs-dhi', label: 'FUE vs DHI' },
-                {
-                  to: '/karsilastirma/turkiye-vs-polonya-sac-ekimi',
-                  label: safeTranslate('footer.compTrPl', 'Türkiye vs Polonya')
-                }
+                { to: '/karsilastirma/fue-vs-dhi', label: 'FUE vs DHI' }
               ].map(item => (
                 <li key={item.to}>
                   <Link

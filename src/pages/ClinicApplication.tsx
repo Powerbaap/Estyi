@@ -319,6 +319,13 @@ const ClinicApplication: React.FC = () => {
     }
   };
 
+  const removeCertificateAt = (index: number) => {
+    setFormData(prev => ({
+      ...prev,
+      certificates: prev.certificates.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -524,7 +531,7 @@ const ClinicApplication: React.FC = () => {
                 {/* Ülkeler — birden fazla seçim (talep formu ile aynı liste) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {getTranslation('clinicApplication.countries', 'Ülkeler')} * ({getTranslation('clinicApplication.selectAll', 'Tümünü seçin')})
+                    {getTranslation('clinicApplication.countries', 'Ülkeler')} * (Klinik şubenizin bulunduğu ülkeleri seçin)
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     <button
@@ -861,9 +868,34 @@ const ClinicApplication: React.FC = () => {
                   </div>
                   {formData.certificates.length > 0 && (
                     <div className="mt-3">
-                      <p className="text-sm text-gray-600">
+                      <p className="text-sm text-gray-600 mb-2">
                         {formData.certificates.length} {getTranslation('clinicApplication.filesUploaded', 'files uploaded')}
                       </p>
+                      <div className="flex flex-wrap">
+                        {formData.certificates.map((file, index) => (
+                          <div key={index} className="relative inline-block m-1">
+                            {file.type.startsWith('image/') ? (
+                              <img
+                                src={URL.createObjectURL(file)}
+                                className="w-20 h-20 object-cover rounded-lg border"
+                                alt={file.name}
+                              />
+                            ) : (
+                              <div className="w-20 h-20 flex flex-col items-center justify-center bg-gray-100 rounded-lg border text-xs text-center p-1">
+                                <span>📄</span>
+                                <span className="truncate w-full text-center">{file.name}</span>
+                              </div>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => removeCertificateAt(index)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                            >
+                              ×
+                            </button>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
