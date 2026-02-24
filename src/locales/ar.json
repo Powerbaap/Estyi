@@ -1,4 +1,69 @@
 {
+  "clinicApplication": {
+    "title": "نموذج طلب العيادة",
+    "subtitle": "انضم إلى شبكتنا العالمية من العيادات التجميلية المعتمدة وتواصل مع المرضى في جميع أنحاء العالم",
+    "clinicName": "اسم العيادة",
+    "clinicNamePlaceholder": "أدخل اسم العيادة",
+    "countries": "البلدان",
+    "branchCountriesLabel": "اختر البلدان التي توجد بها فروع لعيادتك",
+    "selectAllCountries": "تحديد الكل",
+    "clearAll": "مسح الكل",
+    "selected": "محدد",
+    "country": "بلد",
+    "citiesIn": "المدن في",
+    "selectAll": "تحديد الكل",
+    "clear": "مسح",
+    "passwordErrors": "يرجى ملء حقول كلمة المرور.",
+    "passwordMismatch": "كلمات المرور غير متطابقة.",
+    "passwordWeak": "يجب أن تتكون كلمة المرور من 8 أحرف على الأقل وتحتوي على حرف كبير واحد.",
+    "cityRequired": "يرجى تحديد مدينة واحدة على الأقل لكل بلد.",
+    "filesRejectedTitle": "تعذر إضافة بعض الملفات:",
+    "filesRejectedHint": "يرجى تحميل ملفات PDF أو JPG أو PNG بحجم يصل إلى 10 ميجابايت فقط.",
+    "fileInvalidType": "نوع الملف غير صالح",
+    "fileTooBig": "حجم الملف يتجاوز 10 ميجابايت"
+  },
+  "clinicRequests": {
+    "title": "Requests",
+    "subtitle": "Patient aesthetic treatment requests",
+    "stats": {
+      "total": "إجمالي الطلبات",
+      "newRequests": "طلبات جديدة",
+      "offeredRequests": "الطلبات المقدمة",
+      "expiredRequests": "الطلبات المنتهية"
+    },
+    "filter": {
+      "allStatuses": "All Statuses",
+      "allProcedures": "All Procedures"
+    },
+    "status": {
+      "new": "New",
+      "offered": "Offered",
+      "expired": "Expired",
+      "unknown": "Unknown"
+    },
+    "searchPlaceholder": "البحث في الطلبات...",
+    "noRequests": "لم يتم العثور على طلبات",
+    "noRequestsDesc": "لا توجد طلبات تطابق معايير البحث الخاصة بك.",
+    "user": "المستخدم",
+    "age": "العمر",
+    "photos": "الصور",
+    "more": "المزيد",
+    "daysAgo": "أيام مضت",
+    "submitOffer": "تقديم عرض",
+    "enlargedPhoto": "صورة مكبرة"
+  },
+  "clinicDashboard": {
+    "loading": "جار التحميل...",
+    "noOffers": "لا توجد عروض بعد."
+  },
+  "userDashboard": {
+    "deleteRequestConfirm": "هل أنت متأكد أنك تريد حذف هذا الطلب؟",
+    "deleteRequestError": "حدث خطأ أثناء حذف الطلب."
+  },
+  "clinic": {
+    "loginRequired": "تسجيل الدخول مطلوب",
+    "loadingMessages": "جار تحميل الرسائل..."
+  },
   "footer": {
     "description": "نوحد بين الراغبين في التغيير وعيادات التجميل المعتمدة في جميع أنحاء العالم. خدمة آمنة وشفافة ومهنية.",
     "gdpr": "متوافق مع GDPR",
@@ -27,7 +92,10 @@
     "comparisons": "مقارنات",
     "compFueDhi": "FUE مقابل DHI",
     "compTrPl": "تركيا مقابل بولندا",
-    "compIstAnt": "إسطنبول مقابل أنطاليا"
+    "compIstAnt": "إسطنبول مقابل أنطاليا",
+    "comparison_turkey_poland": "تركيا مقابل بولندا",
+    "comparison_turkey_hungary": "تركيا مقابل المجر",
+    "comparison_turkey_spain": "تركيا مقابل إسبانيا"
   },
   "countries": {
     "turkey": "تركيا",

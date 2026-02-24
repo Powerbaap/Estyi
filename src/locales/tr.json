@@ -22,7 +22,14 @@
     "guideDental": "Diş İmplantı",
     "guideHollywood": "Hollywood Gülüşü",
     "guideLipo": "Liposuction",
-    "guidePriceIndex": "Fiyat Endeksi 2026"
+    "guidePriceIndex": "Fiyat Endeksi 2026",
+    "comparisons": "Karşılaştırmalar",
+    "compFueDhi": "FUE vs DHI",
+    "compTrPl": "Türkiye vs Polonya",
+    "compIstAnt": "İstanbul vs Antalya",
+    "comparison_turkey_poland": "Türkiye vs Polonya",
+    "comparison_turkey_hungary": "Türkiye vs Macaristan",
+    "comparison_turkey_spain": "Türkiye vs İspanya"
   },
   "procedureCategories": {
     "searchPlaceholder": "İşlem ara (örn. saç ekimi, lazer)...",
@@ -642,8 +649,8 @@
     "stats": {
       "total": "Toplam Talep",
       "newRequests": "Yeni Talepler",
-      "offeredRequests": "Teklif Verilen",
-      "highPriority": "Yüksek Öncelik"
+      "offeredRequests": "Teklif Verilenler",
+      "expiredRequests": "Süresi Dolanlar"
     },
     "filter": {
       "allStatuses": "Tüm Durumlar",

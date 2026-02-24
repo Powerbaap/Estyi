@@ -330,18 +330,18 @@ const ClinicApplication: React.FC = () => {
     e.preventDefault();
     try {
       if (!formData.password || !formData.confirmPassword) {
-        alert('Lütfen şifre ve şifre tekrarını doldurun.');
+        alert(getTranslation('clinicApplication.passwordErrors', 'Please fill in the password fields.'));
         return;
       }
       if (formData.password !== formData.confirmPassword) {
-        alert(getTranslation('clinicApplication.passwordsDoNotMatch', 'Passwords do not match!'));
+        alert(getTranslation('clinicApplication.passwordMismatch', 'Passwords do not match.'));
         return;
       }
       const pwd = formData.password;
       const lengthOk = pwd.length >= 8;
       const upperOk = /[A-Z]/.test(pwd);
       if (!lengthOk || !upperOk) {
-        alert(getTranslation('clinicApplication.passwordRequirements', 'Password must be at least 8 characters and contain at least one uppercase letter.'));
+        alert(getTranslation('clinicApplication.passwordWeak', 'Password must be at least 8 characters with one uppercase letter.'));
         return;
       }
       const hasMissingCities = (formData.countries || []).some((countryKey: string) => {
@@ -531,7 +531,7 @@ const ClinicApplication: React.FC = () => {
                 {/* Ülkeler — birden fazla seçim (talep formu ile aynı liste) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {getTranslation('clinicApplication.countries', 'Ülkeler')} * ({getTranslation('clinicApplication.selectCountriesHint', 'Select countries where your clinic has branches')})
+                    {getTranslation('clinicApplication.countries', 'Countries')} * ({getTranslation('clinicApplication.branchCountriesLabel', 'Select countries where your clinic has branches')})
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     <button

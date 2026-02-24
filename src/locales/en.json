@@ -1,4 +1,69 @@
 {
+  "clinicApplication": {
+    "title": "Clinic Application Form",
+    "subtitle": "Join our global network of certified aesthetic clinics and connect with patients worldwide",
+    "clinicName": "Clinic Name",
+    "clinicNamePlaceholder": "Enter your clinic name",
+    "countries": "Countries",
+    "branchCountriesLabel": "Select countries where your clinic has branches",
+    "selectAllCountries": "Select All",
+    "clearAll": "Clear All",
+    "selected": "Selected",
+    "country": "country",
+    "citiesIn": "Cities",
+    "selectAll": "Select All",
+    "clear": "Clear",
+    "passwordErrors": "Please fill in the password fields.",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordWeak": "Password must be at least 8 characters with one uppercase letter.",
+    "cityRequired": "Please select at least one city for each country.",
+    "filesRejectedTitle": "Some files could not be added:",
+    "filesRejectedHint": "Please only upload PDF, JPG or PNG files up to 10MB.",
+    "fileInvalidType": "Invalid file type",
+    "fileTooBig": "File exceeds 10MB limit"
+  },
+  "clinicRequests": {
+    "title": "Requests",
+    "subtitle": "Patient aesthetic treatment requests",
+    "stats": {
+      "total": "Total Requests",
+      "newRequests": "New Requests",
+      "offeredRequests": "Offered Requests",
+      "expiredRequests": "Expired Requests"
+    },
+    "filter": {
+      "allStatuses": "All Statuses",
+      "allProcedures": "All Procedures"
+    },
+    "status": {
+      "new": "New",
+      "offered": "Offered",
+      "expired": "Expired",
+      "unknown": "Unknown"
+    },
+    "searchPlaceholder": "Search requests...",
+    "noRequests": "No Requests Found",
+    "noRequestsDesc": "No requests match your search criteria.",
+    "user": "User",
+    "age": "age",
+    "photos": "photos",
+    "more": "more",
+    "daysAgo": "days ago",
+    "submitOffer": "Submit Offer",
+    "enlargedPhoto": "Enlarged photo"
+  },
+  "clinicDashboard": {
+    "loading": "Loading...",
+    "noOffers": "No offers yet."
+  },
+  "userDashboard": {
+    "deleteRequestConfirm": "Are you sure you want to delete this request?",
+    "deleteRequestError": "An error occurred while deleting the request."
+  },
+  "clinic": {
+    "loginRequired": "Login Required",
+    "loadingMessages": "Loading messages..."
+  },
   "footer": {
     "description": "We bring together people seeking change with certified aesthetic clinics worldwide. Safe, transparent, and professional service.",
     "gdpr": "GDPR Compliant",
@@ -27,7 +92,10 @@
     "comparisons": "Comparisons",
     "compFueDhi": "FUE vs DHI",
     "compTrPl": "Turkey vs Poland",
-    "compIstAnt": "Istanbul vs Antalya"
+    "compIstAnt": "Istanbul vs Antalya",
+    "comparison_turkey_poland": "Turkey vs Poland",
+    "comparison_turkey_hungary": "Turkey vs Hungary",
+    "comparison_turkey_spain": "Turkey vs Spain"
   },
   "countries": {
     "turkey": "Turkey",
