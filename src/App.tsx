@@ -217,6 +217,7 @@ function AppContent() {
             <Route path="/contact" element={<Contact />} />
             <Route path="/cookie-policy" element={<CookiePolicy />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/rehber/hollywood-gulus" element={<Navigate to="/rehber/hollywood-gulusu" replace />} />
             <Route path="/rehber/:slug" element={<ProcedureGuide />} />
             <Route path="/karsilastirma/:slug" element={<ComparisonGuide />} />
             <Route path="/fiyat-endeksi" element={<PriceIndex />} />

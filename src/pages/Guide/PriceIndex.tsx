@@ -22,12 +22,12 @@ const PriceIndex: React.FC = () => {
   };
 
   const categories = [
-    { name: 'Saç & Kaş', items: PROCEDURE_GUIDES.filter(g => g.category === 'Saç & Kaş') },
-    { name: 'Yüz Cerrahisi', items: PROCEDURE_GUIDES.filter(g => g.category === 'Yüz Cerrahisi') },
-    { name: 'Diş', items: PROCEDURE_GUIDES.filter(g => g.category === 'Diş') },
-    { name: 'Vücut Cerrahisi', items: PROCEDURE_GUIDES.filter(g => g.category === 'Vücut Cerrahisi') },
-    { name: 'Göğüs Cerrahisi', items: PROCEDURE_GUIDES.filter(g => g.category === 'Göğüs Cerrahisi') },
-    { name: 'Cilt & Dermatoloji', items: PROCEDURE_GUIDES.filter(g => g.category === 'Cilt & Dermatoloji') },
+    { name: 'Saç & Kaş', items: PROCEDURE_GUIDES.filter(g => g.category?.tr === 'Saç Ekimi' || g.category?.en === 'Hair Transplant') },
+    { name: 'Yüz Cerrahisi', items: PROCEDURE_GUIDES.filter(g => g.category?.tr === 'Estetik Cerrahi') },
+    { name: 'Diş', items: PROCEDURE_GUIDES.filter(g => g.category?.tr === 'Diş Tedavisi') },
+    { name: 'Vücut Cerrahisi', items: PROCEDURE_GUIDES.filter(g => g.category?.tr === 'Vücut Şekillendirme') },
+    { name: 'Göğüs Cerrahisi', items: PROCEDURE_GUIDES.filter(g => g.category?.tr === 'Göğüs Cerrahisi') },
+    { name: 'Cilt & Dermatoloji', items: PROCEDURE_GUIDES.filter(g => g.category?.tr === 'Cilt & Dermatoloji') },
   ].filter(c => c.items.length > 0);
 
   return (
@@ -120,7 +120,7 @@ const PriceIndex: React.FC = () => {
                               to={`/rehber/${item.slug}`}
                               className="font-medium text-gray-900 hover:text-blue-600"
                             >
-                              {item.title.split(' - ')[0]}
+                              {(item.title?.tr || item.title?.en || '').split(' - ')[0]}
                             </Link>
                           </td>
                           <td className="px-4 py-3 text-xs text-gray-700">{item.priceRange.india}</td>
