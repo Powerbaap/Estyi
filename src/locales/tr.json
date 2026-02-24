@@ -18,6 +18,7 @@
     "trustMessage": "10,000+ güvenilir hasta tarafından tercih ediliyor",
     "guides": "İşlem Rehberleri",
     "guideFue": "Saç Ekimi FUE",
+    "guideDhi": "Saç Ekimi DHI",
     "guideRhinoplasty": "Burun Estetiği",
     "guideDental": "Diş İmplantı",
     "guideHollywood": "Hollywood Gülüşü",
@@ -1481,7 +1482,21 @@
     "step1": "Başvuru gönder",
     "step2": "İnceleme & doğrulama (2-5 gün)",
     "step3": "Sözleşme imzalama",
-    "step4": "Platform erişimi verildi"
+    "step4": "Platform erişimi verildi",
+    "citiesIn": "Şehirler",
+    "city": "şehir",
+    "cityRequired": "Lütfen seçtiğiniz her ülke için en az bir şehir seçin.",
+    "clear": "Temizle",
+    "clearAll": "Tümünü temizle",
+    "confirmPassword": "Şifreyi Onayla",
+    "countries": "Ülkeler",
+    "branchCountriesLabel": "Klinik şubenizin bulunduğu ülkeleri seçin",
+    "passwordErrors": "Lütfen şifre ve şifre tekrarını doldurun.",
+    "passwordMismatch": "Şifreler birbiriyle eşleşmiyor.",
+    "passwordWeak": "Şifre en az 8 karakter olmalı ve en az bir büyük harf içermelidir.",
+    "fileInvalidType": "Dosya türü geçersiz",
+    "filesRejectedTitle": "Bazı dosyalar eklenemedi:",
+    "submitError": "Başvuru gönderilirken bir hata oluştu."
   },
   "clinicDashboard": {
     "menu": {

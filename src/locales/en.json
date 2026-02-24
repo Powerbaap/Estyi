@@ -1501,7 +1501,21 @@
     "step1": "Submit application",
     "step2": "Review & verification (2-5 days)",
     "step3": "Contract signing",
-    "step4": "Platform access granted"
+    "step4": "Platform access granted",
+    "citiesIn": "Cities",
+    "city": "city",
+    "cityRequired": "Please select at least one city for each country.",
+    "clear": "Clear",
+    "clearAll": "Clear All",
+    "confirmPassword": "Confirm Password",
+    "countries": "Countries",
+    "branchCountriesLabel": "Select countries where your clinic has branches",
+    "passwordErrors": "Please fill in the password and confirm password fields.",
+    "passwordMismatch": "Passwords do not match.",
+    "passwordWeak": "Password must be at least 8 characters and contain at least one uppercase letter.",
+    "fileInvalidType": "Invalid file type",
+    "filesRejectedTitle": "Some files could not be added:",
+    "submitError": "An error occurred while submitting the application."
   },
   "clinicDashboard": {
     "menu": {
