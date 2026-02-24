@@ -30,7 +30,8 @@
     "compIstAnt": "İstanbul vs Antalya",
     "comparison_turkey_poland": "Türkiye vs Polonya",
     "comparison_turkey_hungary": "Türkiye vs Macaristan",
-    "comparison_turkey_spain": "Türkiye vs İspanya"
+    "comparison_turkey_spain": "Türkiye vs İspanya",
+    "doNotSell": "Verilerimi Satma"
   },
   "procedureCategories": {
     "searchPlaceholder": "İşlem ara (örn. saç ekimi, lazer)...",
@@ -230,9 +231,9 @@
     },
     "address": {
       "title": "Adres",
-      "line1": "Estyi Ltd. Şti.",
-      "line2": "Levent Mahallesi, Büyükdere Caddesi",
-      "line3": "34330 Beşiktaş/İstanbul, Türkiye"
+      "line1": "Estyi Inc.",
+      "line2": "Amerika Birleşik Devletleri (ABD merkezli teknoloji şirketi)",
+      "line3": "contact@estyi.com"
     },
     "form": {
       "title": "İletişim Formu",
@@ -1666,12 +1667,22 @@
       "termsPrivacy": "Kullanım Şartları, Gizlilik Politikası ve Veri Toplama Bildirimi'ni okudum ve kabul ediyorum.",
       "explicitConsent": "Hassas/sağlık verilerimin (talep detayları ve varsa fotoğraflar dahil) eşleşen kliniklerle fiyat almak ve iletişim amacıyla işlenmesine ve paylaşılmasına açıkça onay veriyorum.",
       "ageGate": "18 yaşından büyük olduğumu onaylıyorum.",
-      "legalPage": "Şartlar ve Politikalar"
+      "legalPage": "Şartlar ve Politikalar",
+      "part1": "Şunu okudum ve kabul ediyorum:",
+      "termsLink": "Kullanım Şartları",
+      "privacyLink": "Gizlilik Politikası",
+      "part2": " ve",
+      "medicalLink": "Tıbbi Sorumluluk Reddi",
+      "part3": ". 18 yaşında veya daha büyük olduğumu onaylıyor ve sağlıkla ilgili verilerimin teklif alımı amacıyla kliniklerle paylaşılmasına rıza veriyorum."
     },
     "clickwrapClinic": {
       "acceptAll": "Şartlar ve Politikaları kabul ediyorum.",
       "clinicAgreement": "Klinik Sağlayıcı Sözleşmesi'ni okudum ve kabul ediyorum (lisans, uyumluluk, 24 saat SLA, USD fiyatlandırma dahil).",
-      "dataSecurity": "Veri Kullanımı ve Güvenlik Eki'ni okudum ve kabul ediyorum."
+      "dataSecurity": "Veri Kullanımı ve Güvenlik Eki'ni okudum ve kabul ediyorum.",
+      "part1": "Şunları okudum ve kabul ediyorum:",
+      "agreementLink": "Klinik Sağlayıcı Sözleşmesi",
+      "dataLink": "Veri Güvenliği Eki",
+      "part2": ". Fiyatlandırma, lisans ve 24 saatlik yanıt süresi kurallarını kabul ediyorum."
     },
     "medicalDisclaimer": "Estyi tıbbi tavsiye veya tıbbi hizmet sunmaz. Teklifler klinikler tarafından verilir. Acil durumlarda yerel acil servislerle iletişime geçin.",
     "pages": {
@@ -1776,9 +1787,9 @@
         },
         "address": {
           "title": "Adres",
-          "line1": "Estyi Ltd. Şti.",
-          "line2": "Levent Mahallesi, Büyükdere Caddesi",
-          "line3": "34330 Beşiktaş/İstanbul, Türkiye"
+          "line1": "Estyi Inc.",
+          "line2": "Amerika Birleşik Devletleri (ABD merkezli teknoloji şirketi)",
+          "line3": "contact@estyi.com"
         }
       },
       "form": {
@@ -2037,5 +2048,14 @@
     "hairTransplantDetails": "Saç Ekimi Detayları",
     "liposuctionQuestion": "Liposuction Sorusu",
     "hairTransplantAppointment": "Saç Ekimi Randevu"
+  },
+  "cookies": {
+    "bannerText": "Size daha iyi bir deneyim sunmak için çerezler kullanıyoruz.",
+    "learnMore": "Daha fazla bilgi",
+    "accept": "Kabul Et",
+    "decline": "Reddet"
+  },
+  "offers": {
+    "priceLocked": "Bu fiyat kilitlenmiştir — klinik artış yapamaz."
   }
 }

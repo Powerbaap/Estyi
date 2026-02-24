@@ -223,6 +223,12 @@ const Footer = () => {
                   <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
                 </Link>
               </li>
+              <li>
+                <Link to="/privacy-policy#ccpa" className="text-sm text-gray-300 hover:text-white transition-colors duration-300 flex items-center space-x-2 group" onClick={scrollToTopInstant}>
+                  <span>{safeTranslate('footer.doNotSell', 'Do Not Sell My Data')}</span>
+                  <div className="w-0 group-hover:w-2 h-0.5 bg-gradient-to-r from-purple-400 to-pink-400 transition-all duration-300"></div>
+                </Link>
+              </li>
             </ul>
           </div>
 

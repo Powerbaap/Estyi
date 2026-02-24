@@ -95,7 +95,8 @@
     "compIstAnt": "Istanbul vs Antalya",
     "comparison_turkey_poland": "Turkey vs Poland",
     "comparison_turkey_hungary": "Turkey vs Hungary",
-    "comparison_turkey_spain": "Turkey vs Spain"
+    "comparison_turkey_spain": "Turkey vs Spain",
+    "doNotSell": "Do Not Sell My Data"
   },
   "countries": {
     "turkey": "Turkey",
@@ -221,9 +222,9 @@
     },
     "address": {
       "title": "Address",
-      "line1": "Estyi Ltd. Co.",
-      "line2": "Levent Mahallesi, Büyükdere Caddesi",
-      "line3": "34330 Beşiktaş/Istanbul, Turkey"
+      "line1": "Estyi Inc.",
+      "line2": "United States (US-based technology company)",
+      "line3": "contact@estyi.com"
     },
     "form": {
       "title": "Contact Form",
@@ -1685,12 +1686,22 @@
       "termsPrivacy": "I have read and agree to the Terms of Service, Privacy Notice and Notice at Collection.",
       "explicitConsent": "I explicitly consent to the processing and sharing of my sensitive/health-related data (including procedure request details and photos, if provided) with matched clinics for the purpose of obtaining quotes and communicating.",
       "ageGate": "I confirm I am 18+ years old.",
-      "legalPage": "Terms & Policies"
+      "legalPage": "Terms & Policies",
+      "part1": "I have read and agree to the",
+      "termsLink": "Terms of Service",
+      "privacyLink": "Privacy Policy",
+      "part2": " and",
+      "medicalLink": "Medical Disclaimer",
+      "part3": ". I confirm I am 18+ years old and consent to my health-related data being shared with matched clinics for quote purposes."
     },
     "clickwrapClinic": {
       "acceptAll": "I accept the Terms & Policies.",
       "clinicAgreement": "I have read and accept the Clinic Provider Agreement (licensing, compliance, 24h SLA, USD pricing).",
-      "dataSecurity": "I have read and accept the Data Use & Security Addendum."
+      "dataSecurity": "I have read and accept the Data Use & Security Addendum.",
+      "part1": "I have read and accept the",
+      "agreementLink": "Clinic Provider Agreement",
+      "dataLink": "Data Security Addendum",
+      "part2": ". I accept the pricing, licensing, and 24-hour response time rules."
     },
     "medicalDisclaimer": "Estyi does not provide medical advice or medical services. Quotes are provided by clinics. In emergencies, contact local emergency services.",
     "pages": {
@@ -1794,9 +1805,9 @@
         },
         "address": {
           "title": "Address",
-          "line1": "Estyi Ltd. Co.",
-          "line2": "Levent District, Büyükdere Street",
-          "line3": "34330 Beşiktaş/Istanbul, Turkey"
+          "line1": "Estyi Inc.",
+          "line2": "United States (US-based technology company)",
+          "line3": "contact@estyi.com"
         }
       },
       "form": {
@@ -2093,5 +2104,14 @@
     "hairTransplantDetails": "Hair Transplant Details",
     "liposuctionQuestion": "Liposuction Question",
     "hairTransplantAppointment": "Hair Transplant Appointment"
+  },
+  "cookies": {
+    "bannerText": "We use cookies to provide you with a better experience.",
+    "learnMore": "Learn more",
+    "accept": "Accept",
+    "decline": "Decline"
+  },
+  "offers": {
+    "priceLocked": "This price is locked — the clinic cannot increase it."
   }
 }

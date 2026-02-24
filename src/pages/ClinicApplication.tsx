@@ -47,6 +47,7 @@ const ClinicApplication: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [acceptTerms, setAcceptTerms] = useState(false);
+  const [acceptClinicTerms, setAcceptClinicTerms] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
 
@@ -921,6 +922,25 @@ const ClinicApplication: React.FC = () => {
                   )}
                 </div>
 
+                {/* Clinic Terms Checkbox */}
+                <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={acceptClinicTerms}
+                      onChange={(e) => setAcceptClinicTerms(e.target.checked)}
+                      className="mt-1 h-4 w-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                    />
+                    <span className="text-sm text-gray-700">
+                      {t('legal.clickwrapClinic.part1')}{' '}
+                      <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrapClinic.agreementLink')}</a>
+                      {', '}
+                      <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrapClinic.dataLink')}</a>
+                      {t('legal.clickwrapClinic.part2')}
+                    </span>
+                  </label>
+                </div>
+
                 {/* Submit Button */}
                 <button
                   type="submit"
@@ -935,6 +955,7 @@ const ClinicApplication: React.FC = () => {
                     !formData.password ||
                     !formData.confirmPassword ||
                     !acceptTerms ||
+                    !acceptClinicTerms ||
                     hasPriceError
                   }
                   className="w-full bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white py-4 rounded-2xl hover:shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 font-semibold text-lg transform hover:scale-105"

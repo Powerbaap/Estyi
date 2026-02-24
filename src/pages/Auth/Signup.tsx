@@ -243,7 +243,7 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
-            {/* Legal clickwrap — tek onay: Şartlar ve Politikalar (/legal) */}
+            {/* Legal clickwrap — Şartlar ve Politikalar (/legal) */}
             <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4">
               <label className="flex items-start gap-3 cursor-pointer">
                 <input
@@ -253,8 +253,13 @@ const Signup: React.FC = () => {
                   className="mt-1 h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
                 />
                 <span className="text-sm text-gray-700">
-                  {t('legal.clickwrap.acceptAll')}{' '}
-                  <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrap.legalPage')}</a>
+                  {t('legal.clickwrap.part1')}{' '}
+                  <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrap.termsLink')}</a>
+                  {', '}
+                  <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrap.privacyLink')}</a>
+                  {t('legal.clickwrap.part2')}{' '}
+                  <a href="/legal" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline font-medium">{t('legal.clickwrap.medicalLink')}</a>
+                  {t('legal.clickwrap.part3')}
                 </span>
               </label>
             </div>

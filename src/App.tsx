@@ -5,6 +5,7 @@ import Header from './components/Layout/Header';
 import Footer from './components/Layout/Footer';
 import ScrollToTop from './components/Layout/ScrollToTop';
 import ErrorBoundary from './components/Layout/ErrorBoundary';
+import CookieBanner from './components/Layout/CookieBanner';
 import AdminRoute from './components/AdminRoute';
 import { getCurrentUserAccess, getUserRole, type UserRole } from './utils/auth';
 
@@ -236,6 +237,7 @@ function AppContent() {
         </Suspense>
       </main>
       {!isAdminRoute && <Footer />}
+      <CookieBanner />
     </div>
   );
 }

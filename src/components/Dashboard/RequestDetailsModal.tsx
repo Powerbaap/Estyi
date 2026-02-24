@@ -483,6 +483,10 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                             <span aria-hidden>🔒</span>
                             <span>{t('requestDetails.priceLocked')}</span>
                           </div>
+                          <p className="text-xs text-green-600 flex items-center gap-1 mt-1">
+                            <span>🔒</span>
+                            <span>{t('offers.priceLocked')}</span>
+                          </p>
                           <div className="text-sm text-gray-600 mt-2">
                             {safeFormatDateTR((offer as any).createdAt)} {t('requestDetails.onDate')}
                           </div>
