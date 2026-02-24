@@ -214,7 +214,7 @@ const ClinicDashboard: React.FC = () => {
     if (offersLoading) {
       return (
         <div className="py-8 text-center text-gray-500">
-          {t('clinicDashboard.loading')}
+          {t('clinicDashboard.loading', 'Loading...')}
         </div>
       );
     }
@@ -222,7 +222,7 @@ const ClinicDashboard: React.FC = () => {
     if (clinicOffers.length === 0) {
       return (
         <div className="py-8 text-center text-gray-500">
-          {t('clinicDashboard.noOffers')}
+          {t('clinicDashboard.noOffers', 'No offers yet.')}
         </div>
       );
     }

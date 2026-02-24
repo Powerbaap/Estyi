@@ -165,14 +165,14 @@ const UserDashboard: React.FC = () => {
   };
 
   const handleDeleteRequest = async (requestId: string) => {
-    if (!confirm(t('userDashboard.deleteRequestConfirm') || 'Bu talebi silmek istediğinize emin misiniz?')) {
+    if (!confirm(t('userDashboard.deleteRequestConfirm', 'Are you sure you want to delete this request?'))) {
       return;
     }
     try {
       await requestService.deleteRequest(requestId);
       setRequests(prev => prev.filter(req => req.id !== requestId));
     } catch {
-      alert(t('userDashboard.deleteRequestError') || 'Talep silinirken hata oluştu.');
+      alert(t('userDashboard.deleteRequestError', 'An error occurred while deleting the request.'));
     }
   };
 

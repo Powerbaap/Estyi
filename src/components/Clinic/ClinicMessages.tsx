@@ -228,7 +228,7 @@ const ClinicMessages: React.FC = () => {
   if (!user) {
     return (
       <div className="flex bg-white rounded-xl shadow-sm border border-gray-200 items-center justify-center">
-        <p className="text-gray-500 text-sm">{t('clinic.loginRequired')}</p>
+        <p className="text-gray-500 text-sm">{t('clinic.loginRequired', 'Login Required')}</p>
       </div>
     );
   }
@@ -331,7 +331,7 @@ const ClinicMessages: React.FC = () => {
             <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-4 overscroll-contain">
               {loadingMessages ? (
                 <div className="flex items-center justify-center h-full text-gray-500 text-sm">
-                  <span>{t('clinic.loadingMessages') || 'Mesajlar yükleniyor...'}</span>
+                  <span>{t('clinic.loadingMessages', 'Loading messages...')}</span>
                 </div>
               ) : messages.length === 0 ? (
                 <div className="flex items-center justify-center h-full text-gray-500 text-sm">
