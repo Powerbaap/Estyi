@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -24,7 +25,12 @@ const ProcedureGuide: React.FC = () => {
   const guide = getGuideBySlug(slug || '');
   const [openFaq, setOpenFaq] = useState<number[]>([0]);
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+
+  // Dil seçimi: 'tr', 'en', 'ar' (Varsayılan: 'tr')
+  const currentLang = (['tr', 'en', 'ar'].includes(i18n.language?.split('-')[0]) 
+    ? i18n.language.split('-')[0] 
+    : 'tr') as 'tr' | 'en' | 'ar';
 
   if (!guide) {
     return (
@@ -48,8 +54,8 @@ const ProcedureGuide: React.FC = () => {
   const medicalSchema = {
     '@context': 'https://schema.org',
     '@type': 'MedicalWebPage',
-    name: guide.title,
-    description: guide.metaDescription,
+    name: guide.title[currentLang],
+    description: guide.metaDescription[currentLang],
     url: `https://estyi.com/rehber/${guide.slug}`,
     dateModified: '2026-02-01',
     author: {
@@ -59,11 +65,11 @@ const ProcedureGuide: React.FC = () => {
     },
     mainEntity: {
       '@type': 'MedicalProcedure',
-      name: guide.title.split(' - ')[0],
+      name: guide.title[currentLang].split(' - ')[0],
       procedureType: 'https://schema.org/CosmeticProcedure',
-      howPerformed: guide.steps.map((s: any) => s.desc).join(' '),
-      followup: guide.recoveryTime,
-      risks: guide.risks.join(', '),
+      howPerformed: guide.steps.map((s: any) => s.desc[currentLang]).join(' '),
+      followup: guide.recoveryTime[currentLang],
+      risks: guide.risks.map((r: any) => r[currentLang]).join(', '),
     },
   };
 
@@ -72,10 +78,10 @@ const ProcedureGuide: React.FC = () => {
     '@type': 'FAQPage',
     mainEntity: guide.faq.map((f: any) => ({
       '@type': 'Question',
-      name: f.q,
+      name: f.q[currentLang],
       acceptedAnswer: {
         '@type': 'Answer',
-        text: f.a,
+        text: f.a[currentLang],
       },
     })),
   };
@@ -83,14 +89,14 @@ const ProcedureGuide: React.FC = () => {
   const howToSchema = {
     '@context': 'https://schema.org',
     '@type': 'HowTo',
-    name: guide.title.split(' - ')[0],
-    description: guide.summary,
-    totalTime: guide.duration,
+    name: guide.title[currentLang].split(' - ')[0],
+    description: guide.summary[currentLang],
+    totalTime: guide.duration[currentLang],
     step: guide.steps.map((step: any, i: number) => ({
       '@type': 'HowToStep',
       position: i + 1,
-      name: step.title,
-      text: step.desc,
+      name: step.title[currentLang],
+      text: step.desc[currentLang],
     })),
   };
 
@@ -113,30 +119,40 @@ const ProcedureGuide: React.FC = () => {
       {
         '@type': 'ListItem',
         position: 3,
-        name: guide.title.split(' - ')[0],
+        name: guide.title[currentLang].split(' - ')[0],
         item: `https://estyi.com/rehber/${guide.slug}`,
       },
     ],
   };
 
+  const countryNames = {
+    india: { tr: 'Hindistan', en: 'India', ar: 'الهند' },
+    mexico: { tr: 'Meksika', en: 'Mexico', ar: 'المكسيك' },
+    turkey: { tr: 'Türkiye', en: 'Turkey', ar: 'تركيا' },
+    thailand: { tr: 'Tayland', en: 'Thailand', ar: 'تايلاند' },
+    poland: { tr: 'Polonya', en: 'Poland', ar: 'بولندا' },
+    uk: { tr: 'İngiltere', en: 'UK', ar: 'المملكة المتحدة' },
+    usa: { tr: 'ABD', en: 'USA', ar: 'الولايات المتحدة الأمريكية' },
+  };
+
   const priceRows = [
-    { flag: '🇮🇳', code: 'IN', name: 'Hindistan', price: guide.priceRange.india },
-    { flag: '🇲🇽', code: 'MX', name: 'Meksika', price: guide.priceRange.mexico },
-    { flag: '🇹🇷', code: 'TR', name: 'Türkiye', price: guide.priceRange.turkey },
-    { flag: '🇹🇭', code: 'TH', name: 'Tayland', price: guide.priceRange.thailand },
-    { flag: '🇵🇱', code: 'PL', name: 'Polonya', price: guide.priceRange.poland },
-    { flag: '🇬🇧', code: 'GB', name: 'İngiltere', price: guide.priceRange.uk },
-    { flag: '🇺🇸', code: 'US', name: 'ABD', price: guide.priceRange.usa },
+    { flag: '🇮🇳', code: 'IN', name: countryNames.india[currentLang], price: guide.priceRange.india },
+    { flag: '🇲🇽', code: 'MX', name: countryNames.mexico[currentLang], price: guide.priceRange.mexico },
+    { flag: '🇹🇷', code: 'TR', name: countryNames.turkey[currentLang], price: guide.priceRange.turkey },
+    { flag: '🇹🇭', code: 'TH', name: countryNames.thailand[currentLang], price: guide.priceRange.thailand },
+    { flag: '🇵🇱', code: 'PL', name: countryNames.poland[currentLang], price: guide.priceRange.poland },
+    { flag: '🇬🇧', code: 'GB', name: countryNames.uk[currentLang], price: guide.priceRange.uk },
+    { flag: '🇺🇸', code: 'US', name: countryNames.usa[currentLang], price: guide.priceRange.usa },
   ];
 
   return (
     <>
       <Helmet>
-        <title>{guide.title} | Estyi</title>
-        <meta name="description" content={guide.metaDescription} />
+        <title>{guide.title[currentLang]} | Estyi</title>
+        <meta name="description" content={guide.metaDescription[currentLang]} />
         <link rel="canonical" href={`https://estyi.com/rehber/${guide.slug}`} />
-        <meta property="og:title" content={guide.title} />
-        <meta property="og:description" content={guide.metaDescription} />
+        <meta property="og:title" content={guide.title[currentLang]} />
+        <meta property="og:description" content={guide.metaDescription[currentLang]} />
         <meta property="og:type" content="article" />
         <meta name="robots" content="index, follow" />
         <script type="application/ld+json">{JSON.stringify(medicalSchema)}</script>
@@ -156,27 +172,27 @@ const ProcedureGuide: React.FC = () => {
                 {t('guide.breadcrumbGuide', 'Rehber')}
               </Link>
               <span>/</span>
-              <span className="text-white">{guide.title.split(' - ')[0]}</span>
+              <span className="text-white">{guide.title[currentLang].split(' - ')[0]}</span>
             </nav>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">{guide.title.split(' - ')[0]}</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">{guide.title[currentLang].split(' - ')[0]}</h1>
             <div className="bg-white/15 backdrop-blur rounded-xl p-4 mb-6 border border-white/20">
-              <p className="text-base text-white leading-relaxed">{guide.summary}</p>
+              <p className="text-base text-white leading-relaxed">{guide.summary[currentLang]}</p>
             </div>
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Clock className="w-5 h-5 mx-auto mb-1 text-yellow-300" />
                 <div className="text-xs text-blue-200">{t('guide.duration', 'Süre')}</div>
-                <div className="font-bold text-sm">{guide.duration}</div>
+                <div className="font-bold text-sm">{guide.duration[currentLang]}</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Calendar className="w-5 h-5 mx-auto mb-1 text-orange-300" />
                 <div className="text-xs text-blue-200">{t('guide.recovery', 'İyileşme')}</div>
-                <div className="font-bold text-sm">{guide.recoveryTime}</div>
+                <div className="font-bold text-sm">{guide.recoveryTime[currentLang]}</div>
               </div>
               <div className="bg-white/10 backdrop-blur rounded-lg p-3 text-center">
                 <Stethoscope className="w-5 h-5 mx-auto mb-1 text-pink-300" />
                 <div className="text-xs text-blue-200">{t('guide.anesthesia', 'Anestezi')}</div>
-                <div className="font-bold text-sm">{guide.anesthesia}</div>
+                <div className="font-bold text-sm">{guide.anesthesia[currentLang]}</div>
               </div>
             </div>
           </div>
@@ -229,8 +245,8 @@ const ProcedureGuide: React.FC = () => {
                     {i + 1}
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">{step.title}</h3>
-                    <p className="text-gray-600 text-sm mt-1">{step.desc}</p>
+                    <h3 className="font-semibold text-gray-900">{step.title[currentLang]}</h3>
+                    <p className="text-gray-600 text-sm mt-1">{step.desc[currentLang]}</p>
                   </div>
                 </div>
               ))}
@@ -243,10 +259,10 @@ const ProcedureGuide: React.FC = () => {
                 {t('guide.suitableFor', 'Kimler İçin Uygun?')}
               </h2>
               <ul className="space-y-2">
-                {guide.suitableFor.map((item: string, i: number) => (
+                {guide.suitableFor.map((item: any, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                    {item}
+                    {item[currentLang]}
                   </li>
                 ))}
               </ul>
@@ -257,10 +273,10 @@ const ProcedureGuide: React.FC = () => {
                 {t('guide.notSuitableFor', 'Kimler İçin Uygun Değil?')}
               </h2>
               <ul className="space-y-2">
-                {guide.notSuitableFor.map((item: string, i: number) => (
+                {guide.notSuitableFor.map((item: any, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <XCircle className="w-4 h-4 text-red-400 mt-0.5 flex-shrink-0" />
-                    {item}
+                    {item[currentLang]}
                   </li>
                 ))}
               </ul>
@@ -272,10 +288,10 @@ const ProcedureGuide: React.FC = () => {
             </h2>
             <div className="bg-amber-50 rounded-xl border border-amber-200 p-5">
               <ul className="space-y-2">
-                {guide.risks.map((r: string, i: number) => (
+                {guide.risks.map((r: any, i: number) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-gray-700">
                     <AlertTriangle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
-                    {r}
+                    {r[currentLang]}
                   </li>
                 ))}
               </ul>
@@ -293,7 +309,7 @@ const ProcedureGuide: React.FC = () => {
                     className="w-full px-5 py-4 flex items-center justify-between text-left"
                     aria-expanded={openFaq.includes(i)}
                   >
-                    <h3 className="font-semibold text-gray-900 pr-4">{item.q}</h3>
+                    <h3 className="font-semibold text-gray-900 pr-4">{item.q[currentLang]}</h3>
                     {openFaq.includes(i) ? (
                       <ChevronUp className="w-5 h-5 text-gray-400 flex-shrink-0" />
                     ) : (
@@ -301,7 +317,7 @@ const ProcedureGuide: React.FC = () => {
                     )}
                   </button>
                   {openFaq.includes(i) && (
-                    <div className="px-5 pb-4 text-gray-600 text-sm leading-relaxed border-t pt-3">{item.a}</div>
+                    <div className="px-5 pb-4 text-gray-600 text-sm leading-relaxed border-t pt-3">{item.a[currentLang]}</div>
                   )}
                 </div>
               ))}
@@ -355,8 +371,8 @@ const ProcedureGuide: React.FC = () => {
                     to={`/rehber/${g.slug}`}
                     className="bg-white rounded-lg border p-3 hover:shadow-md transition-shadow"
                   >
-                    <div className="text-xs text-blue-600 mb-1">{g.category}</div>
-                    <div className="font-medium text-gray-900 text-sm">{g.title.split(' - ')[0]}</div>
+                    <div className="text-xs text-blue-600 mb-1">{g.category[currentLang]}</div>
+                    <div className="font-medium text-gray-900 text-sm">{g.title[currentLang].split(' - ')[0]}</div>
                     <div className="text-xs text-green-600 mt-1">{g.priceRange.turkey}</div>
                   </Link>
                 ))}
