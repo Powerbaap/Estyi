@@ -295,19 +295,19 @@ const ClinicApplication: React.FC = () => {
         valid.push(f);
       } else {
         const reason = !typeOk && !sizeOk
-          ? 'Dosya türü ve boyutu geçersiz'
+          ? getTranslation('clinicApplication.fileInvalidTypeSize', 'Invalid file type and size')
           : !typeOk
-          ? 'Dosya türü geçersiz'
-          : 'Dosya 10MB sınırını aşıyor';
+          ? getTranslation('clinicApplication.fileInvalidType', 'Invalid file type')
+          : getTranslation('clinicApplication.fileTooBig', 'File exceeds 10MB limit');
         rejected.push(`${f.name} (${reason})`);
       }
     }
 
     if (rejected.length) {
       alert(
-        'Bazı dosyalar eklenemedi:\n' +
+        getTranslation('clinicApplication.filesRejectedTitle', 'Some files could not be added:') + '\n' +
         rejected.join('\n') +
-        '\n\nLütfen yalnızca PDF, JPG veya PNG ve en fazla 10MB ekleyin.'
+        '\n\n' + getTranslation('clinicApplication.filesRejectedHint', 'Please only upload PDF, JPG or PNG files up to 10MB.')
       );
     }
 
@@ -334,14 +334,14 @@ const ClinicApplication: React.FC = () => {
         return;
       }
       if (formData.password !== formData.confirmPassword) {
-        alert('Şifreler birbiriyle eşleşmiyor.');
+        alert(getTranslation('clinicApplication.passwordsDoNotMatch', 'Passwords do not match!'));
         return;
       }
       const pwd = formData.password;
       const lengthOk = pwd.length >= 8;
       const upperOk = /[A-Z]/.test(pwd);
       if (!lengthOk || !upperOk) {
-        alert('Şifre en az 8 karakter olmalı ve en az bir büyük harf içermelidir.');
+        alert(getTranslation('clinicApplication.passwordRequirements', 'Password must be at least 8 characters and contain at least one uppercase letter.'));
         return;
       }
       const hasMissingCities = (formData.countries || []).some((countryKey: string) => {
@@ -409,7 +409,7 @@ const ClinicApplication: React.FC = () => {
       }
 
       alert(
-        'Başvuru gönderilirken bir hata oluştu. ' +
+        getTranslation('clinicApplication.submitError', 'An error occurred while submitting the application. ') +
           (friendly ? `\n\n${friendly}` : '') +
           (raw ? `\n\nDetay: ${raw}` : '')
       );
@@ -531,7 +531,7 @@ const ClinicApplication: React.FC = () => {
                 {/* Ülkeler — birden fazla seçim (talep formu ile aynı liste) */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    {getTranslation('clinicApplication.countries', 'Ülkeler')} * (Klinik şubenizin bulunduğu ülkeleri seçin)
+                    {getTranslation('clinicApplication.countries', 'Ülkeler')} * ({getTranslation('clinicApplication.selectCountriesHint', 'Select countries where your clinic has branches')})
                   </label>
                   <div className="flex flex-wrap gap-2 mb-2">
                     <button
@@ -640,7 +640,7 @@ const ClinicApplication: React.FC = () => {
                   <div className="border border-purple-100 bg-purple-50/60 rounded-2xl p-4 space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <p className="text-sm font-semibold text-gray-900">Fiyat Belirleme</p>
+                        <p className="text-sm font-semibold text-gray-900">{getTranslation('clinicApplication.pricingTitle', 'Pricing')}</p>
                         <p className="text-xs text-gray-600">
                           Seçtiğiniz işlemler için USD fiyatları girin.
                         </p>
