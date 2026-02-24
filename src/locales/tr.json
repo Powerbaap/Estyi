@@ -1845,5 +1845,20 @@
     "learnMore": "Daha fazla bilgi",
     "accept": "Kabul Et",
     "decline": "Reddet"
+  },
+  "priceIndex": {
+    "title": "Estetik İşlemler Fiyat Endeksi 2026",
+    "subtitle": "7 ülkede estetik işlem fiyat aralıklarını karşılaştırın.",
+    "procedure": "İşlem",
+    "procedures": "İşlem",
+    "countries": "Ülke",
+    "updated": "Güncelleme",
+    "comparison": "Ülke Karşılaştırma",
+    "cta": "Kişisel Fiyat Teklifinizi Alın",
+    "ctaButton": "Ücretsiz Teklif Al",
+    "ctaDescription": "Yukarıdaki fiyatlar genel aralıklardır. Kişisel teklif için talep oluşturun.",
+    "intro": "2026 fiyat endeksi, Hindistan, Meksika, Türkiye, Tayland, Polonya, İngiltere ve ABD gibi popüler destinasyonlarda seçili estetik işlemlerin tipik fiyat aralıklarını karşılaştırmalı olarak gösterir.",
+    "about": "Fiyat Endeksi Hakkında",
+    "aboutText": "Estyi platformu verileriyle derlenmiştir. Fiyatlar klinik ve kişisel faktörlere göre değişebilir. Şubat 2026 günceldir."
   }
 }

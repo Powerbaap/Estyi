@@ -8,6 +8,7 @@ import PriceRequestModal from '../Dashboard/PriceRequestModal';
 import Logo from '../Layout/Logo';
 
 const Hero: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -108,13 +109,15 @@ const Hero: React.FC = () => {
 
             {/* Video Placeholder (click message removed) */}
             <div className="relative inline-block group">
-              <Link
-                to="/signup"
-                onClick={scrollToTopInstant}
+              <div
+                onClick={() => {
+                  scrollToTopInstant();
+                  navigate('/signup');
+                }}
                 className="w-24 h-24 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full flex items-center justify-center shadow-2xl cursor-pointer hover:shadow-3xl transform hover:scale-110 transition-all duration-500 group-hover:rotate-12"
               >
                 <Play className="w-10 h-10 text-white ml-1" />
-              </Link>
+              </div>
               <div className="absolute -inset-6 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-full opacity-20 animate-ping group-hover:animate-pulse"></div>
               <div className="absolute -inset-12 bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 rounded-full opacity-10 animate-pulse"></div>
             </div>

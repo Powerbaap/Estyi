@@ -1845,5 +1845,20 @@
     "learnMore": "Learn more",
     "accept": "Accept",
     "decline": "Decline"
+  },
+  "priceIndex": {
+    "title": "Aesthetic Procedures Price Index 2026",
+    "subtitle": "Compare aesthetic procedure price ranges across 7 countries.",
+    "procedure": "Procedure",
+    "procedures": "Procedures",
+    "countries": "Countries",
+    "updated": "Updated",
+    "comparison": "Country Comparison",
+    "cta": "Get Your Personal Price Quote",
+    "ctaButton": "Get Free Quote",
+    "ctaDescription": "The prices above are general ranges. Create a request for a personal quote.",
+    "intro": "The 2026 price index comparatively shows typical price ranges for selected aesthetic procedures in popular destinations such as India, Mexico, Turkey, Thailand, Poland, UK, and USA.",
+    "about": "About Price Index",
+    "aboutText": "Compiled from Estyi platform data. Prices may vary by clinic and personal factors. Updated February 2026."
   }
 }
