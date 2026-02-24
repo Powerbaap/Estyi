@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Play, Sparkles, Heart, Star, ShieldCheck, Zap, EyeOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
