@@ -1,10 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Globe, Award, Users } from 'lucide-react';
+import { ArrowLeft, MapPin, Phone, Mail, Globe, Users } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
+import { useAuth } from '../contexts/AuthContext';
+
+const formatSpecialty = (text: string) => {
+  return text
+    .split('_')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+};
 
 const ClinicProfile: React.FC = () => {
+  const { user } = useAuth();
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { clinicId } = useParams<{ clinicId: string }>();
@@ -75,6 +84,8 @@ const ClinicProfile: React.FC = () => {
   const photos = Array.isArray(clinicData.photos) ? clinicData.photos : [];
   const socialMedia = clinicData.social_media || {};
 
+  const isOwner = user && clinicData && (user.id === clinicData.user_id || user.email === clinicData.email);
+
   return (
     <div className="min-h-screen bg-gray-50 py-6">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -98,7 +109,6 @@ const ClinicProfile: React.FC = () => {
               <div className="flex-1">
                 <div className="flex items-center space-x-3 mb-2">
                   <h1 className="text-2xl font-bold text-gray-900">{clinicData.name}</h1>
-                  <Award className="w-6 h-6 text-blue-600" />
                 </div>
                 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600 mb-3">
@@ -106,23 +116,21 @@ const ClinicProfile: React.FC = () => {
                     <MapPin className="w-4 h-4" />
                     <span>{clinicData.location}</span>
                   </span>
-                  <span className="flex items-center space-x-1">
-                    <Star className="w-4 h-4 text-yellow-500" />
-                    <span>
-                      {(clinicData.rating || 0).toFixed(1)} ({clinicData.reviews || 0} değerlendirme)
-                    </span>
-                  </span>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm">
-                  <span className="flex items-center space-x-1">
-                    <Phone className="w-4 h-4" />
-                    <span>{clinicData.phone}</span>
-                  </span>
-                  <span className="flex items-center space-x-1">
-                    <Mail className="w-4 h-4" />
-                    <span>{clinicData.email}</span>
-                  </span>
+                  {isOwner && (
+                    <>
+                      <span className="flex items-center space-x-1">
+                        <Phone className="w-4 h-4" />
+                        <span>{clinicData.phone}</span>
+                      </span>
+                      <span className="flex items-center space-x-1">
+                        <Mail className="w-4 h-4" />
+                        <span>{clinicData.email}</span>
+                      </span>
+                    </>
+                  )}
                   <span className="flex items-center space-x-1">
                     <Globe className="w-4 h-4" />
                     <a
@@ -240,7 +248,7 @@ const ClinicProfile: React.FC = () => {
                             key={specialty}
                             className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-xs font-medium"
                           >
-                            {specialty}
+                            {formatSpecialty(specialty)}
                           </span>
                         ))}
                       </div>
@@ -252,19 +260,21 @@ const ClinicProfile: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                  <h3 className="text-sm font-semibold text-gray-800 mb-3">İletişim</h3>
-                  <div className="space-y-2 text-sm text-gray-700">
-                    <p className="flex items-center gap-2">
-                      <Phone className="w-4 h-4 text-gray-500" />
-                      <span>{clinicData.phone}</span>
-                    </p>
-                    <p className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-gray-500" />
-                      <span>{clinicData.email}</span>
-                    </p>
+                {isOwner && (
+                  <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                    <h3 className="text-sm font-semibold text-gray-800 mb-3">İletişim</h3>
+                    <div className="space-y-2 text-sm text-gray-700">
+                      <p className="flex items-center gap-2">
+                        <Phone className="w-4 h-4 text-gray-500" />
+                        <span>{clinicData.phone}</span>
+                      </p>
+                      <p className="flex items-center gap-2">
+                        <Mail className="w-4 h-4 text-gray-500" />
+                        <span>{clinicData.email}</span>
+                      </p>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
                   <h3 className="text-sm font-semibold text-gray-800 mb-3">Sosyal Medya</h3>
