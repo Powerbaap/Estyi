@@ -120,17 +120,15 @@ const ClinicProfile: React.FC = () => {
 
                 <div className="flex flex-wrap items-center gap-4 text-sm">
                   {isOwner && (
-                    <>
-                      <span className="flex items-center space-x-1">
-                        <Phone className="w-4 h-4" />
-                        <span>{clinicData.phone}</span>
-                      </span>
-                      <span className="flex items-center space-x-1">
-                        <Mail className="w-4 h-4" />
-                        <span>{clinicData.email}</span>
-                      </span>
-                    </>
+                    <span className="flex items-center space-x-1">
+                      <Phone className="w-4 h-4" />
+                      <span>{clinicData.phone}</span>
+                    </span>
                   )}
+                  <span className="flex items-center space-x-1">
+                    <Mail className="w-4 h-4" />
+                    <span>{clinicData.email}</span>
+                  </span>
                   <span className="flex items-center space-x-1">
                     <Globe className="w-4 h-4" />
                     <a
@@ -260,21 +258,21 @@ const ClinicProfile: React.FC = () => {
               </div>
 
               <div className="space-y-6">
-                {isOwner && (
-                  <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
-                    <h3 className="text-sm font-semibold text-gray-800 mb-3">İletişim</h3>
-                    <div className="space-y-2 text-sm text-gray-700">
+                <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
+                  <h3 className="text-sm font-semibold text-gray-800 mb-3">İletişim</h3>
+                  <div className="space-y-2 text-sm text-gray-700">
+                    {isOwner && (
                       <p className="flex items-center gap-2">
                         <Phone className="w-4 h-4 text-gray-500" />
                         <span>{clinicData.phone}</span>
                       </p>
-                      <p className="flex items-center gap-2">
-                        <Mail className="w-4 h-4 text-gray-500" />
-                        <span>{clinicData.email}</span>
-                      </p>
-                    </div>
+                    )}
+                    <p className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-gray-500" />
+                      <span>{clinicData.email}</span>
+                    </p>
                   </div>
-                )}
+                </div>
 
                 <div className="bg-gray-50 rounded-lg border border-gray-200 p-4">
                   <h3 className="text-sm font-semibold text-gray-800 mb-3">Sosyal Medya</h3>
