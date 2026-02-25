@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, MapPin, Star, Phone, Mail, Globe, Award, Users } from 'lucide-react';
+import { ArrowLeft, MapPin, Star, Phone, Mail, Globe, Award, Users, X } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
 
 const ClinicProfile: React.FC = () => {
@@ -10,6 +10,21 @@ const ClinicProfile: React.FC = () => {
   const { clinicId } = useParams<{ clinicId: string }>();
   const [clinicData, setClinicData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
+
+  const handlePhotoClick = (photo: string) => {
+    setSelectedPhoto(photo);
+  };
+
+  const handleCloseModal = () => {
+    setSelectedPhoto(null);
+  };
+
+  const handleModalBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      setSelectedPhoto(null);
+    }
+  };
 
   useEffect(() => {
     if (!clinicId) {
@@ -353,14 +368,15 @@ const ClinicProfile: React.FC = () => {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Klinik Fotoğrafları</h3>
                 {photos.length > 0 ? (
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
                     {photos.map((photo: string, index: number) => (
-                      <img
-                        key={index}
-                        src={photo}
-                        alt={`Klinik fotoğrafı ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg"
-                      />
+                      <div key={index} className="relative group cursor-pointer" onClick={() => handlePhotoClick(photo)}>
+                        <img
+                          src={photo}
+                          alt={`Klinik fotoğrafı ${index + 1}`}
+                          className="w-full h-24 object-cover rounded-lg hover:opacity-90 transition-opacity"
+                        />
+                      </div>
                     ))}
                   </div>
                 ) : (
@@ -371,6 +387,28 @@ const ClinicProfile: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {selectedPhoto && (
+        <div
+          className="fixed inset-0 bg-black bg-opacity-90 flex items-center justify-center z-50 p-4"
+          onClick={handleModalBackdropClick}
+        >
+          <div className="relative max-w-4xl max-h-[90vh] w-full h-full flex items-center justify-center">
+            <button
+              onClick={handleCloseModal}
+              className="absolute top-4 right-4 w-10 h-10 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full flex items-center justify-center text-white transition-colors z-10"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <img
+              src={selectedPhoto}
+              alt="Büyütülmüş fotoğraf"
+              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

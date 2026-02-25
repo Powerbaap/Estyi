@@ -90,6 +90,7 @@ const ClinicProfile: React.FC = () => {
   const [editingSocial, setEditingSocial] = useState(false);
   const [editingDoctors, setEditingDoctors] = useState(false);
   const [editingPhotos, setEditingPhotos] = useState(false);
+  const [uploadingPhotos, setUploadingPhotos] = useState<{ id: string; preview: string }[]>([]);
   const [photoError, setPhotoError] = useState<string | null>(null);
 
   const handleDocumentUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -174,29 +175,48 @@ const ClinicProfile: React.FC = () => {
     setPhotoError(null);
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
+
     const clinicId = await resolveClinicId(user);
     if (!clinicId) return;
+
     const currentPhotos = profileData.photos || [];
-    if (currentPhotos.length >= 10) return;
+    const totalCount = currentPhotos.length + uploadingPhotos.length;
+    
+    if (totalCount >= 10) {
+      setPhotoError('Maksimum 10 fotoğraf yükleyebilirsiniz.');
+      return;
+    }
+
     const bucket = STORAGE_BUCKETS.CLINIC_PHOTOS || 'clinic-photos';
-    const remainingSlots = 10 - currentPhotos.length;
+    const remainingSlots = 10 - totalCount;
     const filesToUpload = files.slice(0, remainingSlots);
+
+    // Create previews
+    const newUploads = filesToUpload.map(file => ({
+      id: Math.random().toString(36).substr(2, 9),
+      preview: URL.createObjectURL(file),
+      file
+    }));
+
+    setUploadingPhotos(prev => [...prev, ...newUploads.map(u => ({ id: u.id, preview: u.preview }))]);
+
     const newUrls: string[] = [];
-    for (let i = 0; i < filesToUpload.length; i++) {
-      const file = filesToUpload[i];
+
+    for (const uploadItem of newUploads) {
+      const { file, id } = uploadItem;
       const safeName = file.name.replace(/[^a-zA-Z0-9.\-_]/g, '_');
-      const path = `clinic-photos/${clinicId}/${Date.now()}_${safeName}`;
+      const path = `${clinicId}/${Date.now()}_${safeName}`; // Removed 'clinic-photos/' prefix from path as it might be redundant inside the bucket
+
       try {
         const { error: uploadError } = await (supabase as any).storage
           .from(bucket)
           .upload(path, file, { upsert: true });
+
         if (uploadError) {
           console.error('Fotoğraf yükleme hatası:', uploadError);
-          if (!photoError) {
-            setPhotoError('Fotoğraflar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
-          }
-          continue;
+          throw uploadError;
         }
+
         const { data } = (supabase as any).storage.from(bucket).getPublicUrl(path);
         if (data?.publicUrl) {
           newUrls.push(data.publicUrl);
@@ -204,23 +224,72 @@ const ClinicProfile: React.FC = () => {
       } catch (err: any) {
         console.error('Fotoğraf yükleme sırasında hata:', err);
         if (!photoError) {
-          setPhotoError('Fotoğraflar yüklenirken bir hata oluştu. Lütfen daha sonra tekrar deneyin.');
+          setPhotoError('Bazı fotoğraflar yüklenirken hata oluştu.');
         }
+      } finally {
+        // Remove from uploading state
+        setUploadingPhotos(prev => prev.filter(p => p.id !== id));
+        URL.revokeObjectURL(uploadItem.preview);
       }
     }
+
     if (newUrls.length > 0) {
-      setProfileData(prev => ({
-        ...prev,
-        photos: [...(prev.photos || []), ...newUrls]
-      }));
+      setProfileData(prev => {
+        const updatedPhotos = [...(prev.photos || []), ...newUrls];
+        
+        // Otomatik kaydetme
+        (async () => {
+          try {
+            const { error } = await (supabase as any)
+              .from('clinics')
+              .update({ photos: updatedPhotos })
+              .eq('id', clinicId);
+              
+            if (error) {
+              console.error('Fotoğraflar otomatik kaydedilemedi:', error);
+            }
+          } catch (err) {
+            console.error('Otomatik kayıt hatası:', err);
+          }
+        })();
+
+        return {
+          ...prev,
+          photos: updatedPhotos
+        };
+      });
     }
   };
 
-  const handleRemovePhoto = (index: number) => {
-    setProfileData(prev => ({
-      ...prev,
-      photos: (prev.photos || []).filter((_, i) => i !== index)
-    }));
+  const handleRemovePhoto = async (index: number) => {
+    const clinicId = await resolveClinicId(user);
+    
+    setProfileData(prev => {
+      const updatedPhotos = (prev.photos || []).filter((_, i) => i !== index);
+      
+      if (clinicId) {
+        // Otomatik kaydetme
+        (async () => {
+          try {
+            const { error } = await (supabase as any)
+              .from('clinics')
+              .update({ photos: updatedPhotos })
+              .eq('id', clinicId);
+              
+            if (error) {
+              console.error('Fotoğraf silme işlemi kaydedilemedi:', error);
+            }
+          } catch (err) {
+            console.error('Fotoğraf silme hatası:', err);
+          }
+        })();
+      }
+
+      return {
+        ...prev,
+        photos: updatedPhotos
+      };
+    });
   };
 
   const handleAddDoctor = () => {
@@ -834,7 +903,19 @@ const ClinicProfile: React.FC = () => {
                       )}
                     </div>
                   ))}
-                  {(profileData.photos || []).length === 0 && (
+                  {uploadingPhotos.map((photo) => (
+                    <div key={photo.id} className="relative group animate-pulse">
+                      <img
+                        src={photo.preview}
+                        alt="Yükleniyor"
+                        className="w-full h-24 object-cover rounded-lg opacity-50"
+                      />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="w-5 h-5 border-2 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+                      </div>
+                    </div>
+                  ))}
+                  {(profileData.photos || []).length === 0 && uploadingPhotos.length === 0 && (
                     <p className="text-xs text-gray-500">
                       Henüz fotoğraf eklenmemiş. Maksimum 10 fotoğraf ekleyebilirsiniz.
                     </p>
