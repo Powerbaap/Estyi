@@ -1386,7 +1386,10 @@
       "procedures": "Aesthetic Procedures",
       "netPrice": "Price Guarantee",
       "instantOffer": "Instant Offer",
-      "anonymousSharing": "Anonymous Sharing"
+      "anonymousSharing": "Anonymous Sharing",
+      "offersLabel": "offers created",
+      "clinicsLabel": "clinics active",
+      "countriesLabel": "countries reached"
     },
     "features": {
       "title": "Why Choose",

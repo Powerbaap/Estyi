@@ -1,17 +1,91 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Play, Sparkles, Heart, Star, ShieldCheck, Zap, EyeOff } from 'lucide-react';
+import { Play, Sparkles, Heart, Star, ShieldCheck, Zap, EyeOff, FileText, Building2, Globe2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import { useAuth } from '../../contexts/AuthContext';
+import { supabase } from '../../lib/supabaseClient';
 import PriceRequestModal from '../Dashboard/PriceRequestModal';
 import Logo from '../Layout/Logo';
+
+function useCountUp(target: number, duration = 1800, key = 0) {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    if (target === 0) return;
+    setCount(0);
+    let startTime: number | null = null;
+    const step = (timestamp: number) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }, [target, duration, key]);
+  return count;
+}
 
 const Hero: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
+
+  const [stats, setStats] = useState({ offers: 0, clinics: 0, countries: 0 });
+  const [statsVisible, setStatsVisible] = useState(false);
+  const [statsKey, setStatsKey] = useState(0);
+  const statsRef = useRef<HTMLDivElement>(null);
+
+  // Supabase'den veri çek
+  useEffect(() => {
+    const fetchStats = async () => {
+      const { count: offersCount } = await supabase
+        .from('offers')
+        .select('*', { count: 'exact', head: true });
+
+      const { count: clinicsCount } = await supabase
+        .from('clinics')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
+
+      const { data: countryData } = await supabase
+        .from('requests')
+        .select('country');
+
+      const uniqueCountries = new Set(
+        (countryData || []).map((r: any) => r.country).filter(Boolean)
+      ).size;
+
+      setStats({
+        offers: offersCount || 0,
+        clinics: clinicsCount || 0,
+        countries: uniqueCountries || 0,
+      });
+    };
+    fetchStats();
+  }, []);
+
+  // Ekrana girince animasyon başlasın, tekrar çıkıp girince tekrar çalışsın
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setStatsVisible(false);
+          setTimeout(() => setStatsVisible(true), 50);
+          setStatsKey(prev => prev + 1);
+        }
+      },
+      { threshold: 0.3 }
+    );
+    if (statsRef.current) observer.observe(statsRef.current);
+    return () => observer.disconnect();
+  }, []);
+
+  const isLoading = stats.offers === 0 && stats.clinics === 0 && stats.countries === 0;
+  const offersCount    = useCountUp(stats.offers,    1600, statsKey);
+  const clinicsCount   = useCountUp(stats.clinics,   1400, statsKey);
+  const countriesCount = useCountUp(stats.countries, 1200, statsKey);
   
 
   const handlePriceRequestClick = () => {
@@ -105,6 +179,67 @@ const Hero: React.FC = () => {
               )}
               
 
+            </div>
+
+            {/* Traction Sayaç Şeridi */}
+            <div
+              ref={statsRef}
+              className="flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 mb-16"
+            >
+              {/* Teklif */}
+              <div className="flex items-center gap-3 px-6 py-3 bg-white/60 backdrop-blur-md rounded-2xl border border-white/70 shadow-lg">
+                <div className="p-2 bg-gradient-to-br from-purple-500 to-pink-500 rounded-xl">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  {isLoading ? (
+                    <div className="w-12 h-7 bg-gray-200 rounded animate-pulse mb-1" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 leading-none tabular-nums">
+                      {offersCount.toLocaleString()}+
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-0.5">{t('home.heroStats.offersLabel')}</div>
+                </div>
+              </div>
+
+              <div className="hidden sm:block w-px h-10 bg-gray-200" />
+
+              {/* Klinik */}
+              <div className="flex items-center gap-3 px-6 py-3 bg-white/60 backdrop-blur-md rounded-2xl border border-white/70 shadow-lg">
+                <div className="p-2 bg-gradient-to-br from-pink-500 to-red-400 rounded-xl">
+                  <Building2 className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  {isLoading ? (
+                    <div className="w-12 h-7 bg-gray-200 rounded animate-pulse mb-1" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 leading-none tabular-nums">
+                      {clinicsCount}+
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-0.5">{t('home.heroStats.clinicsLabel')}</div>
+                </div>
+              </div>
+
+              <div className="hidden sm:block w-px h-10 bg-gray-200" />
+
+              {/* Ülke */}
+              <div className="flex items-center gap-3 px-6 py-3 bg-white/60 backdrop-blur-md rounded-2xl border border-white/70 shadow-lg">
+                <div className="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl">
+                  <Globe2 className="w-5 h-5 text-white" />
+                </div>
+                <div className="text-left">
+                  {isLoading ? (
+                    <div className="w-12 h-7 bg-gray-200 rounded animate-pulse mb-1" />
+                  ) : (
+                    <div className="text-2xl font-bold text-gray-900 leading-none tabular-nums">
+                      {countriesCount}+
+                    </div>
+                  )}
+                  <div className="text-xs text-gray-500 mt-0.5">{t('home.heroStats.countriesLabel')}</div>
+                </div>
+              </div>
             </div>
 
             {/* Video Placeholder (click message removed) */}
