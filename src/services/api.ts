@@ -1,6 +1,9 @@
 import { supabase } from '../lib/supabaseClient';
 import { uploadClinicCertificates } from './storage';
 
+// Flash engelleme flag'i - klinik başvurusu sırasında auth state değişikliğini engeller
+export let ignoreClinicSignup = false;
+
 // Kullanıcı servisleri
 export const userService = {
   // Kullanıcı profil bilgilerini getir
@@ -120,6 +123,7 @@ export const clinicApplicationService = {
       throw new Error('Klinik başvurusu için şifre gereklidir.');
     }
 
+    ignoreClinicSignup = true;
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email: payload.email,
       password: payload.password,
@@ -132,6 +136,7 @@ export const clinicApplicationService = {
     });
 
     if (authError) {
+      ignoreClinicSignup = false;
       const msg = (authError.message || '').toLowerCase();
       if (msg.includes('already') && (msg.includes('registered') || msg.includes('exists'))) {
         throw new Error('Bu e-posta ile zaten bir hesap var. Giriş yapın veya Şifremi Unuttum kullanın.');
@@ -141,6 +146,7 @@ export const clinicApplicationService = {
 
     const authUserId = authData?.user?.id;
     if (!authUserId) {
+      ignoreClinicSignup = false;
       throw new Error('Kullanıcı oluşturulamadı.');
     }
 
@@ -172,6 +178,7 @@ export const clinicApplicationService = {
 
     const { data, error } = await supabase.from('clinic_applications').insert(insertPayload).select('*');
     if (error) {
+      ignoreClinicSignup = false;
       console.error('Clinic application insert error:', error);
       throw new Error(error.message);
     }
@@ -180,6 +187,7 @@ export const clinicApplicationService = {
       await supabase.auth.signOut();
     } catch {}
 
+    ignoreClinicSignup = false;
     return Array.isArray(data) ? data[0] : data;
   },
 

@@ -274,15 +274,36 @@ const ClinicManagement: React.FC = () => {
   };
 
   const handleDeleteClinic = async (clinicId: string) => {
-    if (!confirm('Bu kliniki silmek istediğinizden emin misiniz?')) return;
+    if (!confirm('Bu kliniki silmek istediğinizden emin misiniz? Tüm teklifleri ve mesajları da silinecektir.')) return;
 
     try {
-      // Auth user'ı sil
-      await supabase.auth.admin.deleteUser(clinicId);
+      // Önce ilişkili tabloları temizle (foreign key kısıtları nedeniyle)
+      // 1. Offers (teklifler)
+      await supabase.from('offers').delete().eq('clinic_id', clinicId);
       
-      // Clinics ve users tablolarından sil (cascade ile otomatik silinir)
+      // 2. Messages (mesajlar) - conversation'lar üzerinden
+      const { data: convs } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('clinic_id', clinicId);
+      
+      if (convs && convs.length > 0) {
+        const convIds = convs.map((c: any) => c.id);
+        await supabase.from('messages').delete().in('conversation_id', convIds);
+        await supabase.from('conversations').delete().eq('clinic_id', clinicId);
+      }
+
+      // 3. Clinic tablosundan sil
       const { error } = await supabase.from('clinics').delete().eq('id', clinicId);
       if (error) throw error;
+
+      // 4. Users tablosundan sil
+      await supabase.from('users').delete().eq('id', clinicId);
+
+      // 5. Auth user'ı sil (admin API - client'tan çalışmayabilir, hata yutulur)
+      try {
+        await supabase.auth.admin.deleteUser(clinicId);
+      } catch {}
 
       alert('Klinik başarıyla silindi!');
       

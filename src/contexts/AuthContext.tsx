@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, useRef } from 'r
 import { supabase } from '../lib/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
 import { getCurrentUserAccess, getUserRole } from '../utils/auth';
+import { ignoreClinicSignup } from '../services/api';
 
 interface AuthContextType {
   user: User | null;
@@ -54,8 +55,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initSession();
 
     const authChange = supabase.auth.onAuthStateChange((_event, s) => {
-      if (ignoreAuthRef.current) {
-        ignoreAuthRef.current = false;
+      if (ignoreAuthRef.current || ignoreClinicSignup) {
+        if (ignoreAuthRef.current) ignoreAuthRef.current = false;
         return;
       }
       setSession(s);
