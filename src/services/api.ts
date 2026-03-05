@@ -131,12 +131,6 @@ export const clinicApplicationService = {
       }
     });
 
-    // FLASH FIX: Başvuru sonrası oluşan geçici session'ı hemen temizle
-    // Hata olsa bile önce çıkış yapmayı dene
-    try {
-      await supabase.auth.signOut();
-    } catch {}
-
     if (authError) {
       const msg = (authError.message || '').toLowerCase();
       if (msg.includes('already') && (msg.includes('registered') || msg.includes('exists'))) {
@@ -183,7 +177,7 @@ export const clinicApplicationService = {
     }
 
     try {
-      await supabase.auth.signOut({ scope: 'local' });
+      await supabase.auth.signOut();
     } catch {}
 
     return Array.isArray(data) ? data[0] : data;
