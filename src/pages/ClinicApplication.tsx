@@ -876,32 +876,45 @@ const ClinicApplication: React.FC = () => {
                   {formData.certificates.length > 0 && (
                     <div className="mt-3">
                       <p className="text-sm text-gray-600 mb-2">
-                        {formData.certificates.length} {getTranslation('clinicApplication.filesUploaded', 'files uploaded')}
+                        {formData.certificates.length} {getTranslation('clinicApplication.filesUploaded', 'dosya yüklendi')}
                       </p>
-                      <div className="flex flex-wrap">
-                        {formData.certificates.map((file, index) => (
-                          <div key={index} className="relative inline-block m-1">
-                            {file.type.startsWith('image/') ? (
-                              <img
-                                src={URL.createObjectURL(file)}
-                                className="w-20 h-20 object-cover rounded-lg border"
-                                alt={file.name}
-                              />
-                            ) : (
-                              <div className="w-20 h-20 flex flex-col items-center justify-center bg-gray-100 rounded-lg border text-xs text-center p-1">
-                                <span>📄</span>
-                                <span className="truncate w-full text-center">{file.name}</span>
-                              </div>
-                            )}
-                            <button
-                              type="button"
-                              onClick={() => removeCertificateAt(index)}
-                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
-                            >
-                              ×
-                            </button>
-                          </div>
-                        ))}
+                      <div className="flex flex-wrap gap-3">
+                        {formData.certificates.map((file, index) => {
+                          const isImage = file.type.startsWith('image/');
+                          const previewUrl = isImage ? URL.createObjectURL(file) : null;
+                          return (
+                            <div key={`${file.name}-${file.size}-${index}`} className="relative group">
+                              {isImage ? (
+                                <div className="w-24 h-24 rounded-xl border-2 border-gray-200 overflow-hidden shadow-sm cursor-pointer hover:border-purple-400 transition-colors"
+                                     onClick={() => previewUrl && window.open(previewUrl, '_blank')}>
+                                  <img
+                                    src={previewUrl!}
+                                    className="w-full h-full object-cover"
+                                    alt={file.name}
+                                    onLoad={() => {}}
+                                  />
+                                </div>
+                              ) : (
+                                <div className="w-24 h-24 flex flex-col items-center justify-center bg-gray-50 rounded-xl border-2 border-gray-200 text-xs text-center p-2 shadow-sm cursor-pointer hover:border-purple-400 transition-colors"
+                                     onClick={() => {
+                                       const url = URL.createObjectURL(file);
+                                       window.open(url, '_blank');
+                                     }}>
+                                  <span className="text-2xl mb-1">📄</span>
+                                  <span className="truncate w-full font-medium text-gray-700">{file.name}</span>
+                                  <span className="text-gray-400 text-[10px]">{(file.size / 1024).toFixed(0)} KB</span>
+                                </div>
+                              )}
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); removeCertificateAt(index); }}
+                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs shadow-md hover:bg-red-600 transition-colors opacity-0 group-hover:opacity-100"
+                              >
+                                ×
+                              </button>
+                            </div>
+                          );
+                        })}
                       </div>
                     </div>
                   )}

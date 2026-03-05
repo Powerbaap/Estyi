@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import { Link, useParams } from 'react-router-dom';
 import { CheckCircle, AlertTriangle, ArrowRight } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 
 interface CompRow {
   aspect: string;
@@ -24,164 +25,87 @@ interface CompData {
   url: string;
 }
 
-const COMPARISONS: CompData[] = [
+interface ComparisonConfig {
+  slug: string;
+  localeKey: string;
+  url: string;
+  rows: { key: string; winner: 'left' | 'right' | 'equal' }[];
+  faqKeys: string[];
+}
+
+const COMPARISON_CONFIGS: ComparisonConfig[] = [
   {
     slug: 'fue-vs-dhi',
-    leftLabel: 'FUE',
-    rightLabel: 'DHI',
-    title: 'FUE vs DHI Saç Ekimi — Fark, Maliyet ve Hangisi Daha İyi? (2026)',
-    metaDesc:
-      'FUE ve DHI saç ekimi arasındaki farklar: teknik, maliyet, iyileşme süresi ve sonuçlar. 2026 güncel karşılaştırma.',
-    summary:
-      'FUE ve DHI saç ekiminde en yaygın iki yöntemdir. İkisi de etkindir; tercih, ekim alanı büyüklüğüne, tıraş tercihine ve klinik donanımına göre değişir. Birinin kesin üstün olduğuna dair bilimsel kanıt bulunmamaktadır.',
-    rows: [
-      {
-        aspect: 'Teknik',
-        left: 'Greft çıkarma → kanal açma → yerleştirme (3 aşama)',
-        right: 'Choi kalemiyle eş zamanlı ekim (2 aşama)',
-        winner: 'equal',
-      },
-      {
-        aspect: 'Tıraş zorunluluğu',
-        left: 'Genellikle gerekli',
-        right: 'Tıraşsız uygulanabilir',
-        winner: 'right',
-      },
-      {
-        aspect: 'Büyük alan kapasitesi',
-        left: '4.000–6.000+ greft',
-        right: '3.000–4.000 greft için uygun',
-        winner: 'left',
-      },
-      {
-        aspect: 'İşlem süresi',
-        left: '6–8 saat',
-        right: '6–10 saat',
-        winner: 'left',
-      },
-      {
-        aspect: 'İyileşme süresi',
-        left: '7–10 gün',
-        right: '5–7 gün',
-        winner: 'right',
-      },
-      {
-        aspect: 'Ortalama maliyet (TR)',
-        left: '1.500–4.000 USD',
-        right: '2.000–5.000 USD',
-        winner: 'left',
-      },
-      {
-        aspect: 'Hassas bölge ekimi',
-        left: 'Mümkün, daha fazla adım',
-        right: 'Daha hassas kontrol',
-        winner: 'right',
-      },
-      {
-        aspect: 'Uzun vadeli sonuç',
-        left: '20+ yıllık kanıtlanmış veri',
-        right: 'İyi sonuçlar, daha kısa veri',
-        winner: 'equal',
-      },
-    ],
-    verdict:
-      'Geniş alan için FUE, tıraşsız ekim veya saç çizgisi düzeltme için DHI daha pratiktir. Klinik deneyimi her iki yöntemden çok daha belirleyicidir.',
-    faq: [
-      {
-        q: 'FUE mi DHI mi daha kalıcıdır?',
-        a: 'Her iki yöntemde de nakledilen kökler kalıcıdır. Uzun vadeli sonuçlar açısından anlamlı fark bulunmamaktadır.',
-      },
-      {
-        q: 'DHI neden daha pahalı?',
-        a: 'Choi kalemi sarf malzemesi ve uzun işlem süresi maliyeti artırır. Aynı greft için DHI genellikle %20–40 daha pahalıdır.',
-      },
-      {
-        q: 'Hangisini seçmeliyim?',
-        a: 'Donör yoğunluğunuz, ekim alanı büyüklüğü ve tıraş tercihiniz belirleyicidir. Konsültasyon gerektirir.',
-      },
-    ],
+    localeKey: 'fue_vs_dhi',
     url: 'https://estyi.com/karsilastirma/fue-vs-dhi',
+    rows: [
+      { key: 'technique', winner: 'equal' },
+      { key: 'shaving', winner: 'right' },
+      { key: 'capacity', winner: 'left' },
+      { key: 'duration', winner: 'left' },
+      { key: 'recovery', winner: 'right' },
+      { key: 'cost', winner: 'left' },
+      { key: 'sensitive', winner: 'right' },
+      { key: 'longTerm', winner: 'equal' },
+    ],
+    faqKeys: ['q1', 'q2', 'q3'],
   },
   {
     slug: 'turkiye-vs-polonya-sac-ekimi',
-    leftLabel: 'Türkiye',
-    rightLabel: 'Polonya',
-    title: 'Türkiye mi Polonya mı — Saç Ekimi Karşılaştırması 2026',
-    metaDesc:
-      "Türkiye ve Polonya'da saç ekimi: maliyet, klinik kalitesi, sertifikasyon ve bekleme süreleri. 2026 tarafsız karşılaştırma.",
-    summary:
-      'Türkiye düşük maliyet ve yüksek hacim avantajı sunarken, Polonya AB sağlık mevzuatı çerçevesinde çalışır. Tercih bütçe, seyahat kolaylığı ve klinik araştırmasına bağlıdır.',
-    rows: [
-      {
-        aspect: 'Ortalama FUE maliyeti',
-        left: '1.500–4.000 USD',
-        right: '2.500–5.500 USD',
-        winner: 'left',
-      },
-      {
-        aspect: 'Regülasyon çerçevesi',
-        left: 'Sağlık Bakanlığı denetimi, JCI bazı kliniklerde',
-        right: 'AB direktifleri, CE standartları',
-        winner: 'equal',
-      },
-      {
-        aspect: 'Uçuş süresi (Batı Avrupa)',
-        left: '3–4 saat',
-        right: '1–3 saat',
-        winner: 'right',
-      },
-      {
-        aspect: 'Yıllık operasyon hacmi',
-        left: '500.000+ (küresel lider)',
-        right: 'Çok daha düşük',
-        winner: 'left',
-      },
-      {
-        aspect: 'Paket kapsamı',
-        left: 'Konaklama + transfer genellikle dahil',
-        right: 'Değişken',
-        winner: 'left',
-      },
-      {
-        aspect: 'Sonuç takibi (uzaklık)',
-        left: 'Kontrol için uçuş gerekebilir',
-        right: 'Avrupa içiyse daha kolay',
-        winner: 'right',
-      },
-    ],
-    verdict:
-      'Maliyet öncelikliyse Türkiye avantaj sağlar. AB içinde ikamet edip kontrol erişimi istiyorsanız Polonya pratik olabilir. Her iki ülkedeki kalite bireysel klinik araştırmasına bağlıdır.',
-    faq: [
-      {
-        q: "Türkiye'deki klinikler güvenilir mi?",
-        a: 'JCI veya ISO sertifikasyonu, hasta yorumları ve cerrah özgeçmişi kontrol edilmelidir. Akredite ve akredite olmayan pek çok klinik bulunmaktadır.',
-      },
-      {
-        q: 'Komplikasyon riski hangi ülkede daha yüksek?',
-        a: 'Risk ülkeden çok kliniğe ve cerraha bağlıdır. Her ülkede iyi ve kötü klinikler mevcuttur.',
-      },
-    ],
+    localeKey: 'turkey_vs_poland',
     url: 'https://estyi.com/karsilastirma/turkiye-vs-polonya-sac-ekimi',
+    rows: [
+      { key: 'cost', winner: 'left' },
+      { key: 'regulation', winner: 'equal' },
+      { key: 'flight', winner: 'right' },
+      { key: 'volume', winner: 'left' },
+      { key: 'package', winner: 'left' },
+      { key: 'followup', winner: 'right' },
+    ],
+    faqKeys: ['q1', 'q2'],
   },
 ];
 
 const ComparisonGuide: React.FC = () => {
+  const { t } = useTranslation();
   const { slug } = useParams<{ slug: string }>();
-  const data = COMPARISONS.find(c => c.slug === slug);
   const { user } = useAuth();
 
-  if (!data) {
+  const config = COMPARISON_CONFIGS.find(c => c.slug === slug);
+
+  if (!config) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-gray-800 mb-4">Sayfa Bulunamadı</h1>
+          <h1 className="text-2xl font-bold text-gray-800 mb-4">{t('comparison.notFound.title')}</h1>
           <Link to="/" className="text-blue-600 hover:underline">
-            Ana Sayfaya Dön
+            {t('comparison.notFound.backHome')}
           </Link>
         </div>
       </div>
     );
   }
+
+  const data: CompData = {
+    slug: config.slug,
+    title: t(`comparison.items.${config.localeKey}.title`),
+    metaDesc: t(`comparison.items.${config.localeKey}.metaDesc`),
+    summary: t(`comparison.items.${config.localeKey}.summary`),
+    leftLabel: t(`comparison.items.${config.localeKey}.leftLabel`),
+    rightLabel: t(`comparison.items.${config.localeKey}.rightLabel`),
+    verdict: t(`comparison.items.${config.localeKey}.verdict`),
+    url: config.url,
+    rows: config.rows.map(rowConfig => ({
+      aspect: t(`comparison.items.${config.localeKey}.rows.${rowConfig.key}.aspect`),
+      left: t(`comparison.items.${config.localeKey}.rows.${rowConfig.key}.left`),
+      right: t(`comparison.items.${config.localeKey}.rows.${rowConfig.key}.right`),
+      winner: rowConfig.winner,
+    })),
+    faq: config.faqKeys.map(key => ({
+      q: t(`comparison.items.${config.localeKey}.faq.${key}.q`),
+      a: t(`comparison.items.${config.localeKey}.faq.${key}.a`),
+    })),
+  };
 
   const faqSchema = {
     '@context': 'https://schema.org',
@@ -200,8 +124,8 @@ const ComparisonGuide: React.FC = () => {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'Ana Sayfa', item: 'https://estyi.com' },
-      { '@type': 'ListItem', position: 2, name: 'Rehber', item: 'https://estyi.com/fiyat-endeksi' },
+      { '@type': 'ListItem', position: 1, name: t('comparison.breadcrumb.home'), item: 'https://estyi.com' },
+      { '@type': 'ListItem', position: 2, name: t('comparison.breadcrumb.guide'), item: 'https://estyi.com/fiyat-endeksi' },
       {
         '@type': 'ListItem',
         position: 3,
@@ -229,14 +153,14 @@ const ComparisonGuide: React.FC = () => {
           <div className="max-w-4xl mx-auto px-4">
             <nav className="flex items-center gap-2 text-indigo-200 text-sm mb-4">
               <Link to="/" className="hover:text-white">
-                Ana Sayfa
+                {t('comparison.breadcrumb.home')}
               </Link>
               <span>/</span>
               <Link to="/fiyat-endeksi" className="hover:text-white">
-                Rehber
+                {t('comparison.breadcrumb.guide')}
               </Link>
               <span>/</span>
-              <span className="text-white">Karşılaştırma</span>
+              <span className="text-white">{t('comparison.breadcrumb.comparison')}</span>
             </nav>
             <h1 className="text-2xl md:text-3xl font-bold mb-4">{data.title}</h1>
             <div className="bg-white/15 backdrop-blur rounded-xl p-4 border border-white/20">
@@ -247,13 +171,13 @@ const ComparisonGuide: React.FC = () => {
         <div className="max-w-4xl mx-auto px-4 py-8">
           <section className="mb-10">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">
-              {data.leftLabel} ve {data.rightLabel}: Karşılaştırma
+              {t('comparison.table.title', { left: data.leftLabel, right: data.rightLabel })}
             </h2>
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
               <table className="w-full">
                 <thead>
                   <tr className="bg-gray-50">
-                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">Kriter</th>
+                    <th className="text-left px-4 py-3 text-sm font-semibold text-gray-700">{t('comparison.table.criterion')}</th>
                     <th className="text-left px-4 py-3 text-sm font-semibold text-green-700">
                       {data.leftLabel}
                     </th>
@@ -302,13 +226,13 @@ const ComparisonGuide: React.FC = () => {
             </div>
           </section>
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sonuç: Hangisi Daha Uygun?</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('comparison.verdict.title')}</h2>
             <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-5">
               <p className="text-gray-700 leading-relaxed">{data.verdict}</p>
             </div>
           </section>
           <section className="mb-10">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">Sıkça Sorulan Sorular</h2>
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('comparison.faq.title')}</h2>
             <div className="space-y-4">
               {data.faq.map((item, i) => (
                 <div key={i} className="bg-white rounded-xl shadow-sm border p-5">
@@ -323,45 +247,42 @@ const ComparisonGuide: React.FC = () => {
               <AlertTriangle className="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <p className="text-xs sm:text-sm text-amber-800 leading-relaxed">
-                  Bu karşılaştırma genel bilgilendirme amaçlıdır ve tıbbi tavsiye yerine geçmez. Kişisel
-                  durumunuz ve sağlık geçmişiniz için mutlaka doktorunuzla veya ilgili uzmanla
-                  değerlendirme yapın.
+                  {t('comparison.disclaimer.medical')}
                 </p>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  Bu karşılaştırma kamuya açık veriler esas alınarak hazırlanmıştır. Bireysel sonuçlar
-                  klinik ve cerrah deneyimine göre farklılık gösterir. Son güncelleme: Şubat 2026.
+                  {t('comparison.disclaimer.data')}
                 </p>
               </div>
             </div>
           </section>
           <section className="mb-10">
             <div className="bg-gradient-to-r from-indigo-600 to-purple-700 rounded-2xl p-8 text-white text-center">
-              <h2 className="text-2xl font-bold mb-3">Klinik Karşılaştırması Yapmak İster misiniz?</h2>
+              <h2 className="text-2xl font-bold mb-3">{t('comparison.cta.title')}</h2>
               <p className="text-indigo-100 mb-6">
-                Estyi üzerinden birden fazla sertifikalı klinikten teklif alın ve kendiniz karşılaştırın.
+                {t('comparison.cta.description')}
               </p>
               <Link
                 to={user ? '/request/new' : '/signup'}
                 className="inline-flex items-center gap-2 bg-white text-indigo-700 font-bold px-8 py-3 rounded-full hover:bg-indigo-50 transition-colors"
               >
-                Ücretsiz Teklif Al <ArrowRight className="w-5 h-5" />
+                {t('comparison.cta.button')} <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </section>
           <section>
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Diğer Karşılaştırmalar</h2>
+            <h2 className="text-xl font-bold text-gray-900 mb-4">{t('comparison.others.title')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {COMPARISONS.filter(c => c.slug !== data.slug).map(c => (
+              {COMPARISON_CONFIGS.filter(c => c.slug !== data.slug).map(c => (
                 <Link
                   key={c.slug}
                   to={`/karsilastirma/${c.slug}`}
                   className="bg-white rounded-lg border p-4 hover:shadow-md transition-shadow"
                 >
                   <div className="text-sm font-semibold text-gray-900">
-                    {c.title.split(' —')[0]}
+                    {t(`comparison.items.${c.localeKey}.title`).split(' —')[0]}
                   </div>
                   <div className="text-xs text-gray-500 mt-1">
-                    {c.leftLabel} vs {c.rightLabel}
+                    {t(`comparison.items.${c.localeKey}.leftLabel`)} vs {t(`comparison.items.${c.localeKey}.rightLabel`)}
                   </div>
                 </Link>
               ))}

@@ -87,6 +87,84 @@
     "otherFacial": "Diğer Yüz İşlemleri",
     "otherBody": "Diğer Vücut İşlemleri"
   },
+  "comparison": {
+    "notFound": {
+      "title": "Sayfa Bulunamadı",
+      "backHome": "Ana Sayfaya Dön"
+    },
+    "breadcrumb": {
+      "home": "Ana Sayfa",
+      "guide": "Rehber",
+      "comparison": "Karşılaştırma"
+    },
+    "table": {
+      "title": "{{left}} ve {{right}}: Karşılaştırma",
+      "criterion": "Kriter"
+    },
+    "verdict": {
+      "title": "Sonuç: Hangisi Daha Uygun?"
+    },
+    "faq": {
+      "title": "Sıkça Sorulan Sorular"
+    },
+    "disclaimer": {
+      "medical": "Bu karşılaştırma genel bilgilendirme amaçlıdır ve tıbbi tavsiye yerine geçmez. Kişisel durumunuz ve sağlık geçmişiniz için mutlaka doktorunuzla veya ilgili uzmanla değerlendirme yapın.",
+      "data": "Bu karşılaştırma kamuya açık veriler esas alınarak hazırlanmıştır. Bireysel sonuçlar klinik ve cerrah deneyimine göre farklılık gösterir. Son güncelleme: Şubat 2026."
+    },
+    "cta": {
+      "title": "Klinik Karşılaştırması Yapmak İster misiniz?",
+      "description": "Estyi üzerinden birden fazla sertifikalı klinikten teklif alın ve kendiniz karşılaştırın.",
+      "button": "Ücretsiz Teklif Al"
+    },
+    "others": {
+      "title": "Diğer Karşılaştırmalar"
+    },
+    "items": {
+      "fue_vs_dhi": {
+        "leftLabel": "FUE",
+        "rightLabel": "DHI",
+        "title": "FUE vs DHI Saç Ekimi — Fark, Maliyet ve Hangisi Daha İyi? (2026)",
+        "metaDesc": "FUE ve DHI saç ekimi arasındaki farklar: teknik, maliyet, iyileşme süresi ve sonuçlar. 2026 güncel karşılaştırma.",
+        "summary": "FUE ve DHI saç ekiminde en yaygın iki yöntemdir. İkisi de etkindir; tercih, ekim alanı büyüklüğüne, tıraş tercihine ve klinik donanımına göre değişir. Birinin kesin üstün olduğuna dair bilimsel kanıt bulunmamaktadır.",
+        "verdict": "Geniş alan için FUE, tıraşsız ekim veya saç çizgisi düzeltme için DHI daha pratiktir. Klinik deneyimi her iki yöntemden çok daha belirleyicidir.",
+        "rows": {
+          "technique": { "aspect": "Teknik", "left": "Greft çıkarma → kanal açma → yerleştirme (3 aşama)", "right": "Choi kalemiyle eş zamanlı ekim (2 aşama)" },
+          "shaving": { "aspect": "Tıraş zorunluluğu", "left": "Genellikle gerekli", "right": "Tıraşsız uygulanabilir" },
+          "capacity": { "aspect": "Büyük alan kapasitesi", "left": "4.000–6.000+ greft", "right": "3.000–4.000 greft için uygun" },
+          "duration": { "aspect": "İşlem süresi", "left": "6–8 saat", "right": "6–10 saat" },
+          "recovery": { "aspect": "İyileşme süresi", "left": "7–10 gün", "right": "5–7 gün" },
+          "cost": { "aspect": "Ortalama maliyet (TR)", "left": "1.500–4.000 USD", "right": "2.000–5.000 USD" },
+          "sensitive": { "aspect": "Hassas bölge ekimi", "left": "Mümkün, daha fazla adım", "right": "Daha hassas kontrol" },
+          "longTerm": { "aspect": "Uzun vadeli sonuç", "left": "20+ yıllık kanıtlanmış veri", "right": "İyi sonuçlar, daha kısa veri" }
+        },
+        "faq": {
+          "q1": { "q": "FUE mi DHI mi daha kalıcıdır?", "a": "Her iki yöntemde de nakledilen kökler kalıcıdır. Uzun vadeli sonuçlar açısından anlamlı fark bulunmamaktadır." },
+          "q2": { "q": "DHI neden daha pahalı?", "a": "Choi kalemi sarf malzemesi ve uzun işlem süresi maliyeti artırır. Aynı greft için DHI genellikle %20–40 daha pahalıdır." },
+          "q3": { "q": "Hangisini seçmeliyim?", "a": "Donör yoğunluğunuz, ekim alanı büyüklüğü ve tıraş tercihiniz belirleyicidir. Konsültasyon gerektirir." }
+        }
+      },
+      "turkey_vs_poland": {
+        "leftLabel": "Türkiye",
+        "rightLabel": "Polonya",
+        "title": "Türkiye mi Polonya mı — Saç Ekimi Karşılaştırması 2026",
+        "metaDesc": "Türkiye ve Polonya'da saç ekimi: maliyet, klinik kalitesi, sertifikasyon ve bekleme süreleri. 2026 tarafsız karşılaştırma.",
+        "summary": "Türkiye düşük maliyet ve yüksek hacim avantajı sunarken, Polonya AB sağlık mevzuatı çerçevesinde çalışır. Tercih bütçe, seyahat kolaylığı ve klinik araştırmasına bağlıdır.",
+        "verdict": "Maliyet öncelikliyse Türkiye avantaj sağlar. AB içinde ikamet edip kontrol erişimi istiyorsanız Polonya pratik olabilir. Her iki ülkedeki kalite bireysel klinik araştırmasına bağlıdır.",
+        "rows": {
+          "cost": { "aspect": "Ortalama FUE maliyeti", "left": "1.500–4.000 USD", "right": "2.500–5.500 USD" },
+          "regulation": { "aspect": "Regülasyon çerçevesi", "left": "Sağlık Bakanlığı denetimi, JCI bazı kliniklerde", "right": "AB direktifleri, CE standartları" },
+          "flight": { "aspect": "Uçuş süresi (Batı Avrupa)", "left": "3–4 saat", "right": "1–3 saat" },
+          "volume": { "aspect": "Yıllık operasyon hacmi", "left": "500.000+ (küresel lider)", "right": "Çok daha düşük" },
+          "package": { "aspect": "Paket kapsamı", "left": "Konaklama + transfer genellikle dahil", "right": "Değişken" },
+          "followup": { "aspect": "Sonuç takibi (uzaklık)", "left": "Kontrol için uçuş gerekebilir", "right": "Avrupa içiyse daha kolay" }
+        },
+        "faq": {
+          "q1": { "q": "Türkiye'deki klinikler güvenilir mi?", "a": "JCI veya ISO sertifikasyonu, hasta yorumları ve cerrah özgeçmişi kontrol edilmelidir. Akredite ve akredite olmayan pek çok klinik bulunmaktadır." },
+          "q2": { "q": "Komplikasyon riski hangi ülkede daha yüksek?", "a": "Risk ülkeden çok kliniğe ve cerraha bağlıdır. Her ülkede iyi ve kötü klinikler mevcuttur." }
+        }
+      }
+    }
+  },
   "helpCenter": {
     "title": "Yardım Merkezi",
     "subtitle": "Size nasıl yardımcı olabiliriz?",

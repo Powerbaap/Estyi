@@ -92,10 +92,10 @@ const Features: React.FC = () => {
           {features.map((feature, index) => (
             <div
               key={index}
-              className="group relative bg-white/90 backdrop-blur-xl rounded-3xl p-10 lg:p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-4 border border-gray-200/50 overflow-hidden"
+              className="group relative bg-white/90 backdrop-blur-xl rounded-3xl p-10 lg:p-12 shadow-xl hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 border border-gray-200/50 overflow-hidden"
             >
               {/* Background Gradient */}
-              <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-500`}></div>
+              <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-5`}></div>
               
               {/* Icon */}
               <div className={`inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br ${feature.color} rounded-2xl mb-8 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-500 relative z-10`}>
@@ -111,9 +111,6 @@ const Features: React.FC = () => {
                   {feature.description}
                 </p>
               </div>
-              
-              {/* Hover Effect Border */}
-              <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-10 transition-opacity duration-500`}></div>
               
               {/* Floating Elements */}
               <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-500">

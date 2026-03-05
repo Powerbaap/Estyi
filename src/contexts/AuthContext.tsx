@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 import { supabase } from '../lib/supabaseClient';
 import { User, Session } from '@supabase/supabase-js';
 import { getCurrentUserAccess, getUserRole } from '../utils/auth';
@@ -32,6 +32,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [messageNotifications, setMessageNotifications] = useState<string[]>([]);
+  const ignoreAuthRef = useRef(false);
 
   useEffect(() => {
     let subscription: { unsubscribe?: () => void } | undefined;
@@ -53,10 +54,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initSession();
 
     const authChange = supabase.auth.onAuthStateChange((_event, s) => {
-      // SIGNED_IN event'i geldiğinde, eğer e-posta doğrulanmamışsa session'ı yoksay
-      // Bu, signup sırasında Header'da flash olmasını engeller
-      if (_event === 'SIGNED_IN' && s?.user && !s.user.email_confirmed_at) {
-        // E-posta doğrulanmamış kullanıcı - session'ı kabul etme
+      if (ignoreAuthRef.current) {
+        ignoreAuthRef.current = false;
         return;
       }
       setSession(s);
@@ -174,6 +173,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setIsLoading(true);
 
+      ignoreAuthRef.current = true;
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -201,6 +201,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         try {
           await supabase.auth.signOut();
         } catch {}
+        ignoreAuthRef.current = false;
         // State'i de sıfırla ki Header hiç tetiklenmesin
         setSession(null);
         setUser(null);
@@ -210,6 +211,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       return { success: false, error: 'Beklenmeyen hata: kullanıcı oluşturulamadı' };
     } catch (error) {
+      ignoreAuthRef.current = false;
       return { success: false, error: 'Kayıt olurken bir hata oluştu' };
     } finally {
       setIsLoading(false);

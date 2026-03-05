@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, Filter, MapPin, Star, Clock, DollarSign, Users, Award } from 'lucide-react';
+import SEOHead from '../components/SEO/SEOHead';
 
 interface Clinic {
   id: string;

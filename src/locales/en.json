@@ -55,6 +55,84 @@
     "filesRejectedTitle": "Some files could not be added:",
     "submitError": "An error occurred while submitting the application."
   },
+  "comparison": {
+    "notFound": {
+      "title": "Page Not Found",
+      "backHome": "Back to Home"
+    },
+    "breadcrumb": {
+      "home": "Home",
+      "guide": "Guide",
+      "comparison": "Comparison"
+    },
+    "table": {
+      "title": "{{left}} vs {{right}}: Comparison",
+      "criterion": "Criterion"
+    },
+    "verdict": {
+      "title": "Verdict: Which is Better?"
+    },
+    "faq": {
+      "title": "Frequently Asked Questions"
+    },
+    "disclaimer": {
+      "medical": "This comparison is for informational purposes only and does not constitute medical advice. Always consult with your doctor or a specialist regarding your personal condition and health history.",
+      "data": "This comparison is based on publicly available data. Individual results may vary based on clinic and surgeon experience. Last updated: February 2026."
+    },
+    "cta": {
+      "title": "Want to Compare Clinics?",
+      "description": "Get quotes from multiple certified clinics via Estyi and compare them yourself.",
+      "button": "Get Free Quote"
+    },
+    "others": {
+      "title": "Other Comparisons"
+    },
+    "items": {
+      "fue_vs_dhi": {
+        "leftLabel": "FUE",
+        "rightLabel": "DHI",
+        "title": "FUE vs DHI Hair Transplant — Difference, Cost and Which is Better? (2026)",
+        "metaDesc": "Differences between FUE and DHI hair transplant: technique, cost, recovery time, and results. 2026 updated comparison.",
+        "summary": "FUE and DHI are the two most common methods in hair transplantation. Both are effective; preference depends on the size of the transplant area, shaving preference, and clinic equipment. There is no scientific evidence that one is definitely superior.",
+        "verdict": "FUE is more practical for large areas, while DHI is better for unshaven transplants or hairline correction. Clinic experience is much more decisive than either method.",
+        "rows": {
+          "technique": { "aspect": "Technique", "left": "Graft extraction → channel opening → implantation (3 stages)", "right": "Simultaneous implantation with Choi pen (2 stages)" },
+          "shaving": { "aspect": "Shaving requirement", "left": "Usually required", "right": "Can be done unshaven" },
+          "capacity": { "aspect": "Large area capacity", "left": "4,000–6,000+ grafts", "right": "Suitable for 3,000–4,000 grafts" },
+          "duration": { "aspect": "Procedure duration", "left": "6–8 hours", "right": "6–10 hours" },
+          "recovery": { "aspect": "Recovery time", "left": "7–10 days", "right": "5–7 days" },
+          "cost": { "aspect": "Average cost (TR)", "left": "1,500–4,000 USD", "right": "2,000–5,000 USD" },
+          "sensitive": { "aspect": "Sensitive area transplant", "left": "Possible, more steps", "right": "More precise control" },
+          "longTerm": { "aspect": "Long-term result", "left": "20+ years of proven data", "right": "Good results, shorter data" }
+        },
+        "faq": {
+          "q1": { "q": "Is FUE or DHI more permanent?", "a": "Roots transplanted in both methods are permanent. There is no significant difference in terms of long-term results." },
+          "q2": { "q": "Why is DHI more expensive?", "a": "Choi pen consumables and long procedure time increase the cost. DHI is usually 20–40% more expensive for the same graft count." },
+          "q3": { "q": "Which one should I choose?", "a": "Your donor density, transplant area size, and shaving preference are decisive. Consultation is required." }
+        }
+      },
+      "turkey_vs_poland": {
+        "leftLabel": "Turkey",
+        "rightLabel": "Poland",
+        "title": "Turkey or Poland — Hair Transplant Comparison 2026",
+        "metaDesc": "Hair transplant in Turkey vs Poland: cost, clinic quality, certification, and waiting times. 2026 unbiased comparison.",
+        "summary": "Turkey offers low cost and high volume advantages, while Poland operates within EU health regulations. Preference depends on budget, travel ease, and clinic research.",
+        "verdict": "Turkey provides an advantage if cost is a priority. Poland may be practical if you reside in the EU and want access to follow-ups. Quality in both countries depends on individual clinic research.",
+        "rows": {
+          "cost": { "aspect": "Average FUE cost", "left": "1,500–4,000 USD", "right": "2,500–5,500 USD" },
+          "regulation": { "aspect": "Regulatory framework", "left": "Ministry of Health supervision, JCI in some clinics", "right": "EU directives, CE standards" },
+          "flight": { "aspect": "Flight duration (Western Europe)", "left": "3–4 hours", "right": "1–3 hours" },
+          "volume": { "aspect": "Annual operation volume", "left": "500,000+ (global leader)", "right": "Much lower" },
+          "package": { "aspect": "Package scope", "left": "Accommodation + transfer usually included", "right": "Variable" },
+          "followup": { "aspect": "Result follow-up (distance)", "left": "Flight may be required for check-up", "right": "Easier if within Europe" }
+        },
+        "faq": {
+          "q1": { "q": "Are clinics in Turkey reliable?", "a": "JCI or ISO certification, patient reviews, and surgeon resume should be checked. There are many accredited and non-accredited clinics." },
+          "q2": { "q": "In which country is the complication risk higher?", "a": "Risk depends more on the clinic and surgeon than the country. Good and bad clinics exist in every country." }
+        }
+      }
+    }
+  },
   "clinicRequests": {
     "title": "Requests",
     "subtitle": "User aesthetic treatment requests",

@@ -8,10 +8,11 @@
 [build.processing.html]
   pretty_urls = true
 
-# Netlify prerendering - Bot'lar için server-side render
+# Netlify Image Optimization
 [[plugins]]
-  package = "@netlify/plugin-prerender"
+  package = "netlify-plugin-image-optim"
 
+# Netlify prerendering - Bot'lar için server-side render
 [[redirects]]
   from = "/*"
   to = "/index.html"
