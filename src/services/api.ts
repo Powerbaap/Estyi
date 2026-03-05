@@ -139,6 +139,11 @@ export const clinicApplicationService = {
       throw new Error(authError.message);
     }
 
+    // FLASH FIX: Başvuru sonrası oluşan geçici session'ı hemen temizle
+    try {
+      await supabase.auth.signOut();
+    } catch {}
+
     const authUserId = authData?.user?.id;
     if (!authUserId) {
       throw new Error('Kullanıcı oluşturulamadı.');

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, User } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
+import SEOHead from '../../components/SEO/SEOHead';
 import EmailVerificationModal from '../../components/Auth/EmailVerificationModal';
 import { logLegalAcceptance } from '../../services/legalAcceptance';
 
@@ -118,6 +119,12 @@ const Signup: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <SEOHead 
+        title="Kayıt Ol - Estyi" 
+        description="Estyi'ye ücretsiz kayıt olun. Estetik işlemler için fiyat teklifi almaya hemen başlayın." 
+        canonical="/signup" 
+        noindex={true} 
+      />
       <div className="max-w-md w-full space-y-8">
         <div className="text-center">
           <Link to="/" className="inline-flex items-center space-x-3 mb-8" onClick={scrollToTopInstant}>

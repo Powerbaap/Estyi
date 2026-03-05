@@ -124,6 +124,11 @@ const SearchPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
+      <SEOHead 
+        title="Klinik Ara - Estyi" 
+        description="Estetik klinikleri arayın ve karşılaştırın. En iyi fiyatları bulun." 
+        canonical="/search" 
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">

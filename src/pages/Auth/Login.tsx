@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Eye, EyeOff, User, Building, Mail, X } from 'lucide-react';
 import { scrollToTopInstant } from '../../utils/scrollUtils';
 import Logo from '../../components/Layout/Logo';
+import SEOHead from '../../components/SEO/SEOHead';
 
 const Login: React.FC = () => {
   const { t } = useTranslation();
@@ -102,6 +103,12 @@ const Login: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <SEOHead 
+        title="Giriş Yap - Estyi" 
+        description="Estyi hesabınıza giriş yapın. Estetik işlemler için fiyat teklifi alın ve klinikleri karşılaştırın." 
+        canonical="/login" 
+        noindex={true} 
+      />
       <div className="max-w-md w-full space-y-8">
         {/* Logo */}
         <div className="text-center flex flex-col items-center">

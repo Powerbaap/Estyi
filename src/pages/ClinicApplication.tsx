@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CheckCircle, Upload, Award, Globe, Sparkles, Heart, Star, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
+import SEOHead from '../components/SEO/SEOHead';
 import { useAuth } from '../contexts/AuthContext';
 import { clinicApplicationService } from '../services/api';
 import { useLocation } from 'react-router-dom';
@@ -486,6 +487,11 @@ const ClinicApplication: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 py-12 px-4">
+      <SEOHead 
+        title="Klinik Başvurusu - Estyi'ye Kliniğinizi Kaydedin" 
+        description="Estyi platformuna kliniğinizi kaydedin. Dünya genelinde hastalarla buluşun, estetik işlemlerinizi tanıtın." 
+        canonical="/clinic-application" 
+      />
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>
