@@ -278,9 +278,6 @@ const ClinicManagement: React.FC = () => {
 
     try {
       // Önce ilişkili tabloları temizle (foreign key kısıtları nedeniyle)
-      // 0. Offer snapshots
-      await supabase.from('offer_snapshots').delete().eq('clinic_id', clinicId);
-
       // 1. Offers (teklifler)
       await supabase.from('offers').delete().eq('clinic_id', clinicId);
       
