@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
@@ -8,86 +8,91 @@ import {
   Users, 
   Building,
   FileText,
-  DollarSign,
+  Globe,
   Shield,
   Download,
   Calendar,
   LogOut
 } from 'lucide-react';
+import { supabase } from '../../lib/supabaseClient';
+import { adminService } from '../../services/adminService';
 
 const Reports: React.FC = () => {
   const { t } = useTranslation();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [stats, setStats] = useState({ totalUsers: 0, activeClinics: 0, totalRequests: 0, totalCountries: 0 });
+  const [usersByCountry, setUsersByCountry] = useState<{country: string, count: number}[]>([]);
+  const [clinicsByCountry, setClinicsByCountry] = useState<{country: string, count: number}[]>([]);
+  const [requestsByProcedure, setRequestsByProcedure] = useState<{procedure: string, count: number}[]>([]);
+  const [recentRequests, setRecentRequests] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const handleLogout = async () => {
     await logout();
     navigate('/');
   };
 
-  const stats = [
-    {
-      title: 'Toplam Kullanıcı',
-      value: '1,247',
-      change: '+12%',
-      icon: Users,
-      color: 'bg-blue-500'
-    },
-    {
-      title: 'Aktif Klinikler',
-      value: '89',
-      change: '+5%',
-      icon: Building,
-      color: 'bg-green-500'
-    },
-    {
-      title: 'Toplam Talep',
-      value: '456',
-      change: '+8%',
-      icon: FileText,
-      color: 'bg-purple-500'
-    },
-    {
-      title: 'Aylık Gelir',
-      value: '$45,230',
-      change: '+15%',
-      icon: DollarSign,
-      color: 'bg-orange-500'
-    }
-  ];
+  useEffect(() => {
+    const loadReports = async () => {
+      setLoading(true);
+      try {
+        const [usersRes, clinicsRes, requestsRes] = await Promise.all([
+          supabase.from('users').select('id, role, created_at', { count: 'exact' }),
+          supabase.from('clinics').select('id, location, countries, status', { count: 'exact' }),
+          supabase.from('requests').select('id, procedure_key, user_id, status, countries, created_at', { count: 'exact' }),
+        ]);
 
-  const monthlyTrends = [
-    { month: 'Ocak', users: 120, clinics: 8, requests: 45, revenue: 12500 },
-    { month: 'Şubat', users: 135, clinics: 10, requests: 52, revenue: 14200 },
-    { month: 'Mart', users: 148, clinics: 12, requests: 58, revenue: 15800 },
-    { month: 'Nisan', users: 162, clinics: 15, requests: 65, revenue: 17200 },
-    { month: 'Mayıs', users: 178, clinics: 18, requests: 72, revenue: 18900 },
-    { month: 'Haziran', users: 195, clinics: 22, requests: 80, revenue: 20800 }
-  ];
+        const users = usersRes.data || [];
+        const clinics = clinicsRes.data || [];
+        const requests = requestsRes.data || [];
 
-  const topClinics = [
-    { name: 'İstanbul Estetik Merkezi', requests: 45, rating: 4.8, revenue: 12500 },
-    { name: 'Hair World İstanbul', requests: 38, rating: 4.7, revenue: 9800 },
-    { name: 'Ankara Estetik Kliniği', requests: 32, rating: 4.6, revenue: 8200 },
-    { name: 'İzmir Güzellik Merkezi', requests: 28, rating: 4.5, revenue: 7200 },
-    { name: 'Bursa Estetik Kliniği', requests: 25, rating: 4.4, revenue: 6500 }
-  ];
+        const activeUsers = users.filter((u: any) => u.role === 'user').length;
+        const activeClinics = clinics.filter((c: any) => c.status === 'active').length;
 
-  const topProcedures = [
-    { name: 'Rhinoplasty', requests: 156, avgPrice: 3500, growth: '+12%' },
-    { name: 'Hair Transplant', requests: 134, avgPrice: 2800, growth: '+8%' },
-    { name: 'Liposuction', requests: 98, avgPrice: 4200, growth: '+15%' },
-    { name: 'Breast Augmentation', requests: 87, avgPrice: 3800, growth: '+6%' },
-    { name: 'Face Lift', requests: 65, avgPrice: 4500, growth: '+10%' }
-  ];
+        const clinicCountryMap: Record<string, number> = {};
+        clinics.forEach((c: any) => {
+          const country = c.location?.split('/')[0]?.trim() || 'Bilinmiyor';
+          clinicCountryMap[country] = (clinicCountryMap[country] || 0) + 1;
+        });
+        const clinicsByCountryArr = Object.entries(clinicCountryMap)
+          .map(([country, count]) => ({ country, count: count as number }))
+          .sort((a, b) => b.count - a.count);
 
-  const quickStats = [
-    { title: 'Günlük Aktif Kullanıcı', value: '234', change: '+5%' },
-    { title: 'Haftalık Yeni Kayıt', value: '89', change: '+12%' },
-    { title: 'Aylık Teklif Sayısı', value: '1,234', change: '+8%' },
-    { title: 'Ortalama İşlem Süresi', value: '2.3 gün', change: '-15%' }
-  ];
+        const procMap: Record<string, number> = {};
+        requests.forEach((r: any) => {
+          const proc = r.procedure_key || 'Bilinmiyor';
+          procMap[proc] = (procMap[proc] || 0) + 1;
+        });
+        const requestsByProc = Object.entries(procMap)
+          .map(([procedure, count]) => ({ procedure, count: count as number }))
+          .sort((a, b) => b.count - a.count);
+
+        const uniqueCountries = new Set<string>();
+        clinics.forEach((c: any) => {
+          if (Array.isArray(c.countries)) {
+            c.countries.forEach((co: string) => uniqueCountries.add(co));
+          }
+        });
+
+        setStats({
+          totalUsers: activeUsers,
+          activeClinics,
+          totalRequests: requests.length,
+          totalCountries: uniqueCountries.size,
+        });
+        setClinicsByCountry(clinicsByCountryArr);
+        setRequestsByProcedure(requestsByProc);
+        setRecentRequests(requests.slice(0, 10));
+      } catch (err) {
+        console.error('Rapor verileri yüklenemedi:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadReports();
+  }, [selectedPeriod]);
 
   const handleDownloadReport = (type: string) => {
     // Burada gerçek rapor indirme işlemi yapılacak
@@ -176,131 +181,113 @@ const Reports: React.FC = () => {
           </div>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          {stats.map((stat, index) => (
-            <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
-              <div className="flex items-center">
-                <div className={`p-2 rounded-lg ${stat.color}`}>
-                  <stat.icon className="w-6 h-6 text-white" />
+        {loading ? (
+          <div className="flex items-center justify-center py-16">
+            <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        ) : (
+          <>
+            {/* Stats Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center">
+                  <div className="p-2 rounded-lg bg-blue-500">
+                    <Users className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Toplam Kullanıcı</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalUsers}</p>
+                  </div>
                 </div>
-                <div className="ml-4">
-                  <p className="text-sm font-medium text-gray-600">{stat.title}</p>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-green-600">{stat.change}</p>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center">
+                  <div className="p-2 rounded-lg bg-green-500">
+                    <Building className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Aktif Klinikler</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.activeClinics}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center">
+                  <div className="p-2 rounded-lg bg-purple-500">
+                    <FileText className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Toplam Talep</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalRequests}</p>
+                  </div>
+                </div>
+              </div>
+              <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+                <div className="flex items-center">
+                  <div className="p-2 rounded-lg bg-orange-500">
+                    <Globe className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="ml-4">
+                    <p className="text-sm font-medium text-gray-600">Ülke Sayısı</p>
+                    <p className="text-2xl font-bold text-gray-900">{stats.totalCountries}</p>
+                  </div>
                 </div>
               </div>
             </div>
-          ))}
-        </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-          {/* Monthly Trends */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Aylık Trendler</h3>
-              <p className="text-sm text-gray-600">Son 6 ayın performansı</p>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {monthlyTrends.map((trend, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <Calendar className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm font-medium text-gray-900">{trend.month}</span>
-                    </div>
-                    <div className="flex items-center space-x-4 text-sm">
-                      <span className="text-gray-600">K: {trend.users}</span>
-                      <span className="text-gray-600">Klinik: {trend.clinics}</span>
-                      <span className="text-gray-600">Talep: {trend.requests}</span>
-                      <span className="text-green-600 font-medium">${trend.revenue}</span>
-                    </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+              {/* Klinik Dağılımı (Ülkelere Göre) */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="p-6 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">Klinik Dağılımı (Ülkelere Göre)</h3>
+                  <p className="text-sm text-gray-600">Kliniklerin ülkeler bazında dağılımı</p>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {clinicsByCountry.map((row, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <Globe className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm font-medium text-gray-900">{row.country}</span>
+                        </div>
+                        <div className="text-sm text-gray-700">{row.count}</div>
+                      </div>
+                    ))}
+                    {clinicsByCountry.length === 0 && (
+                      <div className="text-sm text-gray-500">Veri bulunamadı</div>
+                    )}
                   </div>
-                ))}
+                </div>
+              </div>
+
+              {/* İşlem Bazlı Talepler */}
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200">
+                <div className="p-6 border-b border-gray-200">
+                  <h3 className="text-lg font-semibold text-gray-900">İşlem Bazlı Talepler</h3>
+                  <p className="text-sm text-gray-600">Hangi işlemlere daha çok talep var?</p>
+                </div>
+                <div className="p-6">
+                  <div className="space-y-4">
+                    {requestsByProcedure.map((row, index) => (
+                      <div key={index} className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <FileText className="w-4 h-4 text-gray-400" />
+                          <span className="text-sm font-medium text-gray-900">{row.procedure}</span>
+                        </div>
+                        <div className="text-sm text-gray-700">{row.count}</div>
+                      </div>
+                    ))}
+                    {requestsByProcedure.length === 0 && (
+                      <div className="text-sm text-gray-500">Veri bulunamadı</div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Quick Stats */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">Hızlı İstatistikler</h3>
-              <p className="text-sm text-gray-600">Güncel sistem durumu</p>
-            </div>
-            <div className="p-6">
-              <div className="grid grid-cols-1 gap-4">
-                {quickStats.map((stat, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-sm font-medium text-gray-900">{stat.title}</span>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-lg font-bold text-gray-900">{stat.value}</span>
-                      <span className="text-sm text-green-600">{stat.change}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Top Clinics */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">En İyi Klinikler</h3>
-              <p className="text-sm text-gray-600">En çok talep alan klinikler</p>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {topClinics.map((clinic, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                        <span className="text-blue-600 text-sm font-medium">{index + 1}</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{clinic.name}</p>
-                        <p className="text-xs text-gray-500">{clinic.requests} talep • {clinic.rating} ⭐</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-green-600">${clinic.revenue}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Top Procedures */}
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div className="p-6 border-b border-gray-200">
-              <h3 className="text-lg font-semibold text-gray-900">En Popüler İşlemler</h3>
-              <p className="text-sm text-gray-600">En çok talep edilen işlemler</p>
-            </div>
-            <div className="p-6">
-              <div className="space-y-4">
-                {topProcedures.map((procedure, index) => (
-                  <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
-                        <span className="text-purple-600 text-sm font-medium">{index + 1}</span>
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium text-gray-900">{procedure.name}</p>
-                        <p className="text-xs text-gray-500">{procedure.requests} talep</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-medium text-gray-900">${procedure.avgPrice}</p>
-                      <p className="text-xs text-green-600">{procedure.growth}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
+            {/* Yer ayırıcı: recentRequests ileride kullanılabilir */}
+          </>
+        )}
       </div>
     </div>
   );

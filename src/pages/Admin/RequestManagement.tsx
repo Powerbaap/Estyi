@@ -37,9 +37,9 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
   }, []);
 
   const filteredRequests = requests.filter((request: any) => {
-    const title = (request.title || '').toLowerCase();
+    const proc = (request.procedure_key || '').toLowerCase();
     const desc = (request.description || '').toLowerCase();
-    const matchesSearch = title.includes(searchTerm.toLowerCase()) || desc.includes(searchTerm.toLowerCase());
+    const matchesSearch = proc.includes(searchTerm.toLowerCase()) || desc.includes(searchTerm.toLowerCase());
     const matchesStatus = statusFilter === 'all' || (request.status || 'active') === statusFilter;
     return matchesSearch && matchesStatus;
   });
@@ -57,6 +57,10 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
         return 'bg-yellow-100 text-yellow-800';
       case 'completed':
         return 'bg-blue-100 text-blue-800';
+      case 'expired':
+        return 'bg-orange-100 text-orange-800';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -70,6 +74,10 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
         return 'Kapalı';
       case 'completed':
         return 'Tamamlandı';
+      case 'expired':
+        return 'Süresi Doldu';
+      case 'cancelled':
+        return 'İptal';
       default:
         return 'Bilinmiyor';
     }
@@ -156,6 +164,8 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
                 <option value="active">Aktif</option>
                 <option value="closed">Kapalı</option>
                 <option value="completed">Tamamlandı</option>
+                <option value="expired">Süresi Doldu</option>
+                <option value="cancelled">İptal</option>
               </select>
             </div>
           </div>
@@ -206,13 +216,15 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
                           <User className="w-4 h-4 text-gray-600" />
                         </div>
                         <div className="ml-4">
-                          <div className="text-sm font-medium text-gray-900">{request.user_name || request.user_id || '—'}</div>
+                          <div className="text-sm font-medium text-gray-900">
+                            {request.user_id ? `...${request.user_id.slice(-8)}` : '—'}
+                          </div>
                           <div className="text-sm text-gray-500">{request.user_email || ''}</div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{request.title || '—'}</div>
+                      <div className="text-sm font-medium text-gray-900">{request.procedure_key || '—'}</div>
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-sm text-gray-900 max-w-xs truncate">
@@ -227,7 +239,7 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <FileText className="w-4 h-4 text-gray-400 mr-1" />
-                        <span className="text-sm text-gray-900">{Array.isArray((request as any).photo_urls) ? (request as any).photo_urls.length : '—'}</span>
+                        <span className="text-sm text-gray-900">{Array.isArray((request as any).photos) ? (request as any).photos.length : '—'}</span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -275,7 +287,7 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">İşlem</label>
-                <p className="text-sm text-gray-900">{selectedRequest.procedure}</p>
+                <p className="text-sm text-gray-900">{selectedRequest.procedure_key || '—'}</p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Açıklama</label>
@@ -287,7 +299,9 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Fotoğraf Sayısı</label>
-                <p className="text-sm text-gray-900">{selectedRequest.photos}</p>
+                <p className="text-sm text-gray-900">
+                  {Array.isArray(selectedRequest.photos) ? selectedRequest.photos.length : '—'}
+                </p>
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Teklif Sayısı</label>
@@ -295,7 +309,9 @@ const [requests, setRequests] = useState<AdminRequest[]>([]);
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700">Oluşturulma Tarihi</label>
-                <p className="text-sm text-gray-900">{selectedRequest.createdAt}</p>
+                <p className="text-sm text-gray-900">
+                  {selectedRequest.created_at ? new Date(selectedRequest.created_at).toLocaleString('tr-TR') : '—'}
+                </p>
               </div>
             </div>
             

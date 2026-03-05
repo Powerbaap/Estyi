@@ -30,10 +30,8 @@ const AdminDashboard = lazy(() => import('./pages/Admin/AdminDashboard'));
 const UserManagement = lazy(() => import('./pages/Admin/UserManagement'));
 const ClinicManagement = lazy(() => import('./pages/Admin/ClinicManagement'));
 const RequestManagement = lazy(() => import('./pages/Admin/RequestManagement'));
-const MessageManagement = lazy(() => import('./pages/Admin/MessageManagement'));
 const Reports = lazy(() => import('./pages/Admin/Reports'));
 const Settings = lazy(() => import('./pages/Admin/Settings'));
-const ChangeControl = lazy(() => import('./pages/Admin/ChangeControl'));
 
 // Legal pages
 const AboutUs = lazy(() => import('./pages/Legal/AboutUs'));
@@ -207,10 +205,8 @@ function AppContent() {
             <Route path="/admin/users" element={<AdminRoute><UserManagement /></AdminRoute>} />
             <Route path="/admin/clinics" element={<AdminRoute><ClinicManagement /></AdminRoute>} />
             <Route path="/admin/requests" element={<AdminRoute><RequestManagement /></AdminRoute>} />
-            <Route path="/admin/messages" element={<AdminRoute><MessageManagement /></AdminRoute>} />
             <Route path="/admin/reports" element={<AdminRoute><Reports /></AdminRoute>} />
             <Route path="/admin/settings" element={<AdminRoute><Settings /></AdminRoute>} />
-            <Route path="/admin/change-control" element={<AdminRoute><ChangeControl /></AdminRoute>} />
             
             {/* Legal Routes */}
             <Route path="/about" element={<AboutUs />} />

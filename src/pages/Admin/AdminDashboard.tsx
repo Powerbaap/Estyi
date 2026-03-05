@@ -6,7 +6,6 @@ import {
   Users, 
   Building, 
   FileText, 
-  MessageSquare, 
   BarChart3, 
   Settings,
   UserPlus,
@@ -22,6 +21,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { adminService } from '../../services/adminService';
+import { supabase } from '../../lib/supabaseClient';
 
 const AdminDashboard: React.FC = () => {
   const { user, logout } = useAuth();
@@ -140,14 +140,6 @@ const AdminDashboard: React.FC = () => {
       href: '/admin/requests'
     },
     {
-      title: 'Mesaj Yönetimi',
-      description: 'Kullanıcı mesajlarını yönet',
-      icon: MessageSquare,
-      color: 'from-orange-500 to-orange-600',
-      bgColor: 'bg-orange-50',
-      href: '/admin/messages'
-    },
-    {
       title: 'Raporlar',
       description: 'Sistem raporlarını görüntüle',
       icon: BarChart3,
@@ -162,51 +154,62 @@ const AdminDashboard: React.FC = () => {
       color: 'from-gray-500 to-gray-600',
       bgColor: 'bg-gray-50',
       href: '/admin/settings'
-    },
-    {
-      title: 'Değişim Kontrol',
-      description: 'Değişim arayan ve yaratan tarafları yönet',
-      icon: Shield,
-      color: 'from-indigo-500 to-purple-600',
-      bgColor: 'bg-indigo-50',
-      href: '/admin/change-control'
     }
   ];
 
-  const recentActivities = [
-    {
-      id: '1',
-      type: 'user_registration',
-      message: 'Yeni kullanıcı kaydı: user@example.com',
-      time: '2 dakika önce',
-      status: 'success',
-      icon: UserPlus
-    },
-    {
-      id: '2',
-      type: 'clinic_approval',
-      message: 'Klinik onayı bekliyor: İstanbul Estetik Merkezi',
-      time: '15 dakika önce',
-      status: 'pending',
-      icon: Building
-    },
-    {
-      id: '3',
-      type: 'offer_submitted',
-      message: t('notifications.newTreatmentOffer'),
-      time: '1 saat önce',
-      status: 'info',
-      icon: FileText
-    },
-    {
-      id: '4',
-      type: 'payment_received',
-      message: t('notifications.paymentReceived'),
-      time: '3 saat önce',
-      status: 'success',
-      icon: TrendingUp
-    }
-  ];
+  const [activities, setActivities] = useState<any[]>([]);
+
+  useEffect(() => {
+    const loadActivities = async () => {
+      try {
+        const recentActivities: any[] = [];
+
+        const { data: recentUsers } = await supabase
+          .from('users')
+          .select('email, role, created_at')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (recentUsers) {
+          recentUsers.forEach((u: any) => {
+            recentActivities.push({
+              type: u.role === 'clinic' ? 'clinic' : 'user',
+              message: u.role === 'clinic'
+                ? `Yeni klinik kaydı: ${u.email}`
+                : `Yeni kullanıcı kaydı: ${u.email}`,
+              time: new Date(u.created_at).toLocaleString('tr-TR'),
+              color: u.role === 'clinic' ? 'bg-green-500' : 'bg-blue-500',
+              icon: u.role === 'clinic' ? Building : UserPlus,
+            });
+          });
+        }
+
+        const { data: recentApps } = await supabase
+          .from('clinic_applications')
+          .select('clinic_name, status, created_at')
+          .order('created_at', { ascending: false })
+          .limit(2);
+
+        if (recentApps) {
+          recentApps.forEach((a: any) => {
+            recentActivities.push({
+              type: 'application',
+              message: `Klinik başvurusu: ${a.clinic_name} (${a.status === 'pending' ? 'Beklemede' : a.status === 'approved' ? 'Onaylandı' : 'Reddedildi'})`,
+              time: new Date(a.created_at).toLocaleString('tr-TR'),
+              color: a.status === 'pending' ? 'bg-yellow-500' : a.status === 'approved' ? 'bg-green-500' : 'bg-red-500',
+              icon: Activity,
+            });
+          });
+        }
+
+        recentActivities.sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime());
+        setActivities(recentActivities.slice(0, 5));
+      } catch (err) {
+        console.error('Aktiviteler yüklenemedi:', err);
+      }
+    };
+    loadActivities();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
@@ -338,17 +341,21 @@ const AdminDashboard: React.FC = () => {
               </div>
               <div className="p-6">
                 <div className="space-y-4">
-                  {recentActivities.map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-3 p-3 rounded-xl hover:bg-white/50 transition-colors duration-200">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-r ${activity.status === 'success' ? 'from-green-500 to-green-600' : activity.status === 'pending' ? 'from-yellow-500 to-yellow-600' : 'from-blue-500 to-blue-600'} shadow-lg`}>
-                        <activity.icon className="w-4 h-4 text-white" />
+                  {activities.length === 0 ? (
+                    <div className="text-sm text-gray-500">Henüz aktivite yok</div>
+                  ) : (
+                    activities.map((activity, idx) => (
+                      <div key={idx} className="flex items-start space-x-3 p-3 rounded-xl hover:bg-white/50 transition-colors duration-200">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center ${activity.color} shadow-lg`}>
+                          <activity.icon className="w-4 h-4 text-white" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm text-gray-900 font-medium">{activity.message}</p>
+                          <p className="text-xs text-gray-500">{activity.time}</p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm text-gray-900 font-medium">{activity.message}</p>
-                        <p className="text-xs text-gray-500">{activity.time}</p>
-                      </div>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </div>
             </div>

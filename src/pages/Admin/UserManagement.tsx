@@ -21,6 +21,7 @@ import {
   LogOut
 } from 'lucide-react';
 import { adminService, AdminUser } from '../../services/adminService';
+import { supabase } from '../../lib/supabaseClient';
 
 const UserManagement: React.FC = () => {
   const { user, logout } = useAuth();
@@ -60,16 +61,40 @@ const UserManagement: React.FC = () => {
     setShowUserModal(true);
   };
 
-  const handleBlockUser = (userId: string) => {
-    // Block user logic
+  const handleBlockUser = async (userId: string) => {
+    if (!confirm('Bu kullanıcıyı engellemek istediğinizden emin misiniz?')) return;
+    try {
+      const { error } = await supabase.from('users').update({ status: 'blocked' }).eq('id', userId);
+      if (error) throw error;
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'blocked' } : u));
+      alert('Kullanıcı engellendi.');
+    } catch (err: any) {
+      alert('Hata: ' + (err.message || 'Bilinmeyen hata'));
+    }
   };
 
-  const handleUnblockUser = (userId: string) => {
-    // Unblock user logic
+  const handleUnblockUser = async (userId: string) => {
+    if (!confirm('Bu kullanıcıyı aktif etmek istediğinizden emin misiniz?')) return;
+    try {
+      const { error } = await supabase.from('users').update({ status: 'active' }).eq('id', userId);
+      if (error) throw error;
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'active' } : u));
+      alert('Kullanıcı aktif edildi.');
+    } catch (err: any) {
+      alert('Hata: ' + (err.message || 'Bilinmeyen hata'));
+    }
   };
 
-  const handleDeleteUser = (userId: string) => {
-    // Delete user logic
+  const handleDeleteUser = async (userId: string) => {
+    if (!confirm('Bu kullanıcıyı silmek istediğinizden emin misiniz? Kullanıcı hesabına erişemeyecek.')) return;
+    try {
+      const { error } = await supabase.from('users').update({ status: 'deleted' }).eq('id', userId);
+      if (error) throw error;
+      setUsers(prev => prev.map(u => u.id === userId ? { ...u, status: 'deleted' } : u));
+      alert('Kullanıcı silindi (pasife alındı).');
+    } catch (err: any) {
+      alert('Hata: ' + (err.message || 'Bilinmeyen hata'));
+    }
   };
 
   return (
@@ -162,6 +187,7 @@ const UserManagement: React.FC = () => {
                 <option value="all">Tümü</option>
                 <option value="active">Aktif</option>
                 <option value="blocked">Engellenmiş</option>
+                <option value="deleted">Silinen</option>
               </select>
             </div>
             
@@ -241,12 +267,21 @@ const UserManagement: React.FC = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`inline-flex items-center px-2 py-1 text-xs font-semibold rounded-full ${
-                        user.status === 'active' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        user.status === 'active'
+                          ? 'bg-green-100 text-green-800'
+                          : user.status === 'deleted'
+                          ? 'bg-gray-100 text-gray-800'
+                          : 'bg-red-100 text-red-800'
                       }`}>
                         {user.status === 'active' ? (
                           <>
                             <UserCheck className="w-3 h-3 mr-1" />
                             Aktif
+                          </>
+                        ) : user.status === 'deleted' ? (
+                          <>
+                            <UserX className="w-3 h-3 mr-1" />
+                            Silindi
                           </>
                         ) : (
                           <>

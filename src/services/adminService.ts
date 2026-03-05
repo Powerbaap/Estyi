@@ -26,10 +26,20 @@ export type AdminClinic = {
 export type AdminRequest = {
   id: string;
   user_id?: string | null;
-  status?: string | null;
-  created_at?: string | null;
-  title?: string | null;
+  procedure_key?: string | null;
   description?: string | null;
+  photos?: string[] | null;
+  status?: string | null;
+  country?: string | null;
+  countries?: string[] | null;
+  params?: any | null;
+  age?: number | null;
+  gender?: string | null;
+  created_at?: string | null;
+  expires_at?: string | null;
+  title?: string | null;
+  user_name?: string | null;
+  user_email?: string | null;
 };
 
 export type AdminClinicApplication = {
