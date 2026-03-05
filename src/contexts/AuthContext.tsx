@@ -53,6 +53,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     initSession();
 
     const authChange = supabase.auth.onAuthStateChange((_event, s) => {
+      // SIGNED_IN event'i geldiğinde, eğer e-posta doğrulanmamışsa session'ı yoksay
+      // Bu, signup sırasında Header'da flash olmasını engeller
+      if (_event === 'SIGNED_IN' && s?.user && !s.user.email_confirmed_at) {
+        // E-posta doğrulanmamış kullanıcı - session'ı kabul etme
+        return;
+      }
       setSession(s);
       setUser(s?.user ?? null);
     });
@@ -189,6 +195,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
 
       if (data?.user) {
+        // FLASH FIX: Kayıt sonrası oluşan geçici session'ı hemen temizle
+        // Böylece Header'da kullanıcı anlık görünüp kaybolmaz
+        // E-posta doğrulama tamamlanana kadar session olmamalı
+        try {
+          await supabase.auth.signOut();
+        } catch {}
+        // State'i de sıfırla ki Header hiç tetiklenmesin
+        setSession(null);
+        setUser(null);
+        
         return { success: true, userId: data.user.id };
       }
 
