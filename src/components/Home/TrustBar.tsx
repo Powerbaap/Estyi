@@ -20,8 +20,8 @@ const TrustBar: React.FC = () => {
       try {
         const [clinicsRes, requestsRes, usersRes] = await Promise.all([
           supabase.from('clinics').select('id, location, countries, status').eq('status', 'active'),
-          supabase.from('requests').select('id', { count: 'exact', head: true }),
-          supabase.from('users').select('id', { count: 'exact', head: true }).eq('role', 'user'),
+          supabase.from('requests').select('id'),
+          supabase.from('users').select('id, role'),
         ]);
 
         const clinics = clinicsRes.data || [];
@@ -35,11 +35,15 @@ const TrustBar: React.FC = () => {
           }
         });
 
+        const requests = requestsRes.data || [];
+        const users = usersRes.data || [];
+        const userCount = users.filter((u: any) => u.role === 'user').length;
+
         setStats({
           clinicCount: clinics.length,
           countryCount: uniqueCountries.size,
-          requestCount: requestsRes.count || 0,
-          userCount: usersRes.count || 0,
+          requestCount: requests.length,
+          userCount: userCount,
         });
         setLoaded(true);
       } catch (err) {
