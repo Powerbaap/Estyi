@@ -1429,6 +1429,12 @@
       "instantOffer": "عرض فوري",
       "anonymousSharing": "مشاركة مجهولة"
     },
+    "trustBar": {
+      "clinics": "عيادة معتمدة",
+      "countries": "دولة",
+      "requests": "طلب تم إنشاؤه",
+      "users": "مستخدم مسجل"
+    },
     "features": {
       "title": "لماذا تختار",
       "subtitle": "اختبر مستقبل الطب التجميلي وتعرّف على منصتنا المبتكرة",

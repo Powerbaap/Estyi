@@ -1148,6 +1148,12 @@
       "instantOffer": "Anında Teklif",
       "anonymousSharing": "Anonim Paylaşım"
     },
+    "trustBar": {
+      "clinics": "Sertifikalı Klinik",
+      "countries": "Ülke",
+      "requests": "Talep Oluşturuldu",
+      "users": "Kayıtlı Kullanıcı"
+    },
     "features": {
       "title": "Neden",
       "subtitle": "Estetik tıbbın geleceğini deneyimleyin ve yenilikçi platformumuzla tanışın",
