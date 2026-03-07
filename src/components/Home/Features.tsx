@@ -119,6 +119,43 @@ const Features: React.FC = () => {
             </div>
           ))}
         </div>
+
+        {/* Enhanced CTA Section */}
+        <div className="mt-24 text-center">
+          <div className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 rounded-3xl p-12 text-white relative overflow-hidden shadow-2xl">
+            {/* Background Pattern */}
+            <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width=%2760%27%20height=%2760%27%20viewBox=%270%200%2060%2060%27%20xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg%20fill=%27none%27%20fill-rule=%27evenodd%27%3E%3Cg%20fill=%27%23ffffff%27%20fill-opacity=%270.1%27%3E%3Ccircle%20cx=%2730%27%20cy=%2730%27%20r=%271%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-30"></div>
+            
+            {/* Floating Icons */}
+            <div className="absolute top-4 left-4 animate-float">
+              <Sparkles className="w-6 h-6 text-white/60" />
+            </div>
+            <div className="absolute top-8 right-8 animate-float animation-delay-1000">
+              <Zap className="w-5 h-5 text-white/60" />
+            </div>
+            <div className="absolute bottom-6 left-1/3 animate-float animation-delay-2000">
+              <Heart className="w-4 h-4 text-white/60" />
+            </div>
+            
+            <div className="relative z-10">
+              <h3 className="text-4xl md:text-5xl font-bold mb-6">
+                {t('home.features.cta.title')}
+              </h3>
+              <p className="text-xl md:text-2xl text-white/90 mb-10 max-w-3xl mx-auto leading-relaxed">
+                {t('home.features.cta.subtitle')}
+              </p>
+              <Link
+                to="/signup"
+                onClick={handleCtaClick}
+                className="group inline-flex items-center bg-white text-purple-600 px-10 py-5 rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-500 relative overflow-hidden"
+              >
+                <span className="relative z-10">{t('home.features.cta.button')}</span>
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-50 to-pink-50 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <Sparkles className="w-5 h-5 text-purple-600 absolute right-4 top-1/2 transform -translate-y-1/2 group-hover:animate-pulse" />
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
   );

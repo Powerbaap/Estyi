@@ -1,7 +1,6 @@
 import React from 'react';
 import SEOHead from '../components/SEO/SEOHead';
 import Hero from '../components/Home/Hero';
-import TrustBar from '../components/Home/TrustBar';
 import Features from '../components/Home/Features';
 
 const Home: React.FC = () => {
@@ -13,7 +12,6 @@ const Home: React.FC = () => {
         canonical="/" 
       />
       <Hero />
-      <TrustBar />
       <Features />
     </div>
   );
