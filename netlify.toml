@@ -12,6 +12,12 @@
 [[plugins]]
   package = "netlify-plugin-image-optim"
 
+[[redirects]]
+  from = "/sitemap.xml"
+  to = "/sitemap.xml"
+  status = 200
+  force = true
+
 # Netlify prerendering - Bot'lar için server-side render
 [[redirects]]
   from = "/*"
