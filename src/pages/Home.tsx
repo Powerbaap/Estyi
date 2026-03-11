@@ -2,6 +2,7 @@ import React from 'react';
 import SEOHead from '../components/SEO/SEOHead';
 import Hero from '../components/Home/Hero';
 import Features from '../components/Home/Features';
+import LiveStats from '../components/Home/LiveStats';
 
 const Home: React.FC = () => {
   return (
@@ -13,6 +14,7 @@ const Home: React.FC = () => {
       />
       <Hero />
       <Features />
+      <LiveStats />
     </div>
   );
 };
