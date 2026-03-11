@@ -1,8 +1,10 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Send, Check, CheckCheck } from 'lucide-react';
+import { Send, Check, CheckCheck, Calendar } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
+import AppointmentBubble from '../Messages/AppointmentBubble';
+import AppointmentForm from '../Messages/AppointmentForm';
 
 interface Conversation {
   id: string;
@@ -20,6 +22,57 @@ interface Message {
   is_read: boolean;
 }
 
+type AppointmentStatus = 'pending' | 'confirmed' | 'rejected' | 'cancelled';
+
+type AppointmentPayload =
+  | {
+      type: 'appointment_request';
+      appointmentId: string;
+      date: string;
+      time: string;
+      note?: string;
+    }
+  | { type: 'appointment_response'; appointmentId: string; status: 'confirmed' | 'rejected' }
+  | { type: 'appointment_cancelled'; appointmentId: string };
+
+const parseAppointmentPayload = (content: string): AppointmentPayload | null => {
+  const trimmed = content.trim();
+  if (!trimmed.startsWith('{') || !trimmed.endsWith('}')) return null;
+  try {
+    const obj: unknown = JSON.parse(trimmed);
+    if (!obj || typeof obj !== 'object') return null;
+    const rec = obj as Record<string, unknown>;
+    if (typeof rec.type !== 'string') return null;
+
+    const appointmentId = rec.appointment_id;
+    if (typeof appointmentId !== 'string' || !appointmentId) return null;
+
+    if (rec.type === 'appointment_request') {
+      if (typeof rec.date !== 'string' || typeof rec.time !== 'string') return null;
+      return {
+        type: 'appointment_request',
+        appointmentId,
+        date: rec.date,
+        time: rec.time,
+        note: typeof rec.note === 'string' ? rec.note : undefined,
+      };
+    }
+
+    if (rec.type === 'appointment_response') {
+      if (rec.status !== 'confirmed' && rec.status !== 'rejected') return null;
+      return { type: 'appointment_response', appointmentId, status: rec.status };
+    }
+
+    if (rec.type === 'appointment_cancelled') {
+      return { type: 'appointment_cancelled', appointmentId };
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+};
+
 const ClinicMessages: React.FC = () => {
   const { t } = useTranslation();
   const { user } = useAuth();
@@ -30,7 +83,25 @@ const ClinicMessages: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [loadingMessages, setLoadingMessages] = useState(false);
+  const [showAppointmentForm, setShowAppointmentForm] = useState(false);
+  const [appointments, setAppointments] = useState<Record<string, any>>({});
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+
+  const appointmentStatusById = useMemo(() => {
+    const map: Record<string, AppointmentStatus> = {};
+    for (const m of messages) {
+      const payload = parseAppointmentPayload(m.content);
+      if (!payload) continue;
+      if (payload.type === 'appointment_request') {
+        map[payload.appointmentId] = map[payload.appointmentId] || 'pending';
+      } else if (payload.type === 'appointment_response') {
+        map[payload.appointmentId] = payload.status;
+      } else if (payload.type === 'appointment_cancelled') {
+        map[payload.appointmentId] = 'cancelled';
+      }
+    }
+    return map;
+  }, [messages]);
 
   useEffect(() => {
     if (!clinicId) {
@@ -63,7 +134,19 @@ const ClinicMessages: React.FC = () => {
                 .limit(1)
                 .maybeSingle();
               if (msg) {
-                lastMessage = msg.content || '';
+                const payload = msg.content ? parseAppointmentPayload(msg.content) : null;
+                if (!payload) {
+                  lastMessage = msg.content || '';
+                } else if (payload.type === 'appointment_request') {
+                  lastMessage = 'Randevu talebi';
+                } else if (payload.type === 'appointment_response') {
+                  lastMessage =
+                    payload.status === 'confirmed'
+                      ? 'Randevu onaylandı'
+                      : 'Randevu reddedildi';
+                } else {
+                  lastMessage = 'Randevu iptal edildi';
+                }
                 lastTime = msg.created_at || '';
               }
             } catch {}
@@ -106,6 +189,8 @@ const ClinicMessages: React.FC = () => {
   useEffect(() => {
     if (!selectedConversation) {
       setMessages([]);
+      setAppointments({});
+      setShowAppointmentForm(false);
       return;
     }
     let active = true;
@@ -129,6 +214,20 @@ const ClinicMessages: React.FC = () => {
             }))
           );
         }
+
+        try {
+          const { data: aptsData } = await supabase
+            .from('appointments')
+            .select('*')
+            .eq('conversation_id', selectedConversation);
+          if (aptsData && active) {
+            const aptMap: Record<string, any> = {};
+            aptsData.forEach((a: any) => {
+              aptMap[a.id] = a;
+            });
+            setAppointments(aptMap);
+          }
+        } catch {}
 
         await supabase
           .from('messages')
@@ -190,6 +289,27 @@ const ClinicMessages: React.FC = () => {
                   : m
               )
             );
+          }
+        }
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'appointments',
+          filter: `conversation_id=eq.${selectedConversation}`,
+        },
+        (payload: any) => {
+          if (!active) return;
+          if (payload.eventType === 'DELETE') {
+            setAppointments(prev => {
+              const n = { ...prev };
+              delete n[payload.old.id];
+              return n;
+            });
+          } else {
+            setAppointments(prev => ({ ...prev, [payload.new.id]: payload.new }));
           }
         }
       )
@@ -345,44 +465,114 @@ const ClinicMessages: React.FC = () => {
                       message.sender_id === currentUserId ? 'justify-end' : 'justify-start'
                     }`}
                   >
-                    <div
-                      className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
-                        message.sender_id === currentUserId
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-900'
-                      }`}
-                    >
-                      <p className="text-sm">{message.content}</p>
-                      <div
-                        className={`flex items-center justify-end mt-1 ${
-                          message.sender_id === currentUserId ? 'text-blue-100' : 'text-gray-500'
-                        }`}
-                      >
-                        <span className="text-xs mr-1">
-                          {message.created_at
-                            ? new Date(message.created_at).toLocaleTimeString('tr-TR', {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                              })
-                            : ''}
-                        </span>
-                        {message.sender_id === currentUserId && (
-                          <span className="text-xs">
-                            {message.is_read ? (
-                              <CheckCheck className="w-3 h-3 text-blue-300" />
-                            ) : (
-                              <Check className="w-3 h-3 text-gray-300" />
+                    {(() => {
+                      const isOwn = message.sender_id === currentUserId;
+
+                      return (
+                        <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
+                          {(() => {
+                            try {
+                              const parsed = JSON.parse(message.content);
+
+                              if (parsed.type === 'appointment_request') {
+                                const apt = appointments[parsed.appointment_id] || { status: 'pending' };
+                                return (
+                                  <AppointmentBubble
+                                    appointmentId={parsed.appointment_id}
+                                    date={parsed.date}
+                                    time={parsed.time}
+                                    note={parsed.note}
+                                    status={apt.status || appointmentStatusById[parsed.appointment_id] || 'pending'}
+                                    isOwnMessage={message.sender_id === currentUserId}
+                                    currentUserId={currentUserId}
+                                    proposedBy={message.sender_id}
+                                    conversationId={selectedConversation || ''}
+                                    onUpdate={() => {}}
+                                  />
+                                );
+                              } else if (parsed.type === 'appointment_response') {
+                                const label =
+                                  parsed.status === 'confirmed'
+                                    ? 'Randevu onaylandı ✅'
+                                    : 'Randevu reddedildi ❌';
+                                return <p className="text-sm italic">{label}</p>;
+                              } else if (parsed.type === 'appointment_cancelled') {
+                                return <p className="text-sm italic">Randevu iptal edildi 🚫</p>;
+                              }
+
+                              return (
+                                <div
+                                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                                    isOwn ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                                  }`}
+                                >
+                                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                                </div>
+                              );
+                            } catch {
+                              return (
+                                <div
+                                  className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                                    isOwn ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                                  }`}
+                                >
+                                  <p className="text-sm whitespace-pre-wrap break-words">{message.content}</p>
+                                </div>
+                              );
+                            }
+                          })()}
+                          <div
+                            className={`flex items-center justify-end mt-1 ${
+                              isOwn ? 'text-blue-100' : 'text-gray-500'
+                            }`}
+                          >
+                            <span className="text-xs mr-1">
+                              {message.created_at
+                                ? new Date(message.created_at).toLocaleTimeString('tr-TR', {
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                  })
+                                : ''}
+                            </span>
+                            {isOwn && (
+                              <span className="text-xs">
+                                {message.is_read ? (
+                                  <CheckCheck className="w-3 h-3 text-blue-300" />
+                                ) : (
+                                  <Check className="w-3 h-3 text-gray-300" />
+                                )}
+                              </span>
                             )}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
                   </div>
                 ))
               )}
             </div>
+            {showAppointmentForm && selectedConv && (
+              <AppointmentForm
+                conversationId={selectedConversation || ''}
+                userId={selectedConv.user_id}
+                clinicId={clinicId}
+                onSent={() => setShowAppointmentForm(false)}
+                onCancel={() => setShowAppointmentForm(false)}
+              />
+            )}
             <div className="p-4 border-t border-gray-200">
               <div className="flex items-center space-x-3">
+                <button
+                  onClick={() => setShowAppointmentForm(!showAppointmentForm)}
+                  className={`p-3 rounded-full transition-colors ${
+                    showAppointmentForm
+                      ? 'bg-purple-100 text-purple-600'
+                      : 'hover:bg-gray-100 text-gray-500'
+                  }`}
+                  title="Randevu Oluştur"
+                >
+                  <Calendar className="w-5 h-5" />
+                </button>
                 <input
                   type="text"
                   value={newMessage}
