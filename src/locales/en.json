@@ -1506,6 +1506,12 @@
         "subtitle": "Create a free account and get the best prices for your aesthetic treatment",
         "button": "Register for Free"
       }
+    },
+    "liveStats": {
+      "title": "Estyi in Numbers",
+      "clinics": "Certified Clinics",
+      "countries": "Countries",
+      "requests": "Requests Created"
     }
   },
   "dashboard": {
