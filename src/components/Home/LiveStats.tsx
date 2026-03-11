@@ -1,13 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Building, Globe, FileText } from 'lucide-react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase } from '../../lib/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 const LiveStats: React.FC = () => {
+  const { t } = useTranslation();
   const [targets, setTargets] = useState({ clinics: 0, countries: 0, requests: 0 });
   const [displayed, setDisplayed] = useState({ clinics: 0, countries: 0, requests: 0 });
   const [loaded, setLoaded] = useState(false);
   const sectionRef = useRef<HTMLDivElement>(null);
-  const animatedRef = useRef(false);
+  const isAnimatingRef = useRef(false);
 
   useEffect(() => {
     const load = async () => {
@@ -46,23 +47,11 @@ const LiveStats: React.FC = () => {
     load();
   }, []);
 
-  useEffect(() => {
-    if (!loaded || animatedRef.current) return;
-    const observer = new IntersectionObserver(
-      entries => {
-        if (entries[0].isIntersecting && !animatedRef.current) {
-          animatedRef.current = true;
-          animateCountUp();
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 }
-    );
-    if (sectionRef.current) observer.observe(sectionRef.current);
-    return () => observer.disconnect();
-  }, [loaded]);
+  const animateCountUp = useCallback(() => {
+    if (isAnimatingRef.current) return;
+    isAnimatingRef.current = true;
+    setDisplayed({ clinics: 0, countries: 0, requests: 0 });
 
-  const animateCountUp = () => {
     const duration = 2000;
     const steps = 60;
     const interval = duration / steps;
@@ -72,78 +61,73 @@ const LiveStats: React.FC = () => {
       step++;
       const progress = step / steps;
       const eased = 1 - Math.pow(1 - progress, 3);
+
       setDisplayed({
         clinics: Math.round(targets.clinics * eased),
         countries: Math.round(targets.countries * eased),
         requests: Math.round(targets.requests * eased),
       });
+
       if (step >= steps) {
         clearInterval(timer);
         setDisplayed({ ...targets });
+        isAnimatingRef.current = false;
       }
     }, interval);
-  };
+  }, [targets]);
+
+  useEffect(() => {
+    if (!loaded || targets.clinics === 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          animateCountUp();
+        }
+      },
+      { threshold: 0.3 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, [loaded, animateCountUp]);
 
   if (!loaded || (targets.clinics === 0 && targets.countries === 0 && targets.requests === 0)) return null;
 
   const metrics = [
-    {
-      icon: Building,
-      value: displayed.clinics,
-      label: 'Sertifikalı Klinik',
-      gradient: 'from-purple-500 to-pink-500',
-      bg: 'bg-purple-50',
-      iconColor: 'text-purple-600',
-    },
-    {
-      icon: Globe,
-      value: displayed.countries,
-      label: 'Ülke',
-      gradient: 'from-pink-500 to-rose-500',
-      bg: 'bg-pink-50',
-      iconColor: 'text-pink-600',
-    },
-    {
-      icon: FileText,
-      value: displayed.requests,
-      label: 'Talep Oluşturuldu',
-      gradient: 'from-blue-500 to-indigo-500',
-      bg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
-    },
+    { value: displayed.clinics, label: t('home.liveStats.clinics', { defaultValue: 'Sertifikalı Klinik' }), color: 'text-purple-500', glow: '0 0 30px rgba(168,85,247,0.3)', gradient: 'from-purple-500 to-purple-500/0' },
+    { value: displayed.countries, label: t('home.liveStats.countries', { defaultValue: 'Ülke' }), color: 'text-pink-500', glow: '0 0 30px rgba(236,72,153,0.3)', gradient: 'from-pink-500 to-pink-500/0' },
+    { value: displayed.requests, label: t('home.liveStats.requests', { defaultValue: 'Talep Oluşturuldu' }), color: 'text-blue-500', glow: '0 0 30px rgba(59,130,246,0.3)', gradient: 'from-blue-500 to-blue-500/0' },
   ];
 
   return (
-    <section ref={sectionRef} className="py-16 md:py-20 relative overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600"></div>
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg%20width=%2760%27%20height=%2760%27%20viewBox=%270%200%2060%2060%27%20xmlns=%27http://www.w3.org/2000/svg%27%3E%3Cg%20fill=%27none%27%20fill-rule=%27evenodd%27%3E%3Cg%20fill=%27%23ffffff%27%20fill-opacity=%270.08%27%3E%3Ccircle%20cx=%2730%27%20cy=%2730%27%20r=%271.5%27/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')]"></div>
+    <section ref={sectionRef} className="py-16 px-6 relative overflow-hidden bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50">
+      <div className="absolute top-0 left-0 w-72 h-72 bg-purple-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob"></div>
+      <div className="absolute top-0 right-0 w-72 h-72 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-2000"></div>
+      <div className="absolute -bottom-8 left-20 w-72 h-72 bg-blue-300 rounded-full mix-blend-multiply filter blur-xl opacity-20 animate-blob animation-delay-4000"></div>
 
-      <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-4xl mx-auto relative z-10">
         <div className="text-center mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold text-white mb-3">
-            Rakamlarla Estyi
+          <h2 className="text-3xl font-bold italic">
+            <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
+              {t('home.liveStats.title', { defaultValue: 'Rakamlarla Estyi' })}
+            </span>
           </h2>
-          <p className="text-lg text-white/70">
-            Platformumuzdaki güncel veriler
-          </p>
         </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
-          {metrics.map((metric, index) => (
-            metric.value > 0 && (
-              <div
-                key={index}
-                className="group relative bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-8 text-center hover:bg-white/20 transition-all duration-500 hover:-translate-y-1"
-              >
-                <div className={`w-16 h-16 ${metric.bg} rounded-2xl flex items-center justify-center mx-auto mb-5 group-hover:scale-110 transition-transform duration-500 shadow-lg`}>
-                  <metric.icon className={`w-8 h-8 ${metric.iconColor}`} />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          {metrics.map((m, i) => (
+            m.value >= 0 && (
+              <div key={i} className="text-center">
+                <div
+                  className={`text-7xl font-black ${m.color} mb-2 tabular-nums`}
+                  style={{ textShadow: m.glow }}
+                >
+                  {m.value}
+                  <span className="text-3xl opacity-50">+</span>
                 </div>
-                <div className="text-5xl md:text-6xl font-bold text-white mb-2 tabular-nums">
-                  {metric.value}
-                  <span className="text-3xl text-white/60">+</span>
-                </div>
-                <div className="text-base text-white/80 font-medium tracking-wide">
-                  {metric.label}
+                <div className={`w-16 h-px mx-auto mb-3 bg-gradient-to-r ${m.gradient}`}></div>
+                <div className="text-sm text-gray-500 font-medium uppercase tracking-wider">
+                  {m.label}
                 </div>
               </div>
             )
