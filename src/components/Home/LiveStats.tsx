@@ -29,14 +29,27 @@ const LiveStats: React.FC = () => {
           }
         });
 
-        const { count: requestCount } = await supabase
+        const { data: requestsData } = await supabase
           .from('requests')
-          .select('*', { count: 'exact', head: true });
+          .select('id');
+
+        let totalRequests = Array.isArray(requestsData) ? requestsData.length : 0;
+
+        if (totalRequests === 0) {
+          try {
+            const { data: offersData } = await supabase
+              .from('offers')
+              .select('id');
+            totalRequests = Array.isArray(offersData) ? offersData.length : 0;
+          } catch (err) {
+            console.error('LiveStats offers fallback error:', err);
+          }
+        }
 
         setTargets({
           clinics: clinicList.length,
           countries: uniqueCountries.size,
-          requests: requestCount || 0,
+          requests: totalRequests,
         });
         setLoaded(true);
       } catch (err) {

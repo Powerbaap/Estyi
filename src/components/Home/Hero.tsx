@@ -124,37 +124,37 @@ const Hero: React.FC = () => {
           </div>
 
           {/* Özellikler: Fiyat Güvencesi, Anında Teklif, Anonim Paylaşım */}
-          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+          <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-10 max-w-5xl mx-auto">
             {/* Fiyat Güvencesi */}
-            <div className="relative group p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="relative group p-8 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="p-3 bg-white/60 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <ShieldCheck className="w-8 h-8 text-purple-600" />
+                <div className="p-4 bg-white/60 rounded-xl mb-5 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <ShieldCheck className="w-10 h-10 text-purple-600" />
                 </div>
-                <div className="text-gray-700 font-semibold text-lg tracking-wide text-center">{t('home.heroStats.netPrice')}</div>
+                <div className="text-gray-700 font-bold text-xl tracking-wide text-center">{t('home.heroStats.netPrice')}</div>
               </div>
             </div>
 
             {/* Anında Teklif */}
-            <div className="relative group p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="relative group p-8 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="absolute inset-0 bg-gradient-to-br from-pink-500/5 to-blue-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="p-3 bg-white/60 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <Zap className="w-8 h-8 text-pink-600" />
+                <div className="p-4 bg-white/60 rounded-xl mb-5 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <Zap className="w-10 h-10 text-pink-600" />
                 </div>
-                <div className="text-gray-700 font-semibold text-lg tracking-wide text-center">{t('home.heroStats.instantOffer')}</div>
+                <div className="text-gray-700 font-bold text-xl tracking-wide text-center">{t('home.heroStats.instantOffer')}</div>
               </div>
             </div>
 
             {/* Anonim Paylaşım */}
-            <div className="relative group p-6 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="relative group p-8 rounded-2xl bg-white/40 backdrop-blur-md border border-white/50 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
               <div className="relative z-10 flex flex-col items-center">
-                <div className="p-3 bg-white/60 rounded-full mb-4 shadow-sm group-hover:scale-110 transition-transform duration-300">
-                  <EyeOff className="w-8 h-8 text-blue-600" />
+                <div className="p-4 bg-white/60 rounded-xl mb-5 shadow-sm group-hover:scale-110 transition-transform duration-300">
+                  <EyeOff className="w-10 h-10 text-blue-600" />
                 </div>
-                <div className="text-gray-700 font-semibold text-lg tracking-wide text-center">{t('home.heroStats.anonymousSharing')}</div>
+                <div className="text-gray-700 font-bold text-xl tracking-wide text-center">{t('home.heroStats.anonymousSharing')}</div>
               </div>
             </div>
           </div>
