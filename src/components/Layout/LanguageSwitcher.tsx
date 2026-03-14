@@ -11,7 +11,10 @@ const LanguageSwitcher: React.FC = () => {
   const languages = [
     { code: 'tr', name: 'Türkçe', flag: '🇹🇷' },
     { code: 'en', name: 'English', flag: '🇺🇸' },
-    { code: 'ar', name: 'العربية', flag: '🇸🇦' }
+    { code: 'ar', name: 'العربية', flag: '🇸🇦' },
+    { code: 'fr', name: 'Français', flag: '🇫🇷' },
+    { code: 'es', name: 'Español', flag: '🇪🇸' },
+    { code: 'ru', name: 'Русский', flag: '🇷🇺' }
   ];
 
   const normalize = (lng: string) => lng?.split('-')[0] || lng;

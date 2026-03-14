@@ -1,0 +1,2019 @@
+{
+  "clinicApplication": {
+    "title": "Formulario de solicitud de clínica",
+    "subtitle": "Únase a nuestra red global de clínicas estéticas certificadas y conéctese con pacientes de todo el mundo",
+    "submissionSuccess": "¡Solicitud enviada!",
+    "submissionMessage": "Su solicitud se ha recibido correctamente. Nos comunicaremos con usted lo antes posible.",
+    "backToHome": "Volver a la página de inicio",
+    "clinicName": "Nombre de la clínica",
+    "clinicNamePlaceholder": "Ingrese el nombre de su clínica",
+    "country": "País",
+    "selectCountry": "Seleccione su país",
+    "specialties": "Especialidades",
+    "selectAll": "Seleccione todo lo que corresponda",
+    "selected": "Seleccionado",
+    "specialtyAreas": "áreas de especialidad",
+    "website": "Sitio web",
+    "websitePlaceholder": "https://your-clinic-website.com",
+    "phone": "Número de contacto",
+    "phonePlaceholder": "+90 XXX XXX XX XX",
+    "email": "Correo electrónico Dirección",
+    "emailPlaceholder": "clinic@example.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Cree una contraseña para el administrador de la clínica",
+    "passwordHint": "Mantenga esta contraseña segura; lo usarás para acceder al panel de la clínica.",
+    "loginNote": "Más tarde podrás iniciar sesión con este correo electrónico y contraseña.",
+    "description": "Descripción de la clínica",
+    "descriptionPlaceholder": "Escribe sobre tu clínica, servicios, experiencia y lo que te hace especial...",
+    "certificates": "Certificados y licencias",
+    "uploadCertificates": "Subir certificados y licencias",
+    "fileFormat": "PDF, JPG, PNG: máximo 10 MB cada archivo",
+    "filesUploaded": "archivos cargados",
+    "submitting": "Enviando...",
+    "submitApplication": "Enviar solicitud",
+    "whyJoin": "¿Por qué unirse a Estyi?",
+    "globalAccess": "Acceso a la red global de pacientes",
+    "verifiedCertification": "Certificación clínica verificada",
+    "securePayments": "Procesamiento de pagos seguro",
+    "applicationProcess": "Proceso de solicitud",
+    "step1": "Enviar solicitud",
+    "step2": "Revisión y verificación (2-5) días)",
+    "step3": "Firma de contrato",
+    "step4": "Acceso a plataforma concedido",
+    "citiesIn": "Ciudades",
+    "city": "ciudad",
+    "cityRequired": "Por favor seleccione al menos una ciudad para cada país.",
+    "clear": "Borrar",
+    "clearAll": "Borrar todo",
+    "confirmPassword": "Confirmar contraseña",
+    "countries": "Países",
+    "branchCountriesLabel": "Seleccione países donde su clínica tiene sucursales",
+    "passwordErrors": "Por favor complete la contraseña y confirme la contraseña campos.",
+    "passwordMismatch": "Las contraseñas no coinciden.",
+    "passwordWeak": "La contraseña debe tener al menos 8 caracteres y contener al menos una letra mayúscula.",
+    "fileInvalidType": "Tipo de archivo no válido",
+    "filesRejectedTitle": "No se pudieron agregar algunos archivos:",
+    "submitError": "Se produjo un error al enviar la solicitud."
+  },
+  "comparison": {
+    "notFound": {
+      "title": "Página no encontrada",
+      "backHome": "Volver a Inicio"
+    },
+    "breadcrumb": {
+      "home": "Inicio",
+      "guide": "Guía",
+      "comparison": "Comparación"
+    },
+    "table": {
+      "title": "{{left}} vs {{right}}: Comparación",
+      "criterion": "Criterio"
+    },
+    "verdict": {
+      "title": "Veredicto: ¿Cuál es mejor?"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes"
+    },
+    "disclaimer": {
+      "medical": "Esta comparación es solo para fines informativos y no constituye un consejo médico. Consulte siempre con su médico o especialista sobre su condición personal e historial de salud.",
+      "data": "Esta comparación se basa en datos disponibles públicamente. Los resultados individuales pueden variar según la experiencia de la clínica y del cirujano. Última actualización: febrero de 2026."
+    },
+    "cta": {
+      "title": "¿Quiere comparar clínicas?",
+      "description": "Obtenga cotizaciones de varias clínicas certificadas a través de Estyi y compárelas usted mismo.",
+      "button": "Obtenga una cotización gratuita"
+    },
+    "others": {
+      "title": "Otras comparaciones"
+    },
+    "items": {
+      "fue_vs_dhi": {
+        "leftLabel": "fue",
+        "rightLabel": "DHI",
+        "title": "FUE vs DHI Trasplante Capilar: ¿Diferencia, costo y cuál es mejor? (2026)",
+        "metaDesc": "Diferencias entre el trasplante capilar FUE y DHI: técnica, coste, tiempo de recuperación y resultados. Comparación actualizada de 2026.",
+        "summary": "FUE y DHI son los dos métodos más comunes en el trasplante de cabello. Ambos son efectivos; La preferencia depende del tamaño del área de trasplante, la preferencia de afeitado y el equipo clínico. No hay evidencia científica de que uno sea definitivamente superior.",
+        "verdict": "FUE es más práctico para áreas grandes, mientras que DHI es mejor para trasplantes sin afeitar o corrección de la línea del cabello. La experiencia clínica es mucho más decisiva que cualquiera de los métodos.",
+        "rows": {
+          "technique": {
+            "aspect": "Técnica",
+            "left": "Extracción del injerto → apertura del canal → implantación (3 etapas)",
+            "right": "Implantación simultánea con pluma Choi (2 etapas)"
+          },
+          "shaving": {
+            "aspect": "Requisito de afeitado",
+            "left": "Generalmente requerido",
+            "right": "Se puede realizar sin afeitar"
+          },
+          "capacity": {
+            "aspect": "Gran capacidad de área",
+            "left": "4000–6000+ injertos",
+            "right": "Adecuado para 3000–4000 injertos"
+          },
+          "duration": {
+            "aspect": "Duración del procedimiento",
+            "left": "6–8 horas",
+            "right": "6–10 horas"
+          },
+          "recovery": {
+            "aspect": "Tiempo de recuperación",
+            "left": "7–10 días",
+            "right": "5–7 días"
+          },
+          "cost": {
+            "aspect": "Costo promedio (TR)",
+            "left": "1.500 a 4.000 dólares",
+            "right": "2000 a 5000 dólares"
+          },
+          "sensitive": {
+            "aspect": "Trasplante de áreas sensibles",
+            "left": "Posible, más pasos",
+            "right": "Control más preciso"
+          },
+          "longTerm": {
+            "aspect": "Largo plazo resultado",
+            "left": "20+ años de datos probados",
+            "right": "Buenos resultados, datos más cortos"
+          }
+        },
+        "faq": {
+          "q1": {
+            "q": "¿FUE o DHI son más permanentes?",
+            "a": "Las raíces trasplantadas con ambos métodos son permanentes. No hay una diferencia significativa en términos de resultados a largo plazo."
+          },
+          "q2": {
+            "q": "¿Por qué DHI es más caro?",
+            "a": "Los consumibles de la pluma Choi y el largo tiempo del procedimiento aumentan el costo. DHI suele ser entre un 20% y un 40% más caro para el mismo número de injertos."
+          },
+          "q3": {
+            "q": "¿Cuál debo elegir?",
+            "a": "La densidad del donante, el tamaño del área de trasplante y la preferencia de afeitado son decisivos. Se requiere consulta."
+          }
+        }
+      },
+      "turkey_vs_poland": {
+        "leftLabel": "Turquía",
+        "rightLabel": "Polonia",
+        "title": "Turquía o Polonia - Comparación de trasplante de cabello 2026",
+        "metaDesc": "Trasplante de cabello en Turquía frente a Polonia: costo, calidad clínica, certificación y tiempos de espera. Comparación imparcial de 2026.",
+        "summary": "Turquía ofrece ventajas de bajo costo y gran volumen, mientras que Polonia opera dentro de las regulaciones sanitarias de la UE. La preferencia depende del presupuesto, la facilidad de viaje y la investigación clínica.",
+        "verdict": "Turquía ofrece una ventaja si el costo es una prioridad. Polonia puede resultar práctica si reside en la UE y desea acceder a seguimientos. La calidad en ambos países depende de la investigación clínica individual.",
+        "rows": {
+          "cost": {
+            "aspect": "Costo promedio de FUE",
+            "left": "1.500 a 4.000 dólares",
+            "right": "2500-5500 dólares"
+          },
+          "regulation": {
+            "aspect": "Marco regulatorio",
+            "left": "Supervisión del Ministerio de Salud, JCI en algunos clínicas",
+            "right": "Directivas de la UE, normas CE"
+          },
+          "flight": {
+            "aspect": "Duración del vuelo (Europa occidental)",
+            "left": "3–4 horas",
+            "right": "1–3 horas"
+          },
+          "volume": {
+            "aspect": "Volumen de operación anual",
+            "left": "500,000+ (líder global)",
+            "right": "Mucho menor"
+          },
+          "package": {
+            "aspect": "Alcance del paquete",
+            "left": "Alojamiento + traslado generalmente incluido",
+            "right": "Variable"
+          },
+          "followup": {
+            "aspect": "Seguimiento de resultados (distancia)",
+            "left": "Se puede requerir vuelo para chequeo",
+            "right": "Más fácil si está dentro de Europa"
+          }
+        },
+        "faq": {
+          "q1": {
+            "q": "¿Son confiables las clínicas en Turquía?",
+            "a": "Se deben verificar la certificación JCI o ISO, las revisiones de los pacientes y el currículum del cirujano. Hay muchas clínicas acreditadas y no acreditadas."
+          },
+          "q2": {
+            "q": "¿En qué país es mayor el riesgo de complicaciones?",
+            "a": "El riesgo depende más de la clínica y del cirujano que del país. Clínicas buenas y malas existen en todos los países."
+          }
+        }
+      }
+    }
+  },
+  "clinicRequests": {
+    "title": "Solicitudes",
+    "subtitle": "Solicitudes de tratamiento estético de usuarios",
+    "status": {
+      "new": "Nueva",
+      "offered": "Oferta enviada",
+      "expired": "Caducada",
+      "unknown": "Desconocido"
+    },
+    "stats": {
+      "total": "Solicitudes totales",
+      "newRequests": "Nuevas solicitudes",
+      "offeredRequests": "Ofrecidas",
+      "expiredRequests": "Solicitudes caducadas"
+    },
+    "filter": {
+      "allStatuses": "Todos los estados",
+      "allProcedures": "Todos los procedimientos"
+    },
+    "searchPlaceholder": "Solicitudes de búsqueda...",
+    "noRequests": "No se encontraron solicitudes",
+    "noRequestsDesc": "No hay solicitudes que coincidan con su búsqueda criterios.",
+    "user": "Usuario",
+    "age": "años",
+    "photos": "fotos",
+    "more": "más",
+    "daysAgo": "hace días",
+    "submitOffer": "Enviar oferta",
+    "enlargedPhoto": "Foto ampliada",
+    "slaCountdown": "SLA 24h",
+    "slaExpired": "Caducado",
+    "offerTypeAuto": "Oferta automática enviada",
+    "offerTypeManual": "Oferta manual",
+    "offerTypeSlaDefault": "Sistema oferta automática enviada"
+  },
+  "clinicDashboard": {
+    "menu": {
+      "dashboard": "Panel de control",
+      "requests": "Solicitudes",
+      "offers": "Ofertas",
+      "messages": "Mensajes",
+      "doctors": "Doctores",
+      "fixedPrices": "Precios fijos",
+      "profile": "Perfil",
+      "membership": "Membresía"
+    },
+    "stats": {
+      "totalRequests": "Total Solicitudes",
+      "activeOffers": "Ofertas activas",
+      "acceptedOffers": "Ofertas aceptadas",
+      "responseRate": "Tasa de respuesta"
+    },
+    "welcome": "¡Bienvenido, {{name}}!",
+    "clinic": "Clínica",
+    "today": "Hoy",
+    "activeRequest": "Solicitudes activas",
+    "pendingOffer": "Ofertas pendientes",
+    "fromLastMonth": "desde la última mes",
+    "recentRequests": "Solicitudes recientes",
+    "recentOffers": "Ofertas recientes",
+    "last24Hours": "Últimas 24 solicitudes",
+    "last24HoursOffers": "Ofertas de las últimas 24 horas",
+    "viewAll": "Ver todo",
+    "new": "Nuevo",
+    "accepted": "Aceptado",
+    "pending": "Pendiente",
+    "quickActions": "Acciones rápidas",
+    "reports": "Reportes",
+    "performanceAnalysis": "Rendimiento análisis",
+    "calendar": "Calendario",
+    "viewAppointments": "Ver citas",
+    "sidebarTitle": "Panel clínico",
+    "medicalDashboard": "Panel de clínica médica",
+    "premiumMember": "Miembro Premium",
+    "calendarTitle": "Calendario",
+    "calendarSubtitle": "Ver sus citas confirmadas",
+    "thisWeek": "Esta semana",
+    "thisMonth": "Esta Mes",
+    "monday": "Lun",
+    "tuesday": "Mar",
+    "wednesday": "Mié",
+    "thursday": "Jueves",
+    "friday": "Viernes",
+    "saturday": "Sáb",
+    "sunday": "Dom",
+    "confirmedAppointments": "Citas confirmadas",
+    "confirmed": "Confirmado",
+    "duration": "Duración",
+    "hospitalization": "Hospitalización",
+    "night": "noche",
+    "hours": "horas",
+    "hoursAgo": "hace horas",
+    "request": "Solicitud",
+    "user": "Usuario",
+    "patientName": "Nombre del paciente",
+    "date": "Fecha",
+    "time": "Hora",
+    "procedure": "Procedimiento",
+    "amount": "Cantidad",
+    "status": "Estado",
+    "august": "Agosto",
+    "istanbulAestheticCenter": "Centro de Estética de Estambul",
+    "testClinic": "Clínica de prueba",
+    "clinicProfile": "Perfil de la clínica",
+    "viewClinicInfo": "Ver la información de su clínica",
+    "basicInfo": "Información básica",
+    "clinicName": "Nombre de la clínica",
+    "branchLocation": "Sucursal Ubicación",
+    "phone": "Teléfono",
+    "email": "Correo electrónico",
+    "website": "Sitio web",
+    "address": "Dirección",
+    "specialties": "Especialidades",
+    "aboutUs": "Acerca de nosotros",
+    "medicalTeamDescription": "Descripción del equipo médico",
+    "quickStats": "Estadísticas rápidas",
+    "profileCompletion": "Perfil Finalización",
+    "documents": "Documentos",
+    "photos": "Fotos",
+    "specialtyAreas": "Áreas de especialidad",
+    "specialtiesSameAsPrices": "Precios Fijos (Precios Automáticos) solo le permiten establecer precios para procedimientos en esta lista.",
+    "certifications": "Certificaciones",
+    "languages": "Idiomas",
+    "membership": "Membresía",
+    "manageMembership": "Administra tu plan de membresía",
+    "quotaUnlimited": "Ilimitado",
+    "quotaOffers": "ofertas",
+    "quotaUsedThisMonth": "Ofertas utilizadas esta mes",
+    "quotaIncludesAutoManualSLA": "Incluye ofertas automáticas, manuales y SLA",
+    "renewalDate": "Fecha de renovación",
+    "downloadInvoice": "Descargar factura",
+    "upgradePlan": "Plan de actualización",
+    "professionalPlan": "Plan profesional",
+    "monthly": "Mensual",
+    "autoRenewal": "Renovación automática",
+    "manualRenewal": "Renovación manual",
+    "nextBillingDate": "Próxima fecha de facturación",
+    "daysLeft": "días restantes",
+    "requestUsage": "Solicitud Uso",
+    "storage": "Almacenamiento",
+    "translation": "Traducción",
+    "videoConsultation": "Videoconsulta",
+    "availablePlans": "Planes disponibles",
+    "mostPopular": "Más populares",
+    "currentPlan": "Plan actual",
+    "upgradeToPlan": "Actualizar al plan {{plan}}",
+    "billingHistory": "Facturación Historial",
+    "description": "Descripción",
+    "invoice": "Factura",
+    "paid": "Pagado",
+    "download": "Descargar",
+    "paymentMethod": "Método de pago",
+    "change": "Cambiar",
+    "myOffers": "Mis ofertas",
+    "trackAndManageOffers": "Seguimiento y gestión de sus ofertas",
+    "allStatuses": "Todos los estados",
+    "rejected": "Rechazado",
+    "expired": "Caducado",
+    "allDates": "Todos Fechas",
+    "totalOffers": "Total de ofertas",
+    "totalValue": "Valor total",
+    "offersList": "Lista de ofertas",
+    "showingOffers": "{{filtered}} / {{total}} ofertas que muestran",
+    "patientProcedure": "Paciente & Procedimiento",
+    "price": "Precio",
+    "details": "Detalles",
+    "submitted": "Enviado",
+    "deadline": "Fecha límite",
+    "total": "Total",
+    "hospital": "Hospital",
+    "more": "más",
+    "loading": "Cargando...",
+    "noOffers": "Aún no hay ofertas."
+  },
+  "userDashboard": {
+    "welcome": "Bienvenido, {{name}}",
+    "user": "Usuario",
+    "subtitle": "Sigue el estado de tu solicitud, ofertas y fotos aquí.",
+    "newRequest": "Nuevo Solicitud",
+    "offer": "Oferta",
+    "photo": "Foto",
+    "photos": "Mis fotos",
+    "latestOffers": "Últimas ofertas",
+    "reviews": "reseñas",
+    "deleteRequest": "Eliminar solicitud",
+    "enlargedPhoto": "Foto ampliada",
+    "noPhotos": "Aún no se han subido fotos",
+    "loadingTitle": "Cargando solicitudes",
+    "loadingText": "Por favor espere, obteniendo datos...",
+    "stats": {
+      "totalRequests": "Solicitudes totales",
+      "allRequests": "Total de solicitudes en el sistema",
+      "activeRequests": "Solicitudes activas",
+      "ongoing": "Solicitudes actualmente en curso",
+      "totalOffers": "Total de ofertas",
+      "receivedOffers": "Total de ofertas recibidas",
+      "completed": "Solicitudes completadas",
+      "finished": "Cerradas y completadas solicitudes"
+    },
+    "status": {
+      "active": "Activo",
+      "closed": "Cerrado",
+      "cancelled": "Cancelado",
+      "unknown": "Desconocido"
+    },
+    "empty": {
+      "all": {
+        "title": "Aún no tienes ninguna solicitud",
+        "description": "Cree una nueva solicitud para obtener cotizaciones de precios de clínicas."
+      },
+      "guide": {
+        "step1": {
+          "title": "Elija procedimiento",
+          "desc": "Elija tratamientos como acné, trasplante de cabello, etc."
+        },
+        "step2": {
+          "title": "Seleccione países",
+          "desc": "Elija los países desde donde recibir ofertas."
+        },
+        "step3": {
+          "title": "Obtenga precios transparentes",
+          "desc": "Reciba ofertas de precios transparentes y claras de clínicas."
+        }
+      }
+    },
+    "deleteRequestConfirm": "¿Está seguro de que desea eliminar esta solicitud?",
+    "deleteRequestError": "Se produjo un error al eliminar la solicitud."
+  },
+  "clinic": {
+    "dashboard": "Panel de la clínica",
+    "messages": "Mensajes",
+    "chatWithPatients": "Chatea con tus pacientes",
+    "noConversations": "Aún no hay conversaciones",
+    "typeMessage": "Escribe tu mensaje...",
+    "translationEnabled": "Traducción habilitada",
+    "selectConversation": "Selecciona una conversación",
+    "choosePatient": "Elige un paciente de la lista para chatear",
+    "applicationTitle": "Clínica Solicitud",
+    "applicationSuccess": "¡Su solicitud ha sido enviada exitosamente! Nos comunicaremos con usted pronto.",
+    "clinicName": "Nombre de la clínica",
+    "country": "País",
+    "specialties": "Especialidades",
+    "website": "Sitio web",
+    "description": "Descripción",
+    "submitApplication": "Enviar solicitud",
+    "requests": "Solicitudes entrantes",
+    "offers": "Ofertas",
+    "profileTitle": "Perfil",
+    "profileSubtitle": "Administre su clínica información",
+    "membershipTitle": "Membresía",
+    "membershipSubtitle": "Administre su plan de membresía",
+    "editProfile": "Editar perfil",
+    "cancel": "Cancelar",
+    "saveChanges": "Guardar cambios",
+    "basicInformation": "Información básica",
+    "email": "Correo electrónico",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "aboutUs": "Acerca de nosotros",
+    "aboutUsDescription": "Estambul Centro de Estética es un destino líder en turismo médico especializado en cirugía estética y reconstructiva. Combinamos tecnología médica avanzada con la hospitalidad turca para brindar a nuestros pacientes un servicio de la más alta calidad.",
+    "profileCompletion": "Finalización del perfil",
+    "documents": "Documentos",
+    "photos": "Fotos",
+    "certifications": "Certificaciones",
+    "languages": "Idiomas",
+    "teamDescription": "Nuestro equipo de expertos está formado por cirujanos y profesionales de la salud experimentados.",
+    "quickStats": "Estadísticas rápidas",
+    "stats": {
+      "totalRequests": "Total Solicitudes",
+      "receivedOffers": "Ofertas recibidas",
+      "membershipDate": "Fecha de membresía"
+    },
+    "lookingForNaturalResults": "Buscando resultados naturales",
+    "preferFUETechnique": "Prefiere la técnica FUE",
+    "lookingForNaturalEnhancement": "Quiere una apariencia natural",
+    "jciAccredited": "Acreditado por JCI",
+    "isoCertified": "Norma ISO 9001:2015",
+    "ministryApproved": "Ministerio Aprobado",
+    "turkish": "Turco",
+    "english": "Inglés",
+    "arabic": "Árabe",
+    "russian": "Ruso",
+    "rhinoplasty": "Rinoplastia",
+    "hairTransplant": "Trasplante Capilar",
+    "breastSurgery": "Cirugía de Senos",
+    "faceLift": "Lifting Facial",
+    "describeClinic": "Escribe sobre tu clínica...",
+    "describeMedicalTeam": "Escribe sobre tu equipo médico...",
+    "documentsAndCertificates": "Documentos y Certificados",
+    "uploadDocument": "Subir Documento",
+    "uploaded": "Subido",
+    "clinicPhotos": "Fotos de la clínica",
+    "addPhotos": "Agregar fotos",
+    "clinicPhoto": "Foto de la clínica",
+    "downloadInvoice": "Descargar factura",
+    "upgradePlan": "Plan de actualización",
+    "plan": "Plan",
+    "monthly": "mensual",
+    "autoRenewing": "Renovación automática",
+    "manualRenewal": "Renovación manual",
+    "nextBillingDate": "Siguiente facturación Fecha",
+    "daysRemaining": "días restantes",
+    "currentUsage": "Uso actual",
+    "patientRequests": "Solicitudes de pacientes",
+    "storage": "Almacenamiento",
+    "translations": "Traducciones",
+    "videoCalls": "Videollamadas",
+    "availablePlans": "Planes disponibles",
+    "billingHistory": "Historial de facturación",
+    "perfectForSmallClinics": "Perfecto para clínicas pequeñas",
+    "mostPopularForGrowingClinics": "Más popular para crecimiento clínicas",
+    "forLargeMedicalCenters": "Para grandes centros médicos",
+    "upTo50PatientRequests": "Hasta 50 solicitudes de pacientes por mes",
+    "basicAnalytics": "Análisis básicos",
+    "emailSupport": "Soporte por correo electrónico",
+    "documentStorage2GB": "Almacenamiento de documentos (2 GB)",
+    "standardProfileListing": "Listado de perfiles estándar",
+    "limitedTo2Specialties": "Limitado a 2 especialidades",
+    "noVideoConsultations": "Sin videoconsultas",
+    "basicTranslationOnly": "Traducción básica solo",
+    "unlimitedPatientRequests": "Solicitudes ilimitadas de pacientes",
+    "advancedAnalytics": "Análisis avanzados",
+    "prioritySupport": "Soporte prioritario",
+    "multiLanguageTranslation": "Traducción multilingüe",
+    "documentStorage10GB": "Almacenamiento de documentos (10GB)",
+    "videoConsultations": "Videoconsultas",
+    "featuredProfileListing": "Listado de perfiles destacados",
+    "customBranding": "Marca personalizada",
+    "everythingInProfessional": "Todo en Professional",
+    "dedicatedAccountManager": "Cuenta dedicada manager",
+    "customIntegrations": "Integraciones personalizadas",
+    "whiteLabelSolution": "Solución de marca blanca",
+    "unlimitedDocumentStorage": "Almacenamiento ilimitado de documentos",
+    "advancedReporting": "Informes avanzados",
+    "apiAccess": "Acceso API",
+    "multiClinicManagement": "Gestión multiclínica",
+    "reviewAndRespond": "Revisar y responder a las solicitudes de los pacientes",
+    "allProcedures": "Todos los procedimientos",
+    "allStatus": "Todos Estados",
+    "new": "Nuevo",
+    "offered": "Ofrecido",
+    "expired": "Caducado",
+    "newRequests": "Nuevas solicitudes",
+    "offersSent": "Ofertas enviadas",
+    "avgResponse": "Respuesta promedio",
+    "responseRate": "Tasa de respuesta",
+    "activeRequests": "Solicitudes activas",
+    "submitOffer": "Enviar oferta",
+    "viewDetails": "Ver detalles",
+    "patientAge": "Edad del paciente",
+    "preferredCountries": "Preferido Países",
+    "patientNotes": "Notas para pacientes",
+    "requestDate": "Fecha de solicitud",
+    "noPhotos": "Sin fotos",
+    "viewAllPhotos": "Ver todas las fotos",
+    "closePhoto": "Cerrar foto",
+    "myOffers": "Mis ofertas",
+    "trackAndManage": "Seguimiento y gestión de su ofertas",
+    "pending": "Pendiente",
+    "accepted": "Aceptado",
+    "rejected": "Rechazado",
+    "allTime": "Todo el tiempo",
+    "today": "Hoy",
+    "thisWeek": "Esta semana",
+    "totalOffers": "Total de ofertas",
+    "totalValue": "Valor total",
+    "offerDetails": "Detalles de la oferta",
+    "submittedDate": "Fecha de envío",
+    "expiryDate": "Vencimiento Fecha",
+    "duration": "Duración",
+    "hospitalization": "Hospitalización",
+    "includedServices": "Servicios incluidos",
+    "basePrice": "Precio base",
+    "totalPrice": "Precio total",
+    "daysUntilExpiry": "días restantes",
+    "viewOffer": "Ver oferta",
+    "editOffer": "Editar oferta",
+    "withdrawOffer": "Retirar oferta",
+    "noOffers": "Aún no se han enviado ofertas",
+    "noOffersMessage": "Envíe su primera oferta respondiendo al paciente solicitudes",
+    "send": "Enviar",
+    "translate": "Traducir",
+    "call": "Llamada",
+    "videoCall": "Videollamada",
+    "moreOptions": "Más opciones",
+    "online": "En línea",
+    "offline": "Sin conexión",
+    "messageDelivered": "Mensaje entregado",
+    "messageSeen": "Mensaje visto",
+    "translatedMessage": "Mensaje traducido",
+    "originalMessage": "Mensaje original",
+    "noMessages": "No mensajes todavía",
+    "startConversation": "Iniciar conversación",
+    "submitOfferTitle": "Enviar oferta",
+    "for": "para",
+    "patientInformation": "Información del paciente",
+    "age": "Edad",
+    "countries": "Países",
+    "baseProcedurePrice": "Precio base del procedimiento",
+    "enterBasePrice": "Ingrese el precio base",
+    "priceRange": "Rango de precios",
+    "procedureDuration": "Procedimiento Duración",
+    "selectDuration": "Seleccionar duración",
+    "duration1to2": "1-2 horas",
+    "duration2to3": "2-3 horas",
+    "duration3to4": "3-4 horas",
+    "duration4to6": "4-6 horas",
+    "duration6to8": "6-8 horas",
+    "fullDay": "Día completo",
+    "hospitalizationRequired": "Hospitalización requerida",
+    "noHospitalization": "Sin hospitalización necesario",
+    "oneNight": "1 noche",
+    "twoNights": "2 noches",
+    "threeNights": "3 noches",
+    "additionalServices": "Servicios adicionales",
+    "hotelAccommodation": "Alojamiento en hotel",
+    "airportTransfer": "Traslado aeropuerto",
+    "consultationIncluded": "Consulta incluida",
+    "additionalNotes": "Notas adicionales",
+    "offerNotes": "Escribe tus notas de oferta...",
+    "offerSubmitted": "Oferta ¡Enviado!",
+    "offerSubmittedMessage": "Su oferta ha sido enviada al usuario {userId}. Pueden responder en un plazo de 7 días.",
+    "totalOffer": "Oferta total",
+    "flightCost": "Costo de vuelo",
+    "visaCost": "Costo de Visa",
+    "date": "Fecha",
+    "amount": "Cantidad",
+    "paid": "Pagado",
+    "invoice": "Factura",
+    "download": "Descargar",
+    "paymentMethod": "Método de pago",
+    "primary": "Primario",
+    "expires": "Vence",
+    "updatePaymentMethod": "Actualizar método de pago",
+    "selectHospitalization": "Seleccionar hospitalización",
+    "additionalInfo": "Información adicional",
+    "costBreakdown": "Desglose de costos",
+    "baseProcedure": "Procedimiento base",
+    "flightAssistance": "Asistencia de vuelo",
+    "visaSupport": "Soporte de visas",
+    "importantNotice": "Importante Aviso",
+    "oneOfferPerRequest": "Solo puedes enviar una oferta por solicitud",
+    "noModification": "La oferta no se puede modificar después del envío",
+    "sevenDaysResponse": "El paciente debe responder dentro de los 7 días",
+    "autoIncluded": "Los costos de vuelo y visa se incluyen automáticamente",
+    "offersList": "Ofertas Lista",
+    "showing": "Mostrando",
+    "of": "de",
+    "patientProcedure": "Paciente/Procedimiento",
+    "details": "Detalles",
+    "submitted": "Enviado",
+    "clinicPanel": "Panel clínico",
+    "medicalClinicDashboard": "Panel de Clínica Médica",
+    "professionalPlan": "Plan Profesional",
+    "basicPlan": "Plan Básico",
+    "professionalPlanJanuary2025": "Plan Profesional - Enero 2025",
+    "professionalPlanDecember2024": "Plan Profesional - Diciembre 2024",
+    "professionalPlanNovember2024": "Plan Profesional - Noviembre 2024",
+    "basicPlanOctober2024": "Plan Básico - Octubre 2024",
+    "istanbulAestheticCenter": "Centro de Estética de Estambul",
+    "totalRequests": "Solicitudes totales",
+    "activeOffers": "Ofertas activas",
+    "acceptedOffers": "Ofertas aceptadas",
+    "mostPopular": "Más populares",
+    "currentPlan": "Plan actual",
+    "upgradeTo": "Actualizar a",
+    "status": "Estado",
+    "base": "Base",
+    "daysLeft": "días restantes",
+    "noOffersFound": "No se encontraron ofertas",
+    "adjustFilters": "Ajustar filtros o esperar a que se presenten nuevas ofertas enviado",
+    "noneOutpatient": "Ninguno (ambulatorio)",
+    "fourFiveNights": "4-5 noches",
+    "oneWeek": "1 semana",
+    "accommodation": "Alojamiento",
+    "transport": "Transporte",
+    "consultations": "Consultas",
+    "submitting": "Enviando...",
+    "fromLastMonth": "del mes pasado",
+    "recentRequests": "Solicitudes recientes",
+    "recentOffers": "Recientes Ofertas",
+    "user": "Usuario",
+    "rhinoplastyRequest": "Solicitud de rinoplastia",
+    "hoursAgo": "hace horas",
+    "offerSent": "Oferta enviada",
+    "waitingResponse": "Esperando respuesta",
+    "loginRequired": "Inicio de sesión requerido",
+    "loadingMessages": "Cargando mensajes..."
+  },
+  "footer": {
+    "description": "Reunimos a personas que buscan un cambio con clínicas estéticas certificadas en todo el mundo.",
+    "support": "Soporte",
+    "legal": "Legal",
+    "contact": "Contacto",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso",
+    "about": "Acerca de nosotros",
+    "helpCenter": "Centro de ayuda",
+    "faq": "Preguntas frecuentes",
+    "security": "Seguridad",
+    "cookies": "Política de cookies",
+    "doNotSell": "No vender mis datos",
+    "guides": "Procedimiento Guías",
+    "guideFue": "Trasplante Capilar FUE",
+    "guideDhi": "Trasplante Capilar DHI",
+    "guideRhinoplasty": "Rinoplastia",
+    "guideDental": "Implante Dental",
+    "guideHollywood": "Sonrisa de Hollywood",
+    "guideLipo": "Liposucción",
+    "guidePriceIndex": "Índice de precios 2026",
+    "comparisons": "Comparaciones",
+    "compTrPl": "Turquía vs. Polonia",
+    "gdpr": "Cumple con GDPR",
+    "ssl": "SSL cifrado",
+    "worldwide": "En todo el mundo",
+    "privacyPolicy": "Política de privacidad",
+    "termsOfUse": "Términos de uso",
+    "cookiePolicy": "Política de cookies",
+    "aboutUs": "Acerca de nosotros",
+    "copyright": "© 2026 Estyi. Todos los derechos reservados.",
+    "trustMessage": "Con la confianza de más de 10,000 pacientes en todo el mundo"
+  },
+  "countries": {
+    "turkey": "Turquía",
+    "southKorea": "Corea del Sur",
+    "thailand": "Tailandia",
+    "brazil": "Brasil",
+    "mexico": "México",
+    "colombia": "Colombia",
+    "argentina": "Argentina",
+    "chile": "Chile",
+    "peru": "Perú",
+    "venezuela": "Venezuela",
+    "ecuador": "Ecuador",
+    "uruguay": "Uruguay",
+    "paraguay": "Paraguay",
+    "bolivia": "bolivia",
+    "guyana": "Guayana",
+    "suriname": "Surinam",
+    "frenchGuiana": "Francés Guayana",
+    "india": "India",
+    "singapore": "Singapur",
+    "malaysia": "Malasia",
+    "indonesia": "Indonesia",
+    "philippines": "Filipinas",
+    "vietnam": "Vietnam",
+    "cambodia": "Camboya",
+    "laos": "Laos",
+    "myanmar": "Birmania",
+    "bangladesh": "Bangladesh",
+    "sriLanka": "Sri Lanka",
+    "nepal": "Nepal",
+    "bhutan": "Bután",
+    "maldives": "Maldivas",
+    "pakistan": "Pakistán",
+    "afghanistan": "Afganistán",
+    "usa": "Estados Unidos",
+    "russia": "Federación de Rusia",
+    "china": "Porcelana",
+    "canada": "Canadá",
+    "japan": "Japón",
+    "germany": "Alemania",
+    "unitedKingdom": "Reino Unido",
+    "netherlands": "Países Bajos",
+    "sweden": "Suecia"
+  },
+  "procedures": {
+    "rhinoplasty": "Rinoplastia",
+    "hairTransplant": "Trasplante de cabello",
+    "breastSurgery": "Cirugía de senos",
+    "faceLift": "Lifting facial",
+    "liposuction": "Liposucción",
+    "tummyTuck": "Abdominoplastia",
+    "botoxFillers": "Botox y rellenos",
+    "dentalSurgery": "Cirugía dental",
+    "eyeSurgery": "Cirugía ocular",
+    "bodyContouring": "Cuerpo Contorneado",
+    "nailProcedures": "Procedimientos de uñas",
+    "hairColoring": "Coloración del cabello",
+    "hairProsthesis": "Prótesis capilar",
+    "otherHairProcedures": "Otros procedimientos capilares",
+    "otherDental": "Otros procedimientos dentales",
+    "otherFacial": "Otros procedimientos faciales",
+    "otherBody": "Otros procedimientos corporales"
+  },
+  "helpCenter": {
+    "title": "Centro de ayuda",
+    "subtitle": "¿Cómo podemos ayudar? ¿tú?",
+    "description": "Puedes comunicarte con nosotros a través de los canales de comunicación a continuación. Le responderemos lo antes posible.",
+    "emailSupport": {
+      "title": "Soporte por correo electrónico",
+      "description": "Envíe un correo electrónico para preguntas generales. Recibirá una respuesta dentro de las 24 horas."
+    },
+    "phoneSupport": {
+      "title": "Soporte telefónico",
+      "description": "Contáctenos por teléfono para emergencias."
+    },
+    "supportHours": {
+      "title": "Horario de soporte",
+      "weekdays": "Días laborables: 09:00 - 18:00",
+      "weekends": "Fines de semana: 10:00 - 16:00",
+      "timezone": "Todos los horarios se muestran en hora turca (GMT+3)"
+    },
+    "liveSupport": {
+      "title": "Soporte en vivo",
+      "description": "Nuestro servicio de soporte en vivo está disponible para sus preguntas instantáneas.",
+      "button": "Iniciar soporte en vivo"
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "description": "Puede encontrar respuestas a preguntas comunes en nuestra sección de preguntas frecuentes.",
+      "button": "Ver preguntas frecuentes"
+    }
+  },
+  "faq": {
+    "title": "Preguntas frecuentes",
+    "subtitle": "Estamos aquí para ayudarlo",
+    "questions": {
+      "howItWorks": {
+        "question": "¿Cómo funciona Estyi?",
+        "answer": "Estyi conecta a las personas que buscan cambios con clínicas certificadas en todo el mundo para solicitudes de tratamientos estéticos. Las clínicas envían ofertas."
+      },
+      "pricing": {
+        "question": "¿El servicio es pago?",
+        "answer": "No, la plataforma Estyi es completamente gratuita para los pacientes. Sólo pagas los costes del tratamiento a las clínicas."
+      },
+      "dataSafety": {
+        "question": "¿Mis datos están seguros?",
+        "answer": "Sí, todos sus datos se almacenan cifrados y cumplen con el RGPD. Su información personal está protegida de forma segura."
+      },
+      "countries": {
+        "question": "¿A qué países presta servicios?",
+        "answer": "Atendemos en Turquía, Corea del Sur, Tailandia, México, Brasil, Alemania, Polonia, República Checa, India y Dubai."
+      },
+      "clinicSelection": {
+        "question": "¿Cómo se hace la selección de la clínica?",
+        "answer": "Todas nuestras clínicas están certificadas y acreditadas. Puedes revisar los perfiles de las clínicas y leer sus reseñas."
+      },
+      "payment": {
+        "question": "¿Cómo se realiza el pago?",
+        "answer": "Los pagos se realizan directamente a la clínica. Los usuarios no realizan ningún pago a través de la plataforma."
+      }
+    },
+    "stillHaveQuestions": "¿Aún tienes preguntas?",
+    "contactDescription": "Puedes contactarnos para tus preguntas. Le responderemos lo antes posible.",
+    "sendEmail": "Enviar correo electrónico",
+    "contactPage": "Página de contacto"
+  },
+  "contact": {
+    "badge": "Contacto",
+    "title": "Contacto",
+    "subtitle": "Póngase en contacto con nosotros",
+    "description": "Póngase en contacto con nosotros para sus preguntas. Le responderemos lo antes posible.",
+    "email": {
+      "title": "Correo electrónico",
+      "general": "Para consultas generales:",
+      "support": "Para soporte técnico:"
+    },
+    "phone": {
+      "title": "Teléfono",
+      "turkey": "Turquía:",
+      "international": "Internacional:"
+    },
+    "address": {
+      "title": "Dirección",
+      "line1": "Estyi Inc.",
+      "line2": "Estados Unidos (compañía de tecnología con sede en EE. UU.)",
+      "line3": "contact@estyi.com"
+    },
+    "form": {
+      "title": "Formulario de contacto",
+      "name": "Nombre completo",
+      "namePlaceholder": "Ingrese su nombre completo nombre",
+      "email": "Correo electrónico",
+      "emailPlaceholder": "Ingrese su dirección de correo electrónico",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Ingrese el título del asunto",
+      "message": "Mensaje",
+      "messagePlaceholder": "Escriba su mensaje...",
+      "submit": "Enviar"
+    }
+  },
+  "aboutUs": {
+    "title": "Acerca de nosotros",
+    "subtitle": "Dando forma al futuro de la medicina estética",
+    "description": "Estyi es una plataforma innovadora que conecta a pacientes que buscan tratamiento estético en todo el mundo con clínicas confiables. Estamos dando forma al futuro de la medicina estética con nuestro enfoque centrado en la transparencia, la seguridad y la calidad.",
+    "features": {
+      "transparent": {
+        "title": "Precios transparentes",
+        "description": "Ofrecemos precios claros sin costos ocultos. Conozca los costos del tratamiento de antemano."
+      },
+      "global": {
+        "title": "Acceso global",
+        "description": "Brindamos acceso a clínicas certificadas en todo el mundo. Descubra las mejores opciones de tratamiento."
+      },
+      "ai": {
+        "title": "Coincidencia impulsada por IA",
+        "description": "Emparejamos clínicas con pacientes mediante inteligencia artificial. Recomendaciones personalizadas."
+      }
+    },
+    "quality": {
+      "title": "Garantía de calidad",
+      "description": "Todas nuestras clínicas se someten a verificación de licencias y certificados. En nuestra plataforma solo aparecen clínicas que cumplen con los más altos estándares de calidad. La seguridad y satisfacción de nuestros pacientes es nuestra principal prioridad."
+    },
+    "stats": {
+      "patients": "10,000+ Pacientes Felices",
+      "rating": "4.9/5 Calificación Promedio",
+      "clinics": "500+ Clínicas Confiables",
+      "countries": "10+ Países"
+    },
+    "cta": {
+      "title": "Póngase en contacto con nosotros",
+      "description": "Puede contactarnos si tiene preguntas. Le responderemos lo antes posible.",
+      "contactButton": "Página de contacto",
+      "emailButton": "Enviar correo electrónico"
+    }
+  },
+  "safety": {
+    "title": "Pautas de seguridad",
+    "subtitle": "Más información sobre la seguridad de la plataforma",
+    "description": "Su seguridad es muy importante para nosotros en la plataforma Estyi. Implementamos las siguientes medidas de seguridad.",
+    "clinicVerification": {
+      "title": "Verificación de la clínica",
+      "description": "Todas nuestras clínicas se someten a verificación de licencias y certificados. En nuestra plataforma solo aparecen clínicas aprobadas y confiables.",
+      "license": {
+        "title": "Verificación de licencia",
+        "description": "Se verifican las licencias válidas de todas las clínicas"
+      },
+      "certificate": {
+        "title": "Verificación de certificados",
+        "description": "Se verifican los certificados internacionales"
+      },
+      "accreditation": {
+        "title": "Acreditación",
+        "description": "Se prefieren instituciones acreditadas"
+      }
+    },
+    "dataEncryption": {
+      "title": "Cifrado de datos",
+      "description": "Todos sus datos están protegidos con cifrado SSL. Su información personal y sus fotografías se almacenan de forma segura.",
+      "ssl": "Cifrado SSL de 256 bits",
+      "gdpr": "Protección de datos compatible con GDPR",
+      "server": "Infraestructura de servidor segura"
+    },
+    "secureMessaging": {
+      "title": "Mensajería segura",
+      "description": "La comunicación segura se proporciona a través de la plataforma. Todos los mensajes se transmiten cifrados.",
+      "e2e": {
+        "title": "Cifrado de extremo a extremo",
+        "description": "Sus mensajes solo pueden ser leídos por usted y el destinatario"
+      },
+      "fileSharing": {
+        "title": "Intercambio seguro de archivos",
+        "description": "El intercambio de fotografías y documentos se realiza a través de canales seguros"
+      }
+    },
+    "suspiciousActivity": {
+      "title": "Actividad sospechosa",
+      "description": "Reporte actividades sospechosas de inmediato. Nuestro equipo de seguridad está a su servicio las 24 horas del día, los 7 días de la semana.",
+      "report": {
+        "title": "Reporte de violación de seguridad",
+        "description": "Reporte actividades sospechosas de inmediato"
+      },
+      "support": {
+        "title": "Soporte de seguridad 24 horas al día, 7 días a la semana",
+        "description": "Nuestro equipo de seguridad siempre está listo"
+      }
+    },
+    "tips": {
+      "title": "Consejos de seguridad",
+      "personal": "Mantenga segura su información personal",
+      "suspicious": "Reportar mensajes sospechosos",
+      "password": "Utilice contraseñas seguras",
+      "twoFactor": "Utilice autenticación de dos factores"
+    }
+  },
+  "cookie": {
+    "title": "Cookie Política",
+    "subtitle": "Más información sobre el uso de cookies",
+    "description": "Esta política de cookies explica cómo se utilizan las cookies en la plataforma Estyi.",
+    "types": {
+      "title": "Tipos de cookies",
+      "essential": {
+        "title": "Cookies esenciales",
+        "description": "Cookies necesarias para las funciones básicas del sitio. El sitio no funcionará correctamente sin estas cookies."
+      },
+      "analytics": {
+        "title": "Cookies de análisis",
+        "description": "Cookies utilizadas para analizar el uso del sitio. Se utiliza para mejorar la experiencia del usuario."
+      },
+      "language": {
+        "title": "Cookies de idioma",
+        "description": "Cookies utilizadas para recordar su idioma preferido. Recibirá el servicio en el mismo idioma en su próxima visita."
+      }
+    },
+    "management": {
+      "title": "Gestión de cookies",
+      "description": "Puede administrar o eliminar las cookies desde la configuración de su navegador. Sin embargo, es posible que algunas funciones del sitio no funcionen.",
+      "accept": {
+        "title": "Aceptar cookies",
+        "description": "Acepte todas las cookies para experimentar el sitio completo."
+      },
+      "reject": {
+        "title": "Rechazar cookies",
+        "description": "Acepte solo cookies esenciales para usar funciones básicas."
+      }
+    },
+    "settings": {
+      "title": "Configuración de cookies",
+      "essential": {
+        "title": "Cookies esenciales",
+        "status": "Siempre activo"
+      },
+      "analytics": {
+        "title": "Analítica Cookies",
+        "status": "Opcional"
+      },
+      "language": {
+        "title": "Cookies de idioma",
+        "status": "Opcional"
+      }
+    }
+  },
+  "guide": {
+    "priceComparison": "Comparación de precios (2026)",
+    "procedureProcess": "Proceso de procedimiento",
+    "risks": "Riesgos y consideraciones",
+    "faq": "Preguntas frecuentes",
+    "getFreeQuote": "Obtenga una cotización gratuita",
+    "getPersonalQuote": "Obtenga su cotización de precio personal",
+    "notFound": "Página no encontrada",
+    "backHome": "Volver a Inicio",
+    "breadcrumbHome": "Inicio",
+    "breadcrumbGuide": "Guía",
+    "duration": "Duración",
+    "recovery": "Recuperación",
+    "anesthesia": "Anestesia",
+    "priceComparisonTitle": "¿Cuánto cuesta este procedimiento?",
+    "country": "País",
+    "priceRange": "Rango de precios (USD)",
+    "suitableFor": "¿Para quién es adecuado?",
+    "notSuitableFor": "¿Para quién no es adecuado? ¿Para?"
+  },
+  "terms": {
+    "title": "Términos de uso",
+    "subtitle": "Conozca los términos y condiciones de la plataforma",
+    "description": "Al utilizar la plataforma Estyi, acepta los siguientes términos.",
+    "serviceUsage": {
+      "title": "Uso del servicio",
+      "matching": "La plataforma se utiliza solo para combinar tratamientos estéticos",
+      "approved": "Las clínicas deben estar aprobadas y certificadas"
+    },
+    "userResponsibilities": {
+      "title": "Responsabilidades del usuario",
+      "accurate": "Proporcionar información precisa y actual es obligatorio",
+      "noMisleading": "Compartir información engañosa es obligatorio prohibido"
+    },
+    "clinicResponsibilities": {
+      "title": "Responsabilidades de la clínica",
+      "license": "Debe tener licencias y certificados válidos",
+      "transparent": "Debe proporcionar precios transparentes"
+    },
+    "platformResponsibilities": {
+      "title": "Responsabilidades de la plataforma",
+      "secure": "Proporciona almacenamiento seguro de datos",
+      "notLiable": "No es responsable de los resultados del tratamiento"
+    },
+    "disputeResolution": {
+      "title": "Resolución de disputas",
+      "mediation": "Primero se intenta la mediación",
+      "court": "Se toman acciones legales si es necesario"
+    }
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "subtitle": "Aprenda cómo se almacenan sus datos personales protected",
+    "description": "Esta política de privacidad explica cómo se recopilan, utilizan y protegen sus datos personales en la plataforma Estyi.",
+    "dataCollection": {
+      "title": "Recopilación de datos",
+      "email": "Dirección de correo electrónico e información de contacto",
+      "preferences": "Preferencias de tratamiento e información presupuestaria",
+      "clinicInfo": "Información clínica y certificados"
+    },
+    "dataUsage": {
+      "title": "Uso de datos",
+      "encryption": "Almacenado con cifrado seguro",
+      "matching": "Utilizado para coincidencias impulsadas por IA",
+      "legal": "Requerido para obligaciones legales"
+    },
+    "dataSharing": {
+      "title": "Datos Compartir",
+      "clinics": "Compartido solo con clínicas aprobadas",
+      "noMarketing": "No compartido con fines de marketing"
+    },
+    "userRights": {
+      "title": "Derechos de usuario",
+      "access": "Derecho a acceder a sus datos",
+      "objection": "Derecho a oponerse al procesamiento",
+      "portability": "Derecho a la portabilidad de datos"
+    },
+    "contact": {
+      "title": "Contacto",
+      "description": "Para preguntas sobre privacidad, envíe un correo electrónico a:"
+    }
+  },
+  "messages": {
+    "title": "Mensajes",
+    "loginRequired": "Requiere inicio de sesión",
+    "loginToView": "Usted necesita iniciar sesión para ver los mensajes.",
+    "selectMessage": "Seleccionar mensaje",
+    "selectToChat": "Seleccione una persona para chatear",
+    "rhinoplastyInquiry": "Me gustaría información sobre la cirugía de rinoplastia. ¿Cómo será el precio y el proceso?",
+    "rhinoplastyInfo": "Le envío información detallada sobre la cirugía de rinoplastia. El precio es de $3,500 USD y el proceso toma aproximadamente 2 horas.",
+    "hairTransplantDetails": "Detalles del trasplante de cabello",
+    "liposuctionQuestion": "Pregunta sobre liposucción",
+    "hairTransplantAppointment": "Cita para trasplante de cabello"
+  },
+  "profile": {
+    "title": "Perfil",
+    "personalInfo": "Información personal",
+    "user": "Usuario",
+    "patient": "Buscando cambio",
+    "clinic": "Creando cambios",
+    "totalRequests": "Solicitudes totales",
+    "receivedOffers": "Ofertas recibidas",
+    "memberSince": "Miembro desde",
+    "edit": "Editar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "email": "Correo electrónico",
+    "gender": "Género",
+    "selectGender": "Seleccionar género",
+    "male": "Hombre",
+    "female": "Mujer",
+    "other": "Otro",
+    "location": "Ubicación",
+    "locationPlaceholder": "Ciudad, país",
+    "security": "Seguridad",
+    "changePassword": "Cambiar contraseña",
+    "changePasswordDesc": "Actualice su contraseña para la seguridad de la cuenta",
+    "twoFactor": "Two-Factor Autenticación",
+    "twoFactorDesc": "Habilite 2FA para seguridad adicional",
+    "preferences": "Preferencias",
+    "notifications": "Notificaciones",
+    "language": "Idioma",
+    "timezone": "Zona horaria"
+  },
+  "reviews": {
+    "title": "Reseñas de plataforma",
+    "subtitle": "Experiencias Estyi de nuestros usuarios",
+    "platformScore": "Puntuación de plataforma",
+    "excellentPlatform": "Excelente plataforma",
+    "writeReview": "Escribir Reseña",
+    "loginToReview": "Inicie sesión para escribir una reseña",
+    "totalReviews": "reseñas",
+    "stars": "Estrellas",
+    "filters": "Filtros",
+    "searchPlaceholder": "Buscar en características de la plataforma...",
+    "all": "Todos",
+    "positive": "Positivo",
+    "negative": "Negativo",
+    "neutral": "Neutral",
+    "sortBy": "Ordenar por",
+    "newest": "Más nuevo",
+    "oldest": "Más antiguo",
+    "highestRated": "Mayor calificación",
+    "lowestRated": "Menor calificación",
+    "noReviews": "No se encontraron reseñas",
+    "noReviewsDesc": "No hay reseñas que coincidan con sus criterios de búsqueda.",
+    "verified": "Usuario verificado",
+    "helpful": "Útil",
+    "report": "Reporte",
+    "writeReviewTitle": "Plataforma de escritura Revisar",
+    "yourRating": "Tu calificación",
+    "yourReview": "Revisar",
+    "reviewPlaceholder": "Comparte tu experiencia...",
+    "submit": "Enviar",
+    "cancel": "Cancelar",
+    "daysAgo": "hace días",
+    "monthsAgo": "hace meses",
+    "yearsAgo": "hace años"
+  },
+  "signup": {
+    "title": "Crear cuenta",
+    "subtitle": "Crea tu nueva cuenta",
+    "name": "Nombre completo",
+    "namePlaceholder": "Su nombre completo",
+    "phone": "Número de teléfono",
+    "phonePlaceholder": "+90 XXX XXX XX XX",
+    "passwordPlaceholder": "Ingrese su contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "confirmPasswordPlaceholder": "Vuelva a ingresar su contraseña",
+    "signupButton": "Registrarse",
+    "signingUp": "Registrarse...",
+    "signupWithGoogle": "Registrarse con Google",
+    "haveAccount": "¿Ya tienes una cuenta?",
+    "loginHere": "Iniciar sesión",
+    "termsAgree": "Al registrarse",
+    "termsLink": "Términos de uso",
+    "and": "y",
+    "privacyLink": "Política de privacidad",
+    "accept": "Acepto",
+    "fillAllFields": "Por favor complete todos los campos",
+    "passwordMismatch": "Las contraseñas no coinciden",
+    "passwordLength": "La contraseña debe estar en al menos 6 caracteres",
+    "signupError": "Se produjo un error durante el registro",
+    "googleSignupError": "Error al registrarse en Google"
+  },
+  "login": {
+    "welcomeBack": "Bienvenido nuevamente",
+    "subtitle": "Inicie sesión en su cuenta",
+    "selectAccountType": "Seleccione tipo de cuenta",
+    "email": "Dirección de correo electrónico",
+    "emailPlaceholder": "example@email.com",
+    "password": "Contraseña",
+    "forgotPassword": "¿Olvidó su contraseña?",
+    "loginButton": "Firmar En",
+    "loggingIn": "Iniciando sesión...",
+    "or": "o",
+    "continueWithGoogle": "Continuar con Google",
+    "noAccount": "¿No tienes una cuenta?",
+    "signUpHere": "Regístrate aquí",
+    "fillAllFields": "Por favor, completa todos los campos",
+    "loginError": "Se produjo un error durante el inicio de sesión",
+    "googleError": "Error al iniciar sesión en Google",
+    "enterEmail": "Por favor, introduce tu correo electrónico dirección",
+    "resetLinkSent": "El enlace para restablecer la contraseña se ha enviado a su correo electrónico",
+    "resetError": "Se produjo un error al enviar el correo electrónico para restablecer",
+    "yourEmail": "Su correo electrónico",
+    "sending": "Enviando...",
+    "sendResetLink": "Enviar enlace de restablecimiento de contraseña",
+    "cancel": "Cancelar",
+    "resetInfo": "Cuando ingrese su dirección de correo electrónico, se enviará un enlace de restablecimiento de contraseña."
+  },
+  "offerModal": {
+    "title": "Enviar oferta",
+    "for": "para",
+    "priceRangeError": "El rango de precios no puede exceder los $200. Diferencia actual: ${{difference}}",
+    "successTitle": "¡Oferta enviada!",
+    "successMessage": "Su oferta ha sido enviada al usuario {{userId}}. Pueden responder en un plazo de 7 días.",
+    "totalOffer": "Oferta total",
+    "performedBy": "Realizada por",
+    "address": "Dirección",
+    "minPrice": "Precio mínimo",
+    "maxPrice": "Precio máximo",
+    "priceRange": "Rango de precios",
+    "priceRangeWarning": "⚠️ ¡El rango de precios no puede exceder los $200!",
+    "duration": "Procedimiento Duración",
+    "hospitalization": "Estadía en el hospital",
+    "doctorName": "Nombre del médico",
+    "clinicAddress": "Dirección de la clínica",
+    "extras": "Servicios adicionales",
+    "accommodation": "Alojamiento incluido",
+    "transport": "Transporte incluido",
+    "consultation": "Consulta gratuita",
+    "notes": "Notas adicionales",
+    "cancel": "Cancelar",
+    "submitting": "Enviando...",
+    "submit": "Enviar Oferta"
+  },
+  "clinicProcedures": {
+    "automaticPricesTitle": "Precios automáticos",
+    "automaticPricesBadge": "Precio instantáneo por especialidad (USD)",
+    "automaticPricesDesc": "Establece el precio instantáneo (USD) para cada una de las especialidades de tu perfil. Estos precios se muestran cuando un usuario crea una solicitud. Todo el sistema funciona con precios instantáneos.",
+    "noSpecialtiesHint": "Si su perfil aún no tiene especialidades, primero guarde sus áreas de especialidad en su perfil o solicitud.",
+    "newPrice": "Nuevo precio",
+    "procedure": "Procedimiento",
+    "selectProcedure": "Seleccionar",
+    "currency": "Divisa",
+    "amount": "Cantidad",
+    "amountPlaceholder": "p.ej. 3500",
+    "save": "Ahorrar",
+    "update": "Actualizar",
+    "clear": "Borrar",
+    "priceList": "Lista de precios",
+    "noFixedPrices": "Aún no hay precios definidos.",
+    "loading": "Cargando..."
+  },
+  "requestDetails": {
+    "status": {
+      "active": "Activo",
+      "closed": "Completado",
+      "cancelled": "Cancelado",
+      "unknown": "Desconocido"
+    },
+    "acceptSuccess": "Usted aceptó ¡La oferta de {{clinicName}}!",
+    "acceptError": "Ocurrió un error al aceptar la oferta.",
+    "rejectSuccess": "Rechazaste la oferta de {{clinicName}}.",
+    "rejectError": "Ocurrió un error al rechazar la oferta.",
+    "offersReceived": "Ofertas recibidas",
+    "photos": "Fotos",
+    "countries": "Países",
+    "myPhotos": "Mis Fotos",
+    "enlarge": "Agrandar",
+    "photosUploaded": "fotos cargadas",
+    "receivedOffers": "Ofertas recibidas",
+    "noOffersYet": "Aún no hay ofertas. Siendo evaluado por clínicas...",
+    "verified": "Verificado",
+    "reviews": "revisiones",
+    "onDate": "en",
+    "duration": "Duración",
+    "hospitalization": "Estancia en el hospital",
+    "offerNumber": "Oferta",
+    "offerAccepted": "Oferta aceptada",
+    "offerRejected": "Oferta Rechazado",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "contactClinic": "Comuníquese con la clínica",
+    "priceLocked": "Precio bloqueado (no se puede aumentar)",
+    "enlargedPhoto": "Foto ampliada",
+    "photoSignError": "No se pudieron generar enlaces firmados para las fotos. Mostrando URL originales."
+  },
+  "procedureCategories": {
+    "searchPlaceholder": "Procedimiento de búsqueda (por ejemplo, trasplante de cabello, láser)...",
+    "categories": {
+      "medikal_estetik": "Estética médica – Inyectables y rellenos",
+      "cilt_dermatoloji": "Piel y dermatología – Láser / Peeling / Tratamientos",
+      "sac_kas": "Cabello y cejas – Trasplantes y tratamientos",
+      "dis": "Dental – Estética y tratamiento",
+      "yuz_cerrahi": "Cirugía facial – Cirugía plástica",
+      "gogus_cerrahi": "Cirugía de senos",
+      "vucut_cerrahi": "Cirugía y contorno corporal",
+      "ameliyatsiz_incelme": "Pérdida de peso no quirúrgica y contorno corporal",
+      "kadin_sagligi": "Salud de la mujer – Estética genital",
+      "erkek_sagligi": "Salud del hombre – Andrología Estética"
+    },
+    "paramTypes": {
+      "bolge": "Área",
+      "seans": "Sesiones",
+      "ml": "ml",
+      "ip_sayisi": "Número de hilos",
+      "seviye": "Nivel",
+      "adet": "Recuento",
+      "greft_araligi": "Rango de injerto",
+      "paket": "Paquete",
+      "sac_uzunlugu": "Longitud del cabello",
+      "plak_paket": "Paquete de alineadores",
+      "dis_tipi": "Tipo de diente",
+      "taraf": "Lateral",
+      "implant_tipi": "Tipo de implante"
+    }
+  },
+  "errorBoundary": {
+    "title": "Un error inesperado ocurrió",
+    "description": "Puede continuar actualizando la página. Si el error persiste, háganoslo saber.",
+    "reload": "Actualizar página"
+  },
+  "priceRequest": {
+    "title": "Obtener cotización de precio",
+    "procedure": "Seleccionar procedimiento",
+    "selectProcedure": "Seleccionar procedimiento",
+    "chooseProcedure": "Elegir procedimiento",
+    "uploadPhotos": "Subir fotos",
+    "minimumPhotos": "Mínimo 5, Máximo 10",
+    "clickToUpload": "Haga clic para cargar fotos",
+    "fileFormat": "JPG, PNG, máximo 10 MB cada una",
+    "uploadPhotosOptional": "Cargar fotos (opcional)",
+    "minMaxOptional": "Opcional: hasta 10 fotos",
+    "clickUploadOptional": "Haga clic para cargar fotos para obtener una cotización más precisa",
+    "fileFormatOptional": "Opcional: JPG, PNG, máximo 10 MB cada uno",
+    "uploadedPhotos": "Fotos cargadas",
+    "selectCountries": "Seleccionar países",
+    "selectCountriesHint": "Seleccione los países en los que desea recibir ofertas de",
+    "chooseCountries": "Seleccione los países de los que desea obtener cotizaciones",
+    "selectAll": "Seleccionar todo",
+    "clear": "Borrar",
+    "selected": "Seleccionado",
+    "country": "país",
+    "selectedCountries": "Seleccionado",
+    "countriesText": "países",
+    "allCountries": "Todos los países",
+    "selectCities": "Seleccionar ciudades",
+    "istanbulRegion": "Estambul y ciudades circundantes",
+    "city": "ciudad",
+    "age": "Edad",
+    "agePlaceholder": "Entrar tu edad",
+    "enterAge": "Ingrese su edad",
+    "gender": "Género",
+    "selectGender": "Seleccione género",
+    "chooseGender": "Seleccione género",
+    "female": "Mujer",
+    "male": "Hombre",
+    "treatmentDate": "Fecha de tratamiento",
+    "chooseTreatmentDate": "Seleccione fecha de tratamiento",
+    "additionalDetails": "Adicional Detalles",
+    "descriptionPlaceholder": "Información adicional sobre el tratamiento, sus expectativas, peticiones especiales...",
+    "importantInfo": "Información importante",
+    "requestActive": "Tu solicitud permanecerá activa durante 7 días.",
+    "photosEncrypted": "Tus fotos se almacenan cifradas",
+    "notifications": "Recibirás notificaciones cuando lleguen nuevas ofertas",
+    "allCountriesInfo": "Recibirás ofertas de clínicas de todos los países",
+    "cancel": "Cancelar",
+    "submitRequest": "Crear solicitud",
+    "submitAllCountries": "Enviar a todos los países",
+    "submitting": "Enviando...",
+    "missingFieldsTitle": "Falta información:",
+    "loginRequired": "Inicie sesión para crear una solicitud.",
+    "submitError": "Error del servidor al enviar la solicitud. Inténtelo de nuevo más tarde.",
+    "hintProcedure": "Seleccione procedimiento",
+    "hintCountries": "Seleccione al menos un país",
+    "hintCitiesTR": "Seleccione ciudad para Turquía",
+    "hintProcedureParams": "Por favor complete el área/sesiones, etc. para el procedimiento seleccionado",
+    "noResults": "No se encontraron resultados",
+    "procedureOptions": "Procedimiento opciones",
+    "selectOption": "Seleccionar",
+    "hintAge": "Ingresa tu edad",
+    "hintAgeUnder18": "Los usuarios menores de 18 años no pueden crear solicitudes",
+    "ageUnder18Error": "Los usuarios menores de 18 años no pueden crear solicitudes.",
+    "hintGender": "Seleccionar género",
+    "additionalNotes": "Notas adicionales",
+    "addAdditionalInfo": "Agregar información adicional...",
+    "costBreakdown": "Desglose de costos",
+    "basicProcedure": "Procedimiento básico:",
+    "totalOffer": "Total Oferta:",
+    "oneOfferPerRequest": "Solo puede enviar una oferta por solicitud",
+    "offerCannotBeChanged": "La oferta no se puede cambiar después del envío",
+    "patient7DaysResponse": "El paciente puede responder dentro de los 7 días",
+    "hospitalizationIncluded": "La hospitalización y los servicios básicos se incluyen automáticamente"
+  },
+  "common": {
+    "loading": "Cargando...",
+    "error": "Un error ocurrido",
+    "success": "Exitoso",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "view": "Ver",
+    "close": "Cerrar",
+    "back": "Atrás",
+    "next": "Siguiente",
+    "submit": "Enviar",
+    "search": "Buscar",
+    "filter": "Filtro",
+    "sort": "Ordenar",
+    "all": "Todos",
+    "none": "Ninguno",
+    "selectAll": "Seleccionar todo",
+    "clearAll": "Borrar todo",
+    "messages": "Mensajes",
+    "notifications": "Notificaciones",
+    "noNotifications": "Sin notificaciones",
+    "viewAllNotifications": "Ver todas las notificaciones",
+    "dashboard": "Panel de control",
+    "profile": "Perfil",
+    "clinicApplication": "Aplicación clínica",
+    "markAllRead": "Marcar todo como Leer",
+    "newNotificationsHere": "Nuevas notificaciones aparecerán aquí",
+    "minutes": "minutos",
+    "hours": "horas",
+    "days": "días",
+    "ago": "atrás",
+    "offer": "Oferta",
+    "unread": "no leído",
+    "messageReceived": "Su mensaje ha sido recibido. Nos comunicaremos con usted lo antes posible."
+  },
+  "auth": {
+    "login": "Iniciar sesión",
+    "signup": "Registrarse",
+    "logout": "Cerrar sesión",
+    "email": "Correo electrónico",
+    "password": "Contraseña",
+    "confirmPassword": "Confirmar contraseña",
+    "name": "Nombre completo",
+    "forgotPassword": "Olvidé mi contraseña",
+    "rememberMe": "Recordarme",
+    "patient": "Buscando cambio",
+    "clinic": "Creando cambio",
+    "accountType": "Cuenta Escribe",
+    "alreadyHaveAccount": "¿Ya tienes una cuenta?",
+    "dontHaveAccount": "¿No tienes una cuenta?",
+    "loginWithGoogle": "Iniciar sesión con Google",
+    "signupWithGoogle": "Regístrate en Google",
+    "signupTitle": "Regístrate en Estyi",
+    "signupEmailPlaceholder": "Tu dirección de correo electrónico",
+    "passwordPlaceholder": "Contraseña (al menos 8 caracteres)",
+    "confirmPasswordPlaceholder": "Confirmar contraseña",
+    "namePlaceholder": "Tu contraseña completa Nombre",
+    "sendingCode": "Enviando...",
+    "sendVerificationCode": "Enviar código de verificación",
+    "verificationCodeSent": "envió el código de verificación a",
+    "verificationCodePlaceholder": "código de verificación de 6 dígitos",
+    "verifyAndContinue": "Verificar código y continuar",
+    "backButton": "← Volver atrás",
+    "emailVerified": " ✓ Correo electrónico verificado",
+    "registering": "Registro...",
+    "register": "Registrarse",
+    "registrationSuccess": "¡Registro exitoso! Ahora puede iniciar sesión.",
+    "registrationError": "Error en el registro. Por favor, inténtalo de nuevo.",
+    "enterEmail": "Por favor introduce tu dirección de correo electrónico",
+    "codeError": "No se pudo enviar el código. Por favor, inténtalo de nuevo.",
+    "enterVerificationCode": "Por favor ingresa el código de verificación",
+    "emailVerificationTitle": "Verificación por correo electrónico",
+    "verificationSuccess": "¡Verificación exitosa!",
+    "accountVerified": "Tu cuenta ha sido verificada exitosamente. Redirigiendo...",
+    "verificationCodeSentTitle": "Código de verificación enviado",
+    "codeValidTime": "El código caduca:",
+    "verificationCodeLabel": "Código de verificación",
+    "verifying": "Verificando...",
+    "verify": "Verificar",
+    "cancel": "Cancelar",
+    "codeNotReceived": "¿Código no recibido? Revise su carpeta de spam o inténtelo nuevamente.",
+    "verificationFailed": "Verificación fallida",
+    "code6digits": "El código de verificación debe tener 6 dígitos",
+    "emailMinLength": "Ingrese una dirección de correo electrónico válida",
+    "passwordMinLength": "La contraseña debe tener al menos 8 caracteres",
+    "nameMinLength": "El nombre debe tener al menos 2 caracteres",
+    "passwordMismatch": "Las contraseñas no coincidencia",
+    "userStatusUpdateError": "No se pudo actualizar el estado del usuario",
+    "verificationProcessError": "Error en el proceso de verificación",
+    "reportDownloading": "descargando informe...",
+    "settingsSaved": "¡Configuración guardada exitosamente!",
+    "acceptSuccess": "¡Oferta aceptada exitosamente!",
+    "acceptError": "Se produjo un error al aceptar la oferta.",
+    "rejectSuccess": "Oferta rechazada exitosamente.",
+    "rejectError": "Se produjo un error al rechazar la oferta.",
+    "priceRangeError": "Error de rango de precios"
+  },
+  "home": {
+    "hero": {
+      "title": "Tu viaje estético ¡Comienza con un clic!",
+      "subtitle": "Obtenga ofertas transparentes de centros estéticos globales sin compartir su identidad.",
+      "cta": "Obtenga una cotización gratuita",
+      "learnMore": "Más información"
+    },
+    "heroStats": {
+      "clinics": "Clínicas asociadas",
+      "patients": "Clientes satisfechos",
+      "procedures": "Procedimientos estéticos",
+      "netPrice": "Precio garantizado",
+      "instantOffer": "Oferta instantánea",
+      "anonymousSharing": "Compartir anónimo"
+    },
+    "features": {
+      "title": "Por qué elegir",
+      "subtitle": "Experimente el futuro de medicina estética y conoce nuestra innovadora plataforma",
+      "secure": {
+        "title": "Plataforma segura",
+        "description": "Sus datos están seguros con nuestra plataforma certificada de seguridad SSL y compatible con GDPR."
+      },
+      "global": {
+        "title": "Acceso internacional",
+        "description": "Conéctese con clínicas y médicos expertos de confianza a nivel mundial."
+      },
+      "experts": {
+        "title": "Médicos expertos",
+        "description": "Reciba servicios de tratamiento de calidad de médicos certificados y experimentados."
+      },
+      "proven": {
+        "title": "Proven Resultados",
+        "description": "10,000+ pacientes felices y una calificación promedio de 4.9/5."
+      },
+      "quality": {
+        "title": "Garantía de calidad",
+        "description": "Solo clínicas aprobadas que cumplen con los estándares de calidad."
+      },
+      "support": {
+        "title": "Soporte 24 horas al día, 7 días a la semana",
+        "description": "Siempre estamos contigo. Obtenga soporte instantáneo para sus preguntas."
+      },
+      "fixedPrice": {
+        "title": "Precio fijo",
+        "description": "Cuando se realiza una oferta, el monto está bloqueado. No se puede aumentar más adelante."
+      },
+      "locationFilter": {
+        "title": "Solicitudes filtradas por ciudad/país",
+        "description": "Solo recibes ofertas de clínicas en la ubicación que seleccionaste."
+      },
+      "cta": {
+        "title": "Comienza ahora",
+        "subtitle": "Crea una cuenta gratuita y obtén los mejores precios para tu tratamiento estético",
+        "button": "Regístrate gratis"
+      }
+    },
+    "liveStats": {
+      "title": "Estyi en Números",
+      "clinics": "Clínicas certificadas",
+      "countries": "Países",
+      "requests": "Solicitudes creadas"
+    }
+  },
+  "dashboard": {
+    "title": "Panel de control",
+    "welcome": "Bienvenido",
+    "stats": {
+      "requests": "Solicitudes",
+      "offers": "Ofertas",
+      "messages": "Mensajes",
+      "appointments": "Citas"
+    },
+    "recentActivity": "Recientes Actividad",
+    "quickActions": "Acciones rápidas",
+    "myPhotos": "Mis fotos",
+    "receivedOffers": "Ofertas recibidas",
+    "enlargePhoto": "Agrandar",
+    "photos": "fotos",
+    "contactClinic": "Contactar a la clínica",
+    "acceptOffer": "Aceptar",
+    "rejectOffer": "Rechazar",
+    "offerAccepted": "Oferta aceptada",
+    "offerRejected": "Oferta Rechazado",
+    "processingOffer": "Procesando...",
+    "active": "Activo",
+    "closed": "Cerrado",
+    "pending": "Pendiente",
+    "completed": "Completado",
+    "offerId": "Oferta No",
+    "clinicContact": "Contacto de la clínica",
+    "offerDetails": "Detalles de la oferta",
+    "priceRange": "Precio Rango",
+    "duration": "Duración",
+    "hospitalization": "Hospitalización",
+    "clinicRating": "Clasificación de la clínica",
+    "clinicReviews": "Reseñas de la clínica",
+    "clinicCountry": "País de la clínica",
+    "offerDate": "Fecha de oferta",
+    "procedureDetails": "Detalles del procedimiento",
+    "clinicProfile": "Perfil de la clínica",
+    "viewClinic": "Ver perfil de la clínica",
+    "sendMessage": "Enviar mensaje",
+    "requestDetails": "Solicitar Detalles",
+    "requestStatus": "Estado de la solicitud",
+    "requestDate": "Fecha de solicitud",
+    "requestCountries": "Solicitud de países",
+    "totalOffers": "Total de ofertas",
+    "totalPhotos": "Total de fotos",
+    "totalCountries": "Total de países"
+  },
+  "requests": {
+    "title": "Solicitudes de precios",
+    "newRequest": "Nuevo Solicitud",
+    "status": {
+      "pending": "Pendiente",
+      "active": "Activo",
+      "completed": "Completado",
+      "cancelled": "Cancelado"
+    },
+    "procedure": "Procedimiento",
+    "country": "País",
+    "budget": "Presupuesto",
+    "notes": "Notas",
+    "photos": "Fotos",
+    "submitRequest": "Enviar solicitud",
+    "allCountries": "Todos los países",
+    "allCountriesInfo": "Recibirás ofertas de clínicas en todos países",
+    "submitAllCountries": "Obtener cotizaciones de todos los países"
+  },
+  "request": {
+    "title": "Crear solicitud"
+  },
+  "offers": {
+    "priceLocked": "Este precio está bloqueado: la clínica no puede aumentarlo."
+  },
+  "legal": {
+    "clickwrap": {
+      "acceptAll": "Acepto los Términos y políticas.",
+      "termsPrivacy": "He leído y acepto los Términos de servicio, el Aviso de privacidad y el Aviso en la recolección.",
+      "explicitConsent": "Acepto explícitamente el procesamiento y el intercambio de mis datos sensibles/relacionados con la salud (incluidos los detalles de la solicitud de procedimiento y las fotografías, si se proporcionan) con clínicas coincidentes con el fin de obtener citas y comunicación.",
+      "ageGate": "Confirmo que tengo 18+ años.",
+      "legalPage": "Términos y políticas",
+      "part1": "He leído y acepto los",
+      "termsLink": "Términos de servicio",
+      "privacyLink": "Política de privacidad",
+      "part2": "y",
+      "medicalLink": "Descargo de responsabilidad médica",
+      "part3": ". Confirmo que tengo más de 18 años y doy mi consentimiento para que mis datos relacionados con la salud se compartan con clínicas coincidentes para fines de cotización."
+    },
+    "clickwrapClinic": {
+      "acceptAll": "Acepto los Términos y políticas.",
+      "clinicAgreement": "He leído y acepto el Acuerdo de proveedor de la clínica (licencia, cumplimiento, SLA de 24 horas, precios en USD).",
+      "dataSecurity": "He leído y acepto el Uso y seguridad de datos Anexo.",
+      "part1": "He leído y acepto el",
+      "agreementLink": "Acuerdo de proveedor de clínica",
+      "dataLink": "Anexo de seguridad de datos",
+      "part2": ". Acepto las reglas de precios, licencias y tiempo de respuesta de 24 horas."
+    },
+    "medicalDisclaimer": "Estyi no proporciona asesoramiento ni servicios médicos. Las cotizaciones las proporcionan las clínicas. En emergencias, comuníquese con los servicios de emergencia locales.",
+    "pages": {
+      "noticeAtCollection": "Aviso en la recolección",
+      "consent": "Consentimiento explícito de datos sensibles/de salud",
+      "clinicAgreement": "Acuerdo de proveedor de la clínica",
+      "dataSecurityAddendum": "Anexo de seguridad y uso de datos",
+      "dmca": "DMCA",
+      "medicalDisclaimer": "Descargo de responsabilidad médica"
+    },
+    "noticeAtCollectionIntro": "Este aviso Resume cómo Estyi recopila y utiliza sus datos personales y confidenciales. Lea antes de registrarse o crear una solicitud.",
+    "consentIntro": "Se requiere su consentimiento explícito para el procesamiento de sus datos sensibles y relacionados con la salud (detalles de la solicitud, fotos, etc.) con clínicas coincidentes únicamente para obtener cotizaciones y comunicación.",
+    "clinicAgreementIntro": "Como clínica debes aceptar el Acuerdo de Proveedor de la Clínica antes de activar tu perfil y enviar ofertas. Incluye garantía de licencia, obligaciones de cumplimiento, Estyi no es un proveedor, indemnización, regla SLA de 24 horas y obligaciones de precios en USD.",
+    "dataSecurityAddendumIntro": "Las clínicas pueden usar los datos del usuario solo para fines de cotización y comunicación; sin reventa. Se aplican medidas de seguridad y políticas de retención/eliminación.",
+    "dmcaIntro": "Cumplimiento de DMCA. Detalles del agente designado para avisos de infracción de derechos de autor [marcador de posición].",
+    "medicalDisclaimerIntro": "Estyi no es un proveedor de atención médica y no brinda asesoramiento ni servicios médicos. Todas las cotizaciones son proporcionadas por clínicas. En caso de emergencia, comuníquese con los servicios de emergencia locales.",
+    "full": {
+      "pageTitle": "Términos y políticas",
+      "pageSubtitle": "Todos los documentos legales en un solo lugar: obligaciones del usuario y de la clínica.",
+      "tocTitle": "Contenido",
+      "lastUpdated": "Última actualización: febrero de 2026. Estyi es una plataforma intermediaria tecnológica con sede en EE. UU.; no es un proveedor de atención médica.",
+      "termsTitle": "1. Términos de servicio",
+      "termsContent": "Al utilizar la plataforma Estyi, acepta los siguientes términos.\n\nEstyi es una plataforma tecnológica intermediaria que une las solicitudes de tratamientos estéticos con clínicas certificadas. Estyi no es un proveedor de atención médica y no brinda asesoramiento ni servicios médicos. Todas las cotizaciones e información médica son proporcionadas por las clínicas.\n\nEl servicio se proporciona \"tal cual\". En la medida máxima permitida por la ley, Estyi no es responsable de los resultados del tratamiento, las prácticas clínicas o la conducta de terceros. Las disputas están sujetas primero a mediación y luego a los tribunales, según corresponda; se puede aplicar arbitraje y renuncia a demandas colectivas según los estándares estadounidenses.",
+      "privacyTitle": "2. política de privacidad",
+      "privacyContent": "Sus datos personales (correo electrónico, datos de contacto, detalles de la solicitud, fotografías) se almacenan con cifrado seguro y se utilizan únicamente para la prestación de servicios, la comparación y las obligaciones legales.\n\nSus datos se comparten únicamente con clínicas compatibles y aprobadas con el fin de obtener cotizaciones y comunicaciones; ninguna comercialización o venta a terceros. Las políticas de retención y eliminación cumplen con la ley aplicable. Se preservan sus derechos de acceso, oposición y portabilidad de datos.",
+      "noticeAtCollectionTitle": "3. Aviso en la recopilación",
+      "noticeAtCollectionContent": "Antes de registrarse o crear una solicitud, debe saber qué datos recopilamos.\n\nRecopilamos: información de identidad y de contacto, detalles de la solicitud (tipo de procedimiento, preferencias de país/ciudad, edad, sexo) y, si se proporcionan, fotografías y notas. Estos datos se procesan para obtener cotizaciones, conectarlo con clínicas y comunicarnos. La base legal y los plazos de conservación se establecen en la Política de Privacidad.",
+      "consentTitle": "4. Consentimiento explícito de datos sensibles/de salud",
+      "consentContent": "Se requiere su consentimiento explícito para el procesamiento de sus datos sensibles y relacionados con la salud (solicitar detalles, fotos, notas).\n\nAl aceptar, usted acepta expresamente el procesamiento y el intercambio de estos datos con clínicas coincidentes únicamente con el fin de proporcionarle cotizaciones y comunicaciones. Podrá retirar su consentimiento más adelante; el retiro se manejará de acuerdo con nuestra política de retención.",
+      "ageGateTitle": "5. 18 años o más",
+      "ageGateContent": "Los servicios de Estyi son para usuarios mayores de 18 años. Al registrarte o crear una solicitud confirmas que tienes al menos 18 años y aceptas este requisito. El consentimiento para procesar y compartir sus datos confidenciales también está cubierto por los Términos y políticas. Los usuarios menores de 18 años no podrán utilizar la plataforma.",
+      "medicalDisclaimerTitle": "6. Descargo de responsabilidad médica",
+      "medicalDisclaimerContent": "Estyi no es un proveedor de atención médica y no brinda asesoramiento ni servicios médicos.\n\nTodas las cotizaciones, precios e información médica que ve en la plataforma son proporcionadas por clínicas. Debe consultar a un proveedor de atención médica en persona antes de tomar decisiones. En caso de emergencia, comuníquese con los servicios de emergencia locales.",
+      "clinicAgreementTitle": "7. Acuerdo de proveedor de clínica",
+      "clinicAgreementContent": "Como clínica debes aceptar este acuerdo antes de activar tu perfil y enviar ofertas.\n\nLicencias y cumplimiento: La clínica declara que posee licencias y certificados válidos y cumple con las leyes locales. Estyi se esfuerza por verificar esta información, pero la responsabilidad final recae en la clínica.\n\nEl papel de Estyi: Estyi no es un agente ni un proveedor de atención médica; sólo facilita el emparejamiento entre usuarios y clínicas a través de la tecnología. La clínica es responsable del tratamiento, los precios y las decisiones médicas.\n\nIndemnización: La clínica se compromete a indemnizar a Estyi por reclamaciones que surjan del uso de la plataforma, las prácticas propias de la clínica o incumplimientos.\n\nSLA de 24 horas: se debe enviar una respuesta dentro de las 24 horas para cada solicitud, o se enviará automáticamente una oferta predeterminada predefinida. El incumplimiento de esta norma podrá dar lugar a sanciones relacionadas con la suscripción y el acceso.\n\nPrecios: Todas las ofertas están en USD. Después de enviar una oferta para una solicitud, el precio de esa solicitud no se puede aumentar (el precio está bloqueado).\n\nSuscripción y cupo: Solicita cupos mensuales según tu plan; el exceso puede resultar en tarifas o restricciones adicionales.",
+      "dataSecurityTitle": "8. Anexo sobre seguridad y uso de datos",
+      "dataSecurityContent": "Las clínicas pueden utilizar los datos del usuario a los que se accede a través de la plataforma solo con el fin de proporcionar cotizaciones y comunicaciones.\n\nProhibiciones: Está prohibido el uso de los datos del usuario con fines de marketing, reventa o fuera de la plataforma. Los datos deben procesarse únicamente dentro del entorno de plataforma segura; Está prohibido copiar o compartir innecesariamente con terceros.\n\nSeguridad: El acceso, el cifrado y los registros de acceso se gestionan de acuerdo con la ley aplicable. En caso de una violación de datos, la notificación y los pasos requeridos se tomarán de acuerdo con las políticas de Estyi.\n\nConservación y eliminación: Los datos del usuario se conservan sólo durante el tiempo necesario; Las solicitudes de eliminación y los períodos de retención están sujetos a la Política de privacidad y los acuerdos de procesamiento de datos."
+    },
+    "help": {
+      "title": "Centro de ayuda",
+      "description": "¿Cómo podemos ayudarlo? Puede comunicarse con nosotros a través de los canales de contacto a continuación.",
+      "contact": {
+        "email": {
+          "title": "Soporte por correo electrónico",
+          "description": "Enviar correo electrónico para preguntas generales"
+        }
+      },
+      "hours": {
+        "title": "Horario de soporte",
+        "weekdays": "Días laborables: 09:00 - 18:00",
+        "weekend": "Fin de semana: 10:00 - 16:00",
+        "note": "Todos los horarios se muestran en hora de Turquía (GMT+3)"
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "items": [
+        {
+          "question": "¿Cómo funciona Estyi?",
+          "answer": "Estyi transmite las solicitudes de tratamientos estéticos de los pacientes a clínicas certificadas en todo el mundo. Los pacientes comparten fotos e información, las clínicas envían ofertas."
+        },
+        {
+          "question": "¿El servicio es pago?",
+          "answer": "No, la plataforma Estyi es completamente gratuita para los pacientes. Solo paga tarifas de tratamiento a las clínicas."
+        },
+        {
+          "question": "¿Mis datos están seguros?",
+          "answer": "Sí, todos sus datos se almacenan encriptados y cumplen con GDPR. Su información personal está protegida de forma segura."
+        },
+        {
+          "question": "¿A qué países presta servicios?",
+          "answer": "Atendemos en Turquía, Corea del Sur, Tailandia, México, Brasil, Alemania, Polonia, República Checa, India y Dubai."
+        },
+        {
+          "question": "¿Cómo se hace la selección de la clínica?",
+          "answer": "Todas nuestras clínicas están certificadas y acreditadas. Puede revisar los perfiles de las clínicas y leer sus reseñas."
+        },
+        {
+          "question": "¿Hay apoyo posterior al tratamiento?",
+          "answer": "Sí, brindamos apoyo continuo antes y después del tratamiento. Puedes contactar con nosotros para cualquier duda."
+        },
+        {
+          "question": "¿Cómo se realiza el pago?",
+          "answer": "Los pagos se realizan a través de sistemas de pago seguros. Pagas según el precio que acuerdes con la clínica."
+        }
+      ]
+    },
+    "contact": {
+      "title": "Contacto",
+      "description": "Contáctanos para tus dudas. Le responderemos lo antes posible.",
+      "info": {
+        "email": {
+          "title": "Correo electrónico",
+          "general": "Para preguntas generales:",
+          "support": "Para soporte técnico:"
+        },
+        "phone": {
+          "title": "Teléfono",
+          "turkey": "Turquía:",
+          "international": "Internacional:"
+        },
+        "address": {
+          "title": "Dirección",
+          "line1": "Estyi Inc.",
+          "line2": "Estados Unidos (empresa de tecnología con sede en EE. UU.)",
+          "line3": "contact@estyi.com"
+        }
+      },
+      "form": {
+        "title": "Formulario de contacto",
+        "name": "Nombre completo",
+        "namePlaceholder": "Ingrese su nombre y apellido",
+        "email": "Correo electrónico",
+        "emailPlaceholder": "Ingrese su correo electrónico dirección",
+        "subject": "Asunto",
+        "subjectPlaceholder": "Ingrese el título del asunto",
+        "message": "Mensaje",
+        "messagePlaceholder": "Escribe tu mensaje...",
+        "submit": "Enviar"
+      }
+    },
+    "privacy": {
+      "title": "Política de privacidad",
+      "description": "Más información sobre cómo se protegen tus datos personales.",
+      "intro": "Esta política de privacidad explica cómo se recopilan, utilizan y protegen tus datos personales en la plataforma Estyi.",
+      "dataCollected": {
+        "title": "Datos Recopilado",
+        "email": "Dirección de correo electrónico e información de contacto",
+        "preferences": "Preferencias de tratamiento e información presupuestaria",
+        "clinicInfo": "Información clínica y certificados"
+      },
+      "dataUsage": {
+        "title": "Uso de datos",
+        "secure": "Almacenado con cifrado seguro",
+        "ai": "Utilizado para coincidencias asistidas por IA",
+        "legal": "Requerido para obligaciones legales"
+      },
+      "dataSharing": {
+        "title": "Intercambio de datos",
+        "clinics": "Compartido solo con clínicas aprobadas",
+        "noMarketing": "No compartido con fines de marketing"
+      },
+      "rights": {
+        "title": "Usuario Derechos",
+        "access": "Derecho a acceder a sus datos",
+        "object": "Derecho a oponerse al tratamiento",
+        "portability": "Derecho a la portabilidad de datos"
+      },
+      "contact": {
+        "title": "Contacto",
+        "email": "Correo electrónico para preguntas de privacidad"
+      }
+    },
+    "terms": {
+      "title": "Términos de uso",
+      "description": "Conozca las condiciones de uso de la plataforma.",
+      "serviceUsage": {
+        "title": "Uso del servicio",
+        "platform": "La plataforma se utiliza únicamente para la combinación de tratamientos estéticos",
+        "clinic": "Las clínicas deben estar aprobadas y certificado"
+      },
+      "userResponsibilities": {
+        "title": "Responsabilidades del usuario",
+        "accuracy": "Proporcionar información precisa y actualizada es obligatorio",
+        "prohibited": "Está prohibido compartir información engañosa"
+      },
+      "clinicResponsibilities": {
+        "title": "Responsabilidades de la clínica",
+        "licenses": "Debe tener licencias y certificados válidos",
+        "transparent": "Debe proporcionar precios transparentes"
+      },
+      "platformResponsibilities": {
+        "title": "Responsabilidades de la plataforma",
+        "secure": "Proporciona almacenamiento seguro de datos",
+        "notResponsible": "No es responsable del tratamiento resultados"
+      },
+      "disputeResolution": {
+        "title": "Resolución de disputas",
+        "mediation": "Primero se intenta la mediación",
+        "court": "Procedimientos judiciales si es necesario"
+      }
+    },
+    "about": {
+      "title": "Acerca de nosotros",
+      "description": "Estyi es una plataforma innovadora que conecta a pacientes que buscan tratamiento estético en todo el mundo con clínicas confiables.",
+      "mission": {
+        "title": "Nuestra misión",
+        "transparent": {
+          "title": "Precios transparentes",
+          "description": "Ofrecemos precios claros sin costos ocultos"
+        },
+        "visibility": {
+          "title": "Acceso global",
+          "description": "Brindamos acceso a clínicas certificadas en todo el mundo"
+        },
+        "ai": {
+          "title": "Emparejamiento asistido por IA",
+          "description": "Emparejamiento óptimo entre clínica y paciente con inteligencia artificial"
+        }
+      }
+    },
+    "cookies": {
+      "title": "Política de cookies",
+      "description": "Obtenga más información sobre el uso de cookies.",
+      "types": {
+        "title": "Tipos de cookies",
+        "essential": {
+          "title": "Cookies esenciales",
+          "description": "Cookies necesarias para las funciones básicas del sitio"
+        },
+        "analytics": {
+          "title": "Cookies de análisis",
+          "description": "Cookies utilizadas para analizar el uso del sitio"
+        },
+        "language": {
+          "title": "Cookies de idioma",
+          "description": "Cookies utilizadas para recuerda tu idioma preferido"
+        }
+      },
+      "management": {
+        "title": "Gestión de cookies",
+        "description": "Puedes gestionar o eliminar las cookies desde la configuración de tu navegador. Sin embargo, es posible que algunas funciones del sitio no funcionen."
+      }
+    },
+    "security": {
+      "title": "Seguridad",
+      "description": "Conozca nuestras medidas de seguridad.",
+      "verification": {
+        "title": "Verificación de la clínica",
+        "description": "Todas nuestras clínicas pasan controles de licencia y certificado"
+      },
+      "encryption": {
+        "title": "Cifrado de datos",
+        "description": "Todos sus datos están protegidos con cifrado SSL"
+      },
+      "messaging": {
+        "title": "Mensajería segura",
+        "description": "Comunicación segura se proporciona a través de la plataforma"
+      },
+      "suspicious": {
+        "title": "Actividad sospechosa",
+        "description": "Reportar actividades sospechosas inmediatamente"
+      }
+    },
+    "safety": {
+      "title": "Pautas de seguridad",
+      "description": "Más información sobre la seguridad de la plataforma.",
+      "verification": {
+        "title": "Verificación de la clínica",
+        "description": "Todas nuestras clínicas pasan verificaciones de licencias y certificados"
+      },
+      "encryption": {
+        "title": "Cifrado de datos",
+        "description": "Todos sus datos están protegidos con cifrado SSL"
+      },
+      "messaging": {
+        "title": "Mensajería segura",
+        "description": "Comunicación segura se proporciona a través de la plataforma"
+      },
+      "suspicious": {
+        "title": "Actividad sospechosa",
+        "description": "Reportar actividades sospechosas inmediatamente"
+      }
+    }
+  },
+  "cities": {
+    "istanbul": "Estambul",
+    "seoul": "Seúl",
+    "bangkok": "Bangkok",
+    "antalya": "Antalya"
+  },
+  "clinics": {
+    "istanbulAesthetic": "Centro de Estética de Estambul",
+    "seoulBeauty": "Clínica de Belleza de Seúl",
+    "hairWorldIstanbul": "Hair World Estambul",
+    "bangkokHair": "Clínica capilar de Bangkok",
+    "antalyaMedical": "Antalya Medical Centro"
+  },
+  "genders": {
+    "female": "Mujer",
+    "male": "Masculino"
+  },
+  "durations": {
+    "hours23": "2-3 horas",
+    "hours34": "3-4 horas",
+    "hours68": "6-8 horas",
+    "hours810": "8-10 horas"
+  },
+  "hospitalization": {
+    "night1": "1 noche",
+    "nights2": "2 noches"
+  },
+  "proceduresList": [
+    "Rinoplastia",
+    "Cabello Trasplante",
+    "Cirugía de mama",
+    "Estiramiento facial",
+    "Liposucción",
+    "Abdominoplastia",
+    "Botox y rellenos",
+    "Cirugía dental",
+    "Cirugía ocular",
+    "Contorno corporal",
+    "Procedimientos de uñas",
+    "Cabello Coloración",
+    "Prótesis Capilares",
+    "Otros Procedimientos Capilares"
+  ],
+  "notifications": {
+    "newRhinoplastyRequest": "Nueva Solicitud de Rinoplastia",
+    "newHairTransplantRequest": "Nueva Solicitud de Trasplante Capilar",
+    "rhinoplastyTreatmentOffer": "Oferta de Tratamiento de Rinoplastia",
+    "botoxTreatmentPayment": "Pago por tratamiento Botox recibido exitosamente",
+    "newTreatmentOffer": "Nueva oferta de tratamiento enviada: Trasplante Capilar - Hair World",
+    "paymentReceived": "Pago recibido: $2,500 - Rinoplastia"
+  },
+  "cookies": {
+    "bannerText": "Utilizamos cookies para brindarle una mejor experiencia.",
+    "learnMore": "Más información",
+    "accept": "Aceptar",
+    "decline": "Disminución"
+  },
+  "priceIndex": {
+    "title": "Índice de precios de procedimientos estéticos 2026",
+    "subtitle": "Compare rangos de precios de procedimientos estéticos en 7 países.",
+    "procedure": "Procedimiento",
+    "procedures": "Procedimientos",
+    "countries": "Países",
+    "updated": "Actualizado",
+    "comparison": "País Comparación",
+    "cta": "Obtenga su cotización de precio personal",
+    "ctaButton": "Obtenga una cotización gratuita",
+    "ctaDescription": "Los precios anteriores son rangos generales. Cree una solicitud para una cotización personal.",
+    "intro": "El índice de precios de 2026 muestra comparativamente rangos de precios típicos para procedimientos estéticos seleccionados en destinos populares como India, México, Turquía, Tailandia, Polonia, Reino Unido y EE. UU.",
+    "about": "Acerca del índice de precios",
+    "aboutText": "Compilado a partir de datos de la plataforma Estyi. Los precios pueden variar según la clínica y factores personales. Actualizado en febrero de 2026."
+  }
+}
