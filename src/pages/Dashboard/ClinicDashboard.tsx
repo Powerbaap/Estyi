@@ -13,13 +13,15 @@ import {
   CheckCircle,
   Activity,
   Clock,
-  MessageCircle
+  MessageCircle,
+  Calendar
 } from 'lucide-react';
 import ClinicProfile from '../../components/Clinic/ClinicProfile';
 import ClinicMembership from '../../components/Clinic/ClinicMembership';
 import ClinicNotificationCenter from '../../components/Notifications/ClinicNotificationCenter';
 import ClinicProcedures from '../../components/Clinic/ClinicProcedures';
 import ClinicMessages from '../../components/Clinic/ClinicMessages';
+import AppointmentPanel from '../../components/Dashboard/AppointmentPanel';
 import { supabase } from '../../lib/supabaseClient';
 
 const ClinicDashboard: React.FC = () => {
@@ -27,7 +29,7 @@ const ClinicDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'messages' | 'fixedPrices' | 'profile' | 'membership'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'messages' | 'fixedPrices' | 'profile' | 'membership' | 'appointments'>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [notificationCenterOpen, setNotificationCenterOpen] = useState(false);
   const notificationButtonRef = React.useRef<HTMLButtonElement>(null);
@@ -97,6 +99,7 @@ const ClinicDashboard: React.FC = () => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('clinicDashboard.menu.dashboard'), count: null },
     { id: 'messages', icon: MessageCircle, label: t('messages.title'), count: null },
+    { id: 'appointments', icon: Calendar, label: 'Randevular', count: null },
     { id: 'fixedPrices', icon: DollarSign, label: t('clinicDashboard.menu.fixedPrices'), count: null },
     { id: 'profile', icon: User, label: t('clinicDashboard.menu.profile'), count: null },
     { id: 'membership', icon: Crown, label: t('clinicDashboard.menu.membership'), count: null }
@@ -418,6 +421,9 @@ const ClinicDashboard: React.FC = () => {
     }
     if (activeTab === 'messages') {
       return <ClinicMessages />;
+    }
+    if (activeTab === 'appointments') {
+      return <AppointmentPanel role="clinic" />;
     }
 
     return (

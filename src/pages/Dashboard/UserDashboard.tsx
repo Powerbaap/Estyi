@@ -3,6 +3,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { Plus, Clock, CheckCircle, XCircle, Camera, Settings, Eye, TrendingUp, Users, DollarSign, Calendar, MapPin, Star, ChevronRight, Filter, Search, AlertCircle, FileText } from 'lucide-react';
 import PriceRequestModal from '../../components/Dashboard/PriceRequestModal';
 import RequestDetailsModal from '../../components/Dashboard/RequestDetailsModal';
+import AppointmentPanel from '../../components/Dashboard/AppointmentPanel';
 import { useTranslation } from 'react-i18next';
 import { requestService } from '../../services/api';
 import { supabase } from '../../lib/supabaseClient';
@@ -293,7 +294,7 @@ const UserDashboard: React.FC = () => {
 
         {/* Stats Cards */}
         <div className="flex justify-center mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 w-full max-w-5xl">
           {/* Removed total requests card per new design */}
 
           <div 
@@ -379,6 +380,29 @@ const UserDashboard: React.FC = () => {
                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-violet-500/5 rounded-2xl"></div>
              )}
            </div>
+
+            {/* Randevular Card */}
+            <div
+              className={`group relative overflow-hidden bg-white rounded-2xl shadow-sm border border-gray-100 p-6 cursor-pointer transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${
+                activeFilter === 'appointments' ? 'ring-2 ring-purple-500 bg-gradient-to-br from-purple-50 to-pink-50' : 'hover:bg-gradient-to-br hover:from-gray-50 hover:to-purple-50'
+              }`}
+              onClick={() => handleFilterClick('appointments')}
+            >
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600 mb-2">Randevular</p>
+                  <p className="text-xs text-gray-500 mt-1">Randevularınızı takip edin</p>
+                </div>
+                <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
+                  activeFilter === 'appointments' ? 'bg-gradient-to-r from-purple-500 to-pink-600' : 'bg-gradient-to-r from-purple-100 to-pink-100 group-hover:from-purple-200 group-hover:to-pink-200'
+                }`}>
+                  <Calendar className={`w-7 h-7 ${activeFilter === 'appointments' ? 'text-white' : 'text-purple-600'}`} />
+                </div>
+              </div>
+              {activeFilter === 'appointments' && (
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 to-pink-500/5 rounded-2xl"></div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -386,7 +410,9 @@ const UserDashboard: React.FC = () => {
 
         {/* Requests List */}
         <div className="space-y-6">
-          {isLoading ? (
+          {activeFilter === 'appointments' ? (
+            <AppointmentPanel role="user" />
+          ) : isLoading ? (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
               <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6 animate-pulse">
                 <Clock className="w-10 h-10 text-blue-500" />
