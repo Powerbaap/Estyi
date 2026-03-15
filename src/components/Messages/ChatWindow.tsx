@@ -335,6 +335,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
                               : 'Randevu reddedildi ❌';
                         } else if (parsed.type === 'appointment_cancelled') {
                           label = 'Randevu iptal edildi 🚫';
+                        } else if (parsed.type === 'review_submitted') {
+                          return (
+                            <div
+                              className={`max-w-xs lg:max-w-md px-4 py-2 rounded-2xl ${
+                                isOwn ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
+                              }`}
+                            >
+                              <p className="text-sm italic whitespace-pre-wrap break-words">⭐ Değerlendirme gönderildi ({parsed.rating}/5)</p>
+                            </div>
+                          );
                         }
 
                         return (

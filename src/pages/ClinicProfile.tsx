@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Star, Phone, Mail, Globe, Award, Users, X } from 'lucide-react';
 import { supabase } from '../lib/supabaseClient';
+import ClinicReviews from '../components/Clinic/ClinicReviews';
 
 const ClinicProfile: React.FC = () => {
   const { t } = useTranslation();
@@ -385,6 +386,8 @@ const ClinicProfile: React.FC = () => {
               </div>
             </div>
           </div>
+
+          {clinicData && <ClinicReviews clinicId={clinicId || ''} />}
         </div>
       </div>
 

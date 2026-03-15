@@ -498,6 +498,8 @@ const ClinicMessages: React.FC = () => {
                                 return <p className="text-sm italic">{label}</p>;
                               } else if (parsed.type === 'appointment_cancelled') {
                                 return <p className="text-sm italic">Randevu iptal edildi 🚫</p>;
+                              } else if (parsed.type === 'review_submitted') {
+                                return <p className="text-sm italic">⭐ Değerlendirme gönderildi ({parsed.rating}/5)</p>;
                               }
 
                               return (

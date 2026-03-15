@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Check, X, Ban } from 'lucide-react';
+import { Calendar, Clock, Check, X, Ban, Shield } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 
 interface AppointmentBubbleProps {
@@ -200,6 +200,28 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
           <Ban className="w-3 h-3" />
           İptal Et
         </button>
+      )}
+
+      {status === 'confirmed' && isOwnMessage && (
+        <div className="mt-3 p-3 bg-white/80 rounded-xl border border-green-200">
+          <p className="text-xs font-semibold text-gray-700 mb-2">Rezervasyon Türü</p>
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg border border-green-200">
+              <Check className="w-4 h-4 text-green-600" />
+              <div>
+                <p className="text-xs font-medium text-green-800">Standart Rezervasyon</p>
+                <p className="text-[10px] text-green-600">Aktif</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200 opacity-60">
+              <Shield className="w-4 h-4 text-purple-400" />
+              <div>
+                <p className="text-xs font-medium text-purple-800">Estyi Güvenceli Rezervasyon</p>
+                <p className="text-[10px] text-purple-500">Çok Yakında</p>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
