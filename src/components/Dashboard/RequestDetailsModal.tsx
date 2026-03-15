@@ -66,9 +66,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
     if (!Array.isArray(countries)) return '';
     return countries.map(getCountryDisplayName).filter(Boolean).join(', ');
   };
-  const [offerStatuses, setOfferStatuses] = React.useState<{[key: string]: 'pending' | 'accepted' | 'rejected'}>({});
-  const [isProcessing, setIsProcessing] = React.useState<string | null>(null);
-
   const handleContactClinic = async (clinicId: string, clinicName: string) => {
     try {
       const { data: sessionData } = await supabase.auth.getSession();
@@ -114,119 +111,6 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
 
     navigate('/messages');
     onClose();
-  };
-
-  const handleAcceptOffer = async (offerId: string, clinicName: string) => {
-    setIsProcessing(offerId);
-    try {
-      const { error: offerError } = await supabase
-        .from('offers')
-        .update({ status: 'accepted' })
-        .eq('id', offerId);
-
-      if (offerError) throw offerError;
-
-      const { data: offerData } = await supabase
-        .from('offers')
-        .select('request_id')
-        .eq('id', offerId)
-        .single();
-
-      if (offerData?.request_id) {
-        try {
-          await supabase
-            .from('offers')
-            .update({ status: 'rejected' })
-            .eq('request_id', offerData.request_id)
-            .neq('id', offerId);
-        } catch {}
-        
-        try {
-          await supabase
-            .from('requests')
-            .update({ status: 'accepted' })
-            .eq('id', offerData.request_id);
-        } catch {}
-      }
-      
-      setOfferStatuses(prev => ({ ...prev, [offerId]: 'accepted' }));
-
-      // Conversation oluştur
-      let conversationId: string | null = null;
-      try {
-        const { data: fullOffer } = await supabase
-          .from('offers')
-          .select('id, request_id, clinic_id, price_min, currency')
-          .eq('id', offerId)
-          .single();
-        if (fullOffer) {
-          const { data: sessionData } = await supabase.auth.getSession();
-          const userId = sessionData?.session?.user?.id;
-          if (userId && fullOffer.clinic_id) {
-            const { data: existingConv } = await supabase
-              .from('conversations')
-              .select('id')
-              .eq('user_id', userId)
-              .eq('clinic_id', fullOffer.clinic_id)
-              .maybeSingle();
-            if (existingConv?.id) {
-              conversationId = existingConv.id;
-            } else {
-              const { data: newConv } = await supabase
-                .from('conversations')
-                .insert({ user_id: userId, clinic_id: fullOffer.clinic_id })
-                .select('id')
-                .single();
-              conversationId = newConv?.id || null;
-            }
-            if (conversationId) {
-              await supabase.from('messages').insert({
-                conversation_id: conversationId,
-                sender_id: userId,
-                sender_type: 'user',
-                content: `Merhaba, teklifinizi kabul ettim. Detaylar hakkında görüşmek istiyorum.`,
-              });
-            }
-          }
-        }
-      } catch (convErr) {
-        console.error('Conversation oluşturma hatası:', convErr);
-      }
-
-      navigate('/messages', {
-        state: {
-          selectedClinic: clinicName,
-          messageType: 'clinic_contact',
-          offerAccepted: true,
-          offerId: offerId,
-          conversationId: conversationId,
-        },
-      });
-      onClose();
-    } catch (error) {
-      console.error('Teklif kabul hatası:', error);
-      alert(t('auth.acceptError'));
-    } finally {
-      setIsProcessing(null);
-    }
-  };
-
-  const handleRejectOffer = async (offerId: string, clinicName: string) => {
-    setIsProcessing(offerId);
-    try {
-      const { error } = await supabase
-        .from('offers')
-        .update({ status: 'rejected' })
-        .eq('id', offerId);
-
-      if (error) throw error;
-      setOfferStatuses(prev => ({ ...prev, [offerId]: 'rejected' }));
-      alert(t('auth.rejectSuccess', { clinicName }));
-    } catch (error) {
-      console.error('Teklif red hatası:', error);
-    } finally {
-      setIsProcessing(null);
-    }
   };
 
   const getStatusColor = (status: string) => {
@@ -501,86 +385,20 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
                         </div>
                       )}
 
-                      <div className="flex items-center justify-between pt-6 border-t border-gray-100">
-                        {/* Teklif Durumu */}
-                        {(offerStatuses[offer.id] === 'accepted' || (offer as any).status === 'accepted') && (
-                          <div className="flex items-center space-x-2 flex-shrink-0">
-                            <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
-                              <span className="text-green-600 text-lg">✓</span>
-                            </div>
-                            <span className="text-green-600 font-semibold">{t('requestDetails.offerAccepted')}</span>
-                          </div>
-                        )}
-                        
-                        {(offerStatuses[offer.id] === 'rejected' || (offer as any).status === 'rejected') && (
-                          <div className="flex items-center space-x-2 flex-shrink-0">
-                            <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
-                              <span className="text-red-600 text-lg">✗</span>
-                            </div>
-                            <span className="text-red-600 font-semibold">{t('requestDetails.offerRejected')}</span>
-                          </div>
-                        )}
-                        
-                        {/* Aksiyon Butonları */}
-                        {!offerStatuses[offer.id] && (offer as any).status !== 'accepted' && (offer as any).status !== 'rejected' && (
-                          <div className="flex items-center space-x-3 flex-shrink-0">
-                              <button
-                              onClick={() => handleAcceptOffer(offer.id, offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
-                              disabled={isProcessing === offer.id}
-                              className="flex items-center space-x-2 bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-xl hover:from-green-600 hover:to-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                              {isProcessing === offer.id ? (
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <span className="text-lg">✓</span>
-                              )}
-                              <span>{t('requestDetails.accept')}</span>
-                            </button>
-                            
-                            <button
-                              onClick={() => handleRejectOffer(offer.id, offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik')}
-                              disabled={isProcessing === offer.id}
-                              className="flex items-center space-x-2 bg-gradient-to-r from-red-500 to-pink-600 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-pink-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                              {isProcessing === offer.id ? (
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                              ) : (
-                                <span className="text-lg">✗</span>
-                              )}
-                              <span>{t('requestDetails.reject')}</span>
-                            </button>
-                            
-                            <button
-                              onClick={() => {
-                                const cId = offer.clinics?.id ?? (offer as any).clinic_id ?? '';
-                                handleContactClinic(
-                                  cId,
-                                  offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik'
-                                );
-                              }}
-                              className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-                            >
-                              <MessageCircle className="w-4 h-4" />
-                              <span>{t('requestDetails.contactClinic')}</span>
-                            </button>
-                          </div>
-                        )}
-                        
-                        {(offerStatuses[offer.id] || (offer as any).status === 'accepted' || (offer as any).status === 'rejected') && (
-                          <button
-                            onClick={() => {
-                              const cId = offer.clinics?.id ?? (offer as any).clinic_id ?? '';
-                              handleContactClinic(
-                                cId,
-                                offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik'
-                              );
-                            }}
-                            className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
-                          >
-                            <MessageCircle className="w-4 h-4" />
-                            <span>{t('requestDetails.contactClinic')}</span>
-                          </button>
-                        )}
+                      <div className="flex items-center justify-end pt-6 border-t border-gray-100">
+                        <button
+                          onClick={() => {
+                            const cId = offer.clinics?.id ?? (offer as any).clinic_id ?? '';
+                            handleContactClinic(
+                              cId,
+                              offer.clinicName ?? offer.clinic_name ?? offer.clinics?.name ?? 'Klinik'
+                            );
+                          }}
+                          className="flex items-center space-x-2 bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-xl hover:from-blue-600 hover:to-indigo-700 transition-all duration-200 font-semibold shadow-lg hover:shadow-xl transform hover:scale-105"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                          <span>{t('requestDetails.contactClinic')}</span>
+                        </button>
                       </div>
                     </div>
                   ))}
