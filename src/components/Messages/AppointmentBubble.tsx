@@ -1,6 +1,7 @@
 import React from 'react';
 import { Calendar, Clock, Check, X, Ban, Shield } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 interface AppointmentBubbleProps {
   appointmentId: string;
@@ -27,6 +28,7 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
   conversationId,
   onUpdate,
 }) => {
+  const { t } = useTranslation();
   const canRespond = status === 'pending' && currentUserId !== proposedBy;
   const canCancel =
     (status === 'pending' || status === 'confirmed') &&
@@ -118,25 +120,25 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
     pending: {
       bg: 'bg-yellow-50 border-yellow-300',
       text: 'text-yellow-700',
-      label: 'Onay Bekliyor',
+      label: t('appointmentPanel.status.pending'),
       icon: <Clock className="w-4 h-4" />,
     },
     confirmed: {
       bg: 'bg-green-50 border-green-300',
       text: 'text-green-700',
-      label: 'Onaylandı',
+      label: t('appointmentPanel.status.confirmed'),
       icon: <Check className="w-4 h-4" />,
     },
     rejected: {
       bg: 'bg-red-50 border-red-300',
       text: 'text-red-700',
-      label: 'Reddedildi',
+      label: t('appointmentPanel.status.rejected'),
       icon: <X className="w-4 h-4" />,
     },
     cancelled: {
       bg: 'bg-gray-50 border-gray-300',
       text: 'text-gray-500',
-      label: 'İptal Edildi',
+      label: t('appointmentPanel.status.cancelled'),
       icon: <Ban className="w-4 h-4" />,
     },
   };
@@ -152,7 +154,7 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
       <div className="flex items-center gap-2 mb-3">
         <Calendar className="w-5 h-5 text-purple-600" />
         <span className="font-semibold text-gray-900 text-sm">
-          Randevu Talebi
+          {t('appointmentPanel.appointmentRequest')}
         </span>
       </div>
 
@@ -180,14 +182,14 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
             className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-green-600 text-white text-xs font-medium rounded-xl hover:bg-green-700 transition-colors"
           >
             <Check className="w-3 h-3" />
-            Onayla
+            {t('appointmentPanel.actions.approve')}
           </button>
           <button
             onClick={() => handleResponse('rejected')}
             className="flex-1 flex items-center justify-center gap-1 px-3 py-2 bg-red-500 text-white text-xs font-medium rounded-xl hover:bg-red-600 transition-colors"
           >
             <X className="w-3 h-3" />
-            Reddet
+            {t('appointmentPanel.actions.reject')}
           </button>
         </div>
       )}
@@ -198,26 +200,26 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
           className="w-full flex items-center justify-center gap-1 px-3 py-2 bg-gray-200 text-gray-700 text-xs font-medium rounded-xl hover:bg-gray-300 transition-colors"
         >
           <Ban className="w-3 h-3" />
-          İptal Et
+          {t('appointmentPanel.actions.cancel')}
         </button>
       )}
 
       {status === 'confirmed' && isOwnMessage && (
         <div className="mt-3 p-3 bg-white/80 rounded-xl border border-green-200">
-          <p className="text-xs font-semibold text-gray-700 mb-2">Rezervasyon Türü</p>
+          <p className="text-xs font-semibold text-gray-700 mb-2">{t('appointmentPanel.reservation.type')}</p>
           <div className="space-y-2">
             <div className="flex items-center gap-2 p-2 bg-green-50 rounded-lg border border-green-200">
               <Check className="w-4 h-4 text-green-600" />
               <div>
-                <p className="text-xs font-medium text-green-800">Standart Rezervasyon</p>
-                <p className="text-[10px] text-green-600">Aktif</p>
+                <p className="text-xs font-medium text-green-800">{t('appointmentPanel.reservation.standard')}</p>
+                <p className="text-[10px] text-green-600">{t('appointmentPanel.reservation.standardActive')}</p>
               </div>
             </div>
             <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-lg border border-purple-200 opacity-60">
               <Shield className="w-4 h-4 text-purple-400" />
               <div>
-                <p className="text-xs font-medium text-purple-800">Estyi Güvenceli Rezervasyon</p>
-                <p className="text-[10px] text-purple-500">Çok Yakında</p>
+                <p className="text-xs font-medium text-purple-800">{t('appointmentPanel.reservation.guaranteedLabel')}</p>
+                <p className="text-[10px] text-purple-500">{t('appointmentPanel.reservation.comingSoon')}</p>
               </div>
             </div>
           </div>

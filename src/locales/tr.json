@@ -1944,5 +1944,74 @@
     "intro": "2026 fiyat endeksi, Hindistan, Meksika, Türkiye, Tayland, Polonya, İngiltere ve ABD gibi popüler destinasyonlarda seçili estetik işlemlerin tipik fiyat aralıklarını karşılaştırmalı olarak gösterir.",
     "about": "Fiyat Endeksi Hakkında",
     "aboutText": "Estyi platformu verileriyle derlenmiştir. Fiyatlar klinik ve kişisel faktörlere göre değişebilir. Şubat 2026 günceldir."
+  },
+  "appointmentPanel": {
+    "title": "Randevularım",
+    "subtitle": "Tüm randevularınızı buradan takip edin",
+    "filters": {
+      "all": "Tümü",
+      "pending": "Bekleyen",
+      "confirmed": "Onaylı",
+      "completed": "Tamamlanan",
+      "cancelled": "İptal"
+    },
+    "sections": {
+      "upcoming": "Yaklaşan Randevular",
+      "completed": "Tamamlanan İşlemler",
+      "past": "Geçmiş / İptal"
+    },
+    "status": {
+      "pending": "Onay Bekliyor",
+      "confirmed": "Onaylandı",
+      "rejected": "Reddedildi",
+      "cancelled": "İptal Edildi",
+      "completed": "İşlem Tamamlandı"
+    },
+    "actions": {
+      "approve": "Onayla",
+      "reject": "Reddet",
+      "cancel": "İptal Et",
+      "chat": "Sohbet",
+      "markCompleted": "İşlem Tamamlandı",
+      "confirmComplete": "İşlemi tamamlandı olarak işaretlemek istediğinizden emin misiniz?"
+    },
+    "reservation": {
+      "guaranteed": "Estyi Güvenceli",
+      "standard": "Standart Rezervasyon",
+      "standardActive": "Aktif",
+      "guaranteedLabel": "Estyi Güvenceli Rezervasyon",
+      "comingSoon": "Çok Yakında",
+      "type": "Rezervasyon Türü"
+    },
+    "reviewed": "Değerlendirildi",
+    "writeReview": "Yorum Yap",
+    "clinic": "Klinik",
+    "patient": "Hasta",
+    "appointmentRequest": "Randevu Talebi",
+    "empty": {
+      "title": "Randevu Bulunamadı",
+      "subtitle": "Henüz randevunuz yok."
+    }
+  },
+  "reviewForm": {
+    "title": "Deneyiminizi Değerlendirin",
+    "placeholder": "Deneyiminizi anlatın (opsiyonel)",
+    "submit": "Yorumu Gönder",
+    "submitting": "Gönderiliyor...",
+    "selectRating": "Lütfen bir puan seçin.",
+    "success": "Yorumunuz gönderildi!",
+    "error": "Yorum gönderilemedi."
+  },
+  "clinicReviews": {
+    "title": "Hasta Yorumları",
+    "reviews": "yorum",
+    "clinicResponse": "Klinik Yanıtı",
+    "anonymous": "Anonim Kullanıcı",
+    "user": "Kullanıcı"
+  },
+  "priceRequestClinics": {
+    "totalFound": "{{procedure}} için toplam {{count}} aktif klinik bulundu",
+    "noClinics": "{{procedure}} için henüz kayıtlı klinik bulunmuyor. Yine de talep oluşturabilirsiniz.",
+    "clinicCount": "klinik"
   }
 }

@@ -2015,5 +2015,23 @@
     "intro": "L'indice des prix 2026 montre de manière comparative les fourchettes de prix typiques pour certaines procédures esthétiques dans des destinations populaires telles que l'Inde, le Mexique, la Turquie, la Thaïlande, la Pologne, le Royaume-Uni et les États-Unis.",
     "about": "À propos de l'indice des prix",
     "aboutText": "Compilé à partir des données de la plateforme Estyi. Les prix peuvent varier selon la clinique et des facteurs personnels. Mis à jour en février 2026."
-  }
+  },
+  "appointmentPanel": {
+    "title": "Mes Rendez-vous",
+    "subtitle": "Suivez tous vos rendez-vous ici",
+    "filters": { "all": "Tous", "pending": "En attente", "confirmed": "Confirmé", "completed": "Terminé", "cancelled": "Annulé" },
+    "sections": { "upcoming": "Rendez-vous à venir", "completed": "Traitements terminés", "past": "Passés / Annulés" },
+    "status": { "pending": "En attente", "confirmed": "Confirmé", "rejected": "Refusé", "cancelled": "Annulé", "completed": "Traitement terminé" },
+    "actions": { "approve": "Approuver", "reject": "Refuser", "cancel": "Annuler", "chat": "Discuter", "markCompleted": "Marquer terminé", "confirmComplete": "Êtes-vous sûr de marquer ce traitement comme terminé ?" },
+    "reservation": { "guaranteed": "Garanti Estyi", "standard": "Réservation standard", "standardActive": "Actif", "guaranteedLabel": "Réservation garantie Estyi", "comingSoon": "Bientôt", "type": "Type de réservation" },
+    "reviewed": "Évalué",
+    "writeReview": "Écrire un avis",
+    "clinic": "Clinique",
+    "patient": "Patient",
+    "appointmentRequest": "Demande de rendez-vous",
+    "empty": { "title": "Aucun rendez-vous", "subtitle": "Vous n'avez pas encore de rendez-vous." }
+  },
+  "reviewForm": { "title": "Évaluez votre expérience", "placeholder": "Décrivez votre expérience (optionnel)", "submit": "Envoyer l'avis", "submitting": "Envoi en cours...", "selectRating": "Veuillez sélectionner une note.", "success": "Votre avis a été envoyé !", "error": "Échec de l'envoi." },
+  "clinicReviews": { "title": "Avis des patients", "reviews": "avis", "clinicResponse": "Réponse de la clinique", "anonymous": "Utilisateur anonyme", "user": "Utilisateur" },
+  "priceRequestClinics": { "totalFound": "{{count}} cliniques actives trouvées pour {{procedure}}", "noClinics": "Aucune clinique pour {{procedure}}. Vous pouvez quand même créer une demande.", "clinicCount": "cliniques" }
 }

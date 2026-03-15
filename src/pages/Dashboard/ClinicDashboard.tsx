@@ -99,7 +99,7 @@ const ClinicDashboard: React.FC = () => {
   const menuItems = [
     { id: 'dashboard', icon: LayoutDashboard, label: t('clinicDashboard.menu.dashboard'), count: null },
     { id: 'messages', icon: MessageCircle, label: t('messages.title'), count: null },
-    { id: 'appointments', icon: Calendar, label: 'Randevular', count: null },
+    { id: 'appointments', icon: Calendar, label: t('appointmentPanel.title'), count: null },
     { id: 'fixedPrices', icon: DollarSign, label: t('clinicDashboard.menu.fixedPrices'), count: null },
     { id: 'profile', icon: User, label: t('clinicDashboard.menu.profile'), count: null },
     { id: 'membership', icon: Crown, label: t('clinicDashboard.menu.membership'), count: null }

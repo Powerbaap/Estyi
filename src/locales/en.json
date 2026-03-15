@@ -1944,5 +1944,74 @@
     "intro": "The 2026 price index comparatively shows typical price ranges for selected aesthetic procedures in popular destinations such as India, Mexico, Turkey, Thailand, Poland, UK, and USA.",
     "about": "About Price Index",
     "aboutText": "Compiled from Estyi platform data. Prices may vary by clinic and personal factors. Updated February 2026."
+  },
+  "appointmentPanel": {
+    "title": "My Appointments",
+    "subtitle": "Track all your appointments here",
+    "filters": {
+      "all": "All",
+      "pending": "Pending",
+      "confirmed": "Confirmed",
+      "completed": "Completed",
+      "cancelled": "Cancelled"
+    },
+    "sections": {
+      "upcoming": "Upcoming Appointments",
+      "completed": "Completed Treatments",
+      "past": "Past / Cancelled"
+    },
+    "status": {
+      "pending": "Pending Approval",
+      "confirmed": "Confirmed",
+      "rejected": "Rejected",
+      "cancelled": "Cancelled",
+      "completed": "Treatment Completed"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "cancel": "Cancel",
+      "chat": "Chat",
+      "markCompleted": "Mark as Completed",
+      "confirmComplete": "Are you sure you want to mark this treatment as completed?"
+    },
+    "reservation": {
+      "guaranteed": "Estyi Guaranteed",
+      "standard": "Standard Reservation",
+      "standardActive": "Active",
+      "guaranteedLabel": "Estyi Guaranteed Reservation",
+      "comingSoon": "Coming Soon",
+      "type": "Reservation Type"
+    },
+    "reviewed": "Reviewed",
+    "writeReview": "Write Review",
+    "clinic": "Clinic",
+    "patient": "Patient",
+    "appointmentRequest": "Appointment Request",
+    "empty": {
+      "title": "No Appointments Found",
+      "subtitle": "You don't have any appointments yet."
+    }
+  },
+  "reviewForm": {
+    "title": "Rate Your Experience",
+    "placeholder": "Describe your experience (optional)",
+    "submit": "Submit Review",
+    "submitting": "Submitting...",
+    "selectRating": "Please select a rating.",
+    "success": "Your review has been submitted!",
+    "error": "Failed to submit review."
+  },
+  "clinicReviews": {
+    "title": "Patient Reviews",
+    "reviews": "reviews",
+    "clinicResponse": "Clinic Response",
+    "anonymous": "Anonymous User",
+    "user": "User"
+  },
+  "priceRequestClinics": {
+    "totalFound": "{{count}} active clinics found for {{procedure}}",
+    "noClinics": "No clinics registered for {{procedure}} yet. You can still create a request.",
+    "clinicCount": "clinics"
   }
 }

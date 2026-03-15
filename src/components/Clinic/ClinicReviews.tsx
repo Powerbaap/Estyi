@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Star, MessageCircle } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 interface Review {
   id: string;
@@ -16,6 +17,7 @@ interface ClinicReviewsProps {
 }
 
 const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
+  const { t } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
@@ -35,7 +37,7 @@ const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
 
         const enriched = await Promise.all(revs.map(async (r: any) => {
           const { data: u } = await supabase.from('users').select('email').eq('id', r.user_id).maybeSingle();
-          return { ...r, user_email: u?.email || 'Anonim Kullanıcı' };
+          return { ...r, user_email: u?.email || t('clinicReviews.anonymous') };
         }));
 
         setReviews(enriched);
@@ -65,7 +67,7 @@ const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
 
   const maskEmail = (email: string) => {
     const [name, domain] = email.split('@');
-    if (!name || !domain) return 'Kullanıcı';
+    if (!name || !domain) return t('clinicReviews.user');
     return name.substring(0, 2) + '***@' + domain;
   };
 
@@ -74,14 +76,14 @@ const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
           <MessageCircle className="w-5 h-5 text-purple-600" />
-          Hasta Yorumları
+          {t('clinicReviews.title')}
         </h3>
         <div className="flex items-center gap-2">
           <div className="flex items-center gap-1">
             <Star className="w-5 h-5 text-yellow-400 fill-yellow-400" />
             <span className="text-lg font-bold text-gray-900">{averageRating}</span>
           </div>
-          <span className="text-sm text-gray-500">({reviews.length} yorum)</span>
+          <span className="text-sm text-gray-500">({reviews.length} {t('clinicReviews.reviews')})</span>
         </div>
       </div>
 
@@ -103,7 +105,7 @@ const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
             {rev.comment && <p className="text-sm text-gray-700 leading-relaxed">{rev.comment}</p>}
             {rev.clinic_response && (
               <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-100">
-                <p className="text-xs font-semibold text-blue-800 mb-1">Klinik Yanıtı</p>
+                <p className="text-xs font-semibold text-blue-800 mb-1">{t('clinicReviews.clinicResponse')}</p>
                 <p className="text-sm text-blue-700">{rev.clinic_response}</p>
               </div>
             )}

@@ -1904,5 +1904,74 @@
     "intro": "يوضح مؤشر أسعار 2026 بشكل مقارن نطاقات الأسعار النموذجية للإجراءات التجميلية المختارة في وجهات شهيرة مثل الهند والمكسيك وتركيا وتايلاند وبولندا والمملكة المتحدة والولايات المتحدة الأمريكية.",
     "about": "حول مؤشر الأسعار",
     "aboutText": "مجمع من بيانات منصة Estyi. قد تختلف الأسعار حسب العيادة والعوامل الشخصية. محدث في فبراير 2026."
+  },
+  "appointmentPanel": {
+    "title": "مواعيدي",
+    "subtitle": "تتبع جميع مواعيدك من هنا",
+    "filters": {
+      "all": "الكل",
+      "pending": "قيد الانتظار",
+      "confirmed": "مؤكد",
+      "completed": "مكتمل",
+      "cancelled": "ملغى"
+    },
+    "sections": {
+      "upcoming": "المواعيد القادمة",
+      "completed": "العلاجات المكتملة",
+      "past": "السابق / الملغى"
+    },
+    "status": {
+      "pending": "بانتظار الموافقة",
+      "confirmed": "تم التأكيد",
+      "rejected": "مرفوض",
+      "cancelled": "ملغى",
+      "completed": "اكتمل العلاج"
+    },
+    "actions": {
+      "approve": "موافقة",
+      "reject": "رفض",
+      "cancel": "إلغاء",
+      "chat": "محادثة",
+      "markCompleted": "تحديد كمكتمل",
+      "confirmComplete": "هل أنت متأكد من تحديد هذا العلاج كمكتمل؟"
+    },
+    "reservation": {
+      "guaranteed": "ضمان Estyi",
+      "standard": "حجز عادي",
+      "standardActive": "نشط",
+      "guaranteedLabel": "حجز مضمون من Estyi",
+      "comingSoon": "قريباً",
+      "type": "نوع الحجز"
+    },
+    "reviewed": "تم التقييم",
+    "writeReview": "كتابة تقييم",
+    "clinic": "العيادة",
+    "patient": "المريض",
+    "appointmentRequest": "طلب موعد",
+    "empty": {
+      "title": "لا توجد مواعيد",
+      "subtitle": "ليس لديك أي مواعيد بعد."
+    }
+  },
+  "reviewForm": {
+    "title": "قيّم تجربتك",
+    "placeholder": "صف تجربتك (اختياري)",
+    "submit": "إرسال التقييم",
+    "submitting": "جاري الإرسال...",
+    "selectRating": "يرجى اختيار تقييم.",
+    "success": "تم إرسال تقييمك!",
+    "error": "فشل إرسال التقييم."
+  },
+  "clinicReviews": {
+    "title": "تقييمات المرضى",
+    "reviews": "تقييمات",
+    "clinicResponse": "رد العيادة",
+    "anonymous": "مستخدم مجهول",
+    "user": "مستخدم"
+  },
+  "priceRequestClinics": {
+    "totalFound": "تم العثور على {{count}} عيادة نشطة لـ {{procedure}}",
+    "noClinics": "لا توجد عيادات مسجلة لـ {{procedure}} حتى الآن. يمكنك إنشاء طلب.",
+    "clinicCount": "عيادات"
   }
 }

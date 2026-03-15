@@ -95,7 +95,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       try {
         const { data: clinics } = await supabase
           .from('clinics')
-          .select('country_code, city, specialties, cities_by_country');
+          .select('country_code, countries, city, specialties, cities_by_country');
 
         if (!clinics) return;
 
@@ -106,30 +106,38 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
           const specs: string[] = Array.isArray(clinic.specialties) ? clinic.specialties : [];
           if (!specs.includes(formData.procedureKey)) return;
 
-          const country = clinic.country_code || '';
+          // Klinik ülkelerini bul: önce countries array, yoksa country_code
+          const countryList: string[] = Array.isArray(clinic.countries) && clinic.countries.length > 0
+            ? clinic.countries
+            : clinic.country_code
+              ? [clinic.country_code]
+              : [];
 
-          if (country) {
+          for (const country of countryList) {
             byCountry[country] = (byCountry[country] || 0) + 1;
+          }
 
-            const citiesMap = clinic.cities_by_country && typeof clinic.cities_by_country === 'object'
-              ? clinic.cities_by_country as Record<string, string[]>
-              : {};
+          // Şehirleri cities_by_country'den al
+          const citiesMap = clinic.cities_by_country && typeof clinic.cities_by_country === 'object'
+            ? clinic.cities_by_country as Record<string, string[]>
+            : {};
 
-            let cityAdded = false;
-            for (const [cKey, cities] of Object.entries(citiesMap)) {
-              if (Array.isArray(cities)) {
-                for (const c of cities as string[]) {
-                  if (!byCity[cKey]) byCity[cKey] = {};
-                  byCity[cKey][c] = (byCity[cKey][c] || 0) + 1;
-                  if (cKey === country) cityAdded = true;
-                }
+          let anyCity = false;
+          for (const [cKey, cities] of Object.entries(citiesMap)) {
+            if (Array.isArray(cities)) {
+              for (const c of cities as string[]) {
+                if (!byCity[cKey]) byCity[cKey] = {};
+                byCity[cKey][c] = (byCity[cKey][c] || 0) + 1;
+                anyCity = true;
               }
             }
+          }
 
-            if (!cityAdded && clinic.city) {
-              if (!byCity[country]) byCity[country] = {};
-              byCity[country][clinic.city] = (byCity[country][clinic.city] || 0) + 1;
-            }
+          // Fallback: cities_by_country yoksa sadece city alanını kullan
+          if (!anyCity && clinic.city && countryList.length > 0) {
+            const fc = countryList[0];
+            if (!byCity[fc]) byCity[fc] = {};
+            byCity[fc][clinic.city] = (byCity[fc][clinic.city] || 0) + 1;
           }
         });
 
@@ -633,7 +641,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
                   <span className="text-green-700 font-bold text-sm">{Object.values(clinicCounts.byCountry).reduce((s, n) => s + n, 0)}</span>
                 </div>
                 <p className="text-sm text-green-800">
-                  <span className="font-semibold">{formData.procedure}</span> {getTranslation('priceRequest.clinicCountInfo', 'işlemini yapabilen toplam klinik sayısı')}
+                  {t('priceRequestClinics.totalFound', { count: Object.values(clinicCounts.byCountry).reduce((s, n) => s + n, 0), procedure: formData.procedure })}
                 </p>
               </div>
             )}

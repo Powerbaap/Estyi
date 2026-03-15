@@ -390,8 +390,8 @@ const UserDashboard: React.FC = () => {
             >
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 mb-2">Randevular</p>
-                  <p className="text-xs text-gray-500 mt-1">Randevularınızı takip edin</p>
+                  <p className="text-sm font-medium text-gray-600 mb-2">{t('appointmentPanel.title')}</p>
+                  <p className="text-xs text-gray-500 mt-1">{t('appointmentPanel.subtitle')}</p>
                 </div>
                 <div className={`w-14 h-14 rounded-xl flex items-center justify-center transition-all duration-300 ${
                   activeFilter === 'appointments' ? 'bg-gradient-to-r from-purple-500 to-pink-600' : 'bg-gradient-to-r from-purple-100 to-pink-100 group-hover:from-purple-200 group-hover:to-pink-200'

@@ -2015,5 +2015,23 @@
     "intro": "El índice de precios de 2026 muestra comparativamente rangos de precios típicos para procedimientos estéticos seleccionados en destinos populares como India, México, Turquía, Tailandia, Polonia, Reino Unido y EE. UU.",
     "about": "Acerca del índice de precios",
     "aboutText": "Compilado a partir de datos de la plataforma Estyi. Los precios pueden variar según la clínica y factores personales. Actualizado en febrero de 2026."
-  }
+  },
+  "appointmentPanel": {
+    "title": "Mis Citas",
+    "subtitle": "Sigue todas tus citas aquí",
+    "filters": { "all": "Todos", "pending": "Pendiente", "confirmed": "Confirmado", "completed": "Completado", "cancelled": "Cancelado" },
+    "sections": { "upcoming": "Próximas citas", "completed": "Tratamientos completados", "past": "Pasados / Cancelados" },
+    "status": { "pending": "Pendiente", "confirmed": "Confirmado", "rejected": "Rechazado", "cancelled": "Cancelado", "completed": "Tratamiento completado" },
+    "actions": { "approve": "Aprobar", "reject": "Rechazar", "cancel": "Cancelar", "chat": "Chat", "markCompleted": "Marcar completado", "confirmComplete": "¿Estás seguro de marcar este tratamiento como completado?" },
+    "reservation": { "guaranteed": "Garantía Estyi", "standard": "Reserva estándar", "standardActive": "Activo", "guaranteedLabel": "Reserva garantizada Estyi", "comingSoon": "Próximamente", "type": "Tipo de reserva" },
+    "reviewed": "Evaluado",
+    "writeReview": "Escribir reseña",
+    "clinic": "Clínica",
+    "patient": "Paciente",
+    "appointmentRequest": "Solicitud de cita",
+    "empty": { "title": "Sin citas", "subtitle": "Aún no tienes citas." }
+  },
+  "reviewForm": { "title": "Evalúa tu experiencia", "placeholder": "Describe tu experiencia (opcional)", "submit": "Enviar reseña", "submitting": "Enviando...", "selectRating": "Por favor selecciona una puntuación.", "success": "¡Tu reseña ha sido enviada!", "error": "Error al enviar." },
+  "clinicReviews": { "title": "Reseñas de pacientes", "reviews": "reseñas", "clinicResponse": "Respuesta de la clínica", "anonymous": "Usuario anónimo", "user": "Usuario" },
+  "priceRequestClinics": { "totalFound": "{{count}} clínicas activas encontradas para {{procedure}}", "noClinics": "No hay clínicas para {{procedure}}. Puedes crear una solicitud.", "clinicCount": "clínicas" }
 }
