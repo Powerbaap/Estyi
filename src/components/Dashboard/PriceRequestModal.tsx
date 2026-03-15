@@ -71,6 +71,10 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   
   // Talep formu ve klinik başvurusu ile aynı ülke/şehir listesi (countriesAndCities)
   const getCountryName = (key: string) => t(`countries.${key}`) || key;
+
+  // Klinik sayıları: ülke ve şehir bazında
+  const [clinicCounts, setClinicCounts] = useState<{ byCountry: Record<string, number>; byCity: Record<string, Record<string, number>> }>({ byCountry: {}, byCity: {} });
+
   const countries = useMemo(() => {
     const list = COUNTRY_KEYS.map(key => ({ key, name: getCountryName(key) }));
     if (Object.keys(clinicCounts.byCountry).length === 0) return list;
@@ -82,9 +86,6 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
   const [citiesByCountry, setCitiesByCountry] = useState<Record<string, string[]>>({});
 
-  // Klinik sayıları: ülke ve şehir bazında
-  const [clinicCounts, setClinicCounts] = useState<{ byCountry: Record<string, number>; byCity: Record<string, Record<string, number>> }>({ byCountry: {}, byCity: {} });
-
   useEffect(() => {
     if (!formData.procedureKey) {
       setClinicCounts({ byCountry: {}, byCity: {} });
@@ -94,8 +95,7 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
       try {
         const { data: clinics } = await supabase
           .from('clinics')
-          .select('country, city, procedures')
-          .eq('verified', true);
+          .select('country_code, city, specialties, cities_by_country');
 
         if (!clinics) return;
 
@@ -103,17 +103,32 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
         const byCity: Record<string, Record<string, number>> = {};
 
         clinics.forEach((clinic: any) => {
-          const procs: string[] = Array.isArray(clinic.procedures) ? clinic.procedures : [];
-          if (!procs.includes(formData.procedureKey)) return;
+          const specs: string[] = Array.isArray(clinic.specialties) ? clinic.specialties : [];
+          if (!specs.includes(formData.procedureKey)) return;
 
-          const country = (clinic.country || '').toLowerCase().replace(/\s+/g, '_');
-          const city = clinic.city || '';
+          const country = clinic.country_code || '';
 
           if (country) {
             byCountry[country] = (byCountry[country] || 0) + 1;
-            if (city) {
+
+            const citiesMap = clinic.cities_by_country && typeof clinic.cities_by_country === 'object'
+              ? clinic.cities_by_country as Record<string, string[]>
+              : {};
+
+            let cityAdded = false;
+            for (const [cKey, cities] of Object.entries(citiesMap)) {
+              if (Array.isArray(cities)) {
+                for (const c of cities as string[]) {
+                  if (!byCity[cKey]) byCity[cKey] = {};
+                  byCity[cKey][c] = (byCity[cKey][c] || 0) + 1;
+                  if (cKey === country) cityAdded = true;
+                }
+              }
+            }
+
+            if (!cityAdded && clinic.city) {
               if (!byCity[country]) byCity[country] = {};
-              byCity[country][city] = (byCity[country][city] || 0) + 1;
+              byCity[country][clinic.city] = (byCity[country][clinic.city] || 0) + 1;
             }
           }
         });
