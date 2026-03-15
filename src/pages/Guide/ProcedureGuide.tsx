@@ -26,9 +26,9 @@ const ProcedureGuide: React.FC = () => {
   const { user } = useAuth();
   const { t, i18n } = useTranslation();
 
-  // Dil seçimi: 'tr', 'en', 'ar', 'fr', 'es', 'ru' (Varsayılan: 'en')
+  // Dil seçimi: 'tr', 'en', 'ar', 'fr', 'es' (Varsayılan: 'en')
   const rawLang = i18n.language?.split('-')[0] || 'en';
-  const currentLang = (['tr', 'en', 'ar', 'fr', 'es', 'ru'].includes(rawLang) ? rawLang : 'en') as string;
+  const currentLang = (['tr', 'en', 'ar', 'fr', 'es'].includes(rawLang) ? rawLang : 'en') as string;
 
   if (!guide) {
     return (
