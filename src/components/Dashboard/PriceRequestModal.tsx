@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { X, Search } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 
@@ -71,12 +71,60 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
   
   // Talep formu ve klinik başvurusu ile aynı ülke/şehir listesi (countriesAndCities)
   const getCountryName = (key: string) => t(`countries.${key}`) || key;
-  const countries = COUNTRY_KEYS.map(key => ({ key, name: getCountryName(key) }));
+  const countries = useMemo(() => {
+    const list = COUNTRY_KEYS.map(key => ({ key, name: getCountryName(key) }));
+    if (Object.keys(clinicCounts.byCountry).length === 0) return list;
+    return [...list].sort((a, b) => (clinicCounts.byCountry[b.key] || 0) - (clinicCounts.byCountry[a.key] || 0));
+  }, [clinicCounts.byCountry, i18n.language]);
   const turkishCities = TURKISH_CITIES;
   const istanbulRegionCities = ['İstanbul', 'Tekirdağ', 'Kırklareli', 'Edirne', 'Çanakkale', 'Kocaeli', 'Sakarya'];
   const cityOptions = CITY_OPTIONS;
 
   const [citiesByCountry, setCitiesByCountry] = useState<Record<string, string[]>>({});
+
+  // Klinik sayıları: ülke ve şehir bazında
+  const [clinicCounts, setClinicCounts] = useState<{ byCountry: Record<string, number>; byCity: Record<string, Record<string, number>> }>({ byCountry: {}, byCity: {} });
+
+  useEffect(() => {
+    if (!formData.procedureKey) {
+      setClinicCounts({ byCountry: {}, byCity: {} });
+      return;
+    }
+    const fetchCounts = async () => {
+      try {
+        const { data: clinics } = await supabase
+          .from('clinics')
+          .select('country, city, procedures')
+          .eq('verified', true);
+
+        if (!clinics) return;
+
+        const byCountry: Record<string, number> = {};
+        const byCity: Record<string, Record<string, number>> = {};
+
+        clinics.forEach((clinic: any) => {
+          const procs: string[] = Array.isArray(clinic.procedures) ? clinic.procedures : [];
+          if (!procs.includes(formData.procedureKey)) return;
+
+          const country = (clinic.country || '').toLowerCase().replace(/\s+/g, '_');
+          const city = clinic.city || '';
+
+          if (country) {
+            byCountry[country] = (byCountry[country] || 0) + 1;
+            if (city) {
+              if (!byCity[country]) byCity[country] = {};
+              byCity[country][city] = (byCity[country][city] || 0) + 1;
+            }
+          }
+        });
+
+        setClinicCounts({ byCountry, byCity });
+      } catch (err) {
+        console.error('Klinik sayısı yükleme hatası:', err);
+      }
+    };
+    fetchCounts();
+  }, [formData.procedureKey]);
 
   // Photo upload handlers removed
 
@@ -563,6 +611,18 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               {getTranslation('priceRequest.selectCountries', 'Select Countries')} * ({getTranslation('priceRequest.selectCountriesHint', 'Select countries you want to receive offers from')})
             </label>
             
+            {/* Toplam klinik sayısı banner */}
+            {formData.procedureKey && Object.keys(clinicCounts.byCountry).length > 0 && (
+              <div className="mb-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-xl flex items-center gap-2">
+                <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
+                  <span className="text-green-700 font-bold text-sm">{Object.values(clinicCounts.byCountry).reduce((s, n) => s + n, 0)}</span>
+                </div>
+                <p className="text-sm text-green-800">
+                  <span className="font-semibold">{formData.procedure}</span> {getTranslation('priceRequest.clinicCountInfo', 'işlemini yapabilen toplam klinik sayısı')}
+                </p>
+              </div>
+            )}
+
             {/* Quick Selection Buttons */}
             <div className="flex space-x-2 mb-3">
               <button
@@ -587,17 +647,23 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
 
             <div className="max-h-40 overflow-y-auto border border-gray-300 rounded-lg p-3">
               <div className="grid grid-cols-2 gap-2">
-                {countries.map((country) => (
-                  <label key={country.key} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                    <input
-                      type="checkbox"
-                      checked={formData.countries.includes(country.key)}
-                      onChange={() => toggleCountry(country.key)}
-                      className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                    />
-                    <span className="text-sm text-gray-700">{country.name}</span>
-                  </label>
-                ))}
+                {countries.map((country) => {
+                  const count = clinicCounts.byCountry[country.key] || 0;
+                  return (
+                    <label key={country.key} className={`flex items-center space-x-2 cursor-pointer p-2 rounded transition-colors ${count > 0 ? 'hover:bg-green-50 bg-green-50/30' : 'hover:bg-gray-50'}`}>
+                      <input
+                        type="checkbox"
+                        checked={formData.countries.includes(country.key)}
+                        onChange={() => toggleCountry(country.key)}
+                        className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                      />
+                      <span className={`text-sm ${count > 0 ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>{country.name}</span>
+                      {count > 0 && (
+                        <span className="ml-auto text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">{count}</span>
+                      )}
+                    </label>
+                  );
+                })}
               </div>
             </div>
             <p className="text-xs text-gray-500 mt-1">
@@ -637,17 +703,27 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
               </div>
               <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                  {turkishCities.map((city) => (
-                    <label key={city} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={formData.citiesTR.includes(city)}
-                        onChange={() => toggleCityTR(city)}
-                        className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                      />
-                      <span className="text-sm text-gray-700">{city}</span>
-                    </label>
-                  ))}
+                  {[...turkishCities].sort((a, b) => {
+                    const ca = clinicCounts.byCity['turkey']?.[a] || 0;
+                    const cb = clinicCounts.byCity['turkey']?.[b] || 0;
+                    return cb - ca;
+                  }).map((city) => {
+                    const cityCount = clinicCounts.byCity['turkey']?.[city] || 0;
+                    return (
+                      <label key={city} className={`flex items-center space-x-2 cursor-pointer p-2 rounded transition-colors ${cityCount > 0 ? 'hover:bg-green-50 bg-green-50/30' : 'hover:bg-gray-50'}`}>
+                        <input
+                          type="checkbox"
+                          checked={formData.citiesTR.includes(city)}
+                          onChange={() => toggleCityTR(city)}
+                          className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                        />
+                        <span className={`text-sm ${cityCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>{city}</span>
+                        {cityCount > 0 && (
+                          <span className="ml-auto text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">{cityCount}</span>
+                        )}
+                      </label>
+                    );
+                  })}
                 </div>
               </div>
               <p className="text-xs text-gray-500 mt-1">{getTranslation('priceRequest.selected', 'Selected')}: {formData.citiesTR.length} {getTranslation('priceRequest.city', 'city')}</p>
@@ -681,17 +757,27 @@ const PriceRequestModal: React.FC<PriceRequestModalProps> = ({ isOpen, onClose, 
                 </div>
                 <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-lg p-3">
                   <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-                    {cityList.map((city) => (
-                      <label key={city} className="flex items-center space-x-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                        <input
-                          type="checkbox"
-                          checked={(citiesByCountry[ckey] || []).includes(city)}
-                          onChange={() => toggleCity(ckey, city)}
-                          className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                        />
-                        <span className="text-sm text-gray-700">{city}</span>
-                      </label>
-                    ))}
+                    {[...cityList].sort((a, b) => {
+                      const ca = clinicCounts.byCity[ckey]?.[a] || 0;
+                      const cb = clinicCounts.byCity[ckey]?.[b] || 0;
+                      return cb - ca;
+                    }).map((city) => {
+                      const cityCount = clinicCounts.byCity[ckey]?.[city] || 0;
+                      return (
+                        <label key={city} className={`flex items-center space-x-2 cursor-pointer p-2 rounded transition-colors ${cityCount > 0 ? 'hover:bg-green-50 bg-green-50/30' : 'hover:bg-gray-50'}`}>
+                          <input
+                            type="checkbox"
+                            checked={(citiesByCountry[ckey] || []).includes(city)}
+                            onChange={() => toggleCity(ckey, city)}
+                            className="text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                          />
+                          <span className={`text-sm ${cityCount > 0 ? 'text-gray-900 font-medium' : 'text-gray-700'}`}>{city}</span>
+                          {cityCount > 0 && (
+                            <span className="ml-auto text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full font-medium">{cityCount}</span>
+                          )}
+                        </label>
+                      );
+                    })}
                   </div>
                 </div>
                 <p className="text-xs text-gray-500 mt-1">{getTranslation('priceRequest.selected', 'Selected')}: {(citiesByCountry[ckey] || []).length} {getTranslation('priceRequest.city', 'city')}</p>
