@@ -17,7 +17,7 @@ interface ClinicReviewsProps {
 }
 
 const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [averageRating, setAverageRating] = useState(0);
@@ -97,7 +97,7 @@ const ClinicReviews: React.FC<ClinicReviewsProps> = ({ clinicId }) => {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-900">{maskEmail(rev.user_email || '')}</p>
-                  <p className="text-xs text-gray-500">{new Date(rev.created_at).toLocaleDateString('tr-TR')}</p>
+                  <p className="text-xs text-gray-500">{new Date(rev.created_at).toLocaleDateString(i18n.language || 'tr')}</p>
                 </div>
               </div>
               {renderStars(rev.rating)}

@@ -1973,5 +1973,36 @@
     "totalFound": "تم العثور على {{count}} عيادة نشطة لـ {{procedure}}",
     "noClinics": "لا توجد عيادات مسجلة لـ {{procedure}} حتى الآن. يمكنك إنشاء طلب.",
     "clinicCount": "عيادات"
+  },
+  "appointmentForm": {
+    "title": "إنشاء موعد",
+    "date": "التاريخ",
+    "time": "الوقت",
+    "notePlaceholder": "أضف ملاحظة (اختياري)",
+    "send": "إرسال الموعد",
+    "sending": "جاري الإرسال...",
+    "error": "فشل إرسال الموعد."
+  },
+  "messaging": {
+    "chat": "محادثة",
+    "placeholder": "اكتب رسالتك...",
+    "noMessages": "لا توجد رسائل",
+    "today": "اليوم",
+    "yesterday": "أمس",
+    "unread": "غير مقروءة",
+    "searchPlaceholder": "البحث في الرسائل...",
+    "sendError": "فشل إرسال الرسالة: "
+  },
+  "notifications": {
+    "title": "الإشعارات",
+    "loading": "جاري تحميل الإشعارات...",
+    "empty": "لا توجد إشعارات",
+    "emptyHint": "ستظهر الإشعارات الجديدة هنا",
+    "count": "إشعارات",
+    "markAllRead": "تحديد الكل كمقروء",
+    "now": "الآن",
+    "minutesAgo": "دقيقة مضت",
+    "hoursAgo": "ساعة مضت",
+    "daysAgo": "يوم مضى"
   }
 }

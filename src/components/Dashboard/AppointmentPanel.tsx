@@ -35,7 +35,7 @@ interface AppointmentPanelProps {
 const AppointmentPanel: React.FC<AppointmentPanelProps> = ({ role }) => {
   const { user } = useAuth();
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<string>('all');
@@ -110,7 +110,7 @@ const AppointmentPanel: React.FC<AppointmentPanelProps> = ({ role }) => {
   };
 
   const formatDate = (d: string) => {
-    try { return new Date(d).toLocaleDateString('tr-TR', { day: '2-digit', month: 'long', year: 'numeric', weekday: 'short' }); } catch { return d; }
+    try { return new Date(d).toLocaleDateString(i18n.language || 'tr', { day: '2-digit', month: 'long', year: 'numeric', weekday: 'short' }); } catch { return d; }
   };
 
   const statusCfg: Record<string, { bg: string; text: string; label: string; dot: string }> = {

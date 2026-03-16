@@ -1,46 +1,62 @@
-export type NotificationType = 'offer' | 'message' | 'payment' | 'system';
+import { supabase } from '../lib/supabaseClient';
+
+export type NotificationType = 'offer' | 'message' | 'appointment' | 'review' | 'system';
 
 export interface NotificationItem {
   id: string;
   type: NotificationType;
   title: string;
   message: string;
-  timestamp: Date;
-  isRead: boolean;
-  actionUrl?: string;
-  priority: 'low' | 'medium' | 'high';
-  clinicName?: string;
-  offerAmount?: number;
+  is_read: boolean;
+  action_url?: string;
+  metadata?: Record<string, any>;
+  created_at: string;
 }
 
-// Temporary in-memory store; replace with API integration later
-let notificationsStore: NotificationItem[] = [];
-
 export const notificationsService = {
-  init(mock: NotificationItem[]) {
-    notificationsStore = mock;
+  async list(userId: string): Promise<NotificationItem[]> {
+    const { data } = await supabase
+      .from('notifications')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(50);
+    return (data || []) as NotificationItem[];
   },
-  add(notification: NotificationItem) {
-    notificationsStore = [notification, ...notificationsStore];
+
+  async unreadCount(userId: string): Promise<number> {
+    const { count } = await supabase
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', userId)
+      .eq('is_read', false);
+    return count || 0;
   },
-  list(): NotificationItem[] {
-    return notificationsStore;
+
+  async markRead(id: string) {
+    await supabase.from('notifications').update({ is_read: true }).eq('id', id);
   },
-  markRead(id: string) {
-    notificationsStore = notificationsStore.map(n =>
-      n.id === id ? { ...n, isRead: true } : n
-    );
+
+  async markAllRead(userId: string) {
+    await supabase.from('notifications').update({ is_read: true }).eq('user_id', userId).eq('is_read', false);
   },
-  markAllRead() {
-    notificationsStore = notificationsStore.map(n => ({ ...n, isRead: true }));
+
+  async delete(id: string) {
+    await supabase.from('notifications').delete().eq('id', id);
   },
-  delete(id: string) {
-    notificationsStore = notificationsStore.filter(n => n.id !== id);
+
+  async clear(userId: string) {
+    await supabase.from('notifications').delete().eq('user_id', userId);
   },
-  clear() {
-    notificationsStore = [];
+
+  async create(notification: {
+    user_id: string;
+    type: NotificationType;
+    title: string;
+    message: string;
+    action_url?: string;
+    metadata?: Record<string, any>;
+  }) {
+    await supabase.from('notifications').insert(notification);
   },
-  unreadCount(): number {
-    return notificationsStore.filter(n => !n.isRead).length;
-  }
 };

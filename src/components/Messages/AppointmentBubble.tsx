@@ -28,7 +28,7 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
   conversationId,
   onUpdate,
 }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const canRespond = status === 'pending' && currentUserId !== proposedBy;
   const canCancel =
     (status === 'pending' || status === 'confirmed') &&
@@ -102,7 +102,7 @@ const AppointmentBubble: React.FC<AppointmentBubbleProps> = ({
 
   const formatDate = (d: string) => {
     try {
-      return new Date(d).toLocaleDateString('tr-TR', {
+      return new Date(d).toLocaleDateString(i18n.language || 'tr', {
         day: '2-digit',
         month: 'long',
         year: 'numeric',

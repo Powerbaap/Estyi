@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { Send, ArrowLeft, Check, CheckCheck, Calendar } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { useAuth } from '../../contexts/AuthContext';
+import { useTranslation } from 'react-i18next';
 import AppointmentBubble from './AppointmentBubble';
 import AppointmentForm from './AppointmentForm';
 
@@ -71,7 +72,9 @@ const parseAppointmentPayload = (content: string): AppointmentPayload | null => 
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
   const { user } = useAuth();
+  const { t, i18n } = useTranslation();
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const pendingIdsRef = useRef<Set<string>>(new Set());
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState('');
   const [sending, setSending] = useState(false);
@@ -163,9 +166,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
 
     const channel = supabase
       .channel(`room-${conversationId}`)
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, async (payload: any) => {
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'messages', filter: `conversation_id=eq.${conversationId}` }, (payload: any) => {
         if (!active) return;
         const msg = payload.new;
+        if (pendingIdsRef.current.has(msg.id)) {
+          pendingIdsRef.current.delete(msg.id);
+          return;
+        }
         setMessages(prev => {
           if (prev.some(m => m.id === msg.id)) return prev;
           return [...prev, { id: msg.id, sender_id: msg.sender_id, content: msg.content, created_at: msg.created_at, is_read: !!msg.is_read }];
@@ -218,24 +225,23 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
     setSending(true);
     const content = newMessage.trim();
     setNewMessage('');
-    const tempId = `temp-${Date.now()}`;
-    setMessages(prev => [...prev, { id: tempId, sender_id: user.id, content, created_at: new Date().toISOString(), is_read: false }]);
 
     try {
       const { data, error } = await supabase
         .from('messages')
-        .insert({ conversation_id: conversationId, sender_id: user.id, sender_type: 'user', content })
+        .insert({ conversation_id: conversationId, sender_id: user.id, content })
         .select()
         .single();
 
-      if (!error && data) {
-        setMessages(prev => prev.map(m => m.id === tempId ? { id: data.id, sender_id: data.sender_id, content: data.content, created_at: data.created_at, is_read: !!data.is_read } : m));
-      } else {
-        setMessages(prev => prev.filter(m => m.id !== tempId));
-        setNewMessage(content);
+      if (error) throw error;
+      if (data) {
+        pendingIdsRef.current.add(data.id);
+        setMessages(prev => {
+          if (prev.some(m => m.id === data.id)) return prev;
+          return [...prev, { id: data.id, sender_id: data.sender_id, content: data.content, created_at: data.created_at, is_read: false }];
+        });
       }
     } catch {
-      setMessages(prev => prev.filter(m => m.id !== tempId));
       setNewMessage(content);
     } finally {
       setSending(false);
@@ -255,15 +261,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
       yesterday.setDate(yesterday.getDate() - 1);
       const isYesterday = date.toDateString() === yesterday.toDateString();
       
-      if (isToday) return 'Bugün';
-      if (isYesterday) return 'Dün';
-      return date.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      if (isToday) return t('messaging.today', 'Bugün');
+      if (isYesterday) return t('messaging.yesterday', 'Dün');
+      return date.toLocaleDateString(i18n.language || 'tr', { day: '2-digit', month: '2-digit', year: 'numeric' });
     } catch { return ''; }
   };
 
   const formatMessageTime = (dateStr: string) => {
     try {
-      return new Date(dateStr).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      return new Date(dateStr).toLocaleTimeString(i18n.language || 'tr', { hour: '2-digit', minute: '2-digit' });
     } catch { return ''; }
   };
 
@@ -280,20 +286,19 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
         <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-full flex items-center justify-center">
           <span className="text-white font-bold">{partnerName ? partnerName.charAt(0).toUpperCase() : '?'}</span>
         </div>
-        <div><h3 className="font-semibold text-gray-900">{partnerName || 'Sohbet'}</h3></div>
+        <div><h3 className="font-semibold text-gray-900">{partnerName || t('messaging.chat', 'Chat')}</h3></div>
       </div>
 
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 space-y-3">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-64 text-gray-500">
-            <p className="text-sm">Henüz mesaj yok. İlk mesajı gönderin!</p>
+            <p className="text-sm">{t('messaging.noMessages', 'No messages')}</p>
           </div>
         ) : (
           messages.map((message, index) => {
             const showDateSeparator = index === 0 || getDateKey(message.created_at) !== getDateKey(messages[index - 1].created_at);
             const isOwn = message.sender_id === user?.id;
-            const isTemp = message.id.startsWith('temp-');
-            
+
             return (
               <React.Fragment key={message.id}>
                 {showDateSeparator && (
@@ -304,7 +309,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
                   </div>
                 )}
                 <div className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'} ${isTemp ? 'opacity-70' : ''}`}>
+                  <div className={`flex flex-col ${isOwn ? 'items-end' : 'items-start'}`}>
                     {(() => {
                       try {
                         const parsed = JSON.parse(message.content);
@@ -331,10 +336,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
                         if (parsed.type === 'appointment_response') {
                           label =
                             parsed.status === 'confirmed'
-                              ? 'Randevu onaylandı ✅'
-                              : 'Randevu reddedildi ❌';
+                              ? t('appointmentPanel.status.confirmed') + ' ✅'
+                              : t('appointmentPanel.status.rejected') + ' ❌';
                         } else if (parsed.type === 'appointment_cancelled') {
-                          label = 'Randevu iptal edildi 🚫';
+                          label = t('appointmentPanel.status.cancelled') + ' 🚫';
                         } else if (parsed.type === 'review_submitted') {
                           return (
                             <div
@@ -342,7 +347,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
                                 isOwn ? 'bg-blue-600 text-white' : 'bg-gray-100 text-gray-900'
                               }`}
                             >
-                              <p className="text-sm italic whitespace-pre-wrap break-words">⭐ Değerlendirme gönderildi ({parsed.rating}/5)</p>
+                              <p className="text-sm italic whitespace-pre-wrap break-words">⭐ {t('appointmentPanel.reviewed', 'Reviewed')} ({parsed.rating}/5)</p>
                             </div>
                           );
                         }
@@ -403,11 +408,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ conversationId, onBack }) => {
                 ? 'bg-purple-100 text-purple-600'
                 : 'hover:bg-gray-100 text-gray-500'
             }`}
-            title="Randevu Oluştur"
+            title={t('appointmentForm.title', 'Create Appointment')}
           >
             <Calendar className="w-5 h-5" />
           </button>
-          <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder="Mesajınızı yazın..." className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          <input type="text" value={newMessage} onChange={e => setNewMessage(e.target.value)} onKeyPress={handleKeyPress} placeholder={t('messaging.placeholder', 'Type your message...')} className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           <button onClick={handleSendMessage} disabled={!newMessage.trim() || sending} className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors">
             <Send className="w-5 h-5" />
           </button>

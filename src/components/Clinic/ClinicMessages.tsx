@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useMemo } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Send, Check, CheckCheck, Calendar } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
@@ -74,7 +74,7 @@ const parseAppointmentPayload = (content: string): AppointmentPayload | null => 
 };
 
 const ClinicMessages: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const clinicId = (user as any)?.user_metadata?.clinic_id || user?.id;
   const currentUserId = user?.id || '';
@@ -86,6 +86,7 @@ const ClinicMessages: React.FC = () => {
   const [showAppointmentForm, setShowAppointmentForm] = useState(false);
   const [appointments, setAppointments] = useState<Record<string, any>>({});
   const messagesContainerRef = useRef<HTMLDivElement>(null);
+  const pendingIdsRef = useRef<Set<string>>(new Set());
 
   const appointmentStatusById = useMemo(() => {
     const map: Record<string, AppointmentStatus> = {};
@@ -138,14 +139,14 @@ const ClinicMessages: React.FC = () => {
                 if (!payload) {
                   lastMessage = msg.content || '';
                 } else if (payload.type === 'appointment_request') {
-                  lastMessage = 'Randevu talebi';
+                  lastMessage = t('appointmentPanel.appointmentRequest');
                 } else if (payload.type === 'appointment_response') {
                   lastMessage =
                     payload.status === 'confirmed'
-                      ? 'Randevu onaylandı'
-                      : 'Randevu reddedildi';
+                      ? t('appointmentPanel.status.confirmed')
+                      : t('appointmentPanel.status.rejected');
                 } else {
-                  lastMessage = 'Randevu iptal edildi';
+                  lastMessage = t('appointmentPanel.status.cancelled');
                 }
                 lastTime = msg.created_at || '';
               }
@@ -259,16 +260,21 @@ const ClinicMessages: React.FC = () => {
         },
         payload => {
           if (active) {
-            setMessages(prev => [
-              ...prev,
-              {
-                id: payload.new.id,
-                sender_id: payload.new.sender_id,
-                content: payload.new.content,
-                created_at: payload.new.created_at,
-                is_read: !!payload.new.is_read,
-              },
-            ]);
+            const msg = payload.new;
+            if (pendingIdsRef.current.has(msg.id)) {
+              pendingIdsRef.current.delete(msg.id);
+              return;
+            }
+            setMessages(prev => {
+              if (prev.some(m => m.id === msg.id)) return prev;
+              return [...prev, {
+                id: msg.id,
+                sender_id: msg.sender_id,
+                content: msg.content,
+                created_at: msg.created_at,
+                is_read: !!msg.is_read,
+              }];
+            });
           }
         }
       )
@@ -330,15 +336,25 @@ const ClinicMessages: React.FC = () => {
     if (!newMessage.trim() || !selectedConversation || !currentUserId) return;
     const content = newMessage.trim();
     setNewMessage('');
-    const { error } = await supabase.from('messages').insert({
-      conversation_id: selectedConversation,
-      sender_id: currentUserId,
-      sender_type: 'clinic',
-      content,
-    });
-    if (error) {
+
+    try {
+      const { data, error } = await supabase.from('messages').insert({
+        conversation_id: selectedConversation,
+        sender_id: currentUserId,
+        content,
+      }).select().single();
+
+      if (error) throw error;
+      if (data) {
+        pendingIdsRef.current.add(data.id);
+        setMessages(prev => {
+          if (prev.some(m => m.id === data.id)) return prev;
+          return [...prev, { id: data.id, sender_id: data.sender_id, content: data.content, created_at: data.created_at, is_read: false }];
+        });
+      }
+    } catch (error: any) {
       console.error('Mesaj gönderme hatası:', JSON.stringify(error));
-      alert('Mesaj gönderilemedi: ' + error.message);
+      setNewMessage(content);
     }
   };
 
@@ -401,11 +417,11 @@ const ClinicMessages: React.FC = () => {
                               : 'font-semibold text-gray-900'
                           }`}
                         >
-                          {`Kullanıcı ${conversation.user_id.slice(-4)}`}
+                          {`${t('clinicReviews.user', 'User')} ${conversation.user_id.slice(-4)}`}
                         </h3>
                         <span className="text-xs text-gray-500">
                           {conversation.lastMessageTime
-                            ? new Date(conversation.lastMessageTime).toLocaleTimeString('tr-TR', {
+                            ? new Date(conversation.lastMessageTime).toLocaleTimeString(i18n.language || 'tr', {
                                 hour: '2-digit',
                                 minute: '2-digit',
                               })
@@ -443,7 +459,7 @@ const ClinicMessages: React.FC = () => {
                 </div>
                 <div>
                   <h3 className="font-semibold text-gray-900">
-                    {`Kullanıcı ${selectedConv.user_id.slice(-4)}`}
+                    {`${t('clinicReviews.user', 'User')} ${selectedConv.user_id.slice(-4)}`}
                   </h3>
                 </div>
               </div>
@@ -493,13 +509,13 @@ const ClinicMessages: React.FC = () => {
                               } else if (parsed.type === 'appointment_response') {
                                 const label =
                                   parsed.status === 'confirmed'
-                                    ? 'Randevu onaylandı ✅'
-                                    : 'Randevu reddedildi ❌';
+                                    ? t('appointmentPanel.status.confirmed') + ' ✅'
+                                    : t('appointmentPanel.status.rejected') + ' ❌';
                                 return <p className="text-sm italic">{label}</p>;
                               } else if (parsed.type === 'appointment_cancelled') {
-                                return <p className="text-sm italic">Randevu iptal edildi 🚫</p>;
+                                return <p className="text-sm italic">{t('appointmentPanel.status.cancelled')} 🚫</p>;
                               } else if (parsed.type === 'review_submitted') {
-                                return <p className="text-sm italic">⭐ Değerlendirme gönderildi ({parsed.rating}/5)</p>;
+                                return <p className="text-sm italic">⭐ {t('appointmentPanel.reviewed', 'Reviewed')} ({parsed.rating}/5)</p>;
                               }
 
                               return (
@@ -530,7 +546,7 @@ const ClinicMessages: React.FC = () => {
                           >
                             <span className="text-xs mr-1">
                               {message.created_at
-                                ? new Date(message.created_at).toLocaleTimeString('tr-TR', {
+                                ? new Date(message.created_at).toLocaleTimeString(i18n.language || 'tr', {
                                     hour: '2-digit',
                                     minute: '2-digit',
                                   })
@@ -571,7 +587,7 @@ const ClinicMessages: React.FC = () => {
                       ? 'bg-purple-100 text-purple-600'
                       : 'hover:bg-gray-100 text-gray-500'
                   }`}
-                  title="Randevu Oluştur"
+                  title={t('appointmentForm.title', 'Create Appointment')}
                 >
                   <Calendar className="w-5 h-5" />
                 </button>

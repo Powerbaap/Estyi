@@ -25,7 +25,7 @@ import AppointmentPanel from '../../components/Dashboard/AppointmentPanel';
 import { supabase } from '../../lib/supabaseClient';
 
 const ClinicDashboard: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
@@ -270,7 +270,7 @@ const ClinicDashboard: React.FC = () => {
                     {getPriceText(offer)}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {t('clinicDashboard.accepted')} {new Date(offer.created_at).toLocaleDateString('tr-TR')}
+                    {t('clinicDashboard.accepted')} {new Date(offer.created_at).toLocaleDateString(i18n.language || 'tr')}
                   </p>
                 </div>
                 <button
@@ -367,7 +367,7 @@ const ClinicDashboard: React.FC = () => {
                   {getPriceText(offer)}
                 </p>
                 <p className="text-xs text-gray-500 mt-1">
-                  {t('clinicDashboard.expired')} {offer.requests?.expires_at ? new Date(offer.requests.expires_at).toLocaleDateString('tr-TR') : ''}
+                  {t('clinicDashboard.expired')} {offer.requests?.expires_at ? new Date(offer.requests.expires_at).toLocaleDateString(i18n.language || 'tr') : ''}
                 </p>
               </div>
             </div>
@@ -400,7 +400,7 @@ const ClinicDashboard: React.FC = () => {
                 {getPriceText(offer)}
               </p>
               <p className="text-xs text-gray-500 mt-1">
-                {new Date(offer.created_at).toLocaleDateString('tr-TR')}
+                {new Date(offer.created_at).toLocaleDateString(i18n.language || 'tr')}
               </p>
             </div>
           </div>
@@ -544,7 +544,7 @@ const ClinicDashboard: React.FC = () => {
                   {t('clinicDashboard.welcome', { name: clinicName })}
                 </h1>
                 <p className="text-blue-100">
-                  {new Date().toLocaleDateString('tr-TR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                  {new Date().toLocaleDateString(i18n.language || 'tr', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
               </div>
               <div className="text-right">

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Send, X } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
+import { useTranslation } from 'react-i18next';
 
 interface AppointmentFormProps {
   conversationId: string;
@@ -17,6 +18,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
   onSent,
   onCancel,
 }) => {
+  const { t } = useTranslation();
   const [date, setDate] = useState('');
   const [time, setTime] = useState('');
   const [note, setNote] = useState('');
@@ -62,10 +64,23 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         content,
       });
 
+      // Karşı tarafa bildirim gönder
+      const recipientId = currentUserId === clinicId ? userId : clinicId;
+      try {
+        await supabase.from('notifications').insert({
+          user_id: recipientId,
+          type: 'appointment',
+          title: t('appointmentPanel.appointmentRequest', 'Randevu Talebi'),
+          message: `${date} - ${time}`,
+          action_url: '/messages',
+          metadata: { conversation_id: conversationId, appointment_id: apt.id },
+        });
+      } catch {}
+
       onSent();
     } catch (err) {
       console.error('Randevu gönderme hatası:', err);
-      alert('Randevu gönderilemedi.');
+      alert(t('appointmentForm.error', 'Randevu gönderilemedi.'));
     } finally {
       setSending(false);
     }
@@ -79,7 +94,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         <div className="flex items-center gap-2">
           <Calendar className="w-5 h-5 text-purple-600" />
           <span className="font-semibold text-sm text-purple-900">
-            Randevu Oluştur
+            {t('appointmentForm.title', 'Randevu Oluştur')}
           </span>
         </div>
         <button
@@ -91,7 +106,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       </div>
       <div className="grid grid-cols-2 gap-3 mb-3">
         <div>
-          <label className="block text-xs text-gray-600 mb-1">Tarih</label>
+          <label className="block text-xs text-gray-600 mb-1">{t('appointmentForm.date', 'Tarih')}</label>
           <input
             type="date"
             min={today}
@@ -101,7 +116,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
           />
         </div>
         <div>
-          <label className="block text-xs text-gray-600 mb-1">Saat</label>
+          <label className="block text-xs text-gray-600 mb-1">{t('appointmentForm.time', 'Saat')}</label>
           <input
             type="time"
             value={time}
@@ -112,7 +127,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
       </div>
       <input
         type="text"
-        placeholder="Not ekle (opsiyonel)"
+        placeholder={t('appointmentForm.notePlaceholder', 'Not ekle (opsiyonel)')}
         value={note}
         onChange={e => setNote(e.target.value)}
         className="w-full px-3 py-2 border border-gray-300 rounded-xl text-sm mb-3 focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
@@ -123,7 +138,7 @@ const AppointmentForm: React.FC<AppointmentFormProps> = ({
         className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-xl text-sm font-medium hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <Send className="w-4 h-4" />
-        {sending ? 'Gönderiliyor...' : 'Randevu Gönder'}
+        {sending ? t('appointmentForm.sending', 'Gönderiliyor...') : t('appointmentForm.send', 'Randevu Gönder')}
       </button>
     </div>
   );

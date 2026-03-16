@@ -48,6 +48,17 @@ const ReviewForm: React.FC<ReviewFormProps> = ({ appointmentId, clinicId, conver
         content: JSON.stringify({ type: 'review_submitted', rating, appointment_id: appointmentId }),
       });
 
+      // Kliniğe bildirim gönder
+      try {
+        await supabase.from('notifications').insert({
+          user_id: clinicId,
+          type: 'review',
+          title: t('clinicReviews.title', 'Yeni Yorum'),
+          message: `${rating}/5`,
+          action_url: '/clinic-dashboard',
+        });
+      } catch {}
+
       alert(t('reviewForm.success'));
       onDone();
     } catch (err) {

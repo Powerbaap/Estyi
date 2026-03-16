@@ -2033,5 +2033,8 @@
   },
   "reviewForm": { "title": "Evalúa tu experiencia", "placeholder": "Describe tu experiencia (opcional)", "submit": "Enviar reseña", "submitting": "Enviando...", "selectRating": "Por favor selecciona una puntuación.", "success": "¡Tu reseña ha sido enviada!", "error": "Error al enviar." },
   "clinicReviews": { "title": "Reseñas de pacientes", "reviews": "reseñas", "clinicResponse": "Respuesta de la clínica", "anonymous": "Usuario anónimo", "user": "Usuario" },
-  "priceRequestClinics": { "totalFound": "{{count}} clínicas activas encontradas para {{procedure}}", "noClinics": "No hay clínicas para {{procedure}}. Puedes crear una solicitud.", "clinicCount": "clínicas" }
+  "priceRequestClinics": { "totalFound": "{{count}} clínicas activas encontradas para {{procedure}}", "noClinics": "No hay clínicas para {{procedure}}. Puedes crear una solicitud.", "clinicCount": "clínicas" },
+  "appointmentForm": { "title": "Crear cita", "date": "Fecha", "time": "Hora", "notePlaceholder": "Agregar nota (opcional)", "send": "Enviar cita", "sending": "Enviando...", "error": "Error al enviar la cita." },
+  "messaging": { "chat": "Chat", "placeholder": "Escribe tu mensaje...", "noMessages": "Sin mensajes", "today": "Hoy", "yesterday": "Ayer", "unread": "No leídos", "searchPlaceholder": "Buscar en mensajes...", "sendError": "Error al enviar el mensaje: " },
+  "notifications": { "title": "Notificaciones", "loading": "Cargando notificaciones...", "empty": "Sin notificaciones", "emptyHint": "Las nuevas notificaciones aparecerán aquí", "count": "notificaciones", "markAllRead": "Marcar todo como leído", "now": "Ahora", "minutesAgo": "min", "hoursAgo": "h", "daysAgo": "d" }
 }

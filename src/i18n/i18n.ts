@@ -6,13 +6,13 @@ import en from "../locales/en.json";
 import ar from "../locales/ar.json";
 import fr from "../locales/fr.json";
 import es from "../locales/es.json";
-
+import ru from "../locales/ru.json";
 
 // Gelişmiş otomatik dil tespiti fonksiyonu
 const detectLanguage = () => {
   // 1. LocalStorage'dan kaydedilmiş dil tercihi
   const savedLanguage = localStorage.getItem('estyi-language');
-  if (savedLanguage && ['tr', 'en', 'ar', 'fr', 'es'].includes(savedLanguage)) {
+  if (savedLanguage && ['tr', 'en', 'ar', 'fr', 'es', 'ru'].includes(savedLanguage)) {
     return savedLanguage;
   }
 
@@ -37,12 +37,13 @@ const detectLanguage = () => {
 
   const isFrance = browserLang?.startsWith('fr');
   const isSpain = browserLang?.startsWith('es');
-
+  const isRussia = browserLang?.startsWith('ru');
 
   if (isTurkey) return 'tr';
   if (isSaudiArabia) return 'ar';
   if (isFrance) return 'fr';
   if (isSpain) return 'es';
+  if (isRussia) return 'ru';
 
   // Türkiye ve Suudi Arabistan dışı tüm bölgeler için varsayılan İngilizce
   return 'en';
@@ -56,7 +57,8 @@ i18n
       en: { translation: en },
       ar: { translation: ar },
       fr: { translation: fr },
-      es: { translation: es }
+      es: { translation: es },
+      ru: { translation: ru }
     },
     lng: detectLanguage(),
     fallbackLng: "en",

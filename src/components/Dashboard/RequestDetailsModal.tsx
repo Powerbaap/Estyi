@@ -54,7 +54,7 @@ interface RequestDetailsModalProps {
 }
 
 const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClose, request }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const getCountryDisplayName = (countryKey?: string) => {
     if (!countryKey) return '';
@@ -162,7 +162,7 @@ const RequestDetailsModal: React.FC<RequestDetailsModalProps> = ({ isOpen, onClo
         d = new Date(value);
       }
       if (isNaN(d.getTime())) return '';
-      return d.toLocaleDateString('tr-TR');
+      return d.toLocaleDateString(i18n.language || 'tr');
     } catch {
       return '';
     }

@@ -21,7 +21,7 @@ interface MessageListProps {
 }
 
 const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selectedConversation }) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
@@ -83,7 +83,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
             conv.user_id === user.id ? conv.clinic_id : conv.user_id;
           const name =
             clinicsMap[otherPartyId] ||
-            `Kullanıcı ${otherPartyId?.slice(-4) || '????'}`;
+            `${t('clinicReviews.user', 'User')} ${otherPartyId?.slice(-4) || '????'}`;
 
           const msgs = Array.isArray(conv.messages) ? conv.messages : [];
           const sorted = [...msgs].sort(
@@ -94,10 +94,29 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
           const lastMsg = sorted[0];
           const rawTimestamp =
             lastMsg?.created_at || conv.created_at || '';
-          const lastMessage =
-            lastMsg?.content?.substring(0, 50) || '';
+          let lastMessage = '';
+          if (lastMsg?.content) {
+            try {
+              const parsed = JSON.parse(lastMsg.content);
+              if (parsed.type === 'appointment_request') {
+                lastMessage = t('appointmentPanel.appointmentRequest', 'Randevu talebi');
+              } else if (parsed.type === 'appointment_response') {
+                lastMessage = parsed.status === 'confirmed'
+                  ? t('appointmentPanel.status.confirmed', 'Onaylandı')
+                  : t('appointmentPanel.status.rejected', 'Reddedildi');
+              } else if (parsed.type === 'appointment_cancelled') {
+                lastMessage = t('appointmentPanel.status.cancelled', 'İptal edildi');
+              } else if (parsed.type === 'review_submitted') {
+                lastMessage = '⭐ ' + t('appointmentPanel.reviewed', 'Değerlendirildi');
+              } else {
+                lastMessage = lastMsg.content.substring(0, 50);
+              }
+            } catch {
+              lastMessage = lastMsg.content.substring(0, 50);
+            }
+          }
           const timestamp = rawTimestamp
-            ? new Date(rawTimestamp).toLocaleString('tr-TR', {
+            ? new Date(rawTimestamp).toLocaleString(i18n.language || 'tr', {
                 hour: '2-digit',
                 minute: '2-digit',
                 day: '2-digit',
@@ -160,11 +179,11 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
         </div>
         <div className="relative mb-4">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
-          <input type="text" placeholder="Mesajlarda ara..." value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" />
+          <input type="text" placeholder={t('messaging.searchPlaceholder', 'Search messages...')} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm" />
         </div>
         <div className="flex space-x-2">
-          <button onClick={() => setFilter('all')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${filter === 'all' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Tümü</button>
-          <button onClick={() => setFilter('unread')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${filter === 'unread' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>Okunmamış</button>
+          <button onClick={() => setFilter('all')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${filter === 'all' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t('appointmentPanel.filters.all', 'All')}</button>
+          <button onClick={() => setFilter('unread')} className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${filter === 'unread' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}>{t('messaging.unread', 'Unread')}</button>
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">
@@ -211,7 +230,7 @@ const MessageList: React.FC<MessageListProps> = ({ onSelectConversation, selecte
                     </span>
                   </div>
                   <p className="text-sm text-gray-600 truncate">
-                    {conversation.lastMessage || 'Mesaj yok'}
+                    {conversation.lastMessage || t('messaging.noMessages', 'No messages')}
                   </p>
                 </div>
                 {conversation.unreadCount > 0 && (

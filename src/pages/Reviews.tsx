@@ -17,7 +17,7 @@ interface Review {
 }
 
 const Reviews: React.FC = () => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { user } = useAuth();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [filter, setFilter] = useState<'all' | '5star' | '4star'>('all');
@@ -151,7 +151,7 @@ const Reviews: React.FC = () => {
   };
 
   const formatDate = (date: Date) => {
-    return date.toLocaleDateString('tr-TR', {
+    return date.toLocaleDateString(i18n.language || 'tr', {
       year: 'numeric',
       month: 'long',
       day: 'numeric'

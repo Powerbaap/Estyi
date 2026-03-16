@@ -1946,103 +1946,103 @@
     "aboutText": "Compiled from Estyi platform data. Prices may vary by clinic and personal factors. Updated February 2026."
   },
   "appointmentPanel": {
-    "title": "My Appointments",
-    "subtitle": "Track all your appointments here",
+    "title": "Мои записи",
+    "subtitle": "Следите за своими записями",
     "filters": {
-      "all": "All",
-      "pending": "Pending",
-      "confirmed": "Confirmed",
-      "completed": "Completed",
-      "cancelled": "Cancelled"
+      "all": "Все",
+      "pending": "Ожидание",
+      "confirmed": "Подтверждено",
+      "completed": "Завершено",
+      "cancelled": "Отменено"
     },
     "sections": {
-      "upcoming": "Upcoming Appointments",
-      "completed": "Completed Treatments",
-      "past": "Past / Cancelled"
+      "upcoming": "Предстоящие записи",
+      "completed": "Завершённые процедуры",
+      "past": "Прошедшие / Отменённые"
     },
     "status": {
-      "pending": "Pending Approval",
-      "confirmed": "Confirmed",
-      "rejected": "Rejected",
-      "cancelled": "Cancelled",
-      "completed": "Treatment Completed"
+      "pending": "Ожидание",
+      "confirmed": "Подтверждено",
+      "rejected": "Отклонено",
+      "cancelled": "Отменено",
+      "completed": "Процедура завершена"
     },
     "actions": {
-      "approve": "Approve",
-      "reject": "Reject",
-      "cancel": "Cancel",
-      "chat": "Chat",
-      "markCompleted": "Mark as Completed",
-      "confirmComplete": "Are you sure you want to mark this treatment as completed?"
+      "approve": "Подтвердить",
+      "reject": "Отклонить",
+      "cancel": "Отменить",
+      "chat": "Чат",
+      "markCompleted": "Отметить завершённым",
+      "confirmComplete": "Вы уверены, что хотите отметить процедуру как завершённую?"
     },
     "reservation": {
-      "guaranteed": "Estyi Guaranteed",
-      "standard": "Standard Reservation",
-      "standardActive": "Active",
-      "guaranteedLabel": "Estyi Guaranteed Reservation",
-      "comingSoon": "Coming Soon",
-      "type": "Reservation Type"
+      "guaranteed": "Гарантия Estyi",
+      "standard": "Стандартная запись",
+      "standardActive": "Активна",
+      "guaranteedLabel": "Гарантированная запись Estyi",
+      "comingSoon": "Скоро",
+      "type": "Тип записи"
     },
-    "reviewed": "Reviewed",
-    "writeReview": "Write Review",
-    "clinic": "Clinic",
-    "patient": "Patient",
-    "appointmentRequest": "Appointment Request",
+    "reviewed": "Оценено",
+    "writeReview": "Написать отзыв",
+    "clinic": "Клиника",
+    "patient": "Пациент",
+    "appointmentRequest": "Запрос на запись",
     "empty": {
-      "title": "No Appointments Found",
-      "subtitle": "You don't have any appointments yet."
+      "title": "Нет записей",
+      "subtitle": "У вас пока нет записей."
     }
   },
   "reviewForm": {
-    "title": "Rate Your Experience",
-    "placeholder": "Describe your experience (optional)",
-    "submit": "Submit Review",
-    "submitting": "Submitting...",
-    "selectRating": "Please select a rating.",
-    "success": "Your review has been submitted!",
-    "error": "Failed to submit review."
+    "title": "Оцените ваш опыт",
+    "placeholder": "Опишите ваш опыт (необязательно)",
+    "submit": "Отправить отзыв",
+    "submitting": "Отправка...",
+    "selectRating": "Пожалуйста, выберите оценку.",
+    "success": "Ваш отзыв отправлен!",
+    "error": "Не удалось отправить отзыв."
   },
   "clinicReviews": {
-    "title": "Patient Reviews",
-    "reviews": "reviews",
-    "clinicResponse": "Clinic Response",
-    "anonymous": "Anonymous User",
-    "user": "User"
+    "title": "Отзывы пациентов",
+    "reviews": "отзывов",
+    "clinicResponse": "Ответ клиники",
+    "anonymous": "Анонимный пользователь",
+    "user": "Пользователь"
   },
   "priceRequestClinics": {
-    "totalFound": "{{count}} active clinics found for {{procedure}}",
-    "noClinics": "No clinics registered for {{procedure}} yet. You can still create a request.",
-    "clinicCount": "clinics"
+    "totalFound": "Найдено {{count}} активных клиник для {{procedure}}",
+    "noClinics": "Пока нет зарегистрированных клиник для {{procedure}}. Вы всё равно можете создать запрос.",
+    "clinicCount": "клиник"
   },
   "appointmentForm": {
-    "title": "Create Appointment",
-    "date": "Date",
-    "time": "Time",
-    "notePlaceholder": "Add note (optional)",
-    "send": "Send Appointment",
-    "sending": "Sending...",
-    "error": "Failed to send appointment."
+    "title": "Создать запись",
+    "date": "Дата",
+    "time": "Время",
+    "notePlaceholder": "Добавить заметку (необязательно)",
+    "send": "Отправить запись",
+    "sending": "Отправка...",
+    "error": "Не удалось отправить запись."
   },
   "messaging": {
-    "chat": "Chat",
-    "placeholder": "Type your message...",
-    "noMessages": "No messages",
-    "today": "Today",
-    "yesterday": "Yesterday",
-    "unread": "Unread",
-    "searchPlaceholder": "Search messages...",
-    "sendError": "Message send failed: "
+    "chat": "Чат",
+    "placeholder": "Введите сообщение...",
+    "noMessages": "Нет сообщений",
+    "today": "Сегодня",
+    "yesterday": "Вчера",
+    "unread": "Непрочитанные",
+    "searchPlaceholder": "Поиск в сообщениях...",
+    "sendError": "Ошибка отправки сообщения: "
   },
   "notifications": {
-    "title": "Notifications",
-    "loading": "Loading notifications...",
-    "empty": "No Notifications",
-    "emptyHint": "New notifications will appear here",
-    "count": "notifications",
-    "markAllRead": "Mark All as Read",
-    "now": "Now",
-    "minutesAgo": "min ago",
-    "hoursAgo": "h ago",
-    "daysAgo": "d ago"
+    "title": "Уведомления",
+    "loading": "Загрузка уведомлений...",
+    "empty": "Нет уведомлений",
+    "emptyHint": "Новые уведомления появятся здесь",
+    "count": "уведомлений",
+    "markAllRead": "Отметить все как прочитанные",
+    "now": "Сейчас",
+    "minutesAgo": "мин назад",
+    "hoursAgo": "ч назад",
+    "daysAgo": "дн назад"
   }
 }

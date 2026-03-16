@@ -12,7 +12,7 @@ import { getProcedure } from '../../data/procedureCategories';
 
 const UserDashboard: React.FC = () => {
   const { user } = useAuth();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const location = useLocation();
   const navigate = useNavigate();
   const getProcedureDisplayName = (procedureKey?: string, procedureName?: string) => {
@@ -72,7 +72,7 @@ const UserDashboard: React.FC = () => {
         d = new Date(value);
       }
       if (isNaN(d.getTime())) return '';
-      return d.toLocaleDateString('tr-TR');
+      return d.toLocaleDateString(i18n.language || 'tr');
     } catch {
       return '';
     }

@@ -2013,5 +2013,36 @@
     "totalFound": "{{procedure}} için toplam {{count}} aktif klinik bulundu",
     "noClinics": "{{procedure}} için henüz kayıtlı klinik bulunmuyor. Yine de talep oluşturabilirsiniz.",
     "clinicCount": "klinik"
+  },
+  "appointmentForm": {
+    "title": "Randevu Oluştur",
+    "date": "Tarih",
+    "time": "Saat",
+    "notePlaceholder": "Not ekle (opsiyonel)",
+    "send": "Randevu Gönder",
+    "sending": "Gönderiliyor...",
+    "error": "Randevu gönderilemedi."
+  },
+  "messaging": {
+    "chat": "Sohbet",
+    "placeholder": "Mesajınızı yazın...",
+    "noMessages": "Mesaj yok",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "unread": "Okunmamış",
+    "searchPlaceholder": "Mesajlarda ara...",
+    "sendError": "Mesaj gönderilemedi: "
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "loading": "Bildirimler Yükleniyor...",
+    "empty": "Bildirim Yok",
+    "emptyHint": "Yeni bildirimler burada görünecek",
+    "count": "bildirim",
+    "markAllRead": "Tümünü Okundu İşaretle",
+    "now": "Şimdi",
+    "minutesAgo": "dk önce",
+    "hoursAgo": "sa önce",
+    "daysAgo": "gün önce"
   }
 }

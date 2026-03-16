@@ -2033,5 +2033,8 @@
   },
   "reviewForm": { "title": "Évaluez votre expérience", "placeholder": "Décrivez votre expérience (optionnel)", "submit": "Envoyer l'avis", "submitting": "Envoi en cours...", "selectRating": "Veuillez sélectionner une note.", "success": "Votre avis a été envoyé !", "error": "Échec de l'envoi." },
   "clinicReviews": { "title": "Avis des patients", "reviews": "avis", "clinicResponse": "Réponse de la clinique", "anonymous": "Utilisateur anonyme", "user": "Utilisateur" },
-  "priceRequestClinics": { "totalFound": "{{count}} cliniques actives trouvées pour {{procedure}}", "noClinics": "Aucune clinique pour {{procedure}}. Vous pouvez quand même créer une demande.", "clinicCount": "cliniques" }
+  "priceRequestClinics": { "totalFound": "{{count}} cliniques actives trouvées pour {{procedure}}", "noClinics": "Aucune clinique pour {{procedure}}. Vous pouvez quand même créer une demande.", "clinicCount": "cliniques" },
+  "appointmentForm": { "title": "Créer un rendez-vous", "date": "Date", "time": "Heure", "notePlaceholder": "Ajouter une note (optionnel)", "send": "Envoyer le rendez-vous", "sending": "Envoi en cours...", "error": "Échec de l'envoi du rendez-vous." },
+  "messaging": { "chat": "Discussion", "placeholder": "Écrivez votre message...", "noMessages": "Aucun message", "today": "Aujourd'hui", "yesterday": "Hier", "unread": "Non lu", "searchPlaceholder": "Rechercher dans les messages...", "sendError": "Échec de l'envoi du message : " },
+  "notifications": { "title": "Notifications", "loading": "Chargement des notifications...", "empty": "Aucune notification", "emptyHint": "Les nouvelles notifications apparaîtront ici", "count": "notifications", "markAllRead": "Tout marquer comme lu", "now": "Maintenant", "minutesAgo": "min", "hoursAgo": "h", "daysAgo": "j" }
 }

@@ -241,6 +241,8 @@ export const clinicApplicationService = {
       reviews: 0,
       specialties: application.specialties || [],
       countries,
+      country_code: countries[0] || null,
+      city: firstCity || null,
       cities_by_country: citiesByCountry
     };
     const { data: clinicRow, error: clinicErr } = await supabase
